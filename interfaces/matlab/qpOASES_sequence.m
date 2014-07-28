@@ -78,8 +78,8 @@
 %
 %
 %Optional outputs (only x is mandatory):
-%    x          -  Optimal primal solution vector (if status==0).
-%    fval       -  Optimal objective function value (if status==0).
+%    x          -  Optimal primal solution vector (if exitflag==0).
+%    fval       -  Optimal objective function value (if exitflag==0).
 %    exitflag   -   0: QP solved,
 %                   1: QP could not be solved within given number of iterations,
 %                  -1: QP could not be solved due to an internal error,

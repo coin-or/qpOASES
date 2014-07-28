@@ -1,5 +1,5 @@
 /**
- *	\mainpage qpOASES 3.0
+ *	\mainpage Main Page
  *
  *	<p>&nbsp;</p>
  *
@@ -27,7 +27,7 @@
  *
  *	\section sec_developers Authors and Contributors
  *
- *	qpOASES's core functionality and software design has been developed by 
+ *	qpOASES's core functionality and software design have been developed by 
  *  the following main developers (in alphabetical order):
  *  <ul>
   *	<li>Hans Joachim Ferreau
@@ -44,8 +44,9 @@
  *  <li>Sebastian F. Walter
  *	</ul>
  *
- *	Finally, the following people have helped making qpOASES even more 
- *	useful without providing source code (in alphabetical order):
+ *	Finally, the following people have not contributed to the source code, 
+ *  but have helped making qpOASES even more useful by testing, reporting 
+ *  bugs or proposing algorithmic improvements (in alphabetical order): 
  *  <ul>
  *	<li>Eckhard Arnold
  *	<li>Boris Houska
@@ -56,9 +57,11 @@
  *	</ul>
  *
  *	All users are invited to further improve qpOASES by providing comments, code enhancements, 
- *	bug reports, additional documentation or whatever you feel is missing. Just send an e-mail 
- *  to <a href="mailto:support@qpOASES.org">support@qpOASES.org</a> or contact one of the main
- *	developers.
+ *	bug reports, additional documentation or whatever you feel is missing. The preferred way
+ *  of doing so is to <b>create a <a href="https://projects.coin-or.org/qpOASES/newticket">new ticket</a>
+ *  at the qpOASES webpage</b>. In case you do not want to disclose your feedback to the public, 
+ *  you may send an e-mail to <a href="mailto:support@qpOASES.org">support@qpOASES.org</a> 
+ *	or contact one of the main developers directly.
  *	<p>&nbsp;</p>
  *
  *
@@ -99,7 +102,7 @@
  *	 @MISC{qpOASES2014,
  *	  author = {H.J. Ferreau and A. Potschka and C. Kirches},
  *	  title = {{qpOASES} webpage},
- *	  howpublished = {http://www.qpOASES.org},
+ *	  howpublished = {http://www.qpOASES.org/},
  *	  year = {2007--2014},
  *	  keywords = {qpOASES, model predictive control, parametric quadratic programming, online active set strategy}
  *	}
@@ -109,7 +112,7 @@
  *
  *	\section sec_moreinfo More Information
  *
- *	More information can be found on <a href="http://www.qpOASES.org/">www.qpOASES.org</a> 
+ *	More information can be found on <a href="http://www.qpOASES.org/">http://www.qpOASES.org/</a> 
  *	and in the <a href="../manual.pdf">qpOASES User's Manual</a>.
 *	<p>&nbsp;</p>
  */

@@ -411,13 +411,18 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 	}
 
 	// check if supplied data contains 'NaN'
-	// TODO: extend for case with constraints!
-	// TODO: make this work for sparse matrices!
 
-	/*if ( isValidData( (real_t*)mxGetPr(prhs[H_idx]),nV*nV ) == BT_FALSE )
-	{
-		myMexErrMsgTxt("ERROR (qpOASES): Hessian matrix contains 'NaN' !");
-		return;
+	if (mxIsSparse(prhs[H_idx]) == 1) {
+		int nnz = mxGetNzmax(prhs[H_idx]);
+		if (isValidData((real_t*) mxGetPr(prhs[H_idx]), nnz) == BT_FALSE) {
+			myMexErrMsgTxt("ERROR (qpOASES): Hessian matrix contains 'NaN' !");
+			return;
+		}
+	} else {
+		if (isValidData((real_t*) mxGetPr(prhs[H_idx]), nV * nV) == BT_FALSE) {
+			myMexErrMsgTxt("ERROR (qpOASES): Hessian matrix contains 'NaN' !");
+			return;
+		}
 	}
 
 	if ( isValidData( (real_t*)mxGetPr(prhs[g_idx]),nV ) == BT_FALSE )
@@ -436,9 +441,38 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 	{
 		myMexErrMsgTxt("ERROR (qpOASES): Upper bound vector contains 'NaN' !");
 		return;
-	}*/
+	}
 
+	if (nC > 0) {
 
+		if (mxIsSparse(prhs[A_idx]) == 1) {
+			int nnz = mxGetNzmax(prhs[A_idx]);
+			if (isValidData((real_t*) mxGetPr(prhs[A_idx]), nnz) == BT_FALSE) {
+				myMexErrMsgTxt(
+						"ERROR (qpOASES): Constraint matrix contains 'NaN' !");
+				return;
+			}
+		} else {
+			if (isValidData((real_t*) mxGetPr(prhs[A_idx]), nV * nC)
+					== BT_FALSE) {
+				myMexErrMsgTxt(
+						"ERROR (qpOASES): Constraint matrix contains 'NaN' !");
+				return;
+			}
+		}
+
+		if (isValidData((real_t*) mxGetPr(prhs[lbA_idx]), nC) == BT_FALSE) {
+			myMexErrMsgTxt(
+					"ERROR (qpOASES): Lower constraint vector contains 'NaN' !");
+			return;
+		}
+
+		if (isValidData((real_t*) mxGetPr(prhs[ubA_idx]), nC) == BT_FALSE) {
+			myMexErrMsgTxt(
+					"ERROR (qpOASES): Upper constraint vector contains 'NaN' !");
+			return;
+		}
+	}
 
 	/* Check inputs dimensions and assign pointers to inputs. */
 	if ( mxGetN( prhs[ H_idx ] ) != nV )

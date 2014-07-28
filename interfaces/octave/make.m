@@ -14,7 +14,6 @@ function [] = make( varargin )
 %Copyright (C) 2013-2014 by Hans Joachim Ferreau, Andreas Potschka,
 %Christian Kirches et al. All rights reserved.
 
-
 %%
 %%	This file is part of qpOASES.
 %%
@@ -82,6 +81,12 @@ function [] = make( varargin )
     end
 
     mexExt = mexext();
+    
+    
+    %% ensure copyright notice is displayed
+    if ~isempty( strfind( CPPFLAGS,'-D__NO_COPYRIGHT__' ) )
+        printCopyrightNotice( );
+    end
     
     
     %% clean if desired
@@ -206,6 +211,24 @@ function [ timestamp ] = getTimestamp( dateString )
     catch
         timestamp = Inf;
     end
+
+end
+
+
+function [ ] = printCopyrightNotice( )
+
+    disp( ' ' );
+    disp( 'qpOASES -- An Implementation of the Online Active Set Strategy.' );
+    disp( 'Copyright (C) 2007-2014 by Hans Joachim Ferreau, Andreas Potschka,' );
+    disp( 'Christian Kirches et al. All rights reserved.' );
+    disp( ' ' );
+    disp( 'qpOASES is distributed under the terms of the' );
+    disp( 'GNU Lesser General Public License 2.1 in the hope that it will be' );
+    disp( 'useful, but WITHOUT ANY WARRANTY; without even the implied warranty' );
+    disp( 'of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.' );
+    disp( 'See the GNU Lesser General Public License for more details.' );
+    disp( ' ' );
+    disp( ' ' );
 
 end
 

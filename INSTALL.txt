@@ -25,8 +25,15 @@
 INSTALLATION UNDER LINUX
 ========================
 
-After downloading and unpacking qpOASES (into <install-dir>), perform the 
-following steps:
+0. Obtain qpOASES from COIN-OR:
+
+Download a zipped archive containg the latest stable release and unpack it 
+into <install-dir>. Alternatively, you check out the latest stable branch, 
+e.g. by running
+
+svn co https://projects.coin-or.org/svn/qpOASES/stable/3.0 <install-dir>
+
+from your shell. 
 
 
 1. Compilation of the qpOASES library libqpOASES.a and test examples:
