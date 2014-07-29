@@ -1,0 +1,47 @@
+*******************************************************************************
+*                                                                             *
+*  ONLINE QP BENCHMARK COLLECTION                                             *
+*  http://homes.esat.kuleuven.be/~optec/software/onlineQP                     *
+*                                                                             *
+*  maintained by: Moritz Diehl and Hans Joachim Ferreau                       *
+*                                                                             *
+*******************************************************************************
+
+
+Benchmark problem:
+==================
+
+crane
+
+
+Dimensions:
+===========
+
+921 QPs,
+57 variables (bounded),
+160 constraints,
+0 equality constraints
+
+
+
+Description:
+============
+
+The trajectory generation problem for the load movement of a boom crane is 
+formulated and solved as a quadratic programming problem. The optimization 
+variables are the piecewise constant highest derivative of the load position 
+reference trajectory as well as slack variables for some of the inequality 
+constraints. Beside load position and acceleration bounds, the constraints 
+approximate the position-dependent load velocity restrictions.
+
+The nonlinear crane model is linearized by a flatness based controller. The 
+optimization procedure generates feasible and smooth reference trajectories 
+for the linearized system including the state feedback. The reference 
+trajectories take into account the current state of the system, therefore 
+this outer feedback loop can be considered as an MPC loop. The optimization 
+horizon is 10s and the sample time is 100ms.
+
+
+*******************************************************************************
+* end of file                                                                 *
+*******************************************************************************
