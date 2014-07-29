@@ -15,7 +15,7 @@ function [ successFlag ] = runVanBarelsUnboundedQP( doPrint )
     
     options1 = qpOASES_options( 'default', 'printLevel',-1*doPrint );
     
-    [x1,fval1,exitflag1,iter1] = qpOASES( data.H,data.g,data.lb,data.ub,options1 ); %#ok<*NASGU>
+    [~,~,exitflag1,iter1] = qpOASES( data.H,data.g,data.lb,data.ub,options1 ); %#ok<*NASGU>
 
     % should return "QP unbounded"
     if ( exitflag1 == -3 )
