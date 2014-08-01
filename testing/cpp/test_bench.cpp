@@ -202,7 +202,7 @@ int main( int argc, char *argv[] )
 	if (nproblems == 0)
 	{
 		/* 2a) Scan problem directory */
-		nproblems = scandir("./cpp/data/problems", &namelist, NULL, alphasort);
+		nproblems = scandir("../testing/cpp/data/problems", &namelist, NULL, alphasort);
 		if (nproblems <= 0)
 		{
 			myPrintf( "No test problems found!\n" );
@@ -239,7 +239,7 @@ int main( int argc, char *argv[] )
 		fprintf(stdFile, "%-10s ", problem);
 		fflush(stdFile);
 
-		snprintf(OQPproblem, MAX_STRING_LENGTH, "./cpp/data/problems/%s/", problem);
+		snprintf(OQPproblem, MAX_STRING_LENGTH, "../testing/cpp/data/problems/%s/", problem);
 		maxCPUtime = 300.0;
 		nWSR = 2500;
 
