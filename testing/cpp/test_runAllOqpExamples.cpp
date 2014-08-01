@@ -58,10 +58,10 @@ int main( )
 
 	const int numBenchmarks = 4; //5
 	const char *benchmarkPath[numBenchmarks];
-	benchmarkPath[0] = "./cpp/data/oqp/chain80/";
-	benchmarkPath[1] = "./cpp/data/oqp/chain80w/";
-	benchmarkPath[2] = "./cpp/data/oqp/diesel/";
-	benchmarkPath[3] = "./cpp/data/oqp/crane/";
+	benchmarkPath[0] = "../testing/cpp/data/oqp/chain80/";
+	benchmarkPath[1] = "../testing/cpp/data/oqp/chain80w/";
+	benchmarkPath[2] = "../testing/cpp/data/oqp/diesel/";
+	benchmarkPath[3] = "../testing/cpp/data/oqp/crane/";
 	//benchmarkPath[4] = "./cpp/data/oqp/CDU/";
 
 
