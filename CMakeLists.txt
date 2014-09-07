@@ -1,32 +1,32 @@
 ##
-##	This file is part of qpOASES.
+##     This file is part of qpOASES.
 ##
-##	qpOASES -- An Implementation of the Online Active Set Strategy.
-##	Copyright (C) 2007-2014 by Hans Joachim Ferreau, Andreas Potschka,
-##	Christian Kirches et al. All rights reserved.
+##     qpOASES -- An Implementation of the Online Active Set Strategy.
+##     Copyright (C) 2007-2014 by Hans Joachim Ferreau, Andreas Potschka,
+##     Christian Kirches et al. All rights reserved.
 ##
-##	qpOASES is free software; you can redistribute it and/or
-##	modify it under the terms of the GNU Lesser General Public
-##	License as published by the Free Software Foundation; either
-##	version 2.1 of the License, or (at your option) any later version.
+##     qpOASES is free software; you can redistribute it and/or
+##     modify it under the terms of the GNU Lesser General Public
+##     License as published by the Free Software Foundation; either
+##     version 2.1 of the License, or (at your option) any later version.
 ##
-##	qpOASES is distributed in the hope that it will be useful,
-##	but WITHOUT ANY WARRANTY; without even the implied warranty of
-##	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
-##	See the GNU Lesser General Public License for more details.
+##     qpOASES is distributed in the hope that it will be useful,
+##     but WITHOUT ANY WARRANTY; without even the implied warranty of
+##     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+##     See the GNU Lesser General Public License for more details.
 ##
-##	You should have received a copy of the GNU Lesser General Public
-##	License along with qpOASES; if not, write to the Free Software
-##	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+##     You should have received a copy of the GNU Lesser General Public
+##     License along with qpOASES; if not, write to the Free Software
+##     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 ##
 
 
 
 ##
-##	Filename:  CMakeLists.txt
-##	Author:    Hans Joachim Ferreau (thanks to Milan Vukov)
-##	Version:   3.0
-##	Date:      2007-2014
+##     Filename:  CMakeLists.txt
+##     Author:    Hans Joachim Ferreau (thanks to Milan Vukov)
+##     Version:   3.0
+##     Date:      2007-2014
 ##
 
 
@@ -38,23 +38,23 @@ SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/libs)
 
 IF( NOT CMAKE_VERBOSE_MAKEFILE )
-	SET( CMAKE_VERBOSE_MAKEFILE OFF )
+    SET( CMAKE_VERBOSE_MAKEFILE OFF )
 ENDIF( NOT CMAKE_VERBOSE_MAKEFILE )
 
 IF( NOT CMAKE_BUILD_TYPE )
-	SET(CMAKE_BUILD_TYPE Release CACHE STRING
-		"Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel."
-		FORCE
-	)
+    SET(CMAKE_BUILD_TYPE Release CACHE STRING
+        "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel."
+        FORCE
+        )
 ENDIF( NOT CMAKE_BUILD_TYPE )
 
 
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__NO_COPYRIGHT__")
 IF ( UNIX )
-	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic -Wfloat-equal -Wshadow -DLINUX")
-	SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_DEBUG} -O3 -finline-functions")
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic -Wfloat-equal -Wshadow -DLINUX")
+    SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_DEBUG} -O3 -finline-functions")
 ELSEIF( WINDOWS )
-	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -nologo -EHsc -DWIN32")
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -nologo -EHsc -DWIN32")
 ENDIF()
 
 SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -D__DEBUG__")
@@ -83,8 +83,8 @@ qrecipe
 )
 
 FOREACH(ELEMENT ${EXAMPLE_NAMES})
-  ADD_EXECUTABLE(${ELEMENT} examples/${ELEMENT}.cpp)
-  TARGET_LINK_LIBRARIES(${ELEMENT} qpOASES)
+    ADD_EXECUTABLE(${ELEMENT} examples/${ELEMENT}.cpp)
+    TARGET_LINK_LIBRARIES(${ELEMENT} qpOASES)
 ENDFOREACH(ELEMENT ${EXAMPLE_NAMES})
 
 
