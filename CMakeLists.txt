@@ -29,10 +29,16 @@
 ##     Date:      2007-2014
 ##
 
-
 cmake_minimum_required(VERSION 2.6)
 
 PROJECT(qpOASES CXX)
+SET(PACKAGE_NAME "qpOASES")
+SET(PACKAGE_VERSION "3.0.0")
+SET(PACKAGE_SO_VERSION "3.0")
+SET(PACKAGE_DESCRIPTION "Active-set Quadratic Program (QP) Solver")
+SET(PACKAGE_AUTHOR "Hans Joachim Ferreau")
+SET(PACKAGE_MAINTAINER "Hans Joachim Ferreau")
+SET(PACKAGE_URL "https://projects.coin-or.org/qpOASES")
 
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/libs)
@@ -49,6 +55,9 @@ IF( NOT CMAKE_BUILD_TYPE )
 ENDIF( NOT CMAKE_BUILD_TYPE )
 
 
+############################################################
+#################### compiler flags ########################
+############################################################
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__NO_COPYRIGHT__")
 IF ( UNIX )
     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic -Wfloat-equal -Wshadow -DLINUX")
@@ -59,27 +68,74 @@ ENDIF()
 
 SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -D__DEBUG__")
 
-INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/include)
+############################################################
+######################## rpath #############################
+############################################################
+# use, i.e. don't skip the full RPATH for the build tree
+set(CMAKE_SKIP_BUILD_RPATH  FALSE)
 
+# when building, don't use the install RPATH already
+# (but later on when installing)
+set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
+
+set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib:${CMAKE_INSTALL_PREFIX}/lib/casadi")
+
+# add the automatically determined parts of the RPATH
+# which point to directories outside the build tree to the install RPATH
+set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+
+# the RPATH to be used when installing, but only if it's not a system directory
+list(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/lib" isSystemDir)
+if("${isSystemDir}" STREQUAL "-1")
+   set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib:${CMAKE_INSTALL_PREFIX}/lib/casadi")
+endif("${isSystemDir}" STREQUAL "-1")
+
+
+
+############################################################
+#################### build and install #####################
+############################################################
+INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/include)
 
 # compile qpOASES libraries
 FILE(GLOB SRC src/*.cpp)
 
+# library
 ADD_LIBRARY(qpOASES STATIC ${SRC})
+INSTALL(TARGETS qpOASES
+  LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION lib
+  RUNTIME DESTINATION lib
+)
+SET_TARGET_PROPERTIES(
+    qpOASES
+    PROPERTIES
+    SOVERSION ${PACKAGE_SO_VERSION}
+    )
 
+# headers
+INSTALL(FILES include/qpOASES.hpp
+  DESTINATION include)
+INSTALL(DIRECTORY include/qpOASES
+  DESTINATION include
+  FILES_MATCHING PATTERN "*.hpp"
+  PATTERN ".svn" EXCLUDE)
 
+############################################################
+######################### examples #########################
+############################################################
 # compile qpOASES examples
 SET(EXAMPLE_NAMES
-example1
-example1a
-example1b
-example2
-example3
-example3b
-example4
-example5
-exampleLP
-qrecipe
+    example1
+    example1a
+    example1b
+    example2
+    example3
+    example3b
+    example4
+    example5
+    exampleLP
+    qrecipe
 )
 
 FOREACH(ELEMENT ${EXAMPLE_NAMES})
