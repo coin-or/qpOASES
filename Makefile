@@ -54,6 +54,7 @@ testing: src
 	@cd $@; ${MAKE} -s
 
 test: testing
+	@cd testing; ${MAKE} -s runTests
 
 debugging:
 	@cd $@; ${MAKE} -s 

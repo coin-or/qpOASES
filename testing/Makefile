@@ -75,6 +75,10 @@ QPOASES_TEST_EXES = \
 
 all: ${QPOASES_TEST_EXES}
 
+runTests: ${QPOASES_TEST_EXES}
+	./runUnitTests
+	./checkForMemoryLeaks
+
 ${BINDIR}/test_bench${EXE}: ./cpp/test_bench.${OBJEXT} ${LINK_DEPENDS}
 	@${ECHO} "Creating" $@
 	@${CPP} ${DEF_TARGET} ${CPPFLAGS} $< ${QPOASES_LINK} ${LINK_LIBRARIES}

@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 ##
 ##	This file is part of qpOASES.
 ##
@@ -97,4 +99,5 @@ if [ $counter == 0 ]; then
 	echo "All available tests passed successfully!"
 else
 	echo "$counter test(s) failed!"
+	exit 1
 fi
