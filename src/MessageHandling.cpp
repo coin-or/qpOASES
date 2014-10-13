@@ -177,7 +177,7 @@ MessageHandling::ReturnValueList returnValueList[] =
 { RET_INITIAL_BOUNDS_STATUS_NYI, "(should not be thrown, no longer in use)", VS_VISIBLE },
 { RET_ERROR_IN_CONSTRAINTPRODUCT, "Error in user-defined constraint product function", VS_VISIBLE },
 { RET_FIX_BOUNDS_FOR_LP, "All initial bounds must be fixed when solving an (unregularised) LP", VS_VISIBLE },
-{ RET_USE_REGULARISATION_FOR_LP, "Set options.enableRegulariation=BT_TRUE for solving LPs", VS_VISIBLE },
+{ RET_USE_REGULARISATION_FOR_LP, "Set options.enableRegularisation=BT_TRUE for solving LPs", VS_VISIBLE },
 /* SQProblem */
 { RET_UPDATEMATRICES_FAILED, "Unable to update QP matrices", VS_VISIBLE },
 { RET_UPDATEMATRICES_FAILED_AS_QP_NOT_SOLVED, "Unable to update matrices as previous QP is not solved", VS_VISIBLE },
