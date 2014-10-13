@@ -1284,7 +1284,7 @@ returnValue QProblemB::determineHessianType( )
 		hessianType = HST_ZERO;
 
 		if ( options.enableRegularisation == BT_FALSE )
-			return THROWERROR( RET_USE_REGULARISATION_FOR_LP );
+			options.enableRegularisation = BT_TRUE;
 
 		return SUCCESSFUL_RETURN;
 	}
@@ -1328,7 +1328,7 @@ returnValue QProblemB::determineHessianType( )
 		hessianType = HST_ZERO;
 
 	if ( ( hessianType == HST_ZERO ) && ( options.enableRegularisation == BT_FALSE ) )
-		return THROWERROR( RET_USE_REGULARISATION_FOR_LP );
+		options.enableRegularisation = BT_TRUE;
 
 	return SUCCESSFUL_RETURN;
 }
