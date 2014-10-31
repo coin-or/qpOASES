@@ -1,6 +1,8 @@
 * text=auto !eol
+binaries/3.0.0/matlab/qpOASES.mexa64 -text
 binaries/3.0.0/matlab/qpOASES.mexw32 -text
 binaries/3.0.0/matlab/qpOASES.mexw64 -text
+binaries/3.0.0/matlab/qpOASES_sequence.mexa64 -text
 binaries/3.0.0/matlab/qpOASES_sequence.mexw32 -text
 binaries/3.0.0/matlab/qpOASES_sequence.mexw64 -text
 testingdata/cpp/oqp/chain80/H.oqp -text
