@@ -287,7 +287,7 @@ returnValue smartDimensionCheck(	real_t** input, unsigned int m, unsigned int n,
 /*
  *	i s V a l i d D a t a
  */
-BooleanType isValidData( const real_t* const data, int dim )
+BooleanType containsNaN( const real_t* const data, int dim )
 {
 	int i;
 
@@ -301,7 +301,23 @@ BooleanType isValidData( const real_t* const data, int dim )
 	return BT_TRUE;
 }
 
+/*
+ *	c o n t a i n s I n f
+ */
 
+BooleanType containsInf( const real_t* const data, int dim )
+{
+	int i;
+
+	if ( data == 0 )
+		return BT_TRUE;
+
+	for ( i = 0; i < dim; ++i )
+		if ( mxIsInf(data[i]) == 1 )
+			return BT_FALSE;
+
+	return BT_TRUE;
+}
 
 /*
  *	c o n v e r t F o r t r a n T o C

@@ -410,34 +410,46 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 		return;
 	}
 
-	// check if supplied data contains 'NaN'
+	// check if supplied data contains 'NaN' or 'Inf'
 
 	if (mxIsSparse(prhs[H_idx]) == 1) {
 		int nnz = mxGetNzmax(prhs[H_idx]);
-		if (isValidData((real_t*) mxGetPr(prhs[H_idx]), nnz) == BT_FALSE) {
+		if (containsNaN((real_t*) mxGetPr(prhs[H_idx]), nnz) == BT_FALSE) {
 			myMexErrMsgTxt("ERROR (qpOASES): Hessian matrix contains 'NaN' !");
 			return;
 		}
+		if (containsInf((real_t*) mxGetPr(prhs[H_idx]), nnz) == BT_FALSE) {
+			myMexErrMsgTxt("ERROR (qpOASES): Hessian matrix contains 'Inf' !");
+			return;
+		}
 	} else {
-		if (isValidData((real_t*) mxGetPr(prhs[H_idx]), nV * nV) == BT_FALSE) {
+		if (containsNaN((real_t*) mxGetPr(prhs[H_idx]), nV * nV) == BT_FALSE) {
 			myMexErrMsgTxt("ERROR (qpOASES): Hessian matrix contains 'NaN' !");
+			return;
+		}
+		if (containsInf((real_t*) mxGetPr(prhs[H_idx]), nV * nV) == BT_FALSE) {
+			myMexErrMsgTxt("ERROR (qpOASES): Hessian matrix contains 'Inf' !");
 			return;
 		}
 	}
 
-	if ( isValidData( (real_t*)mxGetPr(prhs[g_idx]),nV ) == BT_FALSE )
+	if ( containsNaN( (real_t*)mxGetPr(prhs[g_idx]),nV ) == BT_FALSE )
 	{
 		myMexErrMsgTxt("ERROR (qpOASES): Gradient vector contains 'NaN' !");
 		return;
 	}
+	if (containsInf((real_t*) mxGetPr(prhs[g_idx]), nV) == BT_FALSE) {
+		myMexErrMsgTxt("ERROR (qpOASES): Gradient vector contains 'Inf' !");
+		return;
+	}
 
-	if ( isValidData( (real_t*)mxGetPr(prhs[lb_idx]),nV ) == BT_FALSE )
+	if ( containsNaN( (real_t*)mxGetPr(prhs[lb_idx]),nV ) == BT_FALSE )
 	{
 		myMexErrMsgTxt("ERROR (qpOASES): Lower bound vector contains 'NaN' !");
 		return;
 	}
 
-	if ( isValidData( (real_t*)mxGetPr(prhs[ub_idx]),nV ) == BT_FALSE )
+	if ( containsNaN( (real_t*)mxGetPr(prhs[ub_idx]),nV ) == BT_FALSE )
 	{
 		myMexErrMsgTxt("ERROR (qpOASES): Upper bound vector contains 'NaN' !");
 		return;
@@ -447,27 +459,38 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 
 		if (mxIsSparse(prhs[A_idx]) == 1) {
 			int nnz = mxGetNzmax(prhs[A_idx]);
-			if (isValidData((real_t*) mxGetPr(prhs[A_idx]), nnz) == BT_FALSE) {
+			if (containsNaN((real_t*) mxGetPr(prhs[A_idx]), nnz) == BT_FALSE) {
 				myMexErrMsgTxt(
 						"ERROR (qpOASES): Constraint matrix contains 'NaN' !");
 				return;
 			}
+			if (containsInf((real_t*) mxGetPr(prhs[A_idx]), nnz) == BT_FALSE) {
+				myMexErrMsgTxt(
+						"ERROR (qpOASES): Constraint matrix contains 'Inf' !");
+				return;
+			}
 		} else {
-			if (isValidData((real_t*) mxGetPr(prhs[A_idx]), nV * nC)
+			if (containsNaN((real_t*) mxGetPr(prhs[A_idx]), nV * nC)
 					== BT_FALSE) {
 				myMexErrMsgTxt(
 						"ERROR (qpOASES): Constraint matrix contains 'NaN' !");
 				return;
 			}
+			if (containsInf((real_t*) mxGetPr(prhs[A_idx]), nV * nC)
+					== BT_FALSE) {
+				myMexErrMsgTxt(
+						"ERROR (qpOASES): Constraint matrix contains 'Inf' !");
+				return;
+			}
 		}
 
-		if (isValidData((real_t*) mxGetPr(prhs[lbA_idx]), nC) == BT_FALSE) {
+		if (containsNaN((real_t*) mxGetPr(prhs[lbA_idx]), nC) == BT_FALSE) {
 			myMexErrMsgTxt(
 					"ERROR (qpOASES): Lower constraint vector contains 'NaN' !");
 			return;
 		}
 
-		if (isValidData((real_t*) mxGetPr(prhs[ubA_idx]), nC) == BT_FALSE) {
+		if (containsNaN((real_t*) mxGetPr(prhs[ubA_idx]), nC) == BT_FALSE) {
 			myMexErrMsgTxt(
 					"ERROR (qpOASES): Upper constraint vector contains 'NaN' !");
 			return;
