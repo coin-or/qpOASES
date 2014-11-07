@@ -398,6 +398,51 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 
         nV = (unsigned int)mxGetM( prhs[1] ); /* row number of Hessian matrix */
 
+		// Check for 'Inf' and 'Nan' in Hessian
+
+		int H_idx = 1;
+
+		if (mxIsSparse(prhs[H_idx]) == 1) {
+			int nnz = mxGetNzmax(prhs[H_idx]);
+			if (containsNaN((real_t*) mxGetPr(prhs[H_idx]), nnz) == BT_TRUE) {
+				myMexErrMsgTxt(
+						"ERROR (qpOASES): Hessian matrix contains 'NaN' !");
+				return;
+			}
+			if (containsInf((real_t*) mxGetPr(prhs[H_idx]), nnz) == BT_TRUE) {
+				myMexErrMsgTxt(
+						"ERROR (qpOASES): Hessian matrix contains 'Inf' !");
+				return;
+			}
+		} else {
+			if (containsNaN((real_t*) mxGetPr(prhs[H_idx]), nV * nV)
+					== BT_TRUE) {
+				myMexErrMsgTxt(
+						"ERROR (qpOASES): Hessian matrix contains 'NaN' !");
+				return;
+			}
+			if (containsInf((real_t*) mxGetPr(prhs[H_idx]), nV * nV)
+					== BT_TRUE) {
+				myMexErrMsgTxt(
+						"ERROR (qpOASES): Hessian matrix contains 'Inf' !");
+				return;
+			}
+		}
+
+		// Check for 'Inf' and 'Nan' in gradient
+
+		int g_idx = 2;
+
+		if (containsNaN((real_t*) mxGetPr(prhs[g_idx]), nV) == BT_TRUE) {
+			myMexErrMsgTxt("ERROR (qpOASES): Gradient vector contains 'NaN' !");
+			return;
+		}
+		if (containsInf((real_t*) mxGetPr(prhs[g_idx]), nV) == BT_TRUE) {
+			myMexErrMsgTxt("ERROR (qpOASES): Gradient vector contains 'Inf' !");
+			return;
+		}
+
+
         /* determine whether is it a simply bounded QP */
     		if ( nrhs <= 7 )
 				isSimplyBoundedQp = BT_TRUE;
