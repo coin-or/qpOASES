@@ -396,6 +396,13 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 			return;
 		}
 
+		/* ensure that data is given in double precision */
+		if ((mxIsDouble(prhs[1]) == 0) || (mxIsDouble(prhs[2]) == 0)) {
+			myMexErrMsgTxt(
+					"ERROR (qpOASES): All data has to be provided in double precision!");
+			return;
+		}
+
         nV = (unsigned int)mxGetM( prhs[1] ); /* row number of Hessian matrix */
 
 		// Check for 'Inf' and 'Nan' in Hessian
@@ -451,13 +458,6 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 
 		if ( isSimplyBoundedQp == BT_TRUE )
 		{
-			/* ensure that data is given in double precision */
-			if ( ( mxIsDouble( prhs[1] ) == 0 ) ||
-				 ( mxIsDouble( prhs[2] ) == 0 ) )
-			{
-				myMexErrMsgTxt( "ERROR (qpOASES): All data has to be provided in double precision!" );
-				return;
-			}
 
 			/* Check inputs dimensions and assign pointers to inputs. */
 			nC = 0; /* row number of constraint matrix */
