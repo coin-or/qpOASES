@@ -451,10 +451,10 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 
 
         /* determine whether is it a simply bounded QP */
-    		if ( nrhs <= 7 )
-				isSimplyBoundedQp = BT_TRUE;
-			else
-				isSimplyBoundedQp = BT_FALSE;
+		if (nrhs <= 7)
+			isSimplyBoundedQp = BT_TRUE;
+		else
+			isSimplyBoundedQp = BT_FALSE;
 
 		if ( isSimplyBoundedQp == BT_TRUE )
 		{
@@ -520,6 +520,37 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 		
 			/* Check inputs dimensions and assign pointers to inputs. */
 			nC = (unsigned int)mxGetM( prhs[3] ); /* row number of constraint matrix */
+
+			int A_idx = 3;
+
+			if (mxIsSparse(prhs[A_idx]) == 1) {
+				int nnz = mxGetNzmax(prhs[A_idx]);
+				if (containsNaN((real_t*) mxGetPr(prhs[A_idx]), nnz)
+						== BT_TRUE) {
+					myMexErrMsgTxt(
+							"ERROR (qpOASES): Constraint matrix contains 'NaN' !");
+					return;
+				}
+				if (containsInf((real_t*) mxGetPr(prhs[A_idx]), nnz)
+						== BT_TRUE) {
+					myMexErrMsgTxt(
+							"ERROR (qpOASES): Constraint matrix contains 'Inf' !");
+					return;
+				}
+			} else {
+				if (containsNaN((real_t*) mxGetPr(prhs[A_idx]), nV * nC)
+						== BT_TRUE) {
+					myMexErrMsgTxt(
+							"ERROR (qpOASES): Constraint matrix contains 'NaN' !");
+					return;
+				}
+				if (containsInf((real_t*) mxGetPr(prhs[A_idx]), nV * nC)
+						== BT_TRUE) {
+					myMexErrMsgTxt(
+							"ERROR (qpOASES): Constraint matrix contains 'Inf' !");
+					return;
+				}
+			}
 
 			if ( ( mxGetN( prhs[1] ) != nV ) || ( ( mxGetN( prhs[3] ) != 0 ) && ( mxGetN( prhs[3] ) != nV ) ) )
 			{
