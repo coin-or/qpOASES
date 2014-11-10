@@ -406,51 +406,18 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
         nV = (unsigned int)mxGetM( prhs[1] ); /* row number of Hessian matrix */
 
 		// Check for 'Inf' and 'Nan' in Hessian
-
 		int H_idx = 1;
-
-		if (mxIsSparse(prhs[H_idx]) == 1) {
-			int nnz = mxGetNzmax(prhs[H_idx]);
-			if (containsNaN((real_t*) mxGetPr(prhs[H_idx]), nnz) == BT_TRUE) {
-				myMexErrMsgTxt(
-						"ERROR (qpOASES): Hessian matrix contains 'NaN' !");
-				return;
-			}
-			if (containsInf((real_t*) mxGetPr(prhs[H_idx]), nnz) == BT_TRUE) {
-				myMexErrMsgTxt(
-						"ERROR (qpOASES): Hessian matrix contains 'Inf' !");
-				return;
-			}
-		} else {
-			if (containsNaN((real_t*) mxGetPr(prhs[H_idx]), nV * nV)
-					== BT_TRUE) {
-				myMexErrMsgTxt(
-						"ERROR (qpOASES): Hessian matrix contains 'NaN' !");
-				return;
-			}
-			if (containsInf((real_t*) mxGetPr(prhs[H_idx]), nV * nV)
-					== BT_TRUE) {
-				myMexErrMsgTxt(
-						"ERROR (qpOASES): Hessian matrix contains 'Inf' !");
-				return;
-			}
+		int g_idx = 2;
+		if (containsNaNorInf(prhs, nV * nV, H_idx, 0) == BT_TRUE) {
+			return;
 		}
 
 		// Check for 'Inf' and 'Nan' in gradient
-
-		int g_idx = 2;
-
-		if (containsNaN((real_t*) mxGetPr(prhs[g_idx]), nV) == BT_TRUE) {
-			myMexErrMsgTxt("ERROR (qpOASES): Gradient vector contains 'NaN' !");
-			return;
-		}
-		if (containsInf((real_t*) mxGetPr(prhs[g_idx]), nV) == BT_TRUE) {
-			myMexErrMsgTxt("ERROR (qpOASES): Gradient vector contains 'Inf' !");
+		if (containsNaNorInf(prhs, nV, g_idx, 0) == BT_TRUE) {
 			return;
 		}
 
-
-        /* determine whether is it a simply bounded QP */
+		/* determine whether is it a simply bounded QP */
 		if (nrhs <= 7)
 			isSimplyBoundedQp = BT_TRUE;
 		else
@@ -458,6 +425,15 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 
 		if ( isSimplyBoundedQp == BT_TRUE )
 		{
+			int lb_idx = 3;
+			int ub_idx = 4;
+
+			if (containsNaNorInf(prhs, nV, lb_idx, 1) == BT_TRUE) {
+				return;
+			}
+			if (containsNaNorInf(prhs, nV, ub_idx, 1) == BT_TRUE) {
+				return;
+			}
 
 			/* Check inputs dimensions and assign pointers to inputs. */
 			nC = 0; /* row number of constraint matrix */
@@ -522,35 +498,28 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 			nC = (unsigned int)mxGetM( prhs[3] ); /* row number of constraint matrix */
 
 			int A_idx = 3;
+			int lb_idx = 4;
+			int ub_idx = 5;
+			int lbA_idx = 6;
+			int ubA_idx = 7;
 
-			if (mxIsSparse(prhs[A_idx]) == 1) {
-				int nnz = mxGetNzmax(prhs[A_idx]);
-				if (containsNaN((real_t*) mxGetPr(prhs[A_idx]), nnz)
-						== BT_TRUE) {
-					myMexErrMsgTxt(
-							"ERROR (qpOASES): Constraint matrix contains 'NaN' !");
-					return;
-				}
-				if (containsInf((real_t*) mxGetPr(prhs[A_idx]), nnz)
-						== BT_TRUE) {
-					myMexErrMsgTxt(
-							"ERROR (qpOASES): Constraint matrix contains 'Inf' !");
-					return;
-				}
-			} else {
-				if (containsNaN((real_t*) mxGetPr(prhs[A_idx]), nV * nC)
-						== BT_TRUE) {
-					myMexErrMsgTxt(
-							"ERROR (qpOASES): Constraint matrix contains 'NaN' !");
-					return;
-				}
-				if (containsInf((real_t*) mxGetPr(prhs[A_idx]), nV * nC)
-						== BT_TRUE) {
-					myMexErrMsgTxt(
-							"ERROR (qpOASES): Constraint matrix contains 'Inf' !");
-					return;
-				}
+			if (containsNaNorInf(prhs, nV * nC, A_idx, 0) == BT_TRUE) {
+				return;
 			}
+			if (containsNaNorInf(prhs, nV, lb_idx, 1) == BT_TRUE) {
+				return;
+			}
+			if (containsNaNorInf(prhs, nV, ub_idx, 1) == BT_TRUE) {
+				return;
+			}
+			if (containsNaNorInf(prhs, nC, lbA_idx, 1) == BT_TRUE) {
+				return;
+			}
+			if (containsNaNorInf(prhs, nC, ubA_idx, 1) == BT_TRUE) {
+				return;
+			}
+
+
 
 			if ( ( mxGetN( prhs[1] ) != nV ) || ( ( mxGetN( prhs[3] ) != 0 ) && ( mxGetN( prhs[3] ) != nV ) ) )
 			{
@@ -697,14 +666,19 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 		}
 
 		nV = globalQP->getNV();
-		int g_idx = 2;
 
-		if (containsNaN((real_t*) mxGetPr(prhs[g_idx]), nV) == BT_TRUE) {
-			myMexErrMsgTxt("ERROR (qpOASES): Gradient vector contains 'NaN' !");
+		int g_idx = 2;
+		int lb_idx = 3;
+		int ub_idx = 4;
+
+		if (containsNaNorInf(prhs, nV, g_idx, 0) == BT_TRUE) {
 			return;
 		}
-		if (containsInf((real_t*) mxGetPr(prhs[g_idx]), nV) == BT_TRUE) {
-			myMexErrMsgTxt("ERROR (qpOASES): Gradient vector contains 'Inf' !");
+
+		if (containsNaNorInf(prhs, nV, lb_idx, 1) == BT_TRUE) {
+			return;
+		}
+		if (containsNaNorInf(prhs, nV, ub_idx, 1) == BT_TRUE) {
 			return;
 		}
 
@@ -734,6 +708,17 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 		else
 		{
 			nC = globalQP->getNC( );
+
+			int lbA_idx = 5;
+			int ubA_idx = 6;
+
+			if (containsNaNorInf(prhs, nC, lbA_idx, 1) == BT_TRUE) {
+				return;
+			}
+			if (containsNaNorInf(prhs, nC, ubA_idx, 1) == BT_TRUE) {
+				return;
+			}
+
 
 			if ( smartDimensionCheck( &g,nV,1, BT_FALSE,prhs,2 ) != SUCCESSFUL_RETURN )
 				return;
@@ -829,6 +814,44 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 		nV = (unsigned int)mxGetM( prhs[2] ); /* row number of Hessian matrix */
 		nC = (unsigned int)mxGetM( prhs[4] ); /* row number of constraint matrix */
 		
+		int H_idx = 2;
+		int g_idx = 3;
+		int A_idx = 4;
+		int lb_idx = 5;
+		int ub_idx = 6;
+		int lbA_idx = 7;
+		int ubA_idx = 8;
+
+		// check if supplied data contains 'NaN' or 'Inf'
+		// H
+		if (containsNaNorInf(prhs, nV * nV, H_idx, 0) == BT_TRUE) {
+			return;
+		}
+
+		// g
+		if (containsNaNorInf(prhs, nV, g_idx, 0) == BT_TRUE) {
+			return;
+		}
+
+		// A
+		if (containsNaNorInf(prhs, nV * nC, A_idx, 0) == BT_TRUE) {
+			return;
+		}
+
+		if (containsNaNorInf(prhs, nV, lb_idx, 1) == BT_TRUE) {
+			return;
+		}
+		if (containsNaNorInf(prhs, nV, ub_idx, 1) == BT_TRUE) {
+			return;
+		}
+
+		if (containsNaNorInf(prhs, nC, lbA_idx, 1) == BT_TRUE) {
+			return;
+		}
+		if (containsNaNorInf(prhs, nC, ubA_idx, 1) == BT_TRUE) {
+			return;
+		}
+
 		/* Check that dimensions are consistent with existing QP instance */
 		if (nV != (unsigned int) globalQP->getNV () || nC != (unsigned int) globalQP->getNC ())
 		{
@@ -924,6 +947,31 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 		nV = globalQP->getNV( );
 		nC = globalQP->getNC( );
 		real_t *x_out, *y_out;
+
+		int g_idx = 2;
+		int lb_idx = 3;
+		int ub_idx = 4;
+		int lbA_idx = 5;
+		int ubA_idx = 6;
+
+		// check if supplied data contains 'NaN' or 'Inf'
+		// g
+		if (containsNaNorInf(prhs, nV, g_idx, 0) == BT_TRUE) {
+			return;
+		}
+		if (containsNaNorInf(prhs, nV, lb_idx, 1) == BT_TRUE) {
+			return;
+		}
+		if (containsNaNorInf(prhs, nV, ub_idx, 1) == BT_TRUE) {
+			return;
+		}
+
+		if (containsNaNorInf(prhs, nC, lbA_idx, 1) == BT_TRUE) {
+			return;
+		}
+		if (containsNaNorInf(prhs, nC, ubA_idx, 1) == BT_TRUE) {
+			return;
+		}
 
 		if ( smartDimensionCheck( &g,nV,nRHS, BT_FALSE,prhs,2 ) != SUCCESSFUL_RETURN )
 			return;
