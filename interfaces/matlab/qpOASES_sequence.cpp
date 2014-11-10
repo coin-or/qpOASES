@@ -696,11 +696,22 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 			return;
 		}
 
+		nV = globalQP->getNV();
+		int g_idx = 2;
+
+		if (containsNaN((real_t*) mxGetPr(prhs[g_idx]), nV) == BT_TRUE) {
+			myMexErrMsgTxt("ERROR (qpOASES): Gradient vector contains 'NaN' !");
+			return;
+		}
+		if (containsInf((real_t*) mxGetPr(prhs[g_idx]), nV) == BT_TRUE) {
+			myMexErrMsgTxt("ERROR (qpOASES): Gradient vector contains 'Inf' !");
+			return;
+		}
+
 
 		/* Check inputs dimensions and assign pointers to inputs. */
 		if ( isSimplyBoundedQp == BT_TRUE )
 		{
-			nV = globalQP->getNV( );
 			nC = 0;
 
 			if ( smartDimensionCheck( &g,nV,1, BT_FALSE,prhs,2 ) != SUCCESSFUL_RETURN )
@@ -722,7 +733,6 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 		}
 		else
 		{
-			nV = globalQP->getNV( );
 			nC = globalQP->getNC( );
 
 			if ( smartDimensionCheck( &g,nV,1, BT_FALSE,prhs,2 ) != SUCCESSFUL_RETURN )
