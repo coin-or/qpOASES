@@ -38,6 +38,7 @@
 
 
 #include <qpOASES/SQProblem.hpp>
+#include <qpOASES/SQProblemSchur.hpp>
 
 
 BEGIN_NAMESPACE_QPOASES
@@ -133,7 +134,8 @@ class SolutionAnalysis
 											) const;
 
 		/** Checks if a direction of negative curvature shows up if we remove all bounds that just recently became active */
-
+		int checkCurvatureOnStronglyActiveConstraints(	SQProblemSchur* qp );
+		int checkCurvatureOnStronglyActiveConstraints(	SQProblem* qp );
 
 	/*
 	 *	PROTECTED MEMBER VARIABLES

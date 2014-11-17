@@ -37,12 +37,70 @@
 
 BEGIN_NAMESPACE_QPOASES
 
+/** String for calling LAPACK/BLAS routines with transposed matrices. */
+const char * const TRANS = "TRANS";
+
+/** String for calling LAPACK/BLAS routines without transposing the matrix. */
+const char * const NOTRANS = "NOTRANS";
+
 
 
 /*****************************************************************************
  *  P U B L I C                                                              *
  *****************************************************************************/
 
+returnValue Matrix::getSparseSubmatrix(
+				const Indexlist* const irows,
+				const Indexlist* const icols,
+				int rowoffset,
+				int coloffset,
+				int& numNonzeros,
+				int* irn,
+				int* jcn,
+				real_t* avals,
+				BooleanType only_lower_triangular) const
+{
+	int* rowsNumbers;
+	irows->getNumberArray( &rowsNumbers );
+	int* colsNumbers;
+	icols->getNumberArray( &colsNumbers );
+
+	return getSparseSubmatrix(irows->getLength(), rowsNumbers, icols->getLength(), colsNumbers, rowoffset, coloffset, numNonzeros, irn, jcn, avals, only_lower_triangular);
+}
+
+returnValue Matrix::getSparseSubmatrix(
+				const Indexlist* const irows,
+				int idx_icol,
+				int rowoffset,
+				int coloffset,
+				int& numNonzeros,
+				int* irn,
+				int* jcn,
+				real_t* avals,
+				BooleanType only_lower_triangular) const
+{
+	int* rowsNumbers;
+	irows->getNumberArray( &rowsNumbers );
+
+	return getSparseSubmatrix(irows->getLength(), rowsNumbers, 1, &idx_icol, rowoffset, coloffset, numNonzeros, irn, jcn, avals, only_lower_triangular);
+}
+
+returnValue Matrix::getSparseSubmatrix(
+				int idx_row,
+				const Indexlist* const icols,
+				int rowoffset,
+				int coloffset,
+				int& numNonzeros,
+				int* irn,
+				int* jcn,
+				real_t* avals,
+				BooleanType only_lower_triangular) const
+{
+	int* colsNumbers;
+	icols->getNumberArray( &colsNumbers );
+
+	return getSparseSubmatrix(1, &idx_row, icols->getLength(), colsNumbers, rowoffset, coloffset, numNonzeros, irn, jcn, avals, only_lower_triangular);
+}
 
 
 DenseMatrix::~DenseMatrix()
@@ -102,13 +160,13 @@ BooleanType DenseMatrix::isDiag( ) const
 real_t DenseMatrix::getNorm(	int type
 								) const
 {
-	return REFER_NAMESPACE_QPOASES getNorm( val,nCols*nRows,type ); 
+	return REFER_NAMESPACE_QPOASES getNorm( val,nCols*nRows,type );
 }
 
 
 real_t DenseMatrix::getRowNorm( int rNum, int type ) const
 {
-	return REFER_NAMESPACE_QPOASES getNorm( &(val[rNum*leaDim]),nCols,type ); 
+	return REFER_NAMESPACE_QPOASES getNorm( &(val[rNum*leaDim]),nCols,type );
 }
 
 returnValue DenseMatrix::getRow(int rNum, const Indexlist* const icols, real_t alpha, real_t *row) const
@@ -159,6 +217,84 @@ returnValue DenseMatrix::getCol(int cNum, const Indexlist* const irows, real_t a
 	return SUCCESSFUL_RETURN;
 }
 
+returnValue DenseMatrix::getSparseSubmatrix (int irowsLength, const int* const irowsNumber,
+											 int icolsLength, const int* const icolsNumber,
+											 int rowoffset, int coloffset, int& numNonzeros,	int* irn,
+											 int* jcn, real_t* avals,
+											 BooleanType only_lower_triangular /*= BT_FALSE */) const
+{
+	int i, j, irA;
+	real_t v;
+	numNonzeros = 0;
+	if ( only_lower_triangular == BT_FALSE )
+	{
+		if (irn == 0)
+		{
+			if (jcn != 0 || avals != 0)
+				return THROWERROR( RET_INVALID_ARGUMENTS );
+			for (j = 0; j<irowsLength; j++)
+			{
+				irA = irowsNumber[j] * leaDim;
+				for (i = 0; i<icolsLength; i++)
+					if (val[irA+icolsNumber[i]] != 0.0)
+						numNonzeros++;
+			}
+		}
+		else
+		{
+			for (j = 0; j<irowsLength; j++)
+			{
+				irA = irowsNumber[j] * leaDim;
+				for (i = 0; i<icolsLength; i++)
+				{
+					v = val[irA+icolsNumber[i]];
+					if (v != 0.0)
+					{
+						irn[numNonzeros] = j+rowoffset;
+						jcn[numNonzeros] = i+coloffset;
+						avals[numNonzeros] = v;
+						numNonzeros++;
+					}
+				}
+			}
+		}
+	}
+	else
+	{
+		if (irn == 0)
+		{
+			if (jcn != 0 || avals != 0)
+				return THROWERROR( RET_INVALID_ARGUMENTS );
+			for (j = 0; j<irowsLength; j++)
+			{
+				irA = irowsNumber[j] * leaDim;
+				for (i = 0; i<=j; i++)
+					if (val[irA+irowsNumber[i]] != 0.0)
+						numNonzeros++;
+			}
+		}
+		else
+		{
+			for (j = 0; j<irowsLength; j++)
+			{
+				irA = irowsNumber[j] * leaDim;
+				for (i = 0; i<=j; i++)
+				{
+					v = val[irA+irowsNumber[i]];
+					if (v != 0.0)
+					{
+						irn[numNonzeros] = j+rowoffset;
+						jcn[numNonzeros] = i+coloffset;
+						avals[numNonzeros] = v;
+						numNonzeros++;
+					}
+				}
+			}
+		}
+	}
+
+	return SUCCESSFUL_RETURN;
+}
 
 returnValue DenseMatrix::times(	int xN, real_t alpha, const real_t *x, int xLD, real_t beta, real_t *y, int yLD) const
 {
@@ -438,6 +574,12 @@ returnValue DenseMatrix::addToDiag( real_t alpha )
 }
 
 
+returnValue DenseMatrix::writeToFile( FILE* output_file, const char* prefix ) const
+{
+	return THROWERROR( RET_NOT_YET_IMPLEMENTED );
+}
+
+
 real_t* DenseMatrix::full() const
 {
 	real_t* v = new real_t[nRows*nCols];
@@ -523,12 +665,10 @@ returnValue SymDenseMat::bilinear(	const Indexlist* const icols,
 
 SparseMatrix::SparseMatrix() : nRows(0), nCols(0), ir(0), jc(0), jd(0), val(0) {}
 
+SparseMatrix::SparseMatrix(	int nr, int nc, sparse_int_t *r, sparse_int_t *c, real_t *v, sparse_int_t *d)
+								: nRows(nr), nCols(nc), ir(r), jc(c), jd(d), val(v) { doNotFreeMemory(); }
 
-SparseMatrix::SparseMatrix( int nr, int nc, sparse_int_t *r, sparse_int_t *c, real_t *v )
-								: nRows(nr), nCols(nc), ir(r), jc(c), jd(0), val(v) { doNotFreeMemory(); }
-
-
-SparseMatrix::SparseMatrix( int nr, int nc, int ld, const real_t * const v ) 
+SparseMatrix::SparseMatrix(	int nr, int nc, int ld, const real_t * const v)
 								: nRows(nr), nCols(nc), jd(0)
 {
 	int i, j, nnz;
@@ -601,7 +741,7 @@ Matrix *SparseMatrix::duplicate() const
 	}
 	else
 		dupl->jd = 0;
-	
+
 	dupl->doFreeMemory( );
 
 	return dupl;
@@ -625,19 +765,19 @@ real_t SparseMatrix::diag(int i) const
 BooleanType SparseMatrix::isDiag() const
 {
 	int j;
-	
+
 	if ( nCols != nRows )
 		return BT_FALSE;
-	
+
 	for (j = 0; j < nCols; ++j)
 	{
 		if ( jc[j+1] > jc[j]+1 )
 			return BT_FALSE;
-		
+
 		if ( ( jc[j+1] == jc[j]+1 ) && ( ir[jc[j]] != j ) )
 			return BT_FALSE;
 	}
-	
+
 	return BT_TRUE;
 }
 
@@ -770,6 +910,99 @@ returnValue SparseMatrix::getCol(int cNum, const Indexlist* const irows, real_t 
 	return SUCCESSFUL_RETURN;
 }
 
+returnValue SparseMatrix::getSparseSubmatrix (int irowsLength, const int* const irowsNumber,
+											  int icolsLength, const int* const icolsNumber,
+											  int rowoffset, int coloffset, int& numNonzeros,	int* irn,
+											  int* jcn, real_t* avals,
+											  BooleanType only_lower_triangular /*= BT_FALSE */) const
+{
+	int i, j, k, l;
+
+	// Compute the "inverse" of the irows->number array
+	// TODO: Ideally this should be a part of Indexlist
+	int* rowNumberInv = new int[nRows];
+	for (i=0; i<nRows; i++)
+		rowNumberInv[i] = -1;
+	for (i=0; i<irowsLength; i++)
+		rowNumberInv[irowsNumber[i]] = i;
+
+	numNonzeros = 0;
+	if ( only_lower_triangular == BT_FALSE )
+	{
+		if (irn == 0)
+		{
+			if (jcn != 0 || avals != 0)
+				return THROWERROR( RET_INVALID_ARGUMENTS );
+			for (k = 0; k < icolsLength; k++)
+			{
+				j = icolsNumber[k];
+				for (i = jc[j]; i < jc[j+1]; i++)
+				{
+					l = rowNumberInv[ir[i]];
+					if (l >= 0)
+						numNonzeros++;
+				}
+			}
+		}
+		else
+		{
+			for (k = 0; k < icolsLength; k++)
+			{
+				j = icolsNumber[k];
+				for (i = jc[j]; i < jc[j+1]; i++)
+				{
+					l = rowNumberInv[ir[i]];
+					if (l >= 0)
+					{
+						irn[numNonzeros] = l+rowoffset;
+						jcn[numNonzeros] = k+coloffset;
+						avals[numNonzeros] = val[i];
+						numNonzeros++;
+					}
+				}
+			}
+		}
+	}
+	else
+	{
+		if (irn == 0)
+		{
+			if (jcn != 0 || avals != 0)
+				return THROWERROR( RET_INVALID_ARGUMENTS );
+			for (k = 0; k < icolsLength; k++)
+			{
+				j = icolsNumber[k];
+				for (i = jc[j]; i < jc[j+1]; i++)
+				{
+					l = rowNumberInv[ir[i]];
+					if (l >= k)
+						numNonzeros++;
+				}
+			}
+		}
+		else
+		{
+			for (k = 0; k < icolsLength; k++)
+			{
+				j = icolsNumber[k];
+				for (i = jc[j]; i < jc[j+1]; i++)
+				{
+					l = rowNumberInv[ir[i]];
+					if (l >= k)
+					{
+						irn[numNonzeros] = l+rowoffset;
+						jcn[numNonzeros] = k+coloffset;
+						avals[numNonzeros] = val[i];
+						numNonzeros++;
+					}
+				}
+			}
+		}
+	}
+	delete [] rowNumberInv;
+
+	return SUCCESSFUL_RETURN;
+}
 
 returnValue SparseMatrix::times(int xN, real_t alpha, const real_t *x, int xLD,
 		real_t beta, real_t *y, int yLD) const
@@ -852,229 +1085,163 @@ returnValue SparseMatrix::times(const Indexlist* const irows, const Indexlist* c
 		BooleanType yCompr) const
 {
 	long i, j, k, l, col;
+	real_t xcol;
+
+	if ( isEqual(alpha,0.0) == BT_TRUE )
+	{
+		if (yCompr == BT_TRUE)
+		{
+			if ( isZero(beta) == BT_TRUE )
+				for (k = 0; k < xN; k++)
+					for (j = 0; j < irows->length; j++)
+						y[j+k*yLD] = 0.0;
+			else if ( isEqual(beta,-1.0) == BT_TRUE )
+				for (k = 0; k < xN; k++)
+					for (j = 0; j < irows->length; j++)
+						y[j+k*yLD] = -y[j+k*yLD];
+			else if ( isEqual(beta,1.0) == BT_FALSE )
+				for (k = 0; k < xN; k++)
+					for (j = 0; j < irows->length; j++)
+						y[j+k*yLD] *= beta;
+		}
+		else
+		{
+			if (beta == 0.0)
+				for (k = 0; k < xN; k++)
+					for (j = 0; j < irows->length; j++)
+						y[irows->number[j]+k*yLD] = 0.0;
+			else if (beta == -1.0)
+				for (k = 0; k < xN; k++)
+					for (j = 0; j < irows->length; j++)
+						y[irows->number[j]+k*yLD] = -y[irows->number[j]+k*yLD];
+			else if (beta != 1.0)
+				for (k = 0; k < xN; k++)
+					for (j = 0; j < irows->length; j++)
+						y[irows->number[j]+k*yLD] *= beta;
+		}
+		return SUCCESSFUL_RETURN;
+	}
+
+	// First, work with full, unordered copy of y and store matrix times x in there
+	const int yfullLength = irows->physicallength;
+	real_t* ytmp = new real_t[xN*yfullLength];
+	for (k = 0; k < xN*yfullLength; k++)
+		ytmp[k] = 0.0;
+
+	if (icols!=0)
+	{
+		if (xN==1)
+		{
+			for (l = 0; l < icols->length; l++)
+			{
+				col = icols->iSort[l];
+				xcol = x[col];
+				if (xcol!=0.0)
+				{
+					j = icols->number[col];
+					for (i = jc[j]; i < jc[j+1]; i++)
+						ytmp[ir[i]] += val[i] * xcol;
+				}
+			}
+		}
+		else
+		{
+			// AW: I didn't test the case xN>1, but I hope it is working
+			real_t* xcols = new real_t[xN];
+			for (l = 0; l < icols->length; l++)
+			{
+				col = icols->iSort[l];
+				real_t xmax = 0.0;
+				for (k=0; k<xN; k++)
+				{
+					xcols[k] = x[k*xLD+col];
+					xmax = getMax(xmax,getAbs(xcols[k]));
+				}
+				if (xmax!=0.0)
+				{
+					j = icols->number[col];
+					for (i = jc[j]; i < jc[j+1]; i++)
+						for (k=0; k<xN; k++)
+						  // AW: Maybe it makes more sense to order ytmp by vectors, not vector entries, for better cache peformance?
+							ytmp[k*yfullLength+ir[i]] += val[i] * xcols[k];
+				}
+			}
+			delete [] xcols;
+		}
+	}
+	else /* icols == 0 */
+	{
+		if (xN==1)
+		{
+			for (col = 0; col < nCols; col++)
+			{
+				xcol = x[col];
+				if (xcol!=0.0)
+					for (i = jc[col]; i < jc[col+1]; i++)
+						ytmp[ir[i]] += val[i] * xcol;
+			}
+		}
+		else
+		{
+			// AW: I didn't test the case xN>1, but I hope it is working
+			real_t* xcols = new real_t[xN];
+			for (col = 0; col < nCols; col++)
+			{
+				real_t xmax = 0.0;
+				for (k=0; k<xN; k++)
+				{
+					xcols[k] = x[k*xLD+col];
+					xmax = getMax(xmax,getAbs(xcols[k]));
+				}
+				if (xmax!=0.0)
+					for (i = jc[col]; i < jc[col+1]; i++)
+						for (k=0; k<xN; k++)
+							ytmp[k*yfullLength+ir[i]] += val[i] * xcols[k];
+				delete [] xcols;
+			}
+		}
+	}
 
 	if (yCompr == BT_TRUE)
 	{
 		if ( isZero(beta) == BT_TRUE )
 			for (k = 0; k < xN; k++)
 				for (j = 0; j < irows->length; j++)
-					y[j+k*yLD] = 0.0;
-		else if ( isEqual(beta,-1.0) == BT_TRUE )
+					y[j+k*yLD] = alpha*ytmp[irows->number[j]+k*yfullLength];
+		else if (beta == 1.0)
 			for (k = 0; k < xN; k++)
 				for (j = 0; j < irows->length; j++)
-					y[j+k*yLD] = -y[j+k*yLD];
-		else if ( isEqual(beta,1.0) == BT_FALSE )
+					y[j+k*yLD] += alpha*ytmp[irows->number[j]+k*yfullLength];
+		else if (beta == -1.0)
 			for (k = 0; k < xN; k++)
 				for (j = 0; j < irows->length; j++)
-					y[j+k*yLD] *= beta;
-
-		if (icols == 0)
-			if ( isEqual(alpha,1.0) == BT_TRUE )
-				for (l = 0; l < nCols; l++)
-				{
-					i = jc[l];
-					j = 0;
-					while (i < jc[l+1] && j < irows->length)
-						if (ir[i] == irows->number[irows->iSort[j]])
-						{
-							for (k = 0; k < xN; k++)
-								y[k*yLD+irows->iSort[j]] += val[i] * x[k*xLD+l];
-							i++, j++;
-						}
-						else if (ir[i] > irows->number[irows->iSort[j]]) j++;
-						else i++;
-				}
-			else if ( isEqual(alpha,-1.0) == BT_TRUE )
-				for (l = 0; l < nCols; l++)
-				{
-					i = jc[l];
-					j = 0;
-					while (i < jc[l+1] && j < irows->length)
-						if (ir[i] == irows->number[irows->iSort[j]])
-						{
-							for (k = 0; k < xN; k++)
-								y[k*yLD+irows->iSort[j]] -= val[i] * x[k*xLD+l];
-							i++, j++;
-						}
-						else if (ir[i] > irows->number[irows->iSort[j]]) j++;
-						else i++;
-				}
-			else
-				for (l = 0; l < nCols; l++)
-				{
-					i = jc[l];
-					j = 0;
-					while (i < jc[l+1] && j < irows->length)
-						if (ir[i] == irows->number[irows->iSort[j]])
-						{
-							for (k = 0; k < xN; k++)
-								y[k*yLD+irows->iSort[j]] += alpha * val[i] * x[k*xLD+l];
-							i++, j++;
-						}
-						else if (ir[i] > irows->number[irows->iSort[j]]) j++;
-						else i++;
-				}
-		else /* icols != 0 */
-			if ( isEqual(alpha,1.0) == BT_TRUE )
-				for (l = 0; l < icols->length; l++)
-				{
-					col = icols->iSort[l];
-					i = jc[icols->number[col]];
-					j = 0;
-					while (i < jc[icols->number[col]+1] && j < irows->length)
-						if (ir[i] == irows->number[irows->iSort[j]])
-						{
-							for (k = 0; k < xN; k++)
-								y[k*yLD+irows->iSort[j]] += val[i] * x[k*xLD+col];
-							i++, j++;
-						}
-						else if (ir[i] > irows->number[irows->iSort[j]]) j++;
-						else i++;
-				}
-			else if ( isEqual(alpha,-1.0) == BT_TRUE )
-				for (l = 0; l < icols->length; l++)
-				{
-					col = icols->iSort[l];
-					i = jc[icols->number[col]];
-					j = 0;
-					while (i < jc[icols->number[col]+1] && j < irows->length)
-						if (ir[i] == irows->number[irows->iSort[j]])
-						{
-							for (k = 0; k < xN; k++)
-								y[k*yLD+irows->iSort[j]] -= val[i] * x[k*xLD+col];
-							i++, j++;
-						}
-						else if (ir[i] > irows->number[irows->iSort[j]]) j++;
-						else i++;
-				}
-			else
-				for (l = 0; l < icols->length; l++)
-				{
-					col = icols->iSort[l];
-					i = jc[icols->number[col]];
-					j = 0;
-					while (i < jc[icols->number[col]+1] && j < irows->length)
-						if (ir[i] == irows->number[irows->iSort[j]])
-						{
-							for (k = 0; k < xN; k++)
-								y[k*yLD+irows->iSort[j]] += alpha * val[i] * x[k*xLD+col];
-							i++, j++;
-						}
-						else if (ir[i] > irows->number[irows->iSort[j]]) j++;
-						else i++;
-				}
+					y[j+k*yLD] = alpha*ytmp[irows->number[j]+k*yfullLength]-y[j+k*yLD];
+		else if (beta != 1.0)
+			for (k = 0; k < xN; k++)
+				for (j = 0; j < irows->length; j++)
+					y[j+k*yLD] = alpha*ytmp[irows->number[j]+k*yfullLength]+beta*y[j+k*yLD];
 	}
-	else /* y not compressed */
+	else
 	{
-		if ( isZero(beta) == BT_TRUE )
+		if (beta == 0.0)
 			for (k = 0; k < xN; k++)
 				for (j = 0; j < irows->length; j++)
-					y[irows->number[j]+k*yLD] = 0.0;
-		else if ( isEqual(beta,-1.0) == BT_TRUE )
+					y[irows->number[j]+k*yLD] = alpha*ytmp[irows->number[j]+k*yfullLength];
+		else if (beta == 1.0)
 			for (k = 0; k < xN; k++)
 				for (j = 0; j < irows->length; j++)
-					y[irows->number[j]+k*yLD] = -y[j+k*yLD];
-		else if ( isEqual(beta,1.0) == BT_FALSE )
+					y[irows->number[j]+k*yLD] = alpha*ytmp[irows->number[j]+k*yfullLength]+y[j+k*yLD];
+		else if (beta == -1.0)
 			for (k = 0; k < xN; k++)
 				for (j = 0; j < irows->length; j++)
-					y[irows->number[j]+k*yLD] *= beta;
-
-		if (icols == 0)
-			if ( isEqual(alpha,1.0) == BT_TRUE )
-				for (l = 0; l < nCols; l++)
-				{
-					i = jc[l];
-					j = 0;
-					while (i < jc[l+1] && j < irows->length)
-						if (ir[i] == irows->number[irows->iSort[j]])
-						{
-							for (k = 0; k < xN; k++)
-								y[k*yLD+irows->number[irows->iSort[j]]] += val[i] * x[k*xLD+l];
-							i++, j++;
-						}
-						else if (ir[i] > irows->number[irows->iSort[j]]) j++;
-						else i++;
-				}
-			else if ( isEqual(alpha,-1.0) == BT_TRUE )
-				for (l = 0; l < nCols; l++)
-				{
-					i = jc[l];
-					j = 0;
-					while (i < jc[l+1] && j < irows->length)
-						if (ir[i] == irows->number[irows->iSort[j]])
-						{
-							for (k = 0; k < xN; k++)
-								y[k*yLD+irows->number[irows->iSort[j]]] -= val[i] * x[k*xLD+l];
-							i++, j++;
-						}
-						else if (ir[i] > irows->number[irows->iSort[j]]) j++;
-						else i++;
-				}
-			else
-				for (l = 0; l < nCols; l++)
-				{
-					i = jc[l];
-					j = 0;
-					while (i < jc[l+1] && j < irows->length)
-						if (ir[i] == irows->number[irows->iSort[j]])
-						{
-							for (k = 0; k < xN; k++)
-								y[k*yLD+irows->number[irows->iSort[j]]] += alpha * val[i] * x[k*xLD+l];
-							i++, j++;
-						}
-						else if (ir[i] > irows->number[irows->iSort[j]]) j++;
-						else i++;
-				}
-		else /* icols != 0 */
-			if ( isEqual(alpha,1.0) == BT_TRUE )
-				for (l = 0; l < icols->length; l++)
-				{
-					col = icols->iSort[l];
-					i = jc[icols->number[col]];
-					j = 0;
-					while (i < jc[icols->number[col]+1] && j < irows->length)
-						if (ir[i] == irows->number[irows->iSort[j]])
-						{
-							for (k = 0; k < xN; k++)
-								y[k*yLD+irows->number[irows->iSort[j]]] += val[i] * x[k*xLD+col];
-							i++, j++;
-						}
-						else if (ir[i] > irows->number[irows->iSort[j]]) j++;
-						else i++;
-				}
-			else if ( isEqual(alpha,-1.0) == BT_TRUE )
-				for (l = 0; l < icols->length; l++)
-				{
-					col = icols->iSort[l];
-					i = jc[icols->number[col]];
-					j = 0;
-					while (i < jc[icols->number[col]+1] && j < irows->length)
-						if (ir[i] == irows->number[irows->iSort[j]])
-						{
-							for (k = 0; k < xN; k++)
-								y[k*yLD+irows->number[irows->iSort[j]]] -= val[i] * x[k*xLD+col];
-							i++, j++;
-						}
-						else if (ir[i] > irows->number[irows->iSort[j]]) j++;
-						else i++;
-				}
-			else
-				for (l = 0; l < icols->length; l++)
-				{
-					col = icols->iSort[l];
-					i = jc[icols->number[col]];
-					j = 0;
-					while (i < jc[icols->number[col]+1] && j < irows->length)
-						if (ir[i] == irows->number[irows->iSort[j]])
-						{
-							for (k = 0; k < xN; k++)
-								y[k*yLD+irows->number[irows->iSort[j]]] += alpha * val[i] * x[k*xLD+col];
-							i++, j++;
-						}
-						else if (ir[i] > irows->number[irows->iSort[j]]) j++;
-						else i++;
-				}
+					y[irows->number[j]+k*yLD] = alpha*ytmp[irows->number[j]+k*yfullLength]-y[j+k*yLD];
+		else if (beta != 1.0)
+			for (k = 0; k < xN; k++)
+				for (j = 0; j < irows->length; j++)
+					y[irows->number[j]+k*yLD] = alpha*ytmp[irows->number[j]+k*yfullLength]+beta*y[j+k*yLD];
 	}
+
+	delete [] ytmp;
 	return SUCCESSFUL_RETURN;
 }
 
@@ -1083,6 +1250,7 @@ returnValue SparseMatrix::transTimes(const Indexlist* const irows, const Indexli
 		int xN, real_t alpha, const real_t *x, int xLD, real_t beta, real_t *y, int yLD) const
 {
 	long i, j, k, l, col;
+	real_t yadd;
 
 	if ( isZero(beta) == BT_TRUE )
 		for (k = 0; k < xN; k++)
@@ -1096,55 +1264,31 @@ returnValue SparseMatrix::transTimes(const Indexlist* const irows, const Indexli
 		for (k = 0; k < xN; k++)
 			for (j = 0; j < icols->length; j++)
 				y[j+k*yLD] *= beta;
+	if ( isEqual(alpha,0.0) == BT_TRUE )
+		return SUCCESSFUL_RETURN;
 
-	if ( isEqual(alpha,1.0) == BT_TRUE )
+	// work with full, unordered copy of x
+	const int xfullLength = irows->physicallength;
+	real_t* xtmp = new real_t[xfullLength];
+	for (k = 0; k < xN; k++)
+	{
+		for (i = 0; i < xfullLength; i++)
+			xtmp[i] = 0.0;
+		for (i = 0; i < irows->length; i++)
+			xtmp[irows->number[i]] = x[k*xLD+i];
 		for (l = 0; l < icols->length; l++)
 		{
 			col = icols->iSort[l];
-			i = jc[icols->number[col]];
-			j = 0;
-			while (i < jc[icols->number[col]+1] && j < irows->length)
-				if (ir[i] == irows->number[irows->iSort[j]])
-				{
-					for (k = 0; k < xN; k++)
-						y[k*yLD+col] += val[i] * x[k*xLD+irows->iSort[j]];
-					i++, j++;
-				}
-				else if (ir[i] > irows->number[irows->iSort[j]]) j++;
-				else i++;
+			yadd = 0.0;
+			j = icols->number[col];
+			for (i = jc[j]; i < jc[j+1]; i++)
+				yadd += val[i] * xtmp[ir[i]];
+			y[col] += alpha*yadd;
 		}
-	else if ( isEqual(alpha,-1.0) == BT_TRUE )
-		for (l = 0; l < icols->length; l++)
-		{
-			col = icols->iSort[l];
-			i = jc[icols->number[col]];
-			j = 0;
-			while (i < jc[icols->number[col]+1] && j < irows->length)
-				if (ir[i] == irows->number[irows->iSort[j]])
-				{
-					for (k = 0; k < xN; k++)
-						y[k*yLD+col] -= val[i] * x[k*xLD+irows->iSort[j]];
-					i++, j++;
-				}
-				else if (ir[i] > irows->number[irows->iSort[j]]) j++;
-				else i++;
-		}
-	else
-		for (l = 0; l < icols->length; l++)
-		{
-			col = icols->iSort[l];
-			i = jc[icols->number[col]];
-			j = 0;
-			while (i < jc[icols->number[col]+1] && j < irows->length)
-				if (ir[i] == irows->number[irows->iSort[j]])
-				{
-					for (k = 0; k < xN; k++)
-						y[k*yLD+col] += alpha * val[i] * x[k*xLD+irows->iSort[j]];
-					i++, j++;
-				}
-				else if (ir[i] > irows->number[irows->iSort[j]]) j++;
-				else i++;
-		}
+		y += yLD; // move on to next RHS
+	}
+
+	delete [] xtmp;
 
 	return SUCCESSFUL_RETURN;
 }
@@ -1154,7 +1298,7 @@ returnValue SparseMatrix::transTimes(const Indexlist* const irows, const Indexli
 returnValue SparseMatrix::addToDiag(real_t alpha)
 {
 	long i;
-	
+
 	if ( jd == 0 )
 		return THROWERROR( RET_DIAGONAL_NOT_INITIALISED );
 
@@ -1211,14 +1355,26 @@ returnValue SparseMatrix::print( const char* name ) const
 	return retVal;
 }
 
+returnValue SparseMatrix::writeToFile( FILE* output_file, const char* prefix ) const
+{
+	for (int i=0; i<=nCols; i++) {
+		fprintf(output_file,"%sjc[%d] = %d\n",prefix,i,jc[i]);
+	}
+	for (int i=0; i<jc[nCols]; i++) {
+		fprintf(output_file,"%sir[%d] = %d\n",prefix,i,ir[i]);
+	}
+	for (int i=0; i<jc[nCols]; i++) {
+		fprintf(output_file,"%sval[%d] = %23.16e\n",prefix,i,val[i]);
+	}
+
+	return SUCCESSFUL_RETURN;
+}
 
 
 SparseMatrixRow::SparseMatrixRow() : nRows(0), nCols(0), jr(0), ic(0), jd(0), val(0) {}
 
-
-SparseMatrixRow::SparseMatrixRow(int nr, int nc, sparse_int_t *r, sparse_int_t *c, real_t *v)
-	: nRows(nr), nCols(nc), jr(r), ic(c), jd(0), val(v) { doNotFreeMemory(); }
-
+SparseMatrixRow::SparseMatrixRow(int nr, int nc, sparse_int_t *r, sparse_int_t *c, real_t *v, sparse_int_t *d)
+	: nRows(nr), nCols(nc), jr(r), ic(c), jd(d), val(v) { doNotFreeMemory(); }
 
 SparseMatrixRow::SparseMatrixRow(int nr, int nc, int ld, const real_t * const v) : nRows(nr), nCols(nc), jd(0)
 {
@@ -1317,19 +1473,19 @@ real_t SparseMatrixRow::diag(int i) const
 BooleanType SparseMatrixRow::isDiag() const
 {
 	int i;
-	
+
 	if ( nCols != nRows )
 		return BT_FALSE;
-	
+
 	for (i = 0; i < nRows; ++i)
 	{
 		if ( jr[i+1] > jr[i]+1 )
 			return BT_FALSE;
-		
+
 		if ( ( jr[i+1] == jr[i]+1 ) && ( ic[jr[i]] != i ) )
 			return BT_FALSE;
 	}
-	
+
 	return BT_TRUE;
 }
 
@@ -1464,7 +1620,16 @@ returnValue SparseMatrixRow::getCol(int cNum, const Indexlist* const irows, real
 	return SUCCESSFUL_RETURN;
 }
 
+returnValue SparseMatrixRow::getSparseSubmatrix (
+				int irowsLength, const int* const irowsNumber,
+				int icolsLength, const int* const icolsNumber,
+				int rowoffset, int coloffset, int& numNonzeros,	int* irn,
+				int* jcn, real_t* avals, BooleanType only_lower_triangular /*= BT_FALSE */) const
+{
+	fprintf(stderr, "SparseMatrixRow::getSparseSubmatrix not implemented!\n");
 
+	return THROWERROR(RET_NOT_YET_IMPLEMENTED);
+}
 
 returnValue SparseMatrixRow::times(int xN, real_t alpha, const real_t *x, int xLD,
 		real_t beta, real_t *y, int yLD) const
@@ -1816,7 +1981,7 @@ returnValue SparseMatrixRow::transTimes(const Indexlist* const irows, const Inde
 returnValue SparseMatrixRow::addToDiag(real_t alpha)
 {
 	long i;
-	
+
 	if ( jd == 0 )
 		return THROWERROR( RET_DIAGONAL_NOT_INITIALISED );
 
@@ -1872,7 +2037,10 @@ returnValue SparseMatrixRow::print( const char* name ) const
 	return retVal;
 }
 
-
+returnValue SparseMatrixRow::writeToFile( FILE* output_file, const char* prefix ) const
+{
+	return THROWERROR( RET_NOT_YET_IMPLEMENTED );
+}
 
 Matrix *SymSparseMat::duplicate() const
 {

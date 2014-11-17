@@ -39,6 +39,7 @@
 #elif defined(LINUX) || defined(__LINUX__)
   #include <sys/stat.h>
   #include <sys/time.h>
+  #include <sys/resource.h>
 #endif
 
 #ifdef __MATLAB__
@@ -575,9 +576,16 @@ real_t getCPUtime( )
 	QueryPerformanceCounter(&counter);
 	current_time = ((real_t) counter.QuadPart) / ((real_t) frequency.QuadPart);
 	#elif defined(LINUX) || defined(__LINUX__)
+	struct rusage usage;
+	getrusage(RUSAGE_SELF,&usage);
+	double cpu_temp = (double)usage.ru_utime.tv_sec;
+	cpu_temp += 1.0e-6*((double) usage.ru_utime.tv_usec);
+	current_time = cpu_temp;
+	/*
 	struct timeval theclock;
 	gettimeofday( &theclock,0 );
 	current_time = 1.0*theclock.tv_sec + 1.0e-6*theclock.tv_usec;
+	*/
 	#endif
 
 	return current_time;

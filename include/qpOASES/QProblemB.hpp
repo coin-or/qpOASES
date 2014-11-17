@@ -554,7 +554,7 @@ class QProblemB
 		 *	\return SUCCESSFUL_RETURN \n
 		 *			RET_HESSIAN_NOT_SPD \n
 		 *			RET_INDEXLIST_CORRUPTED */
-		returnValue computeCholesky( );
+		virtual returnValue computeCholesky( );
 
 
 		/** Computes initial Cholesky decomposition of the (simply projected) Hessian 
@@ -590,7 +590,7 @@ class QProblemB
 		/** Solves the system Ra = b or R^Ta = b where R is an upper triangular matrix.
 		 *	\return SUCCESSFUL_RETURN \n
 					RET_DIV_BY_ZERO */
-		returnValue backsolveR(	const real_t* const b,	/**< Right hand side vector. */
+		virtual returnValue backsolveR(	const real_t* const b,	/**< Right hand side vector. */
 								BooleanType transposed,	/**< Indicates if the transposed system shall be solved. */
 								real_t* const a 		/**< Output: Solution vector */
 								) const;
@@ -599,7 +599,7 @@ class QProblemB
 		 *  Special variant for the case that this function is called from within "removeBound()".
 		 *	\return SUCCESSFUL_RETURN \n
 					RET_DIV_BY_ZERO */
-		returnValue backsolveR(	const real_t* const b,		/**< Right hand side vector. */
+		virtual returnValue backsolveR(	const real_t* const b,		/**< Right hand side vector. */
 								BooleanType transposed,		/**< Indicates if the transposed system shall be solved. */
 								BooleanType removingBound,	/**< Indicates if function is called from "removeBound()". */
 								real_t* const a 			/**< Output: Solution vector */

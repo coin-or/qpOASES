@@ -48,6 +48,9 @@ include/qpOASES/QProblemB.hpp -text
 include/qpOASES/QProblemB.ipp -text
 include/qpOASES/SQProblem.hpp -text
 include/qpOASES/SQProblem.ipp -text
+include/qpOASES/SQProblemSchur.hpp -text
+include/qpOASES/SQProblemSchur.ipp -text
+include/qpOASES/SparseSolver.hpp -text
 include/qpOASES/SubjectTo.hpp -text
 include/qpOASES/SubjectTo.ipp -text
 include/qpOASES/Types.hpp -text
@@ -57,6 +60,10 @@ include/qpOASES/Utils.ipp -text
 include/qpOASES/extras/OQPinterface.hpp -text
 include/qpOASES/extras/SolutionAnalysis.hpp -text
 include/qpOASES/extras/SolutionAnalysis.ipp -text
+interfaces/CUTEst/Makefile -text
+interfaces/CUTEst/makeprob -text
+interfaces/CUTEst/qpoasesCutest.cpp -text
+interfaces/CUTEst/readme.txt -text
 interfaces/matlab/Makefile -text
 interfaces/matlab/example1.mat -text
 interfaces/matlab/example1a.mat -text
@@ -133,7 +140,9 @@ src/Options.cpp -text
 src/QProblem.cpp -text
 src/QProblemB.cpp -text
 src/SQProblem.cpp -text
+src/SQProblemSchur.cpp -text
 src/SolutionAnalysis.cpp -text
+src/SparseSolver.cpp -text
 src/SubjectTo.cpp -text
 src/Utils.cpp -text
 testing/Makefile -text

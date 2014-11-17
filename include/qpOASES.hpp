@@ -34,6 +34,7 @@
 #include <qpOASES/QProblemB.hpp>
 #include <qpOASES/QProblem.hpp>
 #include <qpOASES/SQProblem.hpp>
+#include <qpOASES/SQProblemSchur.hpp>
 #include <qpOASES/extras/OQPinterface.hpp>
 #include <qpOASES/extras/SolutionAnalysis.hpp>
 
@@ -53,6 +54,7 @@
 #include <Flipper.cpp>
 #include <QProblem.cpp>
 #include <SQProblem.cpp>
+#include <SQProblemSchur.cpp>
 #include <OQPinterface.cpp>
 #include <SolutionAnalysis.cpp>
 

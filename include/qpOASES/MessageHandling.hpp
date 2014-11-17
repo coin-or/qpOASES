@@ -220,11 +220,15 @@ RET_SIMPLE_STATUS_P1,							/**< QP problem could not be solved within given num
 RET_SIMPLE_STATUS_P0,							/**< QP problem solved. */
 RET_SIMPLE_STATUS_M1,							/**< QP problem could not be solved due to an internal error. */
 RET_SIMPLE_STATUS_M2,							/**< QP problem is infeasible (and thus could not be solved). */
-RET_SIMPLE_STATUS_M3 							/**< QP problem is unbounded (and thus could not be solved). */
+RET_SIMPLE_STATUS_M3,							/**< QP problem is unbounded (and thus could not be solved). */
+/* Schur complement computations */
+RET_KKT_MATRIX_SINGULAR,						/**< KKT matrix is singular. */
+RET_QR_FACTORISATION_FAILED,					/**< QR factorization of Schur complement failed. */
+RET_INERTIA_CORRECTION_FAILED					/**< Inertia correction failed after KKT matrix had too many negative eigenvalues. */
 };
 
 
-/** 
+/**
  *	\brief Handles all kind of error messages, warnings and other information.
  *
  *	This class handles all kinds of messages (errors, warnings, infos) initiated

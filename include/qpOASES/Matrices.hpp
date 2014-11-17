@@ -176,6 +176,77 @@ class Matrix
 									real_t *col						/**< Output column vector. */
 									) const = 0;
 
+		/** Retrieve entries of submatrix in Harwell-Boeing sparse format.
+		 *  If irn, jcn, and avals are null, this only counts the number of nonzeros.
+		 *  Otherwise, numNonzeros containts the size of irn, jcn, and avals on entry,
+		 *  and the written number of entries on return.
+		 *  \return SUCCESSFUL_RETURN */
+		virtual returnValue getSparseSubmatrix(
+				const Indexlist* const irows,	/**< Index list specifying rows. */
+				const Indexlist* const icols,	/**< Index list specifying columns. */
+				int rowoffset,					/**< Offset for row entries. */
+				int coloffset,					/**< Offset for row entries. */
+				int& numNonzeros,				/**< Number of nonzeros in submatrix. */
+				int* irn,						/**< Row position of entries (as position in irows) plus rowoffset. */
+				int* jcn,						/**< Column position of entries (as position in irows) plus coloffset. */
+				real_t* avals,					/**< Numerical values of the entries. */
+				BooleanType only_lower_triangular = BT_FALSE /**< if true, only the lower triangular portion is returned.  This can only be true for symmetric matrices and if irows==jcols. */
+				) const;
+
+		/** Retrieve entries of submatrix in Harwell-Boeing sparse format.
+		 *  If irn, jcn, and avals are null, this only counts the number of nonzeros.
+		 *  Otherwise, numNonzeros containts the size of irn, jcn, and avals on entry,
+		 *  and the written number of entries on return.  This version retrieves one
+		 *  column.
+		 *  \return SUCCESSFUL_RETURN */
+		virtual returnValue getSparseSubmatrix(
+				const Indexlist* const irows,	/**< Index list specifying rows. */
+				int idx_icol,					/**< Index list specifying columns. */
+				int rowoffset,					/**< Offset for row entries. */
+				int coloffset,					/**< Offset for row entries. */
+				int& numNonzeros,				/**< Number of nonzeros in submatrix. */
+				int* irn,						/**< Row position of entries (as position in irows) plus rowoffset. */
+				int* jcn,						/**< Column position of entries (as position in irows) plus coloffset. */
+				real_t* avals,					/**< Numerical values of the entries. */
+				BooleanType only_lower_triangular = BT_FALSE /**< if true, only the lower triangular portion is returned.  This can only be true for symmetric matrices and if irows==jcols. */
+				) const;
+
+		/** Retrieve entries of submatrix in Harwell-Boeing sparse format.
+		 *  If irn, jcn, and avals are null, this only counts the number of nonzeros.
+		 *  Otherwise, numNonzeros containts the size of irn, jcn, and avals on entry,
+		 *  and the written number of entries on return.  This version retrieves one row.
+		 *  \return SUCCESSFUL_RETURN */
+		virtual returnValue getSparseSubmatrix(
+				int idx_row,					/**< Row number. */
+				const Indexlist* const icols,	/**< Index list specifying columns. */
+				int rowoffset,					/**< Offset for row entries. */
+				int coloffset,					/**< Offset for row entries. */
+				int& numNonzeros,				/**< Number of nonzeros in submatrix. */
+				int* irn,						/**< Row position of entries (as position in irows) plus rowoffset. */
+				int* jcn,						/**< Column position of entries (as position in irows) plus coloffset. */
+				real_t* avals,					/**< Numerical values of the entries. */
+				BooleanType only_lower_triangular = BT_FALSE /**< if true, only the lower triangular portion is returned.  This can only be true for symmetric matrices and if irows==jcols. */
+				) const;
+
+		/** Retrieve entries of submatrix in Harwell-Boeing sparse format.
+		 *  If irn, jcn, and avals are null, this only counts the number of nonzeros.
+		 *  Otherwise, numNonzeros containts the size of irn, jcn, and avals on entry,
+		 *  and the written number of entries on return.
+		 *  \return SUCCESSFUL_RETURN */
+		virtual returnValue getSparseSubmatrix(
+				int irowsLength,				/**< Number of rows. */
+				const int* const irowsNumber,   /**< Array with row numbers. */
+				int icolsLength,				/**< Number of columns. */
+				const int* const icolsNumber,   /**< Array with column numbers. */
+				int rowoffset,					/**< Offset for row entries. */
+				int coloffset,					/**< Offset for row entries. */
+				int& numNonzeros,				/**< Number of nonzeros in submatrix. */
+				int* irn,						/**< Row position of entries (as position in irows) plus rowoffset. */
+				int* jcn,						/**< Column position of entries (as position in irows) plus coloffset. */
+				real_t* avals,					/**< Numerical values of the entries. */
+				BooleanType only_lower_triangular = BT_FALSE /**< if true, only the lower triangular portion is returned.  This can only be true for symmetric matrices and if irows==jcols. */
+				) const = 0;
+
 		/** Evaluate Y=alpha*A*X + beta*Y.
 		 *	\return SUCCESSFUL_RETURN */
 		virtual returnValue times (	int xN,					/**< Number of vectors to multiply. */
@@ -245,6 +316,9 @@ class Matrix
 		virtual returnValue print(	const char* name = 0	/** Name of matrix. */
 									) const = 0;
 
+		/** Write matrix to file.
+		 *	\return SUCCESSFUL_RETURN */
+		virtual returnValue writeToFile( FILE* output_file, const char* prefix ) const = 0;
 
 		/** Returns whether internal memory needs to be de-allocated.
 		 *	\return BT_TRUE  iff internal memory needs to be de-allocated, \n
@@ -372,6 +446,26 @@ class DenseMatrix : public virtual Matrix
 				real_t *col						/**< Output column vector. */
 				) const;
 
+		/** Retrieve entries of submatrix in Harwell-Boeing sparse format.
+		 *  If irn, jcn, and avals are null, this only counts the number of nonzeros.
+		 *  Otherwise, numNonzeros containts the size of irn, jcn, and avals on entry,
+		 *  and the written number of entries on return.
+		 *  \return SUCCESSFUL_RETURN */
+		virtual returnValue getSparseSubmatrix(
+				int irowsLength,				/**< Number of rows. */
+				const int* const irowsNumber,   /**< Array with row numbers. */
+				int icolsLength,				/**< Number of columns. */
+				const int* const icolsNumber,   /**< Array with column numbers. */
+				int rowoffset,					/**< Offset for row entries. */
+				int coloffset,					/**< Offset for row entries. */
+				int& numNonzeros,				/**< Number of nonzeros in submatrix. */
+				int* irn,						/**< Row position of entries (as position in irows) plus rowoffset. */
+				int* jcn,						/**< Column position of entries (as position in irows) plus coloffset. */
+				real_t* avals,					/**< Numerical values of the entries. */
+				BooleanType only_lower_triangular = BT_FALSE /**< if true, only the lower triangular portion is returned.  This can only be true for symmetric matrices and if irows==jcols. */
+				) const;
+
+
 		/** Evaluate Y=alpha*A*X + beta*Y.
 		 *  \return SUCCESSFUL_RETURN. */
 		returnValue times (	int xN,					/**< Number of vectors to multiply. */
@@ -442,6 +536,9 @@ class DenseMatrix : public virtual Matrix
 		virtual returnValue print( 	const char* name = 0	/** Name of matrix. */
 									) const;
 
+		/** Write matrix to file.
+		 *	\return SUCCESSFUL_RETURN */
+		virtual returnValue writeToFile( FILE* output_file, const char* prefix ) const;
 
 	protected:
 		int nRows;			/**< Number of rows. */
@@ -510,12 +607,14 @@ class SparseMatrix : public virtual Matrix
 		SparseMatrix();
 
 		/** Constructor with arguments. */
-		SparseMatrix(	int nr, 			/**< Number of rows. */
-						int nc, 			/**< Number of columns. */
-						sparse_int_t *r, 	/**< Row indices (length). */
-						sparse_int_t *c, 	/**< Indices to first entry of columns (nCols+1). */
-						real_t *v			/**< Vector of entries (length). */
-						);
+		SparseMatrix(
+				int nr, 		/**< Number of rows. */
+				int nc, 		/**< Number of columns. */
+				sparse_int_t *r, 		/**< Row indices (length). */
+				sparse_int_t *c, 		/**< Indices to first entry of columns (nCols+1). */
+				real_t *v,		/**< Vector of entries (length). */
+				sparse_int_t *d = 0		/**< Indices to first entry of lower triangle (including diagonal) (nCols). */
+				);
 
 		/** Constructor from dense matrix. */
 		SparseMatrix(	int nr, 				/**< Number of rows. */
@@ -571,6 +670,25 @@ class SparseMatrix : public virtual Matrix
 									real_t alpha,					/**< Scalar factor. */
 									real_t *col						/**< Output column vector. */
 									) const;
+
+		/** Retrieve entries of submatrix in Harwell-Boeing sparse format.
+		 *  If irn, jcn, and avals are null, this only counts the number of nonzeros.
+		 *  Otherwise, numNonzeros containts the size of irn, jcn, and avals on entry,
+		 *  and the written number of entries on return.
+		 *  \return SUCCESSFUL_RETURN */
+		virtual returnValue getSparseSubmatrix(
+				int irowsLength,				/**< Number of rows. */
+				const int* const irowsNumber,   /**< Array with row numbers. */
+				int icolsLength,				/**< Number of columns. */
+				const int* const icolsNumber,   /**< Array with column numbers. */
+				int rowoffset,					/**< Offset for row entries. */
+				int coloffset,					/**< Offset for row entries. */
+				int& numNonzeros,				/**< Number of nonzeros in submatrix. */
+				int* irn,						/**< Row position of entries (as position in irows) plus rowoffset. */
+				int* jcn,						/**< Column position of entries (as position in irows) plus coloffset. */
+				real_t* avals,					/**< Numerical values of the entries. */
+				BooleanType only_lower_triangular = BT_FALSE /**< if true, only the lower triangular portion is returned.  This can only be true for symmetric matrices and if irows==jcols. */
+				) const;
 
 		/** Evaluate Y=alpha*A*X + beta*Y. */
 		virtual returnValue times (	int xN,					/**< Number of vectors to multiply. */
@@ -640,6 +758,10 @@ class SparseMatrix : public virtual Matrix
 		virtual returnValue print( 	const char* name = 0	/** Name of matrix. */
 									) const;
 
+		/** Write matrix to file.
+		 *	\return SUCCESSFUL_RETURN */
+		virtual returnValue writeToFile( FILE* output_file, const char* prefix ) const;
+
 
 	protected:
 		int nRows;			/**< Number of rows. */
@@ -667,12 +789,14 @@ class SparseMatrixRow : public virtual Matrix
 		SparseMatrixRow();
 
 		/** Constructor with arguments. */
-		SparseMatrixRow(	int nr, 			/**< Number of rows. */
-							int nc, 			/**< Number of columns. */
-							sparse_int_t *r, 	/**< Indices to first entry of rows (nRows+1). */
-							sparse_int_t *c, 	/**< Column indices (length). */
-							real_t *v			/**< Vector of entries (length). */
-							);
+		SparseMatrixRow(
+				int nr, 		/**< Number of rows. */
+				int nc, 		/**< Number of columns. */
+				sparse_int_t *r, 		/**< Indices to first entry of rows (nRows+1). */
+				sparse_int_t *c, 		/**< Column indices (length). */
+				real_t *v,		/**< Vector of entries (length). */
+				sparse_int_t *d = 0		/**< Indices to first entry of upper triangle (including diagonal) (nRows). */
+				);
 
 		/** Constructor from dense matrix. */
 		SparseMatrixRow(	int nr, 				/**< Number of rows. */
@@ -731,6 +855,25 @@ class SparseMatrixRow : public virtual Matrix
 				real_t *col						/**< Output column vector. */
 				) const;
 
+		/** Retrieve entries of submatrix in Harwell-Boeing sparse format.
+		 *  If irn, jcn, and avals are null, this only counts the number of nonzeros.
+		 *  Otherwise, numNonzeros containts the size of irn, jcn, and avals on entry,
+		 *  and the written number of entries on return.
+		 *  \return SUCCESSFUL_RETURN */
+		virtual returnValue getSparseSubmatrix(
+				int irowsLength,				/**< Number of rows. */
+				const int* const irowsNumber,   /**< Array with row numbers. */
+				int icolsLength,				/**< Number of columns. */
+				const int* const icolsNumber,   /**< Array with column numbers. */
+				int rowoffset,					/**< Offset for row entries. */
+				int coloffset,					/**< Offset for row entries. */
+				int& numNonzeros,				/**< Number of nonzeros in submatrix. */
+				int* irn,						/**< Row position of entries (as position in irows) plus rowoffset. */
+				int* jcn,						/**< Column position of entries (as position in irows) plus coloffset. */
+				real_t* avals,					/**< Numerical values of the entries. */
+				BooleanType only_lower_triangular = BT_FALSE /**< if true, only the lower triangular portion is returned.  This can only be true for symmetric matrices and if irows==jcols. */
+				) const;
+
 		/** Evaluate Y=alpha*A*X + beta*Y. */
 		virtual returnValue times (	int xN,					/**< Number of vectors to multiply. */
 									real_t alpha,			/**< Scalar factor for matrix vector product. */
@@ -799,6 +942,9 @@ class SparseMatrixRow : public virtual Matrix
 		virtual returnValue print( 	const char* name = 0	/** Name of matrix. */
 									) const;
 
+		/** Write matrix to file.
+		 *	\return SUCCESSFUL_RETURN */
+		virtual returnValue writeToFile( FILE* output_file, const char* prefix ) const;
 
 	protected:
 		int nRows;			/**< Number of rows. */
@@ -830,8 +976,9 @@ class SymSparseMat : public SymmetricMatrix, public SparseMatrix
 						int nc, 			/**< Number of columns. */
 						sparse_int_t *r, 	/**< Row indices (length). */
 						sparse_int_t *c, 	/**< Indices to first entry of columns (nCols+1). */
-						real_t *v			/**< Vector of entries (length). */
-						) : SparseMatrix(nr, nc, r, c, v) {}
+						real_t *v,			/**< Vector of entries (length). */
+						sparse_int_t *d = 0	/**< Indices to first entry of lower triangle (including diagonal) (nCols). */
+						) : SparseMatrix(nr, nc, r, c, v, d) {}
 
 		/** Constructor from dense matrix. */
 		SymSparseMat(	int nr, 				/**< Number of rows. */

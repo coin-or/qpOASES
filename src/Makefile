@@ -45,6 +45,7 @@ QPOASES_OBJECTS = \
 	SQProblem.${OBJEXT} \
 	QProblem.${OBJEXT} \
 	QProblemB.${OBJEXT} \
+	SQProblemSchur.${OBJEXT} \
 	Bounds.${OBJEXT} \
 	Constraints.${OBJEXT} \
 	SubjectTo.${OBJEXT} \
@@ -53,7 +54,8 @@ QPOASES_OBJECTS = \
 	Utils.${OBJEXT} \
 	Options.${OBJEXT} \
 	Matrices.${OBJEXT} \
-	MessageHandling.${OBJEXT}
+	MessageHandling.${OBJEXT} \
+	SparseSolver.${OBJEXT}
 
 
 QPOASES_EXTRAS_OBJECTS = \
@@ -81,16 +83,18 @@ QPOASES_DEPENDS = \
 ##	targets
 ##
 
-all: ${LINK_DEPENDS}
 
+all: ${LIB_LAPACK} ${LIB_BLAS} ${BINDIR}/libqpOASES.${LIBEXT} ${BINDIR}/libqpOASES.${DLLEXT}
+
+withextras: libqpOASESextras.${LIBEXT}
 
 ${BINDIR}/libqpOASES.${LIBEXT}: ${QPOASES_OBJECTS} ${QPOASES_EXTRAS_OBJECTS}
 	@${ECHO} "Creating" $@
-	@${AR} r $@ $^
+	@${AR} rc $@ $?
 
 ${BINDIR}/libqpOASES.${DLLEXT}: ${QPOASES_OBJECTS} ${QPOASES_EXTRAS_OBJECTS}
 	@${ECHO} "Creating" $@
-	@${CPP} ${SHARED} ${DEF_TARGET} $^ ${LINK_LIBRARIES}
+	@${CPP} -shared -o $@ $? ${LINK_LIBRARIES}
 
 clean:
 	@${ECHO} "Cleaning up (src)"
@@ -98,11 +102,9 @@ clean:
 
 clobber: clean
 
-
 %.${OBJEXT}: %.cpp ${QPOASES_DEPENDS}
 	@${ECHO} "Creating" $@
 	@${CPP} ${DEF_TARGET} -c ${IFLAGS} ${CPPFLAGS} $<
-
 
 ##
 ##	end of file

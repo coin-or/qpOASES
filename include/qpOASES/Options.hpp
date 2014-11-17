@@ -152,10 +152,15 @@ class Options
 		real_t epsLITests;						/**< Tolerance for linear independence tests. */
 		real_t epsNZCTests;						/**< Tolerance for nonzero curvature tests. */
 
+		// For now: only for Schur complement version
+		real_t rcondSMin;						/**< Minimum reciprocal condition number of S before refactorization is triggered */
+		BooleanType enableInertiaCorrection;	/**< Specifies whether the working set should be repaired when negative curvature is discovered during hotstart. */
+
 		BooleanType enableDropInfeasibles;		/**< ... */
 		int    dropBoundPriority;				/**< ... */
         int    dropEqConPriority;				/**< ... */
         int    dropIneqConPriority;				/**< ... */
+        BooleanType printResiduals;             /**< If true, it will print the internal qpOASES residuals and other information per iteration */
 };
 
 

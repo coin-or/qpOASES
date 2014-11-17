@@ -37,7 +37,7 @@
 
 
 #include <qpOASES/extras/OQPinterface.hpp>
-#include <qpOASES/QProblem.hpp>
+#include <qpOASES/SQProblemSchur.hpp>
 
 
 BEGIN_NAMESPACE_QPOASES
@@ -324,7 +324,7 @@ returnValue solveOQPbenchmark(	int nQP, int nV, int nC, int nEC,
 	A->doFreeMemory( );
 
 	/* II) SETUP QPROBLEM OBJECT */
-	QProblem qp( nV,nC );
+	SQProblemSchur qp( nV,nC );
 	qp.setOptions( options );
 	//qp.setPrintLevel( PL_LOW );
 
