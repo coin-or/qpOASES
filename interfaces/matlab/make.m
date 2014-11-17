@@ -7,7 +7,7 @@ function [] = make( varargin )
 %type  make clean all  to first delete and then compile 
 %                      all interfaces,
 %type  make 'name'     to compile only the interface with
-%                      the given name (if is has been modified),
+%                      the given name (if it has been modified),
 %type  make 'opt'      to compile all interfaces using the 
 %                      given compiler options.
 %
