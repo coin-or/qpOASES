@@ -78,8 +78,10 @@
  *	  title = {{qpOASES}: A parametric active-set algorithm for quadratic programming},
  *	  journal = {Mathematical Programming Computation},
  *	  year = {2014},
- *	  keywords = {qpOASES, parametric quadratic programming, active set method, model predictive control},
- *	  note = {(in print)}
+ *	  volume = {6},
+ *	  number = {4},
+ *	  pages = {327--363},
+ *	  keywords = {qpOASES, parametric quadratic programming, active set method, model predictive control}
  *	}
  *	\endcode
  *
