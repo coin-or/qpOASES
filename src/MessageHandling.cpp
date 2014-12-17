@@ -302,7 +302,7 @@ MessageHandling::MessageHandling( const MessageHandling& rhs )
 MessageHandling::~MessageHandling( )
 {
 	#ifndef __XPCTARGET__
-	if ( outputFile != 0 )
+	if ( ( outputFile != 0 ) && ( outputFile != stdout ) && ( outputFile != stderr ) )
 		fclose( outputFile );
 	#endif /* __XPCTARGET__ */
 }
