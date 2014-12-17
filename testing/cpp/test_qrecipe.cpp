@@ -130,9 +130,9 @@ int main( )
 	delete[] y1;
 	delete[] x1;
 
-	QPOASES_TEST_FOR_TOL( stat,1e-15 );
-	QPOASES_TEST_FOR_TOL( feas,1e-15 );
-	QPOASES_TEST_FOR_TOL( cmpl,1e-15 );
+	QPOASES_TEST_FOR_TOL( stat,1e-14 );
+	QPOASES_TEST_FOR_TOL( feas,1e-14 );
+	QPOASES_TEST_FOR_TOL( cmpl,1e-13 );
 	
 	QPOASES_TEST_FOR_TOL( stat2,1e-14 );
 	QPOASES_TEST_FOR_TOL( feas2,1e-14 );

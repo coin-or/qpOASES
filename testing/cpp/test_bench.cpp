@@ -117,14 +117,14 @@ int main( int argc, char *argv[] )
 				if ( argv[argc-1][2] == 's' )
 				{
 					expectedNumSolvedProblems = 44;
-					expectedAvgStationarity   = 1e-10;
+					expectedAvgStationarity   = 1e-7;
 					expectedAvgavgFeasibility = 1e-10;
 					expectedAvgFeasibility    = 5e-7;
 				}
 				else
 				{
 					expectedNumSolvedProblems = 44;
-					expectedAvgStationarity   = 5e-10;
+					expectedAvgStationarity   = 1e-7;
 					expectedAvgavgFeasibility = 5e-10;
 					expectedAvgFeasibility    = 5e-8;
 				}
@@ -155,7 +155,7 @@ int main( int argc, char *argv[] )
 				if ( argv[argc-1][2] == 's' )
 				{
 					expectedNumSolvedProblems = 42;
-					expectedAvgStationarity   = 1e-8;
+					expectedAvgStationarity   = 2e-8;
 					expectedAvgavgFeasibility = 1e-8;
 					expectedAvgFeasibility    = 1e-7;
 				}
