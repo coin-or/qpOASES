@@ -26,8 +26,8 @@ VERSION HISTORY
 ===============
 
 
-3.0 (released on 29th July 2014):
----------------------------------
+3.0 (released on 29th July 2014, last updated on 17th December 2014):
+---------------------------------------------------------------------
 
 + Addition of unit testing
 + Several bugfixes
