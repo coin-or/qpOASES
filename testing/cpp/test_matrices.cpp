@@ -71,8 +71,8 @@ int sumOfSquares()
 	aT.free ();	// or delete[] aTv;
 	a.free (); // or delete[] av;
 
-	QPOASES_TEST_FOR_TRUE( err  <= 1e-10 )
-	QPOASES_TEST_FOR_TRUE( errT <= 1e-10 )
+	QPOASES_TEST_FOR_TOL( err ,1e-10 )
+	QPOASES_TEST_FOR_TOL( errT,1e-10 )
 	
 	return TEST_PASSED;
 }
@@ -119,7 +119,7 @@ int hilbert()
 	delete[] Cv;
 	A.free ();	// or delete[] Av;
 
-	QPOASES_TEST_FOR_TRUE( err <= 1e-12 )
+	QPOASES_TEST_FOR_TOL( err,1e-12 )
 	
 	return TEST_PASSED;
 }
@@ -161,7 +161,7 @@ int submatrix()
 	
 	Asub.free ();	// or delete[] Asubv;
 
-	QPOASES_TEST_FOR_TRUE( err <= 1e-13 )
+	QPOASES_TEST_FOR_TOL( err,1e-13 )
 
 	return TEST_PASSED;
 }
@@ -254,8 +254,8 @@ int indexDenseSubmatrix()
 	delete[] X;
 	A.free ();	// or delete[] Av;
 
-	QPOASES_TEST_FOR_TRUE( err  <= 1e-13 )
-	QPOASES_TEST_FOR_TRUE( errT <= 1e-14 )
+	QPOASES_TEST_FOR_TOL( err ,1e-13 )
+	QPOASES_TEST_FOR_TOL( errT,1e-14 )
 
 	return TEST_PASSED;
 }
@@ -423,8 +423,8 @@ int spTimes()
 	delete[] y;
 	delete[] x;
 
-	QPOASES_TEST_FOR_TRUE( err  <= 1e-15 )
-	QPOASES_TEST_FOR_TRUE( errT <= 1e-15 )
+	QPOASES_TEST_FOR_TOL( err ,1e-15 )
+	QPOASES_TEST_FOR_TOL( errT,1e-15 )
 
 	return TEST_PASSED;
 }
@@ -501,8 +501,8 @@ int spIndTimes()
 	delete[] yc;
 	A.free ();
 
-	QPOASES_TEST_FOR_TRUE( err  <= 1e-15 )
-	QPOASES_TEST_FOR_TRUE( errT <= 1e-15 )
+	QPOASES_TEST_FOR_TOL( err ,1e-15 )
+	QPOASES_TEST_FOR_TOL( errT,1e-15 )
 
 	return TEST_PASSED;
 }
@@ -682,8 +682,8 @@ int sprTimes()
 	delete[] y;
 	delete[] x;
 
-	QPOASES_TEST_FOR_TRUE( err  <= 1e-15 )
-	QPOASES_TEST_FOR_TRUE( errT <= 1e-15 )
+	QPOASES_TEST_FOR_TOL( err ,1e-15 )
+	QPOASES_TEST_FOR_TOL( errT,1e-15 )
 
 	return TEST_PASSED;
 }
@@ -775,8 +775,8 @@ int sprIndTimes()
 	delete[] yc;
 	A.free ();
 
-	QPOASES_TEST_FOR_TRUE( err  <= 1e-15 )
-	QPOASES_TEST_FOR_TRUE( errT <= 1e-15 )
+	QPOASES_TEST_FOR_TOL( err ,1e-15 )
+	QPOASES_TEST_FOR_TOL( errT,1e-15 )
 
 	return TEST_PASSED;
 }
@@ -865,8 +865,8 @@ int symmetry()
 	delete[] Z;
 	delete[] Hv;
 
-	QPOASES_TEST_FOR_TRUE( err  <= 1e-15 )
-	QPOASES_TEST_FOR_TRUE( errS <= 1e-15 )
+	QPOASES_TEST_FOR_TOL( err ,1e-15 )
+	QPOASES_TEST_FOR_TOL( errS,1e-15 )
 
 	return TEST_PASSED;
 }

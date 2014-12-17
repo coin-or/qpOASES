@@ -36,6 +36,11 @@
 #define QPOASES_UNIT_TESTING_HPP
 
 
+#ifndef TEST_TOL_FACTOR
+#define TEST_TOL_FACTOR 1
+#endif
+
+
 /** Return value for tests that passed. */
 #define TEST_PASSED 0
 
@@ -51,6 +56,9 @@
 
 /** Macro verifying that two numerical values are close to each other in order to pass unit test. */
 #define QPOASES_TEST_FOR_NEAR( x,y )  if ( REFER_NAMESPACE_QPOASES getAbs((x)-(y)) / REFER_NAMESPACE_QPOASES getMax( 1.0,REFER_NAMESPACE_QPOASES getAbs(x) ) >= 1e-10 ) { return TEST_FAILED; }
+
+/** Macro verifying that first quantity is lower or equal than second one in order to pass unit test. */
+#define QPOASES_TEST_FOR_TOL( x,tol )  if ( (x) > (tol)*(TEST_TOL_FACTOR) ) { return TEST_FAILED; }
 
 /** Macro verifying that a logical expression holds in order to pass unit test. */
 #define QPOASES_TEST_FOR_TRUE( x )  if ( (x) == false ) { return TEST_FAILED; }

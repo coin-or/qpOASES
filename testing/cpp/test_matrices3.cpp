@@ -79,7 +79,7 @@ int main( )
 	delete Hd;
 	
 	
-	QPOASES_TEST_FOR_TRUE( errH <= 1e-15 )
+	QPOASES_TEST_FOR_TOL( errH,1e-15 )
 	
 	return TEST_PASSED;
 }

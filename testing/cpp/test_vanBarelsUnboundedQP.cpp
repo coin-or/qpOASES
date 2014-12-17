@@ -23,7 +23,7 @@
 
 
 /**
- *	\file debugging/cpp/debug_vanBarelsUnboundedQP.cpp
+ *	\file testing/cpp/debug_vanBarelsUnboundedQP.cpp
  *	\author Hans Joachim Ferreau
  *	\version 3.0
  *	\date 2007-2014

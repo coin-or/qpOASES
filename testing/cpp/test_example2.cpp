@@ -75,7 +75,7 @@ int main( )
     analyser.getMaxKKTviolation( &example, maxKKTviolation );
     printf( "maxKKTviolation: %e\n", maxKKTviolation );
 
-	QPOASES_TEST_FOR_TRUE( maxKKTviolation <= 1e-15 );
+	QPOASES_TEST_FOR_TOL( maxKKTviolation,1e-15 );
 
 
 	/* Solve second QP ... */
@@ -86,7 +86,7 @@ int main( )
 	analyser.getMaxKKTviolation( &example, maxKKTviolation );
     printf( "maxKKTviolation: %e\n", maxKKTviolation );
 
-	QPOASES_TEST_FOR_TRUE( maxKKTviolation <= 1e-15 );
+	QPOASES_TEST_FOR_TOL( maxKKTviolation,1e-15 );
 
 
 //  ------------ VARIANCE-COVARIANCE EVALUATION --------------------

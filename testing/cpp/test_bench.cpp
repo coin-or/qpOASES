@@ -295,9 +295,9 @@ int main( int argc, char *argv[] )
 	printf("avg. feas:  %e\n", avgFeasibility);
 	printf("avg. cmpl:  %e\n", avgFeasibility);
 
-	QPOASES_TEST_FOR_TRUE( avgStationarity    <= expectedAvgStationarity );
-	QPOASES_TEST_FOR_TRUE( avgFeasibility     <= expectedAvgavgFeasibility );
-	QPOASES_TEST_FOR_TRUE( avgComplementarity <= expectedAvgFeasibility );
+	QPOASES_TEST_FOR_TOL( avgStationarity,    expectedAvgStationarity );
+	QPOASES_TEST_FOR_TOL( avgFeasibility,     expectedAvgavgFeasibility );
+	QPOASES_TEST_FOR_TOL( avgComplementarity, expectedAvgFeasibility );
 
 
 	return 0;
