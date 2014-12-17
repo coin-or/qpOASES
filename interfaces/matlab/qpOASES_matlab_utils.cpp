@@ -301,10 +301,10 @@ BooleanType containsNaN( const real_t* const data, int dim )
 	return BT_FALSE;
 }
 
+
 /*
  *	c o n t a i n s I n f
  */
-
 BooleanType containsInf( const real_t* const data, int dim )
 {
 	int i;
@@ -319,6 +319,10 @@ BooleanType containsInf( const real_t* const data, int dim )
 	return BT_FALSE;
 }
 
+
+/*
+ *	c o n t a i n s N a N o r I n f
+ */
 BooleanType containsNaNorInf(const mxArray* prhs[], int dim, int rhs_index,
 		bool mayContainInf) {
 
@@ -348,6 +352,7 @@ BooleanType containsNaNorInf(const mxArray* prhs[], int dim, int rhs_index,
 
 	return BT_FALSE;
 }
+
 
 /*
  *	c o n v e r t F o r t r a n T o C

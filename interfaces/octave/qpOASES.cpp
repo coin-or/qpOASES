@@ -410,6 +410,22 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 		return;
 	}
 
+	/* check if supplied data contains 'NaN' or 'Inf' */
+	if (containsNaNorInf(prhs, nV * nV, H_idx, 0) == BT_TRUE) {
+		return;
+	}
+
+	if (containsNaNorInf(prhs, nV, g_idx, 0) == BT_TRUE) {
+		return;
+	}
+
+	if (containsNaNorInf(prhs, nV, lb_idx, 1) == BT_TRUE) {
+		return;
+	}
+	if (containsNaNorInf(prhs, nV, ub_idx, 1) == BT_TRUE) {
+		return;
+	}
+
 	/* Check inputs dimensions and assign pointers to inputs. */
 	if ( mxGetN( prhs[ H_idx ] ) != nV )
 	{
@@ -436,6 +452,16 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 			snprintf(msg, MAX_STRING_LENGTH, "ERROR (qpOASES): Constraint matrix input dimension mismatch (%ld != %d)!", 
 					(long int)mxGetN(prhs[A_idx]), nV);
 			myMexErrMsgTxt(msg);
+			return;
+		}
+
+		if (containsNaNorInf(prhs, nV * nC, A_idx, 0) == BT_TRUE) {
+			return;
+		}
+		if (containsNaNorInf(prhs, nC, lbA_idx, 1) == BT_TRUE) {
+			return;
+		}
+		if (containsNaNorInf(prhs, nC, ubA_idx, 1) == BT_TRUE) {
 			return;
 		}
 	}
