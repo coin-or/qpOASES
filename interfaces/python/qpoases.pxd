@@ -21,14 +21,11 @@
 ##
 
 ##
-##	Filename:  qpoases.pxd
-##	Author:    Sebastian F. Walter, Manuel Kudruss
-##	Version:   3.0
-##	Date:      2013-2014
+##    Filename:  qpoases.pxd
+##    Author:    Sebastian F. Walter, Manuel Kudruss
+##    Version:   3.0
+##    Date:      2013-2014
 ##
-
-
-
 
 cdef extern from "qpOASES.hpp" namespace "qpOASES":
 
@@ -215,7 +212,7 @@ cdef extern from "qpOASES.hpp" namespace "qpOASES":
         RET_INITIAL_BOUNDS_STATUS_NYI
         RET_ERROR_IN_CONSTRAINTPRODUCT
         RET_FIX_BOUNDS_FOR_LP
-		RET_USE_REGULARISATION_FOR_LP
+        RET_USE_REGULARISATION_FOR_LP
         RET_UPDATEMATRICES_FAILED
         RET_UPDATEMATRICES_FAILED_AS_QP_NOT_SOLVED
         RET_UNABLE_TO_OPEN_FILE
@@ -231,7 +228,7 @@ cdef extern from "qpOASES.hpp" namespace "qpOASES":
         RET_QP_SOLUTION_STARTED
         RET_BENCHMARK_SUCCESSFUL
         RET_NO_DIAGONAL_AVAILABLE
-		RET_DIAGONAL_NOT_INITIALISED
+        RET_DIAGONAL_NOT_INITIALISED
         RET_ENSURELI_DROPPED
         RET_SIMPLE_STATUS_P1
         RET_SIMPLE_STATUS_P0

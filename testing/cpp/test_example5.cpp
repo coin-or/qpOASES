@@ -179,7 +179,7 @@ int main( )
 	}
 	printf ("Maximum perturbation over all directions: %e\n", nrm);
 
-	QPOASES_TEST_FOR_TRUE( nrm <= 1e-15 );
+	QPOASES_TEST_FOR_TOL( nrm,1e-15 );
 
 
 	/* // print feedback matrix

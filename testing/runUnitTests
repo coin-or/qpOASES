@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 ##
 ##	This file is part of qpOASES.
 ##
@@ -28,7 +30,10 @@
 ##	Version:   3.0
 ##	Date:      2014
 
-
+# defining colors for output
+red='\e[0;31m'
+green='\e[0;32m'
+NC='\e[0m' # No Color
 
 # runs a number of examples to detect malfunctioning of the code
 
@@ -40,12 +45,12 @@ function runTest {
 	rm -rf dummy.txt;
 
 	if [ $retVal == 0 ]; then
-		echo "passed!"
+		echo -e "${green}passed!${NC}"
 	else
 		if [ $retVal == 99 ]; then
 			echo "problem data missing!"
 		else
-			echo "failed!"
+			echo -e "${red}failed!${NC}"
 			counter=$[counter+1];
 		fi
 	fi
@@ -94,7 +99,8 @@ runTest $counter ../bin/test_bench Omd;
 
 
 if [ $counter == 0 ]; then
-	echo "All available tests passed successfully!"
+	echo -e "${green}All available tests passed successfully!${NC}"
 else
-	echo "$counter test(s) failed!"
+	echo -e "${red}$counter test(s) failed!${NC}"
+	exit 1
 fi

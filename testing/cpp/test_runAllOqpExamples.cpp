@@ -58,10 +58,10 @@ int main( )
 
 	const int numBenchmarks = 4; //5
 	const char *benchmarkPath[numBenchmarks];
-	benchmarkPath[0] = "./cpp/data/oqp/chain80/";
-	benchmarkPath[1] = "./cpp/data/oqp/chain80w/";
-	benchmarkPath[2] = "./cpp/data/oqp/diesel/";
-	benchmarkPath[3] = "./cpp/data/oqp/crane/";
+	benchmarkPath[0] = "../testing/cpp/data/oqp/chain80/";
+	benchmarkPath[1] = "../testing/cpp/data/oqp/chain80w/";
+	benchmarkPath[2] = "../testing/cpp/data/oqp/diesel/";
+	benchmarkPath[3] = "../testing/cpp/data/oqp/crane/";
 	//benchmarkPath[4] = "./cpp/data/oqp/CDU/";
 
 
@@ -112,9 +112,9 @@ int main( )
 		printf( "maximum violation complementarity:  %.3e\n",maxComplementarity );
 		printf( "\n" );
 
-		QPOASES_TEST_FOR_TRUE( maxStationarity    <= 1e-9 );
-		QPOASES_TEST_FOR_TRUE( maxFeasibility     <= 1e-11 );
-		QPOASES_TEST_FOR_TRUE( maxComplementarity <= 1e-10 );
+		QPOASES_TEST_FOR_TOL( maxStationarity,    1e-9  );
+		QPOASES_TEST_FOR_TOL( maxFeasibility,     1e-11 );
+		QPOASES_TEST_FOR_TOL( maxComplementarity, 1e-10 );
 		
 		switch( ii )
 		{

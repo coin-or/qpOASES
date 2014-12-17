@@ -18,12 +18,12 @@
 %to obtain a struct with all auxiliary inputs empty.
 %
 %Call
-%    options = qpOASES_auxInput( 'input1',value1,'input2',value2,... )
+%    auxInput = qpOASES_auxInput( 'input1',value1,'input2',value2,... )
 %to obtain a struct with 'input1' set to value1 etc. and all remaining
 %auxiliary inputs empty.
 %
 %Call
-%    options = qpOASES_auxInput( oldInputs,'input1',value1,... )
+%    auxInput = qpOASES_auxInput( oldInputs,'input1',value1,... )
 %to obtain a copy of the options struct oldInputs but with 'input1' set to 
 %value1 etc.
 %

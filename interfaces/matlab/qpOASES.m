@@ -20,7 +20,7 @@
 %Call
 %
 %    [x,fval,exitflag,iter,lambda,auxOutput] = 
-%                     qpOASES( H,g,A,lb,ub,lbA,ubA{,options{,auxInput} )
+%                     qpOASES( H,g,A,lb,ub,lbA,ubA{,options{,auxInput}} )
 %
 %for solving the above-mentioned QP. H must be a symmetric (but possibly 
 %indefinite) matrix and all vectors g, lb, ub, lbA, ubA have to be given
@@ -32,7 +32,7 @@
 %Call
 %
 %    [x,fval,exitflag,iter,lambda,auxOutput] =
-%                     qpOASES( H,g,lb,ub{,options{,auxInput} )
+%                     qpOASES( H,g,lb,ub{,options{,auxInput}} )
 %
 %for solving the above-mentioned QP without general constraints.
 %

@@ -83,9 +83,9 @@ int main( )
 					);
 	printf( "stat = %e\nfeas = %e\ncmpl = %e\n", stat,feas,cmpl );
 
-	QPOASES_TEST_FOR_TRUE( stat <= 1e-15 );
-	QPOASES_TEST_FOR_TRUE( feas <= 1e-15 );
-	QPOASES_TEST_FOR_TRUE( cmpl <= 1e-15 );
+	QPOASES_TEST_FOR_TOL( stat,1e-15 );
+	QPOASES_TEST_FOR_TOL( feas,1e-15 );
+	QPOASES_TEST_FOR_TOL( cmpl,1e-15 );
 
 	
 	/* Solve second QP. */
@@ -106,9 +106,9 @@ int main( )
 					);
 	printf( "stat = %e\nfeas = %e\ncmpl = %e\n", stat,feas,cmpl );
 
-	QPOASES_TEST_FOR_TRUE( stat <= 1e-15 );
-	QPOASES_TEST_FOR_TRUE( feas <= 1e-15 );
-	QPOASES_TEST_FOR_TRUE( cmpl <= 1e-15 );
+	QPOASES_TEST_FOR_TOL( stat,1e-15 );
+	QPOASES_TEST_FOR_TOL( feas,1e-15 );
+	QPOASES_TEST_FOR_TOL( cmpl,1e-15 );
 
 	return TEST_PASSED;
 }

@@ -190,7 +190,7 @@ RET_CONSTRAINTS_ARE_NOT_SCALED, 				/**< (no longer in use) */
 RET_INITIAL_BOUNDS_STATUS_NYI, 					/**< (no longer in use) */
 RET_ERROR_IN_CONSTRAINTPRODUCT,					/**< Error in user-defined constraint product function. */
 RET_FIX_BOUNDS_FOR_LP,							/**< All initial bounds must be fixed when solving an (unregularised) LP. */
-RET_USE_REGULARISATION_FOR_LP,					/**< Set options.enableRegulariation=BT_TRUE for solving LPs. */
+RET_USE_REGULARISATION_FOR_LP,					/**< Set options.enableRegularisation=BT_TRUE for solving LPs. */
 /* SQProblem */
 RET_UPDATEMATRICES_FAILED,						/**< Unable to update QP matrices. */
 RET_UPDATEMATRICES_FAILED_AS_QP_NOT_SOLVED,		/**< Unable to update matrices as previous QP is not solved. */

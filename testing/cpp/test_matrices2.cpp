@@ -101,8 +101,8 @@ int main( )
 	delete Ad;
 
 	
-	QPOASES_TEST_FOR_TRUE( errH <= 1e-13 )
-	QPOASES_TEST_FOR_TRUE( errA <= 1e-13 )
+	QPOASES_TEST_FOR_TOL( errH,1e-13 )
+	QPOASES_TEST_FOR_TOL( errA,1e-13 )
 
 	return TEST_PASSED;
 }

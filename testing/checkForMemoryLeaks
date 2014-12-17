@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 ##
 ##	This file is part of qpOASES.
 ##
@@ -28,7 +30,10 @@
 ##	Version:   3.0
 ##	Date:      2014
 
-
+# defining colors for output
+red='\e[0;31m'
+green='\e[0;32m'
+NC='\e[0m' # No Color
 
 # runs valgrind on a number of examples to detect possible memory leaks
 
@@ -40,13 +45,13 @@ function callValgrind {
 	rm -rf dummy.txt;
 
 	if [ $retVal == 42 ]; then
-		echo "failed!"
+		echo -e "${red}failed!${NC}"
 		counter=$[counter+1];
 	else
 		if [ $retVal == 99 ]; then
 			echo "problem data missing!"
 		else
-			echo "passed!"
+			echo -e "${green}passed!${NC}"
 		fi
 	fi
 }
@@ -94,7 +99,8 @@ callValgrind $counter ../bin/test_bench Ors; # reliable dense
 
 
 if [ $counter == 0 ]; then
-	echo "All available tests passed successfully!"
+	echo -e "${green}All available tests passed successfully!${NC}"
 else
-	echo "$counter test(s) failed!"
+	echo -e "${red}$counter test(s) failed!${NC}"
+	exit 1
 fi

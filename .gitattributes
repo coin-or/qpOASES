@@ -138,6 +138,7 @@ src/SubjectTo.cpp -text
 src/Utils.cpp -text
 testing/Makefile -text
 testing/checkForMemoryLeaks -text
+testing/cpp/data/fetch_cpp_data -text
 testing/cpp/test_bench.cpp -text
 testing/cpp/test_constraintProduct1.cpp -text
 testing/cpp/test_constraintProduct2.cpp -text
@@ -169,6 +170,7 @@ testing/matlab/auxFiles/getKktResidual.m -text
 testing/matlab/auxFiles/isoctave.m -text
 testing/matlab/auxFiles/setupQpDataStruct.m -text
 testing/matlab/auxFiles/setupQpFeaturesStruct.m -text
+testing/matlab/data/fetch_matlab_data -text
 testing/matlab/runAllTests.m -text
 testing/matlab/tests/runAlexInfeas1.m -text
 testing/matlab/tests/runAlexInfeas2.m -text

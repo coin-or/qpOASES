@@ -6,6 +6,7 @@ function [ successFlag ] = runAllTests( doPrint )
     
     
     %% add sub-folders to Matlab path
+    addpath('../../interfaces/matlab/');
     addpath(genpath(pwd));
     addpath(genpath([pwd 'auxFiles']));
     addpath(genpath([pwd 'data']));

@@ -29,7 +29,7 @@
  *	\date 2007-2014
  *
  *	Interface for octave that enables to call qpOASES as a MEX function
- *  (variant for QPs general constraints).
+ *  (variant for solving QP sequences).
  *
  */
 
@@ -297,10 +297,15 @@ int hotstartVM(	int handle,
 	globalSQP->setOptions( *options );
 	returnValue returnvalue = globalSQP->hotstart( H,g,A,lb,ub,lbA,ubA, nWSRout,&maxCpuTimeOut );
 
-	if (returnvalue != SUCCESSFUL_RETURN)
+	switch (returnvalue)
 	{
-		myMexErrMsgTxt( "ERROR (qpOASES): Hotstart failed." );
-		return -1;
+		case SUCCESSFUL_RETURN:
+		case RET_QP_UNBOUNDED:
+		case RET_QP_INFEASIBLE:
+			break;
+		otherwise:
+			myMexErrMsgTxt( "ERROR (qpOASES): Hotstart failed." );
+			return -1;
 	}
 
 	/* 2) Assign lhs arguments. */
@@ -320,6 +325,7 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 	/* inputs */
 	char typeString[2];
 	real_t *g=0, *lb=0, *ub=0, *lbA=0, *ubA=0, *x0=0;
+	int H_idx=-1, g_idx=-1, A_idx=-1, lb_idx=-1, ub_idx=-1, lbA_idx=-1, ubA_idx=-1;
 	int x0_idx=-1, auxInput_idx=-1;
 
 	double *guessedBoundsAndConstraints = 0;
@@ -391,21 +397,42 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 			return;
 		}
 
+		/* ensure that data is given in double precision */
+		if ((mxIsDouble(prhs[1]) == 0) || (mxIsDouble(prhs[2]) == 0)) {
+			myMexErrMsgTxt(
+					"ERROR (qpOASES): All data has to be provided in double precision!");
+			return;
+		}
+
         nV = (unsigned int)mxGetM( prhs[1] ); /* row number of Hessian matrix */
 
-        /* determine whether is it a simply bounded QP */
-    		if ( nrhs <= 7 )
-				isSimplyBoundedQp = BT_TRUE;
-			else
-				isSimplyBoundedQp = BT_FALSE;
+		/* Check for 'Inf' and 'Nan' in Hessian */
+		H_idx = 1;
+		g_idx = 2;
+		if (containsNaNorInf(prhs, nV * nV, H_idx, 0) == BT_TRUE) {
+			return;
+		}
+
+		/* Check for 'Inf' and 'Nan' in gradient */
+		if (containsNaNorInf(prhs, nV, g_idx, 0) == BT_TRUE) {
+			return;
+		}
+
+		/* determine whether is it a simply bounded QP */
+		if ( nrhs <= 7 )
+			isSimplyBoundedQp = BT_TRUE;
+		else
+			isSimplyBoundedQp = BT_FALSE;
 
 		if ( isSimplyBoundedQp == BT_TRUE )
 		{
-			/* ensure that data is given in double precision */
-			if ( ( mxIsDouble( prhs[1] ) == 0 ) ||
-				 ( mxIsDouble( prhs[2] ) == 0 ) )
-			{
-				myMexErrMsgTxt( "ERROR (qpOASES): All data has to be provided in double precision!" );
+			lb_idx = 3;
+			ub_idx = 4;
+
+			if (containsNaNorInf(prhs, nV, lb_idx, 1) == BT_TRUE) {
+				return;
+			}
+			if (containsNaNorInf(prhs, nV, ub_idx, 1) == BT_TRUE) {
 				return;
 			}
 
@@ -470,6 +497,28 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 		
 			/* Check inputs dimensions and assign pointers to inputs. */
 			nC = (unsigned int)mxGetM( prhs[3] ); /* row number of constraint matrix */
+
+			A_idx = 3;
+			lb_idx = 4;
+			ub_idx = 5;
+			lbA_idx = 6;
+			ubA_idx = 7;
+
+			if (containsNaNorInf(prhs, nV * nC, A_idx, 0) == BT_TRUE) {
+				return;
+			}
+			if (containsNaNorInf(prhs, nV, lb_idx, 1) == BT_TRUE) {
+				return;
+			}
+			if (containsNaNorInf(prhs, nV, ub_idx, 1) == BT_TRUE) {
+				return;
+			}
+			if (containsNaNorInf(prhs, nC, lbA_idx, 1) == BT_TRUE) {
+				return;
+			}
+			if (containsNaNorInf(prhs, nC, ubA_idx, 1) == BT_TRUE) {
+				return;
+			}
 
 			if ( ( mxGetN( prhs[1] ) != nV ) || ( ( mxGetN( prhs[3] ) != 0 ) && ( mxGetN( prhs[3] ) != nV ) ) )
 			{
@@ -615,11 +664,27 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 			return;
 		}
 
+		nV = globalQP->getNV();
+
+		g_idx = 2;
+		lb_idx = 3;
+		ub_idx = 4;
+
+		if (containsNaNorInf(prhs, nV, g_idx, 0) == BT_TRUE) {
+			return;
+		}
+
+		if (containsNaNorInf(prhs, nV, lb_idx, 1) == BT_TRUE) {
+			return;
+		}
+		if (containsNaNorInf(prhs, nV, ub_idx, 1) == BT_TRUE) {
+			return;
+		}
+
 
 		/* Check inputs dimensions and assign pointers to inputs. */
 		if ( isSimplyBoundedQp == BT_TRUE )
 		{
-			nV = globalQP->getNV( );
 			nC = 0;
 
 			if ( smartDimensionCheck( &g,nV,1, BT_FALSE,prhs,2 ) != SUCCESSFUL_RETURN )
@@ -641,8 +706,17 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 		}
 		else
 		{
-			nV = globalQP->getNV( );
 			nC = globalQP->getNC( );
+
+			lbA_idx = 5;
+			ubA_idx = 6;
+
+			if (containsNaNorInf(prhs, nC, lbA_idx, 1) == BT_TRUE) {
+				return;
+			}
+			if (containsNaNorInf(prhs, nC, ubA_idx, 1) == BT_TRUE) {
+				return;
+			}
 
 			if ( smartDimensionCheck( &g,nV,1, BT_FALSE,prhs,2 ) != SUCCESSFUL_RETURN )
 				return;
@@ -738,6 +812,41 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 		nV = (unsigned int)mxGetM( prhs[2] ); /* row number of Hessian matrix */
 		nC = (unsigned int)mxGetM( prhs[4] ); /* row number of constraint matrix */
 		
+		H_idx = 2;
+		g_idx = 3;
+		A_idx = 4;
+		lb_idx = 5;
+		ub_idx = 6;
+		lbA_idx = 7;
+		ubA_idx = 8;
+
+		/* check if supplied data contains 'NaN' or 'Inf' */
+		if (containsNaNorInf(prhs, nV * nV, H_idx, 0) == BT_TRUE) {
+			return;
+		}
+
+		if (containsNaNorInf(prhs, nV, g_idx, 0) == BT_TRUE) {
+			return;
+		}
+
+		if (containsNaNorInf(prhs, nV * nC, A_idx, 0) == BT_TRUE) {
+			return;
+		}
+
+		if (containsNaNorInf(prhs, nV, lb_idx, 1) == BT_TRUE) {
+			return;
+		}
+		if (containsNaNorInf(prhs, nV, ub_idx, 1) == BT_TRUE) {
+			return;
+		}
+
+		if (containsNaNorInf(prhs, nC, lbA_idx, 1) == BT_TRUE) {
+			return;
+		}
+		if (containsNaNorInf(prhs, nC, ubA_idx, 1) == BT_TRUE) {
+			return;
+		}
+
 		/* Check that dimensions are consistent with existing QP instance */
 		if (nV != (unsigned int) globalQP->getNV () || nC != (unsigned int) globalQP->getNC ())
 		{
@@ -833,6 +942,30 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 		nV = globalQP->getNV( );
 		nC = globalQP->getNC( );
 		real_t *x_out, *y_out;
+
+		g_idx = 2;
+		lb_idx = 3;
+		ub_idx = 4;
+		lbA_idx = 5;
+		ubA_idx = 6;
+
+		/* check if supplied data contains 'NaN' or 'Inf' */
+		if (containsNaNorInf(prhs, nV, g_idx, 0) == BT_TRUE) {
+			return;
+		}
+		if (containsNaNorInf(prhs, nV, lb_idx, 1) == BT_TRUE) {
+			return;
+		}
+		if (containsNaNorInf(prhs, nV, ub_idx, 1) == BT_TRUE) {
+			return;
+		}
+
+		if (containsNaNorInf(prhs, nC, lbA_idx, 1) == BT_TRUE) {
+			return;
+		}
+		if (containsNaNorInf(prhs, nC, ubA_idx, 1) == BT_TRUE) {
+			return;
+		}
 
 		if ( smartDimensionCheck( &g,nV,nRHS, BT_FALSE,prhs,2 ) != SUCCESSFUL_RETURN )
 			return;

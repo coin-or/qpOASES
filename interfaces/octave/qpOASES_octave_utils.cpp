@@ -285,6 +285,76 @@ returnValue smartDimensionCheck(	real_t** input, unsigned int m, unsigned int n,
 
 
 /*
+ *	c o n t a i n s N a N
+ */
+BooleanType containsNaN( const real_t* const data, int dim )
+{
+	int i;
+
+	if ( data == 0 )
+		return BT_FALSE;
+
+	for ( i = 0; i < dim; ++i )
+		if ( mxIsNaN(data[i]) == 1 )
+			return BT_TRUE;
+
+	return BT_FALSE;
+}
+
+
+/*
+ *	c o n t a i n s I n f
+ */
+BooleanType containsInf( const real_t* const data, int dim )
+{
+	int i;
+
+	if ( data == 0 )
+		return BT_FALSE;
+
+	for ( i = 0; i < dim; ++i )
+		if ( mxIsInf(data[i]) == 1 )
+			return BT_TRUE;
+
+	return BT_FALSE;
+}
+
+
+/*
+ *	c o n t a i n s N a N o r I n f
+ */
+BooleanType containsNaNorInf(const mxArray* prhs[], int dim, int rhs_index,
+		bool mayContainInf) {
+
+	char msg[MAX_STRING_LENGTH];
+
+	// overwrite dim for sparse matrices
+	if (mxIsSparse(prhs[rhs_index]) == 1) {
+		dim = mxGetNzmax(prhs[rhs_index]);
+	}
+
+	if (containsNaN((real_t*) mxGetPr(prhs[rhs_index]), dim) == BT_TRUE) {
+		snprintf(msg, MAX_STRING_LENGTH,
+				"ERROR (qpOASES): Argument %d contains 'NaN' !", rhs_index + 1);
+		myMexErrMsgTxt(msg);
+		return BT_TRUE;
+	}
+
+	if (mayContainInf == 0) {
+		if (containsInf((real_t*) mxGetPr(prhs[rhs_index]), dim) == BT_TRUE) {
+			snprintf(msg, MAX_STRING_LENGTH,
+					"ERROR (qpOASES): Argument %d contains 'Inf' !",
+					rhs_index + 1);
+			myMexErrMsgTxt(msg);
+			return BT_TRUE;
+		}
+	}
+
+	return BT_FALSE;
+}
+
+
+/*
  *	c o n v e r t F o r t r a n T o C
  */
 returnValue convertFortranToC( const real_t* const A_for, int nV, int nC, real_t* const A )

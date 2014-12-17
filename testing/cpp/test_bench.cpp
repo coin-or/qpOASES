@@ -117,14 +117,14 @@ int main( int argc, char *argv[] )
 				if ( argv[argc-1][2] == 's' )
 				{
 					expectedNumSolvedProblems = 44;
-					expectedAvgStationarity   = 1e-10;
+					expectedAvgStationarity   = 1e-7;
 					expectedAvgavgFeasibility = 1e-10;
 					expectedAvgFeasibility    = 5e-7;
 				}
 				else
 				{
 					expectedNumSolvedProblems = 44;
-					expectedAvgStationarity   = 5e-10;
+					expectedAvgStationarity   = 1e-7;
 					expectedAvgavgFeasibility = 5e-10;
 					expectedAvgFeasibility    = 5e-8;
 				}
@@ -155,7 +155,7 @@ int main( int argc, char *argv[] )
 				if ( argv[argc-1][2] == 's' )
 				{
 					expectedNumSolvedProblems = 42;
-					expectedAvgStationarity   = 1e-8;
+					expectedAvgStationarity   = 2e-8;
 					expectedAvgavgFeasibility = 1e-8;
 					expectedAvgFeasibility    = 1e-7;
 				}
@@ -202,7 +202,7 @@ int main( int argc, char *argv[] )
 	if (nproblems == 0)
 	{
 		/* 2a) Scan problem directory */
-		nproblems = scandir("./cpp/data/problems", &namelist, NULL, alphasort);
+		nproblems = scandir("../testing/cpp/data/problems", &namelist, NULL, alphasort);
 		if (nproblems <= 0)
 		{
 			myPrintf( "No test problems found!\n" );
@@ -239,7 +239,7 @@ int main( int argc, char *argv[] )
 		fprintf(stdFile, "%-10s ", problem);
 		fflush(stdFile);
 
-		snprintf(OQPproblem, MAX_STRING_LENGTH, "./cpp/data/problems/%s/", problem);
+		snprintf(OQPproblem, MAX_STRING_LENGTH, "../testing/cpp/data/problems/%s/", problem);
 		maxCPUtime = 300.0;
 		nWSR = 2500;
 
@@ -295,9 +295,9 @@ int main( int argc, char *argv[] )
 	printf("avg. feas:  %e\n", avgFeasibility);
 	printf("avg. cmpl:  %e\n", avgFeasibility);
 
-	QPOASES_TEST_FOR_TRUE( avgStationarity    <= expectedAvgStationarity );
-	QPOASES_TEST_FOR_TRUE( avgFeasibility     <= expectedAvgavgFeasibility );
-	QPOASES_TEST_FOR_TRUE( avgComplementarity <= expectedAvgFeasibility );
+	QPOASES_TEST_FOR_TOL( avgStationarity,    expectedAvgStationarity );
+	QPOASES_TEST_FOR_TOL( avgFeasibility,     expectedAvgavgFeasibility );
+	QPOASES_TEST_FOR_TOL( avgComplementarity, expectedAvgFeasibility );
 
 
 	return 0;

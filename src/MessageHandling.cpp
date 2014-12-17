@@ -104,7 +104,7 @@ MessageHandling::ReturnValueList returnValueList[] =
 { RET_QP_INFEASIBLE, "QP is infeasible", VS_VISIBLE },
 { RET_QP_NOT_SOLVED, "Problems occurred while solving QP with standard solver", VS_VISIBLE },
 { RET_QP_SOLVED, "QP successfully solved", VS_VISIBLE },
-{ RET_UNABLE_TO_SOLVE_QP, "Problems occured while solving QP", VS_VISIBLE },
+{ RET_UNABLE_TO_SOLVE_QP, "Problems occurred while solving QP", VS_VISIBLE },
 { RET_INITIALISATION_STARTED, "Starting problem initialisation...", VS_VISIBLE },
 { RET_HOTSTART_FAILED, "Unable to perform homotopy due to internal error", VS_VISIBLE },
 { RET_HOTSTART_FAILED_TO_INIT, "Unable to initialise problem", VS_VISIBLE },
@@ -159,7 +159,7 @@ MessageHandling::ReturnValueList returnValueList[] =
 { RET_MATRIX_FACTORISATION_FAILED, "Unable to calculate new matrix factorisations", VS_VISIBLE },
 { RET_PRINT_ITERATION_FAILED, "Unable to print information on current iteration", VS_VISIBLE },
 { RET_NO_GLOBAL_MESSAGE_OUTPUTFILE, "No global message output file initialised", VS_VISIBLE },
-{ RET_DISABLECONSTRAINTS_FAILED, "Unable to disbable constraints", VS_VISIBLE },
+{ RET_DISABLECONSTRAINTS_FAILED, "Unable to disable constraints", VS_VISIBLE },
 { RET_ENABLECONSTRAINTS_FAILED, "Unable to enable constraints", VS_VISIBLE },
 { RET_ALREADY_ENABLED, "Bound or constraint is already enabled", VS_VISIBLE },
 { RET_ALREADY_DISABLED, "Bound or constraint is already disabled", VS_VISIBLE },
@@ -177,7 +177,7 @@ MessageHandling::ReturnValueList returnValueList[] =
 { RET_INITIAL_BOUNDS_STATUS_NYI, "(should not be thrown, no longer in use)", VS_VISIBLE },
 { RET_ERROR_IN_CONSTRAINTPRODUCT, "Error in user-defined constraint product function", VS_VISIBLE },
 { RET_FIX_BOUNDS_FOR_LP, "All initial bounds must be fixed when solving an (unregularised) LP", VS_VISIBLE },
-{ RET_USE_REGULARISATION_FOR_LP, "Set options.enableRegulariation=BT_TRUE for solving LPs", VS_VISIBLE },
+{ RET_USE_REGULARISATION_FOR_LP, "Set options.enableRegularisation=BT_TRUE for solving LPs", VS_VISIBLE },
 /* SQProblem */
 { RET_UPDATEMATRICES_FAILED, "Unable to update QP matrices", VS_VISIBLE },
 { RET_UPDATEMATRICES_FAILED_AS_QP_NOT_SOLVED, "Unable to update matrices as previous QP is not solved", VS_VISIBLE },
@@ -302,7 +302,7 @@ MessageHandling::MessageHandling( const MessageHandling& rhs )
 MessageHandling::~MessageHandling( )
 {
 	#ifndef __XPCTARGET__
-	if ( outputFile != 0 )
+	if ( ( outputFile != 0 ) && ( outputFile != stdout ) && ( outputFile != stderr ) )
 		fclose( outputFile );
 	#endif /* __XPCTARGET__ */
 }

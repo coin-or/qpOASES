@@ -20,10 +20,10 @@
 %I) Call
 %
 %    [QP,x,fval,exitflag,iter,lambda,auxOutput] = ...
-%               qpOASES_sequence( 'i',H,g,A,lb,ub,lbA,ubA{,options{,auxInput} )
+%               qpOASES_sequence( 'i',H,g,A,lb,ub,lbA,ubA{,options{,auxInput}} )
 %or 
 %    [QP,x,fval,exitflag,iter,lambda,auxOutput] = ...
-%               qpOASES_sequence( 'i',H,g,lb,ub{,options{,auxInput} )
+%               qpOASES_sequence( 'i',H,g,lb,ub{,options{,auxInput}} )
 %
 %for initialising and solving the first above-mentioned QP of the sequence
 %starting from an initial guess x0. H must be a symmetric (possibly indefinite) 

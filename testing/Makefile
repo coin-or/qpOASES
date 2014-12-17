@@ -75,10 +75,14 @@ QPOASES_TEST_EXES = \
 
 all: ${QPOASES_TEST_EXES}
 
+runTests: ${QPOASES_TEST_EXES}
+	./runUnitTests
+	./checkForMemoryLeaks
+
 ${BINDIR}/test_bench${EXE}: ./cpp/test_bench.${OBJEXT} ${LINK_DEPENDS}
 	@${ECHO} "Creating" $@
 	@${CPP} ${DEF_TARGET} ${CPPFLAGS} $< ${QPOASES_LINK} ${LINK_LIBRARIES}
-	
+
 ${BINDIR}/test_matrices${EXE}: ./cpp/test_matrices.${OBJEXT} ${LINK_DEPENDS}
 	@${ECHO} "Creating" $@
 	@${CPP} ${DEF_TARGET} ${CPPFLAGS} $< ${QPOASES_LINK} ${LINK_LIBRARIES}
@@ -122,7 +126,7 @@ ${BINDIR}/test_example5${EXE}: ./cpp/test_example5.${OBJEXT} ${LINK_DEPENDS}
 ${BINDIR}/test_example6${EXE}: ./cpp/test_example6.${OBJEXT} ${LINK_DEPENDS}
 	@${ECHO} "Creating" $@
 	@${CPP} ${DEF_TARGET} ${CPPFLAGS} $< ${QPOASES_LINK} ${LINK_LIBRARIES}
-	
+
 ${BINDIR}/test_example7${EXE}: ./cpp/test_example7.${OBJEXT} ${LINK_DEPENDS}
 	@${ECHO} "Creating" $@
 	@${CPP} ${DEF_TARGET} ${CPPFLAGS} $< ${QPOASES_LINK} ${LINK_LIBRARIES}
@@ -154,7 +158,7 @@ ${BINDIR}/test_vanBarelsUnboundedQP${EXE}: ./cpp/test_vanBarelsUnboundedQP.${OBJ
 ${BINDIR}/test_janick1${EXE}: ./cpp/test_janick1.${OBJEXT} ${LINK_DEPENDS}
 	@${ECHO} "Creating" $@
 	@${CPP} ${DEF_TARGET} ${CPPFLAGS} $< ${QPOASES_LINK} ${LINK_LIBRARIES}
-	
+
 ${BINDIR}/test_janick2${EXE}: ./cpp/test_janick2.${OBJEXT} ${LINK_DEPENDS}
 	@${ECHO} "Creating" $@
 	@${CPP} ${DEF_TARGET} ${CPPFLAGS} $< ${QPOASES_LINK} ${LINK_LIBRARIES}

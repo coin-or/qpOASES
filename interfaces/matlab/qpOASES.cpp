@@ -410,68 +410,20 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 		return;
 	}
 
-	// check if supplied data contains 'NaN'
-
-	if (mxIsSparse(prhs[H_idx]) == 1) {
-		int nnz = mxGetNzmax(prhs[H_idx]);
-		if (isValidData((real_t*) mxGetPr(prhs[H_idx]), nnz) == BT_FALSE) {
-			myMexErrMsgTxt("ERROR (qpOASES): Hessian matrix contains 'NaN' !");
-			return;
-		}
-	} else {
-		if (isValidData((real_t*) mxGetPr(prhs[H_idx]), nV * nV) == BT_FALSE) {
-			myMexErrMsgTxt("ERROR (qpOASES): Hessian matrix contains 'NaN' !");
-			return;
-		}
-	}
-
-	if ( isValidData( (real_t*)mxGetPr(prhs[g_idx]),nV ) == BT_FALSE )
-	{
-		myMexErrMsgTxt("ERROR (qpOASES): Gradient vector contains 'NaN' !");
+	/* check if supplied data contains 'NaN' or 'Inf' */
+	if (containsNaNorInf(prhs, nV * nV, H_idx, 0) == BT_TRUE) {
 		return;
 	}
 
-	if ( isValidData( (real_t*)mxGetPr(prhs[lb_idx]),nV ) == BT_FALSE )
-	{
-		myMexErrMsgTxt("ERROR (qpOASES): Lower bound vector contains 'NaN' !");
+	if (containsNaNorInf(prhs, nV, g_idx, 0) == BT_TRUE) {
 		return;
 	}
 
-	if ( isValidData( (real_t*)mxGetPr(prhs[ub_idx]),nV ) == BT_FALSE )
-	{
-		myMexErrMsgTxt("ERROR (qpOASES): Upper bound vector contains 'NaN' !");
+	if (containsNaNorInf(prhs, nV, lb_idx, 1) == BT_TRUE) {
 		return;
 	}
-
-	if (nC > 0) {
-
-		if (mxIsSparse(prhs[A_idx]) == 1) {
-			int nnz = mxGetNzmax(prhs[A_idx]);
-			if (isValidData((real_t*) mxGetPr(prhs[A_idx]), nnz) == BT_FALSE) {
-				myMexErrMsgTxt(
-						"ERROR (qpOASES): Constraint matrix contains 'NaN' !");
-				return;
-			}
-		} else {
-			if (isValidData((real_t*) mxGetPr(prhs[A_idx]), nV * nC)
-					== BT_FALSE) {
-				myMexErrMsgTxt(
-						"ERROR (qpOASES): Constraint matrix contains 'NaN' !");
-				return;
-			}
-		}
-
-		if (isValidData((real_t*) mxGetPr(prhs[lbA_idx]), nC) == BT_FALSE) {
-			myMexErrMsgTxt(
-					"ERROR (qpOASES): Lower constraint vector contains 'NaN' !");
-			return;
-		}
-
-		if (isValidData((real_t*) mxGetPr(prhs[ubA_idx]), nC) == BT_FALSE) {
-			myMexErrMsgTxt(
-					"ERROR (qpOASES): Upper constraint vector contains 'NaN' !");
-			return;
-		}
+	if (containsNaNorInf(prhs, nV, ub_idx, 1) == BT_TRUE) {
+		return;
 	}
 
 	/* Check inputs dimensions and assign pointers to inputs. */
@@ -500,6 +452,16 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 			snprintf(msg, MAX_STRING_LENGTH, "ERROR (qpOASES): Constraint matrix input dimension mismatch (%ld != %d)!", 
 					(long int)mxGetN(prhs[A_idx]), nV);
 			myMexErrMsgTxt(msg);
+			return;
+		}
+
+		if (containsNaNorInf(prhs, nV * nC, A_idx, 0) == BT_TRUE) {
+			return;
+		}
+		if (containsNaNorInf(prhs, nC, lbA_idx, 1) == BT_TRUE) {
+			return;
+		}
+		if (containsNaNorInf(prhs, nC, ubA_idx, 1) == BT_TRUE) {
 			return;
 		}
 	}

@@ -44,7 +44,7 @@ src:
 #src_aw:
 #	@cd $@; ${MAKE} -s 
 
-examples:
+examples: src
 	@cd $@; ${MAKE} -s
 
 doc:
@@ -54,17 +54,18 @@ testing: src
 	@cd $@; ${MAKE} -s
 
 test: testing
+	@cd testing; ${MAKE} -s runTests
 
 debugging:
 	@cd $@; ${MAKE} -s 
 
 clean:
-	@  cd src               && ${MAKE} -s clean && cd .. \
-	&& cd examples          && ${MAKE} -s clean && cd .. \
-	&& cd bin               && ${RM} -f *.* && cd ..
+	@cd src               && ${MAKE} -s clean
+	@cd examples          && ${MAKE} -s clean
+	@cd bin               && ${RM} -f *.*
+	@cd testing           && ${MAKE} -s clean
 
 #	&& cd src_aw            && ${MAKE} -s clean && cd .. \
-#	&& cd testing           && ${MAKE} -s clean && cd .. \
 #	&& cd debugging         && ${MAKE} -s clean && cd .. \
 
 
