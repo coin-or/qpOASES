@@ -42,6 +42,11 @@
 
 USING_NAMESPACE_QPOASES
 
+/*extern "C" {
+#include "../c/qpOASES_wrapper.h"
+}*/
+
+
 /* global pointers to qpOASES objects */
 static QProblem*  qp  = 0;
 static QProblemB* qpb = 0;
@@ -120,6 +125,17 @@ void qpoases(	real_t* H, real_t* g, real_t* A, real_t* lb, real_t* ub, real_t* l
 {
 	/* transform A into C style matrix */
 	transformA( A, *nV,*nC );
+	
+	/*nWSRout[0] = nWSR[0];
+
+	QProblem_setup(	*nV,*nC,HST_UNKNOWN );
+	
+	QProblem_init(	H,g,A,lb,ub,lbA,ubA,
+					nWSRout,0,0,
+					x,y,obj,status
+					);
+	
+	QProblem_cleanup();*/
 
 	/* setup and solve initial QP */
 	QProblem single_qp( *nV,*nC );
