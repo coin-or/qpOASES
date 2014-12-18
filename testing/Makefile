@@ -58,6 +58,7 @@ QPOASES_TEST_EXES = \
 	${BINDIR}/test_example7${EXE} \
 	${BINDIR}/test_exampleLP${EXE} \
 	${BINDIR}/test_qrecipe${EXE} \
+	${BINDIR}/test_hs268${EXE} \
 	${BINDIR}/test_gradientShift${EXE} \
 	${BINDIR}/test_runAllOqpExamples${EXE} \
 	${BINDIR}/test_sebastien1${EXE} \
@@ -136,6 +137,10 @@ ${BINDIR}/test_exampleLP${EXE}: ./cpp/test_exampleLP.${OBJEXT} ${LINK_DEPENDS}
 	@${CPP} ${DEF_TARGET} ${CPPFLAGS} $< ${QPOASES_LINK} ${LINK_LIBRARIES}
 
 ${BINDIR}/test_qrecipe${EXE}: ./cpp/test_qrecipe.${OBJEXT} ./cpp/test_qrecipe_data.hpp ${LINK_DEPENDS}
+	@${ECHO} "Creating" $@
+	@${CPP} ${DEF_TARGET} ${CPPFLAGS} $< ${QPOASES_LINK} ${LINK_LIBRARIES}
+
+${BINDIR}/test_hs268${EXE}: ./cpp/test_hs268.${OBJEXT}
 	@${ECHO} "Creating" $@
 	@${CPP} ${DEF_TARGET} ${CPPFLAGS} $< ${QPOASES_LINK} ${LINK_LIBRARIES}
 

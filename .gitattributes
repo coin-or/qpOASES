@@ -153,6 +153,7 @@ testing/cpp/test_example7.cpp -text
 testing/cpp/test_exampleLP.cpp -text
 testing/cpp/test_gradientShift.cpp -text
 testing/cpp/test_guessedWS1.cpp -text
+testing/cpp/test_hs268.cpp -text
 testing/cpp/test_indexlist.cpp -text
 testing/cpp/test_janick1.cpp -text
 testing/cpp/test_janick2.cpp -text

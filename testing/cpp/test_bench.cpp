@@ -95,9 +95,9 @@ int main( int argc, char *argv[] )
 	returnValue returnvalue;
 
 	int expectedNumSolvedProblems = 44;
-	real_t expectedAvgStationarity = TOL;
-	real_t expectedAvgavgFeasibility = TOL;
-	real_t expectedAvgFeasibility = TOL;
+	real_t expectedAvgStationarity    = TOL;
+	real_t expectedAvgFeasibility     = TOL;
+	real_t expectedAvgComplementarity = TOL;
 
 	
 	if ( argv[argc-1][0] == 'O' )
@@ -116,17 +116,17 @@ int main( int argc, char *argv[] )
 				options.setToDefault();
 				if ( argv[argc-1][2] == 's' )
 				{
-					expectedNumSolvedProblems = 44;
-					expectedAvgStationarity   = 1e-7;
-					expectedAvgavgFeasibility = 1e-10;
-					expectedAvgFeasibility    = 5e-7;
+					expectedNumSolvedProblems  = 44;
+					expectedAvgStationarity    = 2e-10;
+					expectedAvgFeasibility     = 2e-10;
+					expectedAvgComplementarity = 5e-7;
 				}
 				else
 				{
-					expectedNumSolvedProblems = 44;
-					expectedAvgStationarity   = 1e-7;
-					expectedAvgavgFeasibility = 5e-10;
-					expectedAvgFeasibility    = 5e-8;
+					expectedNumSolvedProblems  = 44;
+					expectedAvgStationarity    = 5e-10;
+					expectedAvgFeasibility     = 5e-10;
+					expectedAvgComplementarity = 5e-8;
 				}
 				break;
 				
@@ -135,17 +135,17 @@ int main( int argc, char *argv[] )
 				options.setToReliable();
 				if ( argv[argc-1][2] == 's' )
 				{
-					expectedNumSolvedProblems = 44;
-					expectedAvgStationarity   = 1e-9;
-					expectedAvgavgFeasibility = 2e-11;
-					expectedAvgFeasibility    = 2e-9;
+					expectedNumSolvedProblems  = 44;
+					expectedAvgStationarity    = 2e-9;
+					expectedAvgFeasibility     = 2e-11;
+					expectedAvgComplementarity = 3e-9;
 				}
 				else
 				{
-					expectedNumSolvedProblems = 44;
-					expectedAvgStationarity   = 2e-9;
-					expectedAvgavgFeasibility = 1e-9;
-					expectedAvgFeasibility    = 2e-7;
+					expectedNumSolvedProblems  = 44;
+					expectedAvgStationarity    = 2e-9;
+					expectedAvgFeasibility     = 2e-9;
+					expectedAvgComplementarity = 3e-7;
 				}
 				break;
 				
@@ -154,17 +154,17 @@ int main( int argc, char *argv[] )
 				options.setToMPC();
 				if ( argv[argc-1][2] == 's' )
 				{
-					expectedNumSolvedProblems = 42;
-					expectedAvgStationarity   = 2e-8;
-					expectedAvgavgFeasibility = 1e-8;
-					expectedAvgFeasibility    = 1e-7;
+					expectedNumSolvedProblems  = 42;
+					expectedAvgStationarity    = 2e-8;
+					expectedAvgFeasibility     = 1e-8;
+					expectedAvgComplementarity = 2e-7;
 				}
 				else
 				{
-					expectedNumSolvedProblems = 42;
-					expectedAvgStationarity   = 2e-8;
-					expectedAvgavgFeasibility = 1e-8;
-					expectedAvgFeasibility    = 5e-8;
+					expectedNumSolvedProblems  = 42;
+					expectedAvgStationarity    = 3e-8;
+					expectedAvgFeasibility     = 1e-8;
+					expectedAvgComplementarity = 5e-8;
 				}
 				break;
 				
@@ -280,24 +280,24 @@ int main( int argc, char *argv[] )
 
 
 	/* 4) Print results. */
-	printf("\n\n" );
-	printf("Testbench results:\n" );
-	printf("======================\n\n" );
-	printf("Pass:  %3d\n", npass);
-	printf("Fail:  %3d\n", nfail);
-	printf("Ratio: %5.1f%%\n", 100.0 * (real_t)npass / (real_t)(npass+nfail));
-	printf("\n" );
+	printf( "\n\n" );
+	printf( "Testbench results:\n" );
+	printf( "======================\n\n" );
+	printf( "Pass:  %3d\n",npass );
+	printf( "Fail:  %3d\n",nfail );
+	printf( "Ratio: %5.1f%%\n", 100.0 * (real_t)npass / (real_t)(npass+nfail) );
+	printf( "\n" );
 
 	QPOASES_TEST_FOR_TRUE( npass >= expectedNumSolvedProblems );
 
 
-	printf("avg. stat:  %e\n", avgStationarity);
-	printf("avg. feas:  %e\n", avgFeasibility);
-	printf("avg. cmpl:  %e\n", avgFeasibility);
+	printf( "avg. stat:  %e\n", avgStationarity    );
+	printf( "avg. feas:  %e\n", avgFeasibility     );
+	printf( "avg. cmpl:  %e\n", avgComplementarity );
 
-	QPOASES_TEST_FOR_TOL( avgStationarity,    expectedAvgStationarity );
-	QPOASES_TEST_FOR_TOL( avgFeasibility,     expectedAvgavgFeasibility );
-	QPOASES_TEST_FOR_TOL( avgComplementarity, expectedAvgFeasibility );
+	QPOASES_TEST_FOR_TOL( avgStationarity,    expectedAvgStationarity    );
+	QPOASES_TEST_FOR_TOL( avgFeasibility,     expectedAvgFeasibility     );
+	QPOASES_TEST_FOR_TOL( avgComplementarity, expectedAvgComplementarity );
 
 
 	return 0;
