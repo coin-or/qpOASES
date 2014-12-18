@@ -57,6 +57,12 @@ include/qpOASES/Utils.ipp -text
 include/qpOASES/extras/OQPinterface.hpp -text
 include/qpOASES/extras/SolutionAnalysis.hpp -text
 include/qpOASES/extras/SolutionAnalysis.ipp -text
+interfaces/c/Makefile -text
+interfaces/c/example1.c -text
+interfaces/c/example1a.c -text
+interfaces/c/example1b.c -text
+interfaces/c/qpOASES_wrapper.cpp -text
+interfaces/c/qpOASES_wrapper.h -text
 interfaces/matlab/Makefile -text
 interfaces/matlab/example1.mat -text
 interfaces/matlab/example1a.mat -text
