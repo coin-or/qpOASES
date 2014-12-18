@@ -275,12 +275,12 @@ int hotstart(	int handle,
  *	h o t s t a r t V M
  */
 int hotstartVM(	int handle,
-                    SymmetricMatrix *H, real_t* g, Matrix *A,
-					const real_t* const lb, const real_t* const ub, const real_t* const lbA, const real_t* const ubA,
-					int nWSRin, real_t maxCpuTimeIn,
-					Options* options,
-					int nOutputs, mxArray* plhs[]
-					)
+				SymmetricMatrix *H, real_t* g, Matrix *A,
+				const real_t* const lb, const real_t* const ub, const real_t* const lbA, const real_t* const ubA,
+				int nWSRin, real_t maxCpuTimeIn,
+				Options* options,
+				int nOutputs, mxArray* plhs[]
+				)
 {
 	int nWSRout = nWSRin;
 	real_t maxCpuTimeOut = (maxCpuTimeIn >= 0.0) ? maxCpuTimeIn : INFTY;
@@ -303,7 +303,8 @@ int hotstartVM(	int handle,
 		case RET_QP_UNBOUNDED:
 		case RET_QP_INFEASIBLE:
 			break;
-		otherwise:
+
+		default:
 			myMexErrMsgTxt( "ERROR (qpOASES): Hotstart failed." );
 			return -1;
 	}

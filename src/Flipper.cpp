@@ -117,24 +117,10 @@ returnValue Flipper::init(	unsigned int _nV,
 							unsigned int _nC
 							)
 {
-	if ( ( _nV < 0 ) || ( _nC < 0 ) )
-		return THROWERROR( RET_INVALID_ARGUMENTS );
-
 	clear( );
 
 	nV = _nV;
 	nC = _nC;
-
-	/*if ( nV > 0 )
-	{
-		R = new real_t[nV*nV];
-	
-		if ( nC > 0 )
-		{
-			Q = new real_t[nV*nV];
-			T = new real_t[getDimT()];
-		}
-	}*/
 
 	return SUCCESSFUL_RETURN;
 }
