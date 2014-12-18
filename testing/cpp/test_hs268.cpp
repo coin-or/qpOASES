@@ -58,6 +58,7 @@ int main( int argc, char *argv[] )
 
 
 	int nWSR;
+	int npass = 0;
 	real_t maxCPUtime; /* seconds */
 	real_t maxStationarity = 0.0, maxFeasibility = 0.0, maxComplementarity = 0.0;
 
@@ -77,6 +78,12 @@ int main( int argc, char *argv[] )
 	returnvalue = runOQPbenchmark(	OQPproblem, isSparse, options,
 									nWSR, maxCPUtime, maxStationarity, maxFeasibility, maxComplementarity 
 									);
+
+	if(returnvalue == SUCCESSFUL_RETURN) {
+		npass += 1;
+	}
+
+	QPOASES_TEST_FOR_TRUE( npass >= 1 );
 
 	printf( "\n" );
 	printf( "stat:  %e\n", maxStationarity    );
