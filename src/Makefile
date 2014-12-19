@@ -55,7 +55,6 @@ QPOASES_OBJECTS = \
 	Matrices.${OBJEXT} \
 	MessageHandling.${OBJEXT}
 
-
 QPOASES_EXTRAS_OBJECTS = \
 	SolutionAnalysis.${OBJEXT} \
 	OQPinterface.${OBJEXT}

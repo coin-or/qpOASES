@@ -81,9 +81,35 @@
 	typedef double real_t;
 	#endif /* __USE_SINGLE_PRECISION__ */
 
+	/* dummy definitions, not used when calling from C */
 	#define QProblemBClass int
 	#define OptionsClass int
 	#define returnValue int
+
+	/* HessianType */
+	#define HST_ZERO             0
+	#define HST_IDENTITY         1
+	#define HST_POSDEF           2
+	#define HST_POSDEF_NULLSPACE 3
+	#define HST_SEMIDEF          4
+	#define HST_INDEF            5
+	#define HST_UNKNOWN	         6
+
+	/* SubjectToStatus */
+	#define ST_LOWER            -1
+	#define ST_INACTIVE          0
+	#define ST_UPPER             1
+	#define ST_INFEASIBLE_LOWER  2
+	#define ST_INFEASIBLE_UPPER  3
+	#define ST_UNDEFINED         4
+
+	/* PrintLevel */
+	#define PL_DEBUG_ITER       -2
+	#define PL_TABULAR          -1
+	#define PL_NONE              0
+	#define PL_LOW               1
+	#define PL_MEDIUM            2
+	#define PL_HIGH              3
 
 #else 
 

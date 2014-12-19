@@ -58,7 +58,7 @@ int main( )
 	int nWSR;
 	qpOASES_Options options;
 	qpOASES_Options_init( &options,0 );
-	options.printLevel = 2;
+	options.printLevel = PL_MEDIUM;
 
 	real_t xOpt[2];
 	real_t yOpt[2+1];
@@ -66,7 +66,7 @@ int main( )
 	int status;
 
 
-	QProblem_setup(	2,1, 6 ); /* to be changed, make HST_UNKNOWN==0! */
+	QProblem_setup(	2,1,HST_UNKNOWN );
 
 
 	/* Solve first QP. */

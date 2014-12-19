@@ -30,61 +30,100 @@
 ##
 
 
-
-PATH_LIB = .
-PATH_SRC = .
-PATH_OBJ = .
-PATH_QPOASES_INC = ../../include
-PATH_QPOASES_SRC = ../../src
-PATH_QPOASES_OBJ = ../../src
-
-
-##
-##	bins
-##
-
-CC       = gcc
-CPP      = g++
-LD       = g++
-CP       = cp
-
-
+include ../../make.mk
 
 ##
 ##	flags
 ##
 
-CFLAGS   = -I$(PATH_QPOASES_INC) -I$(PATH_QPOASES_SRC) -Wall -pedantic -Wshadow -g -finline-functions -fPIC
-CPPFLAGS = -I$(PATH_QPOASES_INC) -I$(PATH_QPOASES_SRC) -Wall -pedantic -Wshadow -g -finline-functions -fPIC -DLINUX -D__SINGLE_OBJECT__ 
-LDFLAGS  = -shared
-LIBEXT   = .so
+IDIR   = ../../include
+SRCDIR = ../../src
 
+IFLAGS      =  -I. \
+               -I${IDIR}
 
-LIB = libqpOASES_wrapper$(LIBEXT)
+QPOASES_WRAPPER_OBJECTS = \
+	${SRCDIR}/SQProblem.${OBJEXT} \
+	${SRCDIR}/QProblem.${OBJEXT} \
+	${SRCDIR}/QProblemB.${OBJEXT} \
+	${SRCDIR}/Bounds.${OBJEXT} \
+	${SRCDIR}/Constraints.${OBJEXT} \
+	${SRCDIR}/SubjectTo.${OBJEXT} \
+	${SRCDIR}/Indexlist.${OBJEXT} \
+	${SRCDIR}/Flipper.${OBJEXT} \
+	${SRCDIR}/Utils.${OBJEXT} \
+	${SRCDIR}/Options.${OBJEXT} \
+	${SRCDIR}/Matrices.${OBJEXT} \
+	${SRCDIR}/MessageHandling.${OBJEXT} \
+	qpOASES_wrapper.${OBJEXT}
 
-OBJ = \
-	qpOASES_wrapper.o
+QPOASES_DEPENDS = \
+	${IDIR}/qpOASES/SQProblem.hpp \
+	${IDIR}/qpOASES/QProblem.hpp \
+	${IDIR}/qpOASES/Flipper.hpp \
+	${IDIR}/qpOASES/QProblemB.hpp \
+	${IDIR}/qpOASES/Bounds.hpp \
+	${IDIR}/qpOASES/Constraints.hpp \
+	${IDIR}/qpOASES/SubjectTo.hpp \
+	${IDIR}/qpOASES/Indexlist.hpp \
+	${IDIR}/qpOASES/Utils.hpp \
+	${IDIR}/qpOASES/Constants.hpp \
+	${IDIR}/qpOASES/Types.hpp \
+	${IDIR}/qpOASES/Options.hpp \
+	${IDIR}/qpOASES/Matrices.hpp \
+	${IDIR}/qpOASES/MessageHandling.hpp \
+	qpOASES_wrapper.h
 
+LINK_DEPENDS_WRAPPER = \
+	${BINDIR}/libqpOASES_wrapper.${LIBEXT} \
+	${BINDIR}/libqpOASES_wrapper.${DLLEXT}
+
+QPOASES_LINK_WRAPPER = -L${BINDIR} -Wl,-rpath=${BINDIR} -lqpOASES_wrapper
+
+QPOASES_C_EXAMPLES = \
+	${BINDIR}/c_example1${EXE} \
+	${BINDIR}/c_example1a${EXE} \
+	${BINDIR}/c_example1b${EXE}
 
 
 ##
 ##	targets
 ##
 
-all: $(PATH_LIB)/$(LIB)
+all: ${LINK_DEPENDS} ${LINK_DEPENDS_WRAPPER} ${QPOASES_C_EXAMPLES}
 
-$(PATH_OBJ)/%.o: $(PATH_SRC)/%.c
-	$(CC) -c -o $(@) $(CFLAGS) $<
 
-$(PATH_OBJ)/%.o: $(PATH_SRC)/%.cpp
-	$(CPP) -c -o $(@) $(CPPFLAGS) $<
+${BINDIR}/libqpOASES_wrapper.${LIBEXT}: ${QPOASES_WRAPPER_OBJECTS}
+	@${ECHO} "Creating" $@
+	@${AR} r $@ $^
 
-$(PATH_LIB)/$(LIB) : $(addprefix $(PATH_OBJ)/, $(OBJ))
-	$(LD) $(LDFLAGS) $^ -o $@
+${BINDIR}/libqpOASES_wrapper.${DLLEXT}: ${QPOASES_WRAPPER_OBJECTS}
+	@${ECHO} "Creating" $@
+	@${CPP} ${SHARED} ${DEF_TARGET} $^ ${LINK_LIBRARIES}
 
 clean:
-	$(RM) $(PATH_OBJ)/*.o $(PATH_LIB)/$(LIB)
+	@${ECHO} "Cleaning up (src)"
+	@${RM} -f *.${OBJEXT} *.${LIBEXT} *.${DLLEXT}
 
+clobber: clean
+
+
+%.${OBJEXT}: %.cpp ${QPOASES_DEPENDS}
+	@${ECHO} "Creating" $@
+	@${CPP} ${DEF_TARGET} -c ${IFLAGS} ${CPPFLAGS} $<
+
+
+${BINDIR}/c_example1${EXE}: c_example1.${OBJEXT} ${LINK_DEPENDS_WRAPPER}
+	@${ECHO} "Creating" $@
+	@${CPP} ${DEF_TARGET} ${CPPFLAGS} $< ${QPOASES_LINK_WRAPPER} ${LINK_LIBRARIES}
+
+${BINDIR}/c_example1a${EXE}: c_example1a.${OBJEXT} ${LINK_DEPENDS_WRAPPER}
+	@${ECHO} "Creating" $@
+	@${CPP} ${DEF_TARGET} ${CPPFLAGS} $< ${QPOASES_LINK_WRAPPER} ${LINK_LIBRARIES}
+
+${BINDIR}/c_example1b${EXE}: c_example1b.${OBJEXT} ${LINK_DEPENDS_WRAPPER}
+	@${ECHO} "Creating" $@
+	@${CPP} ${DEF_TARGET} ${CPPFLAGS} $< ${QPOASES_LINK_WRAPPER} ${LINK_LIBRARIES}
 
 
 ##

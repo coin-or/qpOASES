@@ -54,7 +54,7 @@ int main( )
 	qpOASES_Options options;
 	qpOASES_Options_init( &options,0 );
 	/*options.enableFlippingBounds = 0; */
-	options.initialStatusBounds = 0; /* == ST_INACTIVE */
+	options.initialStatusBounds = ST_INACTIVE;
 	options.numRefinementSteps = 1;
 	options.enableCholeskyRefactorisation = 1;
 
@@ -64,7 +64,7 @@ int main( )
 	int status;
 
 
-	QProblemB_setup( 2, 6 ); /* to be changed, make HST_UNKNOWN==0! */
+	QProblemB_setup( 2,HST_UNKNOWN );
 
 
 	/* Solve first QP. */

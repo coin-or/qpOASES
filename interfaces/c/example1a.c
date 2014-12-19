@@ -67,7 +67,7 @@ int main( )
 	int status;
 
 
-	SQProblem_setup( 2,1, 6 ); /* to be changed, make HST_UNKNOWN==0! */
+	SQProblem_setup( 2,1,HST_UNKNOWN );
 
 
 	/* Solve first QP. */
