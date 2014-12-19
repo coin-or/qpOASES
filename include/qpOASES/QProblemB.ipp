@@ -273,7 +273,7 @@ inline returnValue QProblemB::setH( const real_t* const H_new )
  */
 inline returnValue QProblemB::setG( const real_t* const g_new )
 {
-	unsigned int nV = getNV( );
+	unsigned int nV = (unsigned int)getNV( );
 
 	if ( nV == 0 )
 		return THROWERROR( RET_QPOBJECT_NOT_SETUP );
@@ -293,7 +293,7 @@ inline returnValue QProblemB::setG( const real_t* const g_new )
 inline returnValue QProblemB::setLB( const real_t* const lb_new )
 {
 	unsigned int i;
-	unsigned int nV = getNV( );
+	unsigned int nV = (unsigned int)getNV( );
 
 	if ( nV == 0 )
 		return THROWERROR( RET_QPOBJECT_NOT_SETUP );
@@ -341,7 +341,7 @@ inline returnValue QProblemB::setLB( int number, real_t value )
 inline returnValue QProblemB::setUB( const real_t* const ub_new )
 {
 	unsigned int i;
-	unsigned int nV = getNV( );
+	unsigned int nV = (unsigned int)getNV( );
 
 	if ( nV == 0 )
 		return THROWERROR( RET_QPOBJECT_NOT_SETUP );
