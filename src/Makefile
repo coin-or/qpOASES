@@ -35,7 +35,7 @@ include ../make.mk
 ##	flags
 ##
 
-EXTRAS_DIR  =  extras
+EXTRAS_DIR = extras
 IDIR = ../include
 
 IFLAGS      =  -I. \
@@ -60,6 +60,7 @@ QPOASES_EXTRAS_OBJECTS = \
 	OQPinterface.${OBJEXT}
 
 QPOASES_DEPENDS = \
+	${IDIR}/qpOASES.hpp \
 	${IDIR}/qpOASES/SQProblem.hpp \
 	${IDIR}/qpOASES/QProblem.hpp \
 	${IDIR}/qpOASES/Flipper.hpp \

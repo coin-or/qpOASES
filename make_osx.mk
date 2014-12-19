@@ -51,6 +51,7 @@ MATLAB_LIBDIR =
 # do not touch this
 
 CPP = g++
+CC  = gcc
 AR  = ar
 RM  = rm
 F77 = gfortran
@@ -85,13 +86,16 @@ FFLAGS = -Wall -O3 -fPIC -DLINUX -Wno-uninitialized
 # libraries to link against when building qpOASES .so files
 LINK_LIBRARIES = -framework Accelerate -lm
 LINK_LIBRARIES_AW = -framework Accelerate ${LIB_LAPACK} ${LIB_BLAS} -lm -lgfortran -lhsl_ma57 -lfakemetis
+LINK_LIBRARIES_WRAPPER = -lm
 
 # how to link against the qpOASES shared library
 QPOASES_LINK = -L${BINDIR}  -lqpOASES 
 QPOASES_AW_LINK = -L${BINDIR}  -lqpOASES_aw
+QPOASES_LINK_WRAPPER = -L${BINDIR} -lqpOASES_wrapper
 
 # link dependencies when creating executables
 LINK_DEPENDS = ${LIB_LAPACK} ${LIB_BLAS} ${BINDIR}/libqpOASES.${LIBEXT} ${BINDIR}/libqpOASES.${DLLEXT}
+LINK_DEPENDS_WRAPPER = ${BINDIR}/libqpOASES_wrapper.${LIBEXT} ${BINDIR}/libqpOASES_wrapper.${DLLEXT}
 
 
 ##

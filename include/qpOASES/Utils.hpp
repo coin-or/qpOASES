@@ -351,7 +351,7 @@ extern "C" void gdb_printmat(	const char *fname,			/**< File name. */
 #endif /* __DEBUG__ */
 
 
-#if defined(__DSPACE__) || defined(__XPCTARGET__) 
+#if defined(__DSPACE__) || defined(__XPCTARGET__) || defined(__C_WRAPPER__)
 extern "C" void __cxa_pure_virtual( void );
 #endif /* __DSPACE__ || __XPCTARGET__*/ 
 

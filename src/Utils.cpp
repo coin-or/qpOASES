@@ -964,7 +964,7 @@ extern "C" void gdb_printmat(const char *fname, real_t *M, int n, int m, int ldi
 
 
 
-#if defined(__DSPACE__) || defined(__XPCTARGET__) 
+#if defined(__DSPACE__) || defined(__XPCTARGET__) || defined(__C_WRAPPER__)
 /*
  *	_ _ c x a _ p u r e _ v i r t u a l
  */

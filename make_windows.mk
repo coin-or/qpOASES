@@ -65,6 +65,7 @@ endif
 # do not touch this
 
 CPP = cl
+CC  = cl
 AR  = ar
 RM  = rm
 F77 = gfortran
@@ -100,13 +101,16 @@ FFLAGS = -Wall -O3 -fPIC -DWIN32 -Wno-uninitialized
 # libraries to link against when building qpOASES .so files
 LINK_LIBRARIES = ${LIB_LAPACK} ${LIB_BLAS}
 LINK_LIBRARIES_AW = ${LIB_LAPACK} ${LIB_BLAS} -lm -lgfortran -lhsl_ma57 -lfakemetis
+LINK_LIBRARIES_WRAPPER = 
 
 # how to link against the qpOASES shared library
 QPOASES_LINK = /I${BINDIR} /WL /link ${BINDIR}/libqpOASES.lib
 QPOASES_AW_LINK = /I${BINDIR} /WL /link ${BINDIR}/libqpOASES_aw.lib
+QPOASES_LINK_WRAPPER = /I${BINDIR} /WL /link ${BINDIR}/libqpOASES_wrapper.lib
 
 # link dependencies when creating executables
 LINK_DEPENDS = ${LIB_LAPACK} ${LIB_BLAS} ${BINDIR}/libqpOASES.${LIBEXT} ${BINDIR}/libqpOASES.${DLLEXT}
+LINK_DEPENDS_WRAPPER = ${BINDIR}/libqpOASES_wrapper.${LIBEXT} ${BINDIR}/libqpOASES_wrapper.${DLLEXT}
 
 
 ##

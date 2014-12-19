@@ -36,11 +36,9 @@ include ../../make.mk
 ##	flags
 ##
 
-IDIR   = ../../include
-SRCDIR = ../../src
-
 IFLAGS      =  -I. \
-               -I${IDIR}
+               -I${IDIR} \
+			   -I${SRCDIR}
 
 QPOASES_WRAPPER_OBJECTS = \
 	${SRCDIR}/SQProblem.${OBJEXT} \
@@ -74,12 +72,6 @@ QPOASES_DEPENDS = \
 	${IDIR}/qpOASES/MessageHandling.hpp \
 	qpOASES_wrapper.h
 
-LINK_DEPENDS_WRAPPER = \
-	${BINDIR}/libqpOASES_wrapper.${LIBEXT} \
-	${BINDIR}/libqpOASES_wrapper.${DLLEXT}
-
-QPOASES_LINK_WRAPPER = -L${BINDIR} -Wl,-rpath=${BINDIR} -lqpOASES_wrapper
-
 QPOASES_C_EXAMPLES = \
 	${BINDIR}/c_example1${EXE} \
 	${BINDIR}/c_example1a${EXE} \
@@ -90,19 +82,19 @@ QPOASES_C_EXAMPLES = \
 ##	targets
 ##
 
-all: ${LINK_DEPENDS} ${LINK_DEPENDS_WRAPPER} ${QPOASES_C_EXAMPLES}
+all: ${LINK_DEPENDS_WRAPPER} ${QPOASES_C_EXAMPLES}
 
 
 ${BINDIR}/libqpOASES_wrapper.${LIBEXT}: ${QPOASES_WRAPPER_OBJECTS}
 	@${ECHO} "Creating" $@
-	@${AR} r $@ $^
+	@${AR} r $@ qpOASES_wrapper.${OBJEXT}
 
 ${BINDIR}/libqpOASES_wrapper.${DLLEXT}: ${QPOASES_WRAPPER_OBJECTS}
 	@${ECHO} "Creating" $@
-	@${CPP} ${SHARED} ${DEF_TARGET} $^ ${LINK_LIBRARIES}
+	@${CPP} ${SHARED} ${DEF_TARGET} qpOASES_wrapper.${OBJEXT} ${LINK_LIBRARIES_WRAPPER}
 
 clean:
-	@${ECHO} "Cleaning up (src)"
+	@${ECHO} "Cleaning up (interfaces/c)"
 	@${RM} -f *.${OBJEXT} *.${LIBEXT} *.${DLLEXT}
 
 clobber: clean
@@ -110,20 +102,31 @@ clobber: clean
 
 %.${OBJEXT}: %.cpp ${QPOASES_DEPENDS}
 	@${ECHO} "Creating" $@
-	@${CPP} ${DEF_TARGET} -c ${IFLAGS} ${CPPFLAGS} $<
+	@${CPP} ${DEF_TARGET} -c ${IFLAGS} ${CPPFLAGS} -D__C_WRAPPER__ $<
 
+c_example1.${OBJEXT}: c_example1.c ${LINK_DEPENDS_WRAPPER}
+	@${ECHO} "Creating" $@
+	@${CC} ${DEF_TARGET} -c ${IFLAGS} ${CPPFLAGS} $<
+
+c_example1a.${OBJEXT}: c_example1a.c ${LINK_DEPENDS_WRAPPER}
+	@${ECHO} "Creating" $@
+	@${CC} ${DEF_TARGET} -c ${IFLAGS} ${CPPFLAGS} $<
+
+c_example1b.${OBJEXT}: c_example1b.c ${LINK_DEPENDS_WRAPPER}
+	@${ECHO} "Creating" $@
+	@${CC} ${DEF_TARGET} -c ${IFLAGS} ${CPPFLAGS} $<
 
 ${BINDIR}/c_example1${EXE}: c_example1.${OBJEXT} ${LINK_DEPENDS_WRAPPER}
 	@${ECHO} "Creating" $@
-	@${CPP} ${DEF_TARGET} ${CPPFLAGS} $< ${QPOASES_LINK_WRAPPER} ${LINK_LIBRARIES}
+	@${CC} ${DEF_TARGET} ${IFLAGS} ${CPPFLAGS} $< ${QPOASES_LINK_WRAPPER} ${LINK_LIBRARIES_WRAPPER}
 
 ${BINDIR}/c_example1a${EXE}: c_example1a.${OBJEXT} ${LINK_DEPENDS_WRAPPER}
 	@${ECHO} "Creating" $@
-	@${CPP} ${DEF_TARGET} ${CPPFLAGS} $< ${QPOASES_LINK_WRAPPER} ${LINK_LIBRARIES}
+	@${CC} ${DEF_TARGET} ${IFLAGS} ${CPPFLAGS} $< ${QPOASES_LINK_WRAPPER} ${LINK_LIBRARIES_WRAPPER}
 
 ${BINDIR}/c_example1b${EXE}: c_example1b.${OBJEXT} ${LINK_DEPENDS_WRAPPER}
 	@${ECHO} "Creating" $@
-	@${CPP} ${DEF_TARGET} ${CPPFLAGS} $< ${QPOASES_LINK_WRAPPER} ${LINK_LIBRARIES}
+	@${CC} ${DEF_TARGET} ${IFLAGS} ${CPPFLAGS} $< ${QPOASES_LINK_WRAPPER} ${LINK_LIBRARIES_WRAPPER}
 
 
 ##

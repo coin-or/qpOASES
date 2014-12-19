@@ -29,6 +29,12 @@
  *	\date 2007-2014
  */
 
+
+#ifdef __C_WRAPPER__
+#define __SINGLE_OBJECT__
+#endif
+
+
 #ifndef __SINGLE_OBJECT__
 
 #include <qpOASES/QProblemB.hpp>

@@ -23,12 +23,12 @@
 
 
 /**
- *	\file interfaces/c/example1a.c
+ *	\file interfaces/c/c_example1.c
  *	\author Hans Joachim Ferreau
  *	\version 3.0
  *	\date 2014
  *
- *	Very simple example for testing qpOASES (using SQProblem class through C interface).
+ *	Very simple example for testing qpOASES (using QProblem class through C interface).
  */
 
 #include <stdio.h>
@@ -49,8 +49,6 @@ int main( )
 	real_t ubA[1] = { 2.0 };
 
 	/* Setup data of second QP. */
-	real_t H_new[2*2] = { 1.0, 0.5, 0.5, 0.5 };
-	real_t A_new[1*2] = { 1.0, 5.0 };
 	real_t g_new[2] = { 1.0, 1.5 };
 	real_t lb_new[2] = { 0.0, -1.0 };
 	real_t ub_new[2] = { 5.0, -0.5 };
@@ -59,20 +57,21 @@ int main( )
 
 	int nWSR;
 	qpOASES_Options options;
-	qpOASES_Options_init( &options,0 );
-
+	
 	real_t xOpt[2];
 	real_t yOpt[2+1];
 	real_t obj;
 	int status;
 
+	qpOASES_Options_init( &options,0 );
+	options.printLevel = PL_MEDIUM;
 
-	SQProblem_setup( 2,1,HST_UNKNOWN );
 
+	QProblem_setup(	2,1,HST_UNKNOWN );
 
 	/* Solve first QP. */
 	nWSR = 10;
-	SQProblem_init(	H,g,A,lb,ub,lbA,ubA,
+	QProblem_init(	H,g,A,lb,ub,lbA,ubA,
 					&nWSR,0,&options,
 					xOpt,yOpt,&obj,&status
 					);
@@ -84,7 +83,7 @@ int main( )
 
 	/* Solve second QP. */
 	nWSR = 10;
-	SQProblem_hotstart(	H_new,g_new,A_new,lb_new,ub_new,lbA_new,ubA_new,
+	QProblem_hotstart(	g_new,lb_new,ub_new,lbA_new,ubA_new,
 						&nWSR,0,
 						xOpt,yOpt,&obj,&status
 						);
@@ -94,7 +93,7 @@ int main( )
 			xOpt[0],xOpt[1],yOpt[0],yOpt[1],yOpt[2], obj );
 
 	
-	SQProblem_cleanup();
+	QProblem_cleanup();
 	
 	return 0;
 }
