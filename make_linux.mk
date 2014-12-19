@@ -94,7 +94,7 @@ FFLAGS = -Wall -O3 -fPIC -DLINUX -Wno-uninitialized
 # libraries to link against when building qpOASES .so files
 LINK_LIBRARIES = ${LIB_LAPACK} ${LIB_BLAS} -lm
 LINK_LIBRARIES_AW = ${LIB_LAPACK} ${LIB_BLAS} -lm -lgfortran -lhsl_ma57 -lfakemetis
-LINK_LIBRARIES_WRAPPER = -lm
+LINK_LIBRARIES_WRAPPER = -lm -lstdc++
 
 # how to link against the qpOASES shared library
 QPOASES_LINK = -L${BINDIR} -Wl,-rpath=${BINDIR} -lqpOASES

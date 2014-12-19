@@ -142,8 +142,12 @@ src/SQProblem.cpp -text
 src/SolutionAnalysis.cpp -text
 src/SubjectTo.cpp -text
 src/Utils.cpp -text
-testing/Makefile -text
+testing/c/Makefile -text
+testing/c/test_c_example1.c -text
+testing/c/test_c_example1a.c -text
+testing/c/test_c_example1b.c -text
 testing/checkForMemoryLeaks -text
+testing/cpp/Makefile -text
 testing/cpp/data/fetch_cpp_data -text
 testing/cpp/test_bench.cpp -text
 testing/cpp/test_constraintProduct1.cpp -text

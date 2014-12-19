@@ -23,12 +23,12 @@
 
 
 /**
- *	\file interfaces/c/example1b.c
+ *	\file testing/c/test_c_example1a.c
  *	\author Hans Joachim Ferreau
  *	\version 3.0
  *	\date 2014
  *
- *	Very simple example for testing qpOASES (using QProblemB class through C interface).
+ *	Very simple example for testing qpOASES (using SQProblem class through C interface).
  */
 
 #include <stdio.h>
@@ -41,57 +41,60 @@ int main( )
 {
 	/* Setup data of first QP. */
 	real_t H[2*2] = { 1.0, 0.0, 0.0, 0.5 };
+	real_t A[1*2] = { 1.0, 1.0 };
 	real_t g[2] = { 1.5, 1.0 };
 	real_t lb[2] = { 0.5, -2.0 };
 	real_t ub[2] = { 5.0, 2.0 };
+	real_t lbA[1] = { -1.0 };
+	real_t ubA[1] = { 2.0 };
 
 	/* Setup data of second QP. */
+	real_t H_new[2*2] = { 1.0, 0.5, 0.5, 0.5 };
+	real_t A_new[1*2] = { 1.0, 5.0 };
 	real_t g_new[2] = { 1.0, 1.5 };
 	real_t lb_new[2] = { 0.0, -1.0 };
 	real_t ub_new[2] = { 5.0, -0.5 };
+	real_t lbA_new[1] = { -2.0 };
+	real_t ubA_new[1] = { 1.0 };
 
 	int nWSR;
-	qpOASES_Options options;
 
 	real_t xOpt[2];
-	real_t yOpt[2];
+	real_t yOpt[2+1];
 	real_t obj;
 	int status;
 
+	qpOASES_Options options;
 	qpOASES_Options_init( &options,0 );
-	/*options.enableFlippingBounds = 0; */
-	options.initialStatusBounds = ST_INACTIVE;
-	options.numRefinementSteps = 1;
-	options.enableCholeskyRefactorisation = 1;
 
-
-	QProblemB_setup( 2,HST_UNKNOWN );
-
+	
+	SQProblem_setup( 2,1,HST_UNKNOWN );
+	
 	/* Solve first QP. */
 	nWSR = 10;
-	QProblemB_init(	H,g,lb,ub,
+	SQProblem_init(	H,g,A,lb,ub,lbA,ubA,
 					&nWSR,0,&options,
 					xOpt,yOpt,&obj,&status
 					);
 
 	/* Print solution of first QP. */	
-	printf( "\nxOpt = [ %e, %e ];  yOpt = [ %e, %e ];  objVal = %e\n\n", 
-			xOpt[0],xOpt[1],yOpt[0],yOpt[1], obj );
+	printf( "\nxOpt = [ %e, %e ];  yOpt = [ %e, %e, %e ];  objVal = %e\n\n", 
+			xOpt[0],xOpt[1],yOpt[0],yOpt[1],yOpt[2], obj );
 
 
 	/* Solve second QP. */
 	nWSR = 10;
-	QProblemB_hotstart(	g_new,lb_new,ub_new,
+	SQProblem_hotstart(	H_new,g_new,A_new,lb_new,ub_new,lbA_new,ubA_new,
 						&nWSR,0,
 						xOpt,yOpt,&obj,&status
 						);
 
 	/* Print solution of first QP. */	
-	printf( "\nxOpt = [ %e, %e ];  yOpt = [ %e, %e ];  objVal = %e\n\n", 
-			xOpt[0],xOpt[1],yOpt[0],yOpt[1], obj );
+	printf( "\nxOpt = [ %e, %e ];  yOpt = [ %e, %e, %e ];  objVal = %e\n\n", 
+			xOpt[0],xOpt[1],yOpt[0],yOpt[1],yOpt[2], obj );
 
 	
-	QProblemB_cleanup();
+	SQProblem_cleanup();
 	
 	return 0;
 }

@@ -92,11 +92,11 @@ ${BINDIR}/libqpOASES_wrapper.${LIBEXT}: ${QPOASES_WRAPPER_OBJECTS}
 
 ${BINDIR}/libqpOASES_wrapper.${DLLEXT}: ${QPOASES_WRAPPER_OBJECTS}
 	@${ECHO} "Creating" $@
-	@${CPP} ${SHARED} ${DEF_TARGET} qpOASES_wrapper.${OBJEXT} ${LINK_LIBRARIES_WRAPPER}
+	${CC} ${SHARED} ${DEF_TARGET} qpOASES_wrapper.${OBJEXT} ${LINK_LIBRARIES_WRAPPER}
 
 clean:
 	@${ECHO} "Cleaning up (interfaces/c)"
-	@${RM} -f *.${OBJEXT} *.${LIBEXT} *.${DLLEXT}
+	@${RM} -f *.${OBJEXT} ${BINDIR}/*.${LIBEXT} ${BINDIR}/*.${DLLEXT} ${BINDIR}/c_example*${EXE}
 
 clobber: clean
 
@@ -117,17 +117,10 @@ c_example1b.${OBJEXT}: c_example1b.c ${LINK_DEPENDS_WRAPPER}
 	@${ECHO} "Creating" $@
 	@${CC} ${DEF_TARGET} -c ${IFLAGS} ${CPPFLAGS} $<
 
-${BINDIR}/c_example1${EXE}: c_example1.${OBJEXT} ${LINK_DEPENDS_WRAPPER}
-	@${ECHO} "Creating" $@
-	@${CC} ${DEF_TARGET} ${IFLAGS} ${CPPFLAGS} $< ${QPOASES_LINK_WRAPPER} ${LINK_LIBRARIES_WRAPPER}
 
-${BINDIR}/c_example1a${EXE}: c_example1a.${OBJEXT} ${LINK_DEPENDS_WRAPPER}
+${BINDIR}/%${EXE}: %.${OBJEXT} ${LINK_DEPENDS_WRAPPER}
 	@${ECHO} "Creating" $@
-	@${CC} ${DEF_TARGET} ${IFLAGS} ${CPPFLAGS} $< ${QPOASES_LINK_WRAPPER} ${LINK_LIBRARIES_WRAPPER}
-
-${BINDIR}/c_example1b${EXE}: c_example1b.${OBJEXT} ${LINK_DEPENDS_WRAPPER}
-	@${ECHO} "Creating" $@
-	@${CC} ${DEF_TARGET} ${IFLAGS} ${CPPFLAGS} $< ${QPOASES_LINK_WRAPPER} ${LINK_LIBRARIES_WRAPPER}
+	${CC} ${DEF_TARGET} ${IFLAGS} ${CPPFLAGS} $< ${QPOASES_LINK_WRAPPER} ${LINK_LIBRARIES_WRAPPER}
 
 
 ##

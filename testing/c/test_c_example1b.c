@@ -23,7 +23,7 @@
 
 
 /**
- *	\file interfaces/c/example1b.c
+ *	\file testing/c/test_example1b.c
  *	\author Hans Joachim Ferreau
  *	\version 3.0
  *	\date 2014

@@ -23,65 +23,54 @@
 
 
 ##
-##	Filename:  examples/Makefile
+##	Filename:  testing/c/Makefile
 ##	Author:    Hans Joachim Ferreau
 ##	Version:   3.0
-##	Date:      2007-2014
+##	Date:      2014
 ##
 
-include ../make.mk
+
+
+include ../../make.mk
 
 ##
 ##	flags
 ##
 
 IFLAGS      =  -I. \
-               -I${IDIR}
+               -I${IDIR} \
+			   -I${TOP}/interfaces/c
 
-QPOASES_EXES = \
-	${BINDIR}/example1${EXE} \
-	${BINDIR}/example1a${EXE} \
-	${BINDIR}/example1b${EXE} \
-	${BINDIR}/example2${EXE} \
-	${BINDIR}/example3${EXE} \
-	${BINDIR}/example3b${EXE} \
-	${BINDIR}/example4${EXE} \
-	${BINDIR}/example5${EXE} \
-	${BINDIR}/exampleLP${EXE} \
-	${BINDIR}/qrecipe${EXE}
+QPOASES_TEST_EXES = \
+	${BINDIR}/test_c_example1${EXE} \
+	${BINDIR}/test_c_example1a${EXE} \
+	${BINDIR}/test_c_example1b${EXE}
 
 
 ##
 ##	targets
 ##
 
-all: ${QPOASES_EXES}
+all: ${QPOASES_TEST_EXES}
 
-${BINDIR}/%${EXE}: %.${OBJEXT} ${LINK_DEPENDS}
+${BINDIR}/%${EXE}: %.${OBJEXT} ${LINK_DEPENDS_WRAPPER}
 	@${ECHO} "Creating" $@
-	@${CPP} ${DEF_TARGET} ${CPPFLAGS} $< ${QPOASES_LINK} ${LINK_LIBRARIES}
+	@${CPP} ${DEF_TARGET} ${CPPFLAGS} $< ${QPOASES_LINK_WRAPPER} ${LINK_LIBRARIES_WRAPPER}
 
-${BINDIR}/example4${EXE}: example4.${OBJEXT} example4CP.cpp ${LINK_DEPENDS}
-	@${ECHO} "Creating" $@
-	@${CPP} ${DEF_TARGET} ${CPPFLAGS} $< ${QPOASES_LINK} ${LINK_LIBRARIES}
 
 clean:
-	@${ECHO} "Cleaning up (examples)"
-	@${RM} -f *.${OBJEXT} ${QPOASES_EXES}
+	@${ECHO} "Cleaning up (testing/cpp)"
+	@${RM} -f *.${OBJEXT} ${QPOASES_TEST_EXES}
 
 clobber: clean
 
 
-${LINK_DEPENDS}:
-	@cd ..; ${MAKE} -s src
+${LINK_DEPENDS_WRAPPER}:
+	@cd ../..; ${MAKE} -s c_wrapper
 
-example4.${OBJEXT}: example4.cpp example4CP.cpp
+%.${OBJEXT}: %.c
 	@${ECHO} "Creating" $@
-	@${CPP} ${DEF_TARGET} -c ${IFLAGS} ${CPPFLAGS} $<
-
-%.${OBJEXT}: %.cpp
-	@${ECHO} "Creating" $@
-	@${CPP} ${DEF_TARGET} -c ${IFLAGS} ${CPPFLAGS} $<
+	@${CC} ${DEF_TARGET} -c ${IFLAGS} ${CPPFLAGS} $<
 
 
 ##
