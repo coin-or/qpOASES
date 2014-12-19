@@ -374,29 +374,29 @@ class DenseMatrix : public virtual Matrix
 
 		/** Evaluate Y=alpha*A*X + beta*Y.
 		 *  \return SUCCESSFUL_RETURN. */
-		returnValue times (	int xN,					/**< Number of vectors to multiply. */
-							real_t alpha,			/**< Scalar factor for matrix vector product. */
-							const real_t *x,		/**< Input vector to be multiplied. */
-							int xLD,				/**< Leading dimension of input x. */
-							real_t beta,			/**< Scalar factor for y. */
-							real_t *y,				/**< Output vector of results. */
-							int yLD					/**< Leading dimension of output y. */
-							) const;
+		virtual returnValue times(	int xN,					/**< Number of vectors to multiply. */
+									real_t alpha,			/**< Scalar factor for matrix vector product. */
+									const real_t *x,		/**< Input vector to be multiplied. */
+									int xLD,				/**< Leading dimension of input x. */
+									real_t beta,			/**< Scalar factor for y. */
+									real_t *y,				/**< Output vector of results. */
+									int yLD					/**< Leading dimension of output y. */
+									) const;
 
 		/** Evaluate Y=alpha*A'*X + beta*Y.
 		 *  \return SUCCESSFUL_RETURN. */
-		returnValue transTimes (	int xN,				/**< Number of vectors to multiply. */
-									real_t alpha,		/**< Scalar factor for matrix vector product. */
-									const real_t *x,	/**< Input vector to be multiplied. */
-									int xLD,			/**< Leading dimension of input x. */
-									real_t beta,		/**< Scalar factor for y. */
-									real_t *y,			/**< Output vector of results. */
-									int yLD				/**< Leading dimension of output y. */
-									) const;
+		virtual returnValue transTimes(	int xN,				/**< Number of vectors to multiply. */
+										real_t alpha,		/**< Scalar factor for matrix vector product. */
+										const real_t *x,	/**< Input vector to be multiplied. */
+										int xLD,			/**< Leading dimension of input x. */
+										real_t beta,		/**< Scalar factor for y. */
+										real_t *y,			/**< Output vector of results. */
+										int yLD				/**< Leading dimension of output y. */
+										) const;
 
 		/** Evaluate matrix vector product with submatrix given by Indexlist.
 		 *	\return SUCCESSFUL_RETURN */
-		virtual returnValue times (	const Indexlist* const irows,	/**< Index list specifying rows. */
+		virtual returnValue times(	const Indexlist* const irows,	/**< Index list specifying rows. */
 									const Indexlist* const icols,	/**< Index list specifying columns. */
 									int xN,							/**< Number of vectors to multiply. */
 									real_t alpha,					/**< Scalar factor for matrix vector product. */
@@ -410,16 +410,16 @@ class DenseMatrix : public virtual Matrix
 
 		/** Evaluate matrix transpose vector product.
 		 *	\return SUCCESSFUL_RETURN */
-		virtual returnValue transTimes (	const Indexlist* const irows,	/**< Index list specifying rows. */
-											const Indexlist* const icols,	/**< Index list specifying columns. */
-											int xN,							/**< Number of vectors to multiply. */
-											real_t alpha,					/**< Scalar factor for matrix vector product. */
-											const real_t *x,				/**< Input vector to be multiplied. */
-											int xLD,						/**< Leading dimension of input x. */
-											real_t beta,					/**< Scalar factor for y. */
-											real_t *y,						/**< Output vector of results. */
-											int yLD							/**< Leading dimension of output y. */
-											) const;
+		virtual returnValue transTimes(	const Indexlist* const irows,	/**< Index list specifying rows. */
+										const Indexlist* const icols,	/**< Index list specifying columns. */
+										int xN,							/**< Number of vectors to multiply. */
+										real_t alpha,					/**< Scalar factor for matrix vector product. */
+										const real_t *x,				/**< Input vector to be multiplied. */
+										int xLD,						/**< Leading dimension of input x. */
+										real_t beta,					/**< Scalar factor for y. */
+										real_t *y,						/**< Output vector of results. */
+										int yLD							/**< Leading dimension of output y. */
+										) const;
 
 		/** Adds given offset to diagonal of matrix.
 		 *	\return SUCCESSFUL_RETURN \n

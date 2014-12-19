@@ -35,9 +35,6 @@ include ../make.mk
 ##	flags
 ##
 
-EXTRAS_DIR = extras
-IDIR = ../include
-
 IFLAGS      =  -I. \
                -I${IDIR}
 

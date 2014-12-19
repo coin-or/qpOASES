@@ -56,6 +56,7 @@ QPOASES_WRAPPER_OBJECTS = \
 	qpOASES_wrapper.${OBJEXT}
 
 QPOASES_DEPENDS = \
+	${IDIR}/qpOASES.hpp \
 	${IDIR}/qpOASES/SQProblem.hpp \
 	${IDIR}/qpOASES/QProblem.hpp \
 	${IDIR}/qpOASES/Flipper.hpp \

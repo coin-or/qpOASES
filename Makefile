@@ -81,8 +81,11 @@ python: all
 pythoninstall: all
 	cd ./interfaces/python/ && python setup.py install
 
+c_wrapper:
+	@echo Compiling C interface...
+	@cd ./interfaces/c/; ${MAKE} -s
 
-.PHONY : all src examples doc testing debugging clean clobber scilab python phythoninstall
+.PHONY : all src examples doc testing debugging clean clobber scilab python phythoninstall c_wrapper
 
 
 ##

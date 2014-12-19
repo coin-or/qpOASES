@@ -463,8 +463,8 @@ class QProblem : public QProblemB
 
 		/** Writes a vector with the state of the (constraints') bounds
 		 *	\return SUCCESSFUL_RETURN */
-		returnValue getWorkingSet(	real_t* workingSet				/** Output: array containing state of the working set. */
-									);
+		virtual returnValue getWorkingSet(	real_t* workingSet		/** Output: array containing state of the working set. */
+											);
 
 		/** Returns current constraints object of the QP (deep copy).
 		  *	\return SUCCESSFUL_RETURN \n

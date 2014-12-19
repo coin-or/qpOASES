@@ -30,20 +30,7 @@
  */
 
 
-#ifdef __C_WRAPPER__
-#define __SINGLE_OBJECT__
-#endif
-
-
-#ifndef __SINGLE_OBJECT__
-
-#include <qpOASES/QProblemB.hpp>
-#include <qpOASES/QProblem.hpp>
-#include <qpOASES/SQProblem.hpp>
-#include <qpOASES/extras/OQPinterface.hpp>
-#include <qpOASES/extras/SolutionAnalysis.hpp>
-
-#else
+#if defined(__SINGLE_OBJECT__) || defined(__C_WRAPPER__)
 
 #include <MessageHandling.cpp>
 #include <Utils.cpp>
@@ -59,7 +46,18 @@
 #include <Flipper.cpp>
 #include <QProblem.cpp>
 #include <SQProblem.cpp>
+
+#ifndef __C_WRAPPER__
 #include <OQPinterface.cpp>
 #include <SolutionAnalysis.cpp>
+#endif
+
+#else /* default compilation mode */
+
+#include <qpOASES/QProblemB.hpp>
+#include <qpOASES/QProblem.hpp>
+#include <qpOASES/SQProblem.hpp>
+#include <qpOASES/extras/OQPinterface.hpp>
+#include <qpOASES/extras/SolutionAnalysis.hpp>
 
 #endif

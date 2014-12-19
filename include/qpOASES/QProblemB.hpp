@@ -958,8 +958,8 @@ class QProblemB
 			set for bounds
 		 *	\return SUCCESSFUL_RETURN \n
 		 *			RET_SETUP_AUXILIARYQP_FAILED */
-		returnValue setupAuxiliaryQP(	const Bounds* const guessedBounds	/**< Initial guess for working set of bounds. */
-										);
+		virtual returnValue setupAuxiliaryQP(	const Bounds* const guessedBounds	/**< Initial guess for working set of bounds. */
+												);
 
 		/** Determines step direction of the homotopy path.
 		 *	\return SUCCESSFUL_RETURN \n
