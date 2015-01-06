@@ -390,10 +390,24 @@ class QProblemB
 								);
 
 
-		/** Writes a vector with the state of the bounds
-		   *	\return SUCCESSFUL_RETURN */
-		virtual returnValue getWorkingSet(	real_t* workingSet		/** Output: array containing state of the working set. */
+		/** Writes a vector with the state of the working set
+		 *	\return SUCCESSFUL_RETURN \n 
+		 *	        RET_INVALID_ARGUMENTS */
+		virtual returnValue getWorkingSet(	real_t* workingSet				/** Output: array containing state of the working set. */
 											);
+
+		/** Writes a vector with the state of the working set of bounds
+		 *	\return SUCCESSFUL_RETURN \n 
+		 *	        RET_INVALID_ARGUMENTS */
+		virtual returnValue getWorkingSetBounds(	real_t* workingSetB		/** Output: array containing state of the working set of bounds. */
+													);
+
+		/** Writes a vector with the state of the working set of constraints
+		 *	\return SUCCESSFUL_RETURN \n 
+		 *	        RET_INVALID_ARGUMENTS */
+		virtual returnValue getWorkingSetConstraints(	real_t* workingSetC	/** Output: array containing state of the working set of constraints. */
+														);
+
 
 		/** Returns current bounds object of the QP (deep copy).
 		  *	\return SUCCESSFUL_RETURN \n

@@ -101,7 +101,7 @@
 %  epsNZCTests                -  Tolerance for nonzero curvature tests.
 %
 %
-%See also QPOASES, QPOASES_SEQUENCE
+%See also QPOASES, QPOASES_SEQUENCE, QPOASES_AUXINPUT
 %
 %
 %For additional information see the qpOASES User's Manual or

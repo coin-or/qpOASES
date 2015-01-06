@@ -51,16 +51,16 @@ static std::vector<QPInstance *> g_instances;
 
 
 /*
- *	q p O A S E S m e x _ c o n s t r a i n t s
+ *	Q P r o b l e m _ q p O A S E S
  */
-int qpOASESmex_constraints(		int nV, int nC, int nP,
-								SymmetricMatrix *H, real_t* g, Matrix *A,
-								real_t* lb, real_t* ub, real_t* lbA, real_t* ubA,
-								int nWSRin, real_t maxCpuTimeIn,
-								real_t* x0, Options* options,
-								int nOutputs, mxArray* plhs[],
-								double* guessedBounds, double* guessedConstraints
-								)
+int QProblem_qpOASES(	int nV, int nC, int nP,
+						SymmetricMatrix *H, real_t* g, Matrix *A,
+						real_t* lb, real_t* ub, real_t* lbA, real_t* ubA,
+						int nWSRin, real_t maxCpuTimeIn,
+						real_t* x0, Options* options,
+						int nOutputs, mxArray* plhs[],
+						real_t* guessedBounds, real_t* guessedConstraints
+						)
 {
 	int nWSRout;
 	real_t maxCpuTimeOut;
@@ -161,15 +161,15 @@ int qpOASESmex_constraints(		int nV, int nC, int nP,
 
 
 /*
- *	q p O A S E S m e x _ b o u n d s
+ *	Q P r o b l e m B _ q p O A S E S
  */
-int qpOASESmex_bounds(	int nV, int nP,
+int QProblemB_qpOASES(	int nV, int nP,
 						SymmetricMatrix *H, real_t* g,
 						real_t* lb, real_t* ub,
 						int nWSRin, real_t maxCpuTimeIn,
 						real_t* x0, Options* options,
 						int nOutputs, mxArray* plhs[],
-						double* guessedBounds
+						real_t* guessedBounds
 						)
 {
 	int nWSRout;
@@ -250,11 +250,12 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 	/* inputs */
 	SymmetricMatrix *H=0;
 	Matrix *A=0;
-	real_t *g=0, *lb=0, *ub=0, *lbA=0, *ubA=0, *x0=0;
-	int H_idx, g_idx, A_idx, lb_idx, ub_idx, lbA_idx, ubA_idx, options_idx=-1, x0_idx=-1, auxInput_idx=-1;
 
-	double *guessedBoundsAndConstraints = 0;
-	double *guessedBounds = 0, *guessedConstraints = 0;
+	real_t *g=0, *lb=0, *ub=0, *lbA=0, *ubA=0;
+	real_t *x0=0, *guessedBounds=0, *guessedConstraints=0, *R=0;
+
+	int H_idx=-1, g_idx=-1, A_idx=-1, lb_idx=-1, ub_idx=-1, lbA_idx=-1, ubA_idx=-1;
+	int options_idx=-1, x0_idx=-1, auxInput_idx=-1;
 
     /* Setup default options */
 	Options options;
@@ -285,7 +286,7 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 	/* 2) Check for proper number of output arguments. */
 	if ( nlhs > 6 )
 	{
-		myMexErrMsgTxt( "ERROR (qpOASES): At most six output arguments are allowed: \n    [x,fval,exitflag,iter,lambda,workingSet]!" );
+		myMexErrMsgTxt( "ERROR (qpOASES): At most six output arguments are allowed: \n    [x,fval,exitflag,iter,lambda,auxOutput]!" );
 		return;
 	}
 	if ( nlhs < 1 )
@@ -411,7 +412,7 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 	}
 
 	/* check if supplied data contains 'NaN' or 'Inf' */
-	if (containsNaNorInf(prhs, nV * nV, H_idx, 0) == BT_TRUE) {
+	if (containsNaNorInf(prhs, nV*nV, H_idx, 0) == BT_TRUE) {
 		return;
 	}
 
@@ -455,7 +456,7 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 			return;
 		}
 
-		if (containsNaNorInf(prhs, nV * nC, A_idx, 0) == BT_TRUE) {
+		if (containsNaNorInf(prhs, nV*nC, A_idx, 0) == BT_TRUE) {
 			return;
 		}
 		if (containsNaNorInf(prhs, nC, lbA_idx, 1) == BT_TRUE) {
@@ -489,7 +490,7 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 	}
 
 	if ( auxInput_idx >= 0 )
-		setupAuxiliaryInputs( prhs[auxInput_idx],nV,nC, &x0,&guessedBoundsAndConstraints,&guessedBounds,&guessedConstraints );
+		setupAuxiliaryInputs( prhs[auxInput_idx],nV,nC, &x0,&guessedBounds,&guessedConstraints,&R );
 
 	
 	/* III) ACTUALLY PERFORM QPOASES FUNCTION CALL: */
@@ -511,7 +512,7 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 	if ( nC == 0 )
 	{
 		/* Call qpOASES (using QProblemB class). */
-		qpOASESmex_bounds(	nV,nP,
+		QProblemB_qpOASES(	nV,nP,
 							H,g,
 							lb,ub,
 							nWSRin,maxCpuTimeIn,
@@ -519,8 +520,7 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 							nlhs,plhs,
 							guessedBounds
 							);
-
-		deleteAuxiliaryInputs( &guessedBounds,0 );
+		
         delete H;
 		if (Hv != 0) delete[] Hv;
 		if (Hjc != 0) delete[] Hjc;
@@ -530,16 +530,15 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 	else
 	{
 		/* Call qpOASES (using QProblem class). */
-		qpOASESmex_constraints(	nV,nC,nP,
-								H,g,A,
-								lb,ub,lbA,ubA,
-								nWSRin,maxCpuTimeIn,
-								x0,&options,
-								nlhs,plhs,
-								guessedBounds, guessedConstraints
-								);
+		QProblem_qpOASES(	nV,nC,nP,
+							H,g,A,
+							lb,ub,lbA,ubA,
+							nWSRin,maxCpuTimeIn,
+							x0,&options,
+							nlhs,plhs,
+							guessedBounds,guessedConstraints
+							);
 		
-		deleteAuxiliaryInputs( &guessedBounds,&guessedConstraints );
 		delete A;
 		delete H;
 		if (Av != 0) delete[] Av;

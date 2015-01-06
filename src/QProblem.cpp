@@ -934,29 +934,54 @@ returnValue QProblem::solveCurrentEQP(	const int n_rhs,
  */
 returnValue QProblem::getWorkingSet( real_t* workingSet )
 {
-	int nC = this->getNC();
 	int nV = this->getNV();
 
+	if ( workingSet == 0 )
+		return THROWERROR( RET_INVALID_ARGUMENTS );
+
 	/* At which limit are the bounds active? */
-	QProblemB::getWorkingSet( workingSet );
+	getWorkingSetBounds( workingSet );
 
 	/* At which limit are the contraints active? */
-	for (int i = 0; i < nC; i++) {
-		switch (constraints.getStatus(i)) {
-		case ST_LOWER:
-			workingSet[i + nV] = -1.0;
-			break;
-		case ST_UPPER:
-			workingSet[i + nV] = +1.0;
-			break;
-		default:
-			workingSet[i + nV] =  0.0;
-			break;
+	getWorkingSetConstraints( &(workingSet[nV]) );
+	
+	return SUCCESSFUL_RETURN;
+}
+
+
+/*
+ *	g e t W o r k i n g S e t B o u n d s
+ */
+returnValue QProblem::getWorkingSetBounds( real_t* workingSetB )
+{
+	return QProblemB::getWorkingSetBounds( workingSetB );
+}
+
+
+/*
+ *	g e t W o r k i n g S e t C o n s t r a i n t s
+ */
+returnValue QProblem::getWorkingSetConstraints( real_t* workingSetC )
+{
+	int i;
+	int nC = this->getNC();
+
+	if ( workingSetC == 0 )
+		return THROWERROR( RET_INVALID_ARGUMENTS );
+
+	for ( i=0; i<nC; ++i )
+	{
+		switch ( constraints.getStatus(i) )
+		{
+			case ST_LOWER: workingSetC[i] = -1.0; break;
+			case ST_UPPER: workingSetC[i] = +1.0; break;
+			default:       workingSetC[i] =  0.0; break;
 		}
 	}
 
 	return SUCCESSFUL_RETURN;
 }
+
 
 
 /*

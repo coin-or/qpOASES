@@ -287,9 +287,9 @@ returnValue smartDimensionCheck(	real_t** input, unsigned int m, unsigned int n,
 /*
  *	c o n t a i n s N a N
  */
-BooleanType containsNaN( const real_t* const data, int dim )
+BooleanType containsNaN( const real_t* const data, unsigned int dim )
 {
-	int i;
+	unsigned int i;
 
 	if ( data == 0 )
 		return BT_FALSE;
@@ -305,9 +305,9 @@ BooleanType containsNaN( const real_t* const data, int dim )
 /*
  *	c o n t a i n s I n f
  */
-BooleanType containsInf( const real_t* const data, int dim )
+BooleanType containsInf( const real_t* const data, unsigned int dim )
 {
-	int i;
+	unsigned int i;
 
 	if ( data == 0 )
 		return BT_FALSE;
@@ -323,14 +323,14 @@ BooleanType containsInf( const real_t* const data, int dim )
 /*
  *	c o n t a i n s N a N o r I n f
  */
-BooleanType containsNaNorInf(const mxArray* prhs[], int dim, int rhs_index,
-		bool mayContainInf) {
-
+BooleanType containsNaNorInf(	const mxArray* prhs[], unsigned int dim, int rhs_index,
+								bool mayContainInf )
+{
 	char msg[MAX_STRING_LENGTH];
 
 	// overwrite dim for sparse matrices
 	if (mxIsSparse(prhs[rhs_index]) == 1) {
-		dim = mxGetNzmax(prhs[rhs_index]);
+		dim = (unsigned int)mxGetNzmax(prhs[rhs_index]);
 	}
 
 	if (containsNaN((real_t*) mxGetPr(prhs[rhs_index]), dim) == BT_TRUE) {
@@ -558,10 +558,9 @@ returnValue setupOptions( Options* options, const mxArray* optionsPtr, int& nWSR
  *	s e t u p A u x i l i a r y I n p u t s
  */
 returnValue setupAuxiliaryInputs(	const mxArray* auxInput, unsigned int nV, unsigned int nC,
-									double** x0, double** guessedBoundsAndConstraints, double** guessedBounds, double** guessedConstraints
+									double** x0, double** guessedBounds, double** guessedConstraints, double** R
 									)
 {
-	unsigned int i;
 	mxArray* curField = 0;
 
 	/* x0 */
@@ -575,51 +574,40 @@ returnValue setupAuxiliaryInputs(	const mxArray* auxInput, unsigned int nV, unsi
 			return RET_INVALID_ARGUMENTS;
 	}
 
-	/* guessedWorkingSet */
-	curField = mxGetField( auxInput,0,"guessedWorkingSet" );
+	/* guessedWorkingSetB */
+	curField = mxGetField( auxInput,0,"guessedWorkingSetB" );
 	if ( curField == NULL )
-		mexWarnMsgTxt( "auxInput struct does not contain entry 'guessedWorkingSet'!\n         Type 'help qpOASES_auxInput' for further information." );
+		mexWarnMsgTxt( "auxInput struct does not contain entry 'guessedWorkingSetB'!\n         Type 'help qpOASES_auxInput' for further information." );
 	else
 	{
-		*guessedBoundsAndConstraints = mxGetPr(curField);
-		if ( smartDimensionCheck( guessedBoundsAndConstraints,nV+nC,1, BT_TRUE,((const mxArray**)&curField),0 ) != SUCCESSFUL_RETURN )
+		*guessedBounds = mxGetPr(curField);
+		if ( smartDimensionCheck( guessedBounds,nV,1, BT_TRUE,((const mxArray**)&curField),0 ) != SUCCESSFUL_RETURN )
+			return RET_INVALID_ARGUMENTS;
+	}
+
+	/* guessedWorkingSetC */
+	curField = mxGetField( auxInput,0,"guessedWorkingSetC" );
+	if ( curField == NULL )
+		mexWarnMsgTxt( "auxInput struct does not contain entry 'guessedWorkingSetC'!\n         Type 'help qpOASES_auxInput' for further information." );
+	else
+	{
+		*guessedConstraints = mxGetPr(curField);
+		if ( smartDimensionCheck( guessedConstraints,nC,1, BT_TRUE,((const mxArray**)&curField),0 ) != SUCCESSFUL_RETURN )
+			return RET_INVALID_ARGUMENTS;
+	}
+
+	/* R */
+	curField = mxGetField( auxInput,0,"R" );
+	if ( curField == NULL )
+		mexWarnMsgTxt( "auxInput struct does not contain entry 'R'!\n         Type 'help qpOASES_auxInput' for further information." );
+	else
+	{
+		*R = mxGetPr(curField);
+		if ( smartDimensionCheck( R,nV,nV, BT_TRUE,((const mxArray**)&curField),0 ) != SUCCESSFUL_RETURN )
 			return RET_INVALID_ARGUMENTS;
 
-		if ( *guessedBoundsAndConstraints != 0 )
-		{
-			*guessedBounds = new double[nV];
-			for (i = 0; i < nV; i++)
-				(*guessedBounds)[i] = (*guessedBoundsAndConstraints)[i];
-
-			if ( nC > 0 )
-			{
-				*guessedConstraints = new double[nC];
-				for (i = 0; i < nC; i++)
-					(*guessedConstraints)[i] = (*guessedBoundsAndConstraints)[i + nV];
-			}
-		}
-	}
-
-	return SUCCESSFUL_RETURN;
-}
-
-
-/*
- *	d e l e t e A u x i l i a r y I n p u t s
- */
-returnValue deleteAuxiliaryInputs(	double** guessedBounds, double** guessedConstraints
-									)
-{
-	if ( ( guessedBounds != 0 ) && ( *guessedBounds != 0 ) )
-	{
-		delete[] (*guessedBounds);
-		*guessedBounds = 0;
-	}
-
-	if ( ( guessedConstraints != 0 ) && ( guessedConstraints != 0 ) )
-	{
-		delete[] (*guessedConstraints);
-		*guessedConstraints = 0;
+		if ( mxIsEmpty(curField) == 0 )
+			mexWarnMsgTxt( "Use of auxInput.R is not yet implemented!" );
 	}
 
 	return SUCCESSFUL_RETURN;
@@ -670,9 +658,13 @@ returnValue allocateOutputs(	int nlhs, mxArray* plhs[], int nV, int nC = 0, int 
 						int curFieldNum;
 						
 						/* working set */
-						curFieldNum = mxAddField( auxOutput,"workingSet" );
+						curFieldNum = mxAddField( auxOutput,"workingSetB" );
 						if ( curFieldNum >= 0 )
-							mxSetFieldByNumber( auxOutput,0,curFieldNum,mxCreateDoubleMatrix( nV+nC, nP, mxREAL ) );
+							mxSetFieldByNumber( auxOutput,0,curFieldNum,mxCreateDoubleMatrix( nV, nP, mxREAL ) );
+
+						curFieldNum = mxAddField( auxOutput,"workingSetC" );
+						if ( curFieldNum >= 0 )
+							mxSetFieldByNumber( auxOutput,0,curFieldNum,mxCreateDoubleMatrix( nC, nP, mxREAL ) );
 
 						curFieldNum = mxAddField( auxOutput,"cpuTime" );
 						if ( curFieldNum >= 0 )
@@ -731,24 +723,41 @@ returnValue obtainOutputs(	int k, QProblemB* qp, returnValue returnvalue, int _n
 					double* y = mxGetPr( plhs[curIdx++] );
 					qp->getDualSolution( &(y[k*(nV+nC)]) );
 
+					/* auxOutput */
 					if ( nlhs > curIdx )
 					{
-						
-						mxArray* auxOutput = plhs[curIdx];
-						mxArray* curField = 0;
-
-						/* working set */
-						curField = mxGetField( auxOutput,0,"workingSet" );
-						double* workingSet = mxGetPr(curField);
-
 						QProblem* problemPointer;
 						problemPointer = dynamic_cast<QProblem*>(qp);
 
-						// cast successful?
-						if (problemPointer != NULL) {
-							problemPointer->getWorkingSet( &(workingSet[k*(nV+nC)]) );
-						} else {
-							qp->getWorkingSet( &(workingSet[k*(nV+nC)]) );
+						mxArray* auxOutput = plhs[curIdx];
+						mxArray* curField = 0;
+
+						/* working set bounds */
+						if ( nV > 0 )
+						{
+							curField = mxGetField( auxOutput,0,"workingSetB" );
+							double* workingSetB = mxGetPr(curField);
+
+							/* cast successful? */
+							if (problemPointer != NULL) {
+								problemPointer->getWorkingSetBounds( &(workingSetB[k*nV]) );
+							} else {
+								qp->getWorkingSetBounds( &(workingSetB[k*nV]) );
+							}
+						}
+
+						/* working set constraints */
+						if ( nC > 0 )
+						{
+							curField = mxGetField( auxOutput,0,"workingSetC" );
+							double* workingSetC = mxGetPr(curField);
+
+							/* cast successful? */
+							if (problemPointer != NULL) {
+								problemPointer->getWorkingSetConstraints( &(workingSetC[k*nC]) );
+							} else {
+								qp->getWorkingSetConstraints( &(workingSetC[k*nC]) );
+							}
 						}
 
 						/* cpu time */

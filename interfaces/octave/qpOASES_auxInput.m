@@ -18,26 +18,29 @@
 %to obtain a struct with all auxiliary inputs empty.
 %
 %Call
-%    options = qpOASES_auxInput( 'input1',value1,'input2',value2,... )
+%    auxInput = qpOASES_auxInput( 'input1',value1,'input2',value2,... )
 %to obtain a struct with 'input1' set to value1 etc. and all remaining
 %auxiliary inputs empty.
 %
 %Call
-%    options = qpOASES_auxInput( oldInputs,'input1',value1,... )
+%    auxInput = qpOASES_auxInput( oldInputs,'input1',value1,... )
 %to obtain a copy of the options struct oldInputs but with 'input1' set to 
 %value1 etc.
 %
 %
 %qpOASES features the following auxiliary inputs:
 %  x0                   -  Initial guess for optimal primal solution.
-%  guessedWorkingSet    -  Initial guess for working set at optimal
-%                          solution. The first nV elements correspond 
-%                          to the bounds, the last nC elements to the 
-%                          constraints.
-%                          The working set needs to be encoded as follows:
-%                          1: bound/constraint at its upper bound
-%                          0: bound/constraint not at any bound
-%                         -1: bound/constraint at its lower bound
+%  guessedWorkingSetB   -  Initial guess for working set of bounds at 
+%                          optimal solution (nV elements or empty).
+%  guessedWorkingSetC   -  Initial guess for working set of constraints at 
+%                          optimal solution (nC elements or empty).
+%                          The working sets needs to be encoded as follows:
+%                           1: bound/constraint at its upper bound
+%                           0: bound/constraint not at any bound
+%                          -1: bound/constraint at its lower bound
+%  R                    -  Cholesky factor of Hessian matrix (upper-triangular);
+%                          only used if both guessedWorkingSets are empty
+%                          and option initialStatusBounds is set to 0.
 %
 %
 %See also QPOASES, QPOASES_SEQUENCE, QPOASES_OPTIONS
@@ -97,7 +100,9 @@ function [ auxInput ] = qpOASES_emptyAuxInput( )
 
 	% setup auxiliary input struct with all entries empty
 	auxInput = struct(	'x0',                 [], ...
-						'guessedWorkingSet',  []  ...
+						'guessedWorkingSetB', [], ...
+                        'guessedWorkingSetC', [], ...
+                        'R',                  []  ...
                         );
 
 end

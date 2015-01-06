@@ -36,7 +36,7 @@ function [ successFlag ] = runTestWorkingSetLI( doPrint )
         [x,dummy1,exitflag,dummy2,dummy3,auxOutput] = qpOASES( qpData.H,qpData.g,qpData.Ain, ...
                 qpData.lb,qpData.ub,qpData.lbA,qpData.ubA, options ); %#ok<*NASGU>
             
-        WS = auxOutput.workingSet;
+        WS = [auxOutput.workingSetB; auxOutput.workingSetC];
         nAct = sum( WS~=0 );
         Bact = B( WS~=0,: );
 

@@ -53,16 +53,16 @@ static std::vector<QPInstance *> g_instances;
 
 
 /*
- *	i n i t S B
+ *	Q P r o b l e m B _ i n i t
  */
-int initSB(	int handle, 
-			SymmetricMatrix *H, real_t* g,
-			const real_t* const lb, const real_t* const ub,
-			int nWSRin, real_t maxCpuTimeIn,
-			const real_t* const x0, Options* options,
-			int nOutputs, mxArray* plhs[],
-			double* guessedBounds
-			)
+int QProblemB_init(	int handle, 
+					SymmetricMatrix *H, real_t* g,
+					const real_t* const lb, const real_t* const ub,
+					int nWSRin, real_t maxCpuTimeIn,
+					const real_t* const x0, Options* options,
+					int nOutputs, mxArray* plhs[],
+					real_t* guessedBounds
+					)
 {
 	int nWSRout = nWSRin;
 	real_t maxCpuTimeOut = (maxCpuTimeIn >= 0.0) ? maxCpuTimeIn : INFTY;
@@ -117,16 +117,16 @@ int initSB(	int handle,
 
 
 /*
- *	i n i t
+ *	S Q P r o b l e m _ i n i t
  */
-int init(	int handle, 
-			SymmetricMatrix *H, real_t* g, Matrix *A,
-			const real_t* const lb, const real_t* const ub, const real_t* const lbA, const real_t* const ubA,
-			int nWSRin, real_t maxCpuTimeIn,
-			const real_t* const x0, Options* options,
-			int nOutputs, mxArray* plhs[],
-			double* guessedBounds, double* guessedConstraints
-			)
+int SQProblem_init(	int handle, 
+					SymmetricMatrix *H, real_t* g, Matrix *A,
+					const real_t* const lb, const real_t* const ub, const real_t* const lbA, const real_t* const ubA,
+					int nWSRin, real_t maxCpuTimeIn,
+					const real_t* const x0, Options* options,
+					int nOutputs, mxArray* plhs[],
+					real_t* guessedBounds, real_t* guessedConstraints
+					)
 {
 	int nWSRout = nWSRin;
 	real_t maxCpuTimeOut = (maxCpuTimeIn >= 0.0) ? maxCpuTimeIn : INFTY;
@@ -203,15 +203,15 @@ int init(	int handle,
 
 
 /*
- *	h o t s t a r t S B
+ *	Q P r o b l e m B _ h o t s t a r t
  */
-int hotstartSB(	int handle,
-                const real_t* const g,
-				const real_t* const lb, const real_t* const ub,
-				int nWSRin, real_t maxCpuTimeIn,
-				Options* options,
-				int nOutputs, mxArray* plhs[]
-				)
+int QProblemB_hotstart(	int handle,
+						const real_t* const g,
+						const real_t* const lb, const real_t* const ub,
+						int nWSRin, real_t maxCpuTimeIn,
+						Options* options,
+						int nOutputs, mxArray* plhs[]
+						)
 {
 	int nWSRout = nWSRin;
 	real_t maxCpuTimeOut = (maxCpuTimeIn >= 0.0) ? maxCpuTimeIn : INFTY;
@@ -237,16 +237,16 @@ int hotstartSB(	int handle,
 
 
 /*
- *	h o t s t a r t
+ *	Q P r o b l e m _ h o t s t a r t
  */
-int hotstart(	int handle,
-                const real_t* const g,
-				const real_t* const lb, const real_t* const ub,
-				const real_t* const lbA, const real_t* const ubA,
-				int nWSRin, real_t maxCpuTimeIn,
-				Options* options,
-				int nOutputs, mxArray* plhs[]
-				)
+int QProblem_hotstart(	int handle,
+						const real_t* const g,
+						const real_t* const lb, const real_t* const ub,
+						const real_t* const lbA, const real_t* const ubA,
+						int nWSRin, real_t maxCpuTimeIn,
+						Options* options,
+						int nOutputs, mxArray* plhs[]
+						)
 {
 	int nWSRout = nWSRin;
 	real_t maxCpuTimeOut = (maxCpuTimeIn >= 0.0) ? maxCpuTimeIn : INFTY;
@@ -272,15 +272,15 @@ int hotstart(	int handle,
 
 
 /*
- *	h o t s t a r t V M
+ *	S Q P r o b l e m _ h o t s t a r t
  */
-int hotstartVM(	int handle,
-				SymmetricMatrix *H, real_t* g, Matrix *A,
-				const real_t* const lb, const real_t* const ub, const real_t* const lbA, const real_t* const ubA,
-				int nWSRin, real_t maxCpuTimeIn,
-				Options* options,
-				int nOutputs, mxArray* plhs[]
-				)
+int SQProblem_hotstart(	int handle,
+						SymmetricMatrix *H, real_t* g, Matrix *A,
+						const real_t* const lb, const real_t* const ub, const real_t* const lbA, const real_t* const ubA,
+						int nWSRin, real_t maxCpuTimeIn,
+						Options* options,
+						int nOutputs, mxArray* plhs[]
+						)
 {
 	int nWSRout = nWSRin;
 	real_t maxCpuTimeOut = (maxCpuTimeIn >= 0.0) ? maxCpuTimeIn : INFTY;
@@ -303,7 +303,7 @@ int hotstartVM(	int handle,
 		case RET_QP_UNBOUNDED:
 		case RET_QP_INFEASIBLE:
 			break;
-			
+
 		default:
 			myMexErrMsgTxt( "ERROR (qpOASES): Hotstart failed." );
 			return -1;
@@ -325,12 +325,12 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 {
 	/* inputs */
 	char typeString[2];
-	real_t *g=0, *lb=0, *ub=0, *lbA=0, *ubA=0, *x0=0;
+
+	real_t *g=0, *lb=0, *ub=0, *lbA=0, *ubA=0;
+	real_t *x0=0, *guessedBounds=0, *guessedConstraints=0, *R=0;
+
 	int H_idx=-1, g_idx=-1, A_idx=-1, lb_idx=-1, ub_idx=-1, lbA_idx=-1, ubA_idx=-1;
 	int x0_idx=-1, auxInput_idx=-1;
-
-	double *guessedBoundsAndConstraints = 0;
-	double *guessedBounds = 0, *guessedConstraints = 0;
 
 	BooleanType isSimplyBoundedQp = BT_FALSE;
 
@@ -410,7 +410,7 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 		/* Check for 'Inf' and 'Nan' in Hessian */
 		H_idx = 1;
 		g_idx = 2;
-		if (containsNaNorInf(prhs, nV * nV, H_idx, 0) == BT_TRUE) {
+		if (containsNaNorInf(prhs, nV*nV, H_idx, 0) == BT_TRUE) {
 			return;
 		}
 
@@ -505,7 +505,7 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 			lbA_idx = 6;
 			ubA_idx = 7;
 
-			if (containsNaNorInf(prhs, nV * nC, A_idx, 0) == BT_TRUE) {
+			if (containsNaNorInf(prhs, nV*nC, A_idx, 0) == BT_TRUE) {
 				return;
 			}
 			if (containsNaNorInf(prhs, nV, lb_idx, 1) == BT_TRUE) {
@@ -579,7 +579,7 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 			return;
 
 		if ( auxInput_idx >= 0 )
-			setupAuxiliaryInputs( prhs[auxInput_idx],nV,nC, &x0,&guessedBoundsAndConstraints,&guessedBounds,&guessedConstraints );
+			setupAuxiliaryInputs( prhs[auxInput_idx],nV,nC, &x0,&guessedBounds,&guessedConstraints,&R );
 
 
 		/* allocate instance */
@@ -599,29 +599,25 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 		/* Call qpOASES. */
 		if ( isSimplyBoundedQp == BT_TRUE )
 		{
-			initSB(	handle,
-					globalQP->H,g,
-					lb,ub,
-					nWSRin,maxCpuTimeIn,
-					x0,&options,
-					nlhs,plhs,
-					guessedBounds
-					);
-
-			deleteAuxiliaryInputs( &guessedBounds,0 );
+			QProblemB_init(	handle,
+							globalQP->H,g,
+							lb,ub,
+							nWSRin,maxCpuTimeIn,
+							x0,&options,
+							nlhs,plhs,
+							guessedBounds
+							);
 		}
 		else
 		{
-			init(	handle,
-					globalQP->H,g,globalQP->A,
-					lb,ub,lbA,ubA,
-					nWSRin,maxCpuTimeIn,
-					x0,&options,
-					nlhs,plhs,
-					guessedBounds, guessedConstraints
-					);
-
-			deleteAuxiliaryInputs( &guessedBounds,&guessedConstraints );
+			SQProblem_init(	handle,
+							globalQP->H,g,globalQP->A,
+							lb,ub,lbA,ubA,
+							nWSRin,maxCpuTimeIn,
+							x0,&options,
+							nlhs,plhs,
+							guessedBounds,guessedConstraints
+							);
 		}
 
 		return;
@@ -658,7 +654,7 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 
 		/* get QP instance */
 		handle = (unsigned int)mxGetScalar( prhs[1] );
-		globalQP = getQPInstance ( handle );
+		globalQP = getQPInstance( handle );
 		if ( globalQP == 0 )
 		{
 			myMexErrMsgTxt( "ERROR (qpOASES): Invalid handle to QP instance!" );
@@ -749,21 +745,21 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 		/* call qpOASES */
 		if ( isSimplyBoundedQp == BT_TRUE )
 		{
-			hotstartSB(	handle, g,
-						lb,ub,
-						nWSRin,maxCpuTimeIn,
-						&options,
-						nlhs,plhs
-						);
+			QProblemB_hotstart(	handle, g,
+								lb,ub,
+								nWSRin,maxCpuTimeIn,
+								&options,
+								nlhs,plhs
+								);
 		}
 		else
 		{
-			hotstart(	handle, g,
-						lb,ub,lbA,ubA,
-						nWSRin,maxCpuTimeIn,
-						&options,
-						nlhs,plhs
-						);
+			QProblem_hotstart(	handle, g,
+								lb,ub,lbA,ubA,
+								nWSRin,maxCpuTimeIn,
+								&options,
+								nlhs,plhs
+								);
 		}
 
 		return;
@@ -802,7 +798,7 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 
 		/* get QP instance */
 		handle = (unsigned int)mxGetScalar( prhs[1]);
-		globalQP = getQPInstance ( handle );
+		globalQP = getQPInstance( handle );
 		if ( globalQP == 0 )
 		{
 			myMexErrMsgTxt( "ERROR (qpOASES): Invalid handle to QP instance!" );
@@ -897,12 +893,12 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 		allocateOutputs( nlhs,plhs, nV,nC );
 
 		/* Call qpOASES */
-		hotstartVM(	handle, globalQP->H,g,globalQP->A,
-					lb,ub,lbA,ubA,
-					nWSRin,maxCpuTimeIn,
-					&options,
-					nlhs,plhs
-					);
+		SQProblem_hotstart(	handle, globalQP->H,g,globalQP->A,
+							lb,ub,lbA,ubA,
+							nWSRin,maxCpuTimeIn,
+							&options,
+							nlhs,plhs
+							);
 
 		return;
 	}
@@ -911,7 +907,7 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 	if ( ( strcmp( typeString,"e" ) == 0 ) || ( strcmp( typeString,"E" ) == 0 ) )
 	{
 		/* consistency checks */
-		if ( ( nlhs < 1 ) || ( nlhs > 3 ) )
+		if ( ( nlhs < 1 ) || ( nlhs > 4 ) )
 		{
 			myMexErrMsgTxt( "ERROR (qpOASES): Invalid number of output arguments!\nType 'help qpOASES_sequence' for further information." );
 			return;
@@ -931,7 +927,7 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 
 		/* get QP instance */
 		handle = (unsigned int)mxGetScalar( prhs[1] );
-		globalQP = getQPInstance ( handle );
+		globalQP = getQPInstance( handle );
 		if ( globalQP == 0 )
 		{
 			myMexErrMsgTxt( "ERROR (qpOASES): Invalid handle to QP instance!" );
@@ -999,11 +995,18 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 			plhs[1] = mxCreateDoubleMatrix( nV+nC, nRHS, mxREAL );
 			y_out = mxGetPr(plhs[1]);
 
-			if (nlhs >= 3) {
-				plhs[2] = mxCreateDoubleMatrix( nV+nC, nRHS, mxREAL );
-				double* workingSet = mxGetPr(plhs[2]);
+			if (nlhs >= 3)
+			{
+				plhs[2] = mxCreateDoubleMatrix( nV, nRHS, mxREAL );
+				real_t* workingSetB = mxGetPr(plhs[2]);
+				globalQP->sqp->getWorkingSetBounds(workingSetB);
 
-				globalQP->sqp->getWorkingSet(workingSet);
+				if ( nlhs >= 4 )
+				{
+					plhs[3] = mxCreateDoubleMatrix( nC, nRHS, mxREAL );
+					real_t* workingSetC = mxGetPr(plhs[3]);
+					globalQP->sqp->getWorkingSetConstraints(workingSetC);
+				}
 			}
 		}
 		else
@@ -1049,8 +1052,8 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 		}
 
 		/* Cleanup SQProblem instance. */
-		handle =(unsigned int)mxGetScalar( prhs[1] );
-		deleteQPInstance ( handle );
+		handle = (unsigned int)mxGetScalar( prhs[1] );
+		deleteQPInstance( handle );
 		
 		return;
 	}

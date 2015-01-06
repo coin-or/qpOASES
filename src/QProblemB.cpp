@@ -766,18 +766,44 @@ returnValue QProblemB::hotstart(	const char* const g_file,
  */
 returnValue QProblemB::getWorkingSet( real_t* workingSet )
 {
+	return getWorkingSetBounds( workingSet );
+}
+
+
+/*
+ *	g e t W o r k i n g S e t B o u n d s
+ */
+returnValue QProblemB::getWorkingSetBounds( real_t* workingSetB )
+{
+	int i;
 	int nV = this->getNV();
 
-	// At which limit is the bound active?
-	for (int i = 0; i < nV; i++) {
-		switch (bounds.getStatus(i)) {
-			case ST_LOWER: workingSet[i] = -1.0; break;
-			case ST_UPPER: workingSet[i] = +1.0; break;
-			default: workingSet[i] = 0.0; break;
+	if ( workingSetB == 0 )
+		return THROWERROR( RET_INVALID_ARGUMENTS );
+
+	for ( i=0; i<nV; ++i )
+	{
+		switch ( bounds.getStatus(i) )
+		{
+			case ST_LOWER: workingSetB[i] = -1.0; break;
+			case ST_UPPER: workingSetB[i] = +1.0; break;
+			default:       workingSetB[i] =  0.0; break;
 		}
 	}
 
 	return SUCCESSFUL_RETURN;
+}
+
+
+/*
+ *	g e t W o r k i n g S e t C o n s t r a i n t s
+ */
+returnValue QProblemB::getWorkingSetConstraints( real_t* workingSetC )
+{
+	if ( workingSetC == 0 )
+		return THROWERROR( RET_INVALID_ARGUMENTS );
+	else
+		return SUCCESSFUL_RETURN;
 }
 
 
