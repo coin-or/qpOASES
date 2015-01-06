@@ -26,7 +26,7 @@
  *	\file interfaces/simulink/qpOASES_QProblemB.cpp
  *	\author Hans Joachim Ferreau (thanks to Aude Perrin)
  *	\version 3.0
- *	\date 2007-2014
+ *	\date 2007-2015
  *
  *	Interface for Simulink(R) that enables to call qpOASES as a S function
  *  (variant for simply bounded QPs with fixed matrices).
@@ -53,9 +53,9 @@ extern "C" {
 
 
 /* SETTINGS */
-#define SAMPLINGTIME    -1						/**< Sampling time. */
+#define SAMPLINGTIME   -1						/**< Sampling time. */
 #define NCONTROLINPUTS  2						/**< Number of control inputs. */
-#define NWSR            100						/**< Maximum number of working set recalculations. */
+#define MAXITER         100						/**< Maximum number of iteration. */
 
 
 static void mdlInitializeSizes (SimStruct *S)   /* Init sizes array */
@@ -66,8 +66,13 @@ static void mdlInitializeSizes (SimStruct *S)   /* Init sizes array */
 	ssSetNumContStates(S, 0);
 	ssSetNumDiscStates(S, 0);
 
+	/* Specify the number of parameters */
+	ssSetNumSFcnParams(S, 1); /* H */
+	if ( ssGetNumSFcnParams(S) != ssGetSFcnParamsCount(S) )
+		return;
+
 	/* Specify the number of intput ports */
-	if ( !ssSetNumInputPorts(S, 4) )
+	if ( !ssSetNumInputPorts(S, 3) )
 		return;
 
 	/* Specify the number of output ports */
@@ -75,14 +80,13 @@ static void mdlInitializeSizes (SimStruct *S)   /* Init sizes array */
 		return;
 
 	/* Specify dimension information for the input ports */
-	ssSetInputPortVectorDimension(S, 0, DYNAMICALLY_SIZED);	/* H */
-	ssSetInputPortVectorDimension(S, 1, DYNAMICALLY_SIZED);	/* g */
-	ssSetInputPortVectorDimension(S, 2, DYNAMICALLY_SIZED);	/* lb */
-	ssSetInputPortVectorDimension(S, 3, DYNAMICALLY_SIZED);	/* ub */
+	ssSetInputPortVectorDimension(S, 0, DYNAMICALLY_SIZED);	/* g */
+	ssSetInputPortVectorDimension(S, 1, DYNAMICALLY_SIZED);	/* lb */
+	ssSetInputPortVectorDimension(S, 2, DYNAMICALLY_SIZED);	/* ub */
 
 	/* Specify dimension information for the output ports */
-	ssSetOutputPortVectorDimension(S, 0, 1 );   /* fval */
-	ssSetOutputPortVectorDimension(S, 1, nU );  /* uOpt */
+	ssSetOutputPortVectorDimension(S, 0, nU );  /* uOpt */
+    ssSetOutputPortVectorDimension(S, 1, 1 );   /* fval */
 	ssSetOutputPortVectorDimension(S, 2, 1 );   /* exitflag */
 	ssSetOutputPortVectorDimension(S, 3, 1 );   /* iter */
 
@@ -90,7 +94,6 @@ static void mdlInitializeSizes (SimStruct *S)   /* Init sizes array */
 	ssSetInputPortDirectFeedThrough(S, 0, 1);
 	ssSetInputPortDirectFeedThrough(S, 1, 1);
 	ssSetInputPortDirectFeedThrough(S, 2, 1);
-	ssSetInputPortDirectFeedThrough(S, 3, 1);
 
 	/* One sample time */
 	ssSetNumSampleTimes(S, 1);
@@ -141,7 +144,8 @@ static void mdlStart(SimStruct *S)
 	USING_NAMESPACE_QPOASES
 
 	int nU = NCONTROLINPUTS;
-	int size_H, size_g, size_lb, size_ub;
+	int size_g, size_lb, size_ub;
+	int size_H, nRows_H, nCols_H;
 	int nV;
 
 	QProblemB* problem;
@@ -149,16 +153,30 @@ static void mdlStart(SimStruct *S)
 
 
 	/* get block inputs dimensions */
-	size_H   = ssGetInputPortWidth(S, 0);
-	size_g   = ssGetInputPortWidth(S, 1);
-	size_lb  = ssGetInputPortWidth(S, 2);
-	size_ub  = ssGetInputPortWidth(S, 3);
+	const mxArray* in_H = ssGetSFcnParam(S, 0);
+
+	if ( mxIsEmpty(in_H) == 1 )
+	{
+	    nRows_H = 0;
+		nCols_H = 0;
+		size_H  = 0;
+	}
+	else
+	{
+	    nRows_H = (int)mxGetM(in_H);
+		nCols_H = (int)mxGetN(in_H);
+		size_H  = nRows_H * nCols_H;
+	}
+
+	size_g   = ssGetInputPortWidth(S, 0);
+	size_lb  = ssGetInputPortWidth(S, 1);
+	size_ub  = ssGetInputPortWidth(S, 2);
 
 
 	/* dimension checks */
 	nV = size_g;
 
-	if ( NWSR < 0 )
+	if ( MAXITER < 0 )
 	{
 		#ifndef __DSPACE__
 		#ifndef __XPCTARGET__
@@ -183,6 +201,16 @@ static void mdlStart(SimStruct *S)
 		#ifndef __DSPACE__
 		#ifndef __XPCTARGET__
 		mexErrMsgTxt( "ERROR (qpOASES): Dimension mismatch!" );
+		#endif
+		#endif
+		return;
+	}
+
+	if ( nRows_H != nCols_H )
+	{
+		#ifndef __DSPACE__
+		#ifndef __XPCTARGET__
+		mexErrMsgTxt( "ERROR (qpOASES): Hessian matrix must be square matrix!" );
 		#endif
 		#endif
 		return;
@@ -268,24 +296,24 @@ static void mdlOutputs(SimStruct *S, int_T tid)
 	int nV;
 	returnValue status;
 
-	int nWSR = NWSR;
+	int nWSR = MAXITER;
 	int nU   = NCONTROLINPUTS;
 
-	InputRealPtrsType in_H, in_g, in_lb, in_ub;
+	InputRealPtrsType in_g, in_lb, in_ub;
 
 	QProblemB* problem;
 	real_t *H, *g, *lb, *ub, *count;
 
 	real_t *xOpt;
 
-	real_T *out_objVal, *out_uOpt, *out_status, *out_nWSR;
+	real_T *out_uOpt, *out_objVal, *out_status, *out_nWSR;
 
 
 	/* get pointers to block inputs ... */
-	in_H  = ssGetInputPortRealSignalPtrs(S, 0);
-	in_g  = ssGetInputPortRealSignalPtrs(S, 1);
-	in_lb = ssGetInputPortRealSignalPtrs(S, 2);
-	in_ub = ssGetInputPortRealSignalPtrs(S, 3);
+	const mxArray* in_H = ssGetSFcnParam(S, 0);
+	in_g  = ssGetInputPortRealSignalPtrs(S, 0);
+	in_lb = ssGetInputPortRealSignalPtrs(S, 1);
+	in_ub = ssGetInputPortRealSignalPtrs(S, 2);
 
 	/* ... and to the QP data */
 	problem = (QProblemB *) ssGetPWork(S)[0];
@@ -302,7 +330,7 @@ static void mdlOutputs(SimStruct *S, int_T tid)
 	nV = ssGetInputPortWidth(S, 1); /* nV = size_g */
 
 	for ( i=0; i<nV*nV; ++i )
-		H[i] = (*in_H)[i];
+		H[i] = (mxGetPr(in_H))[i];
 
 	for ( i=0; i<nV; ++i )
 	{
@@ -329,7 +357,7 @@ static void mdlOutputs(SimStruct *S, int_T tid)
 			problem->reset( );
             
             /* ... and initialise/solve again with remaining number of iterations. */
-            int nWSR_retry = NWSR-nWSR;
+            int nWSR_retry = MAXITER - nWSR;
 			status = problem->init( H,g,lb,ub, nWSR_retry,0 );
             nWSR += nWSR_retry;
 		}
@@ -339,18 +367,17 @@ static void mdlOutputs(SimStruct *S, int_T tid)
 	}
 
 	/* generate block output: status information ... */
-	out_objVal = ssGetOutputPortRealSignal(S, 0);
-	out_uOpt   = ssGetOutputPortRealSignal(S, 1);
+	out_uOpt   = ssGetOutputPortRealSignal(S, 0);
+	out_objVal = ssGetOutputPortRealSignal(S, 1);
 	out_status = ssGetOutputPortRealSignal(S, 2);
 	out_nWSR   = ssGetOutputPortRealSignal(S, 3);
 
-	out_objVal[0] = ((real_T) problem->getObjVal( ));
-
 	for ( i=0; i<nU; ++i )
-		out_uOpt[i] = ((real_T) xOpt[i]);
-
-	out_status[0] = (real_t)getSimpleStatus( status );
-	out_nWSR[0] = ((real_T) nWSR);
+		out_uOpt[i] = (real_T)(xOpt[i]);
+    
+    out_objVal[0] = (real_T)(problem->getObjVal());
+	out_status[0] = (real_t)(getSimpleStatus( status ));
+	out_nWSR[0]   = (real_T)(nWSR);
 
 	/* increase counter */
 	count[0] = count[0] + 1;
@@ -363,11 +390,15 @@ static void mdlTerminate(SimStruct *S)
 {
 	USING_NAMESPACE_QPOASES
 
+	int i;
+
 	/* reset global message handler */
 	getGlobalMessageHandler( )->reset( );
 
-	int i;
-	for ( i=0; i<6; ++i )
+	if ( ssGetPWork(S)[0] != 0 )
+		delete ssGetPWork(S)[0];
+
+	for ( i=1; i<6; ++i )
 	{
 		if ( ssGetPWork(S)[i] != 0 )
 			free( ssGetPWork(S)[i] );

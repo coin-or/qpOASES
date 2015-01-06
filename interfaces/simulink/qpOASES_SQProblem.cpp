@@ -2,7 +2,7 @@
  *	This file is part of qpOASES.
  *
  *	qpOASES -- An Implementation of the Online Active Set Strategy.
- *	Copyright (C) 2007-2014 by Hans Joachim Ferreau, Andreas Potschka,
+ *	Copyright (C) 2007-2015 by Hans Joachim Ferreau, Andreas Potschka,
  *	Christian Kirches et al. All rights reserved.
  *
  *	qpOASES is free software; you can redistribute it and/or
@@ -26,7 +26,7 @@
  *	\file interfaces/simulink/qpOASES_SQProblem.cpp
  *	\author Hans Joachim Ferreau (thanks to Aude Perrin)
  *	\version 3.0
- *	\date 2007-2014
+ *	\date 2007-2015
  *
  *	Interface for Simulink(R) that enables to call qpOASES as a S function
  *  (variant for QPs with varying matrices).
@@ -53,9 +53,9 @@ extern "C" {
 
 
 /* SETTINGS */
-#define SAMPLINGTIME    -1						/**< Sampling time. */
+#define SAMPLINGTIME   -1						/**< Sampling time. */
 #define NCONTROLINPUTS  2						/**< Number of control inputs. */
-#define NWSR            100	    				/**< Maximum number of working set recalculations. */
+#define MAXITER         100	    				/**< Maximum number of iterations. */
 
 
 static void mdlInitializeSizes (SimStruct *S)   /* Init sizes array */
@@ -65,6 +65,11 @@ static void mdlInitializeSizes (SimStruct *S)   /* Init sizes array */
 	/* Specify the number of continuous and discrete states */
 	ssSetNumContStates(S, 0);
 	ssSetNumDiscStates(S, 0);
+
+	/* Specify the number of parameters */
+	ssSetNumSFcnParams(S, 0);
+	if ( ssGetNumSFcnParams(S) != ssGetSFcnParamsCount(S) )
+		return;
 
 	/* Specify the number of intput ports */
 	if ( !ssSetNumInputPorts(S, 7) )
@@ -98,8 +103,8 @@ static void mdlInitializeSizes (SimStruct *S)   /* Init sizes array */
 	ssSetInputPortVectorDimension(S, 6, DYNAMICALLY_SIZED); /* ubA */
 
 	/* Specify dimension information for the output ports */
-	ssSetOutputPortVectorDimension(S, 0, 1 );   /* fval */
-	ssSetOutputPortVectorDimension(S, 1, nU );  /* uOpt */
+	ssSetOutputPortVectorDimension(S, 0, nU );  /* uOpt */
+	ssSetOutputPortVectorDimension(S, 1, 1 );   /* fval */
 	ssSetOutputPortVectorDimension(S, 2, 1 );   /* exitflag */
 	ssSetOutputPortVectorDimension(S, 3, 1 );   /* iter */
 
@@ -185,7 +190,7 @@ static void mdlStart(SimStruct *S)
 	nV = size_g;
 	nC = (int) ( ((real_t) size_A) / ((real_t) nV) );
 
-	if ( NWSR < 0 )
+	if ( MAXITER < 0 )
 	{
 		#ifndef __DSPACE__
 		#ifndef __XPCTARGET__
@@ -319,7 +324,7 @@ static void mdlOutputs(SimStruct *S, int_T tid)
 	int nV, nC;
 	returnValue status;
 
-	int nWSR  = NWSR;
+	int nWSR  = MAXITER;
 	int nU   = NCONTROLINPUTS;
 
 	InputRealPtrsType in_H, in_g, in_A, in_lb, in_ub, in_lbA, in_ubA;
@@ -329,7 +334,7 @@ static void mdlOutputs(SimStruct *S, int_T tid)
 
 	real_t *xOpt;
 
-	real_T *out_objVal, *out_uOpt, *out_status, *out_nWSR;
+	real_T *out_uOpt, *out_objVal, *out_status, *out_nWSR;
 
 
 	/* get pointers to block inputs ... */
@@ -397,7 +402,7 @@ static void mdlOutputs(SimStruct *S, int_T tid)
 			problem->reset( );
             
             /* ... and initialise/solve again with remaining number of iterations. */
-            int nWSR_retry = NWSR-nWSR;
+            int nWSR_retry = MAXITER - nWSR;
 			status = problem->init( H,g,A,lb,ub,lbA,ubA, nWSR_retry,0 );
             nWSR += nWSR_retry;
 		}
@@ -407,18 +412,17 @@ static void mdlOutputs(SimStruct *S, int_T tid)
 	}
 
 	/* generate block output: status information ... */
-	out_objVal = ssGetOutputPortRealSignal(S, 0);
-	out_uOpt   = ssGetOutputPortRealSignal(S, 1);
+	out_uOpt   = ssGetOutputPortRealSignal(S, 0);
+	out_objVal = ssGetOutputPortRealSignal(S, 1);
 	out_status = ssGetOutputPortRealSignal(S, 2);
 	out_nWSR   = ssGetOutputPortRealSignal(S, 3);
 
-	out_objVal[0] = ((real_T) problem->getObjVal( ));
-
 	for ( i=0; i<nU; ++i )
-		out_uOpt[i] = ((real_T) xOpt[i]);
+		out_uOpt[i] = (real_T)(xOpt[i]);
 
-	out_status[0] = (real_t)getSimpleStatus( status );
-	out_nWSR[0] = ((real_T) nWSR);
+	out_objVal[0] = (real_T)(problem->getObjVal( ));
+	out_status[0] = (real_t)(getSimpleStatus( status ));
+	out_nWSR[0]   = (real_T)(nWSR);
 
 	/* increase counter */
 	count[0] = count[0] + 1;
@@ -431,11 +435,15 @@ static void mdlTerminate(SimStruct *S)
 {
 	USING_NAMESPACE_QPOASES
 
+	int i;
+
 	/* reset global message handler */
 	getGlobalMessageHandler( )->reset( );
 
-	int i;
-	for ( i=0; i<9; ++i )
+	if ( ssGetPWork(S)[0] != 0 )
+		delete ssGetPWork(S)[0];
+
+	for ( i=1; i<9; ++i )
 	{
 		if ( ssGetPWork(S)[i] != 0 )
 			free( ssGetPWork(S)[i] );

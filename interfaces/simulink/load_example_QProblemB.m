@@ -26,7 +26,7 @@
 %%	Filename:  interfaces/simulink/load_example_QProblemB.m
 %%	Author:    Hans Joachim Ferreau (thanks to Aude Perrin)
 %%	Version:   3.0
-%%	Date:      2007-2014
+%%	Date:      2007-2015
 %%
 
 
@@ -35,17 +35,14 @@ clear all;
 
 
 %% setup QP data
-simulationTime  =  [0;0.1];
+simulationTime = [0;0.1];
 
-H.time = simulationTime;
-data1 = [1.0,0.0,0.0,0.5];
-data2 = [1.0,0.0,0.0,0.5];
-H.signals.values = [data1; data2];
-H.signals.dimensions = length(data1);
+H = [ 1.0,0.0; ...
+      0.0,0.5 ];
 
 g.time = simulationTime;
-data1 = [1.5,1.0];
-data2 = [1.0,1.5];
+data1 = [ 1.5,1.0 ];
+data2 = [ 1.0,1.5 ];
 g.signals.values = [data1; data2];
 g.signals.dimensions = length(data1);
 
@@ -56,8 +53,8 @@ lb.signals.values = [data1; data2];
 lb.signals.dimensions = length(data1);
 
 ub.time = simulationTime;
-data1 = [5.0,2.0];
-data2 = [5.0,-0.5];
+data1 = [ 5.0,2.0 ];
+data2 = [ 5.0,-0.5 ];
 ub.signals.values = [data1; data2];
 ub.signals.dimensions = length(data1);
 

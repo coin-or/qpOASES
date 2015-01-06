@@ -6,7 +6,7 @@ Model {
     NumRootInports	    0
     NumRootOutports	    0
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.65"
+    ComputedModelVersion    "1.69"
     NumModelReferences	    0
     NumTestPointedSignals   0
   }
@@ -25,9 +25,9 @@ Model {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "chjofer2"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Thu Feb 20 15:11:24 2014"
-  RTWModifiedTimeStamp	  314809883
-  ModelVersionFormat	  "1.%<AutoIncrement:65>"
+  LastModifiedDate	  "Tue Jan 06 16:16:07 2015"
+  RTWModifiedTimeStamp	  342461745
+  ModelVersionFormat	  "1.%<AutoIncrement:69>"
   ConfigurationManager	  "None"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -593,7 +593,7 @@ Model {
   }
   System {
     Name		    "example_QProblem"
-    Location		    [2, 82, 1918, 1147]
+    Location		    [2, 74, 1918, 1139]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -610,19 +610,9 @@ Model {
     SIDHighWatermark	    9
     Block {
       BlockType		      FromWorkspace
-      Name		      "From\nWorkspace1"
-      SID		      1
-      Position		      [85, 53, 150, 77]
-      VariableName	      "H"
-      SampleTime	      "0.1"
-      ZeroCross		      on
-      OutputAfterFinalValue   "Holding final value"
-    }
-    Block {
-      BlockType		      FromWorkspace
-      Name		      "From\nWorkspace2"
+      Name		      "g"
       SID		      2
-      Position		      [85, 113, 150, 137]
+      Position		      [200, 158, 265, 182]
       VariableName	      "g"
       SampleTime	      "0.1"
       ZeroCross		      on
@@ -630,19 +620,9 @@ Model {
     }
     Block {
       BlockType		      FromWorkspace
-      Name		      "From\nWorkspace3"
-      SID		      3
-      Position		      [85, 173, 150, 197]
-      VariableName	      "A"
-      SampleTime	      "0.1"
-      ZeroCross		      on
-      OutputAfterFinalValue   "Holding final value"
-    }
-    Block {
-      BlockType		      FromWorkspace
-      Name		      "From\nWorkspace4"
+      Name		      "lb"
       SID		      4
-      Position		      [85, 233, 150, 257]
+      Position		      [200, 203, 265, 227]
       VariableName	      "lb"
       SampleTime	      "0.1"
       ZeroCross		      on
@@ -650,9 +630,30 @@ Model {
     }
     Block {
       BlockType		      FromWorkspace
-      Name		      "From\nWorkspace5"
+      Name		      "lbA"
+      SID		      6
+      Position		      [200, 293, 265, 317]
+      VariableName	      "lbA"
+      SampleTime	      "0.1"
+      ZeroCross		      on
+      OutputAfterFinalValue   "Holding final value"
+    }
+    Block {
+      BlockType		      "S-Function"
+      Name		      "qpOASES"
+      SID		      9
+      Ports		      [5, 4]
+      Position		      [595, 222, 795, 298]
+      BackgroundColor	      "[1.000000, 0.915850, 0.439000]"
+      FunctionName	      "qpOASES_QProblem"
+      Parameters	      "H,A"
+      EnableBusSupport	      off
+    }
+    Block {
+      BlockType		      FromWorkspace
+      Name		      "ub"
       SID		      5
-      Position		      [85, 293, 150, 317]
+      Position		      [200, 248, 265, 272]
       VariableName	      "ub"
       SampleTime	      "0.1"
       ZeroCross		      on
@@ -660,19 +661,9 @@ Model {
     }
     Block {
       BlockType		      FromWorkspace
-      Name		      "From\nWorkspace6"
-      SID		      6
-      Position		      [85, 353, 150, 377]
-      VariableName	      "lbA"
-      SampleTime	      "0.1"
-      ZeroCross		      on
-      OutputAfterFinalValue   "Holding final value"
-    }
-    Block {
-      BlockType		      FromWorkspace
-      Name		      "From\nWorkspace7"
+      Name		      "ubA"
       SID		      7
-      Position		      [85, 418, 150, 442]
+      Position		      [200, 338, 265, 362]
       VariableName	      "ubA"
       SampleTime	      "0.1"
       ZeroCross		      on
@@ -680,10 +671,10 @@ Model {
     }
     Block {
       BlockType		      Scope
-      Name		      "fval,\nx,\nexitflag,\niter"
+      Name		      "x,\nfval,\nexitflag,\niter"
       SID		      8
       Ports		      [4]
-      Position		      [915, 229, 945, 261]
+      Position		      [945, 222, 1000, 298]
       Floating		      off
       Location		      [6, 78, 1276, 993]
       Open		      off
@@ -701,102 +692,70 @@ Model {
       DataFormat	      "StructureWithTime"
       SampleTime	      "0"
     }
-    Block {
-      BlockType		      "S-Function"
-      Name		      "qpOASES"
-      SID		      9
-      Ports		      [7, 4]
-      Position		      [595, 226, 790, 264]
-      BackgroundColor	      "[1.000000, 0.915850, 0.439000]"
-      FunctionName	      "qpOASES_QProblem"
-      EnableBusSupport	      off
-      MaskHelp		      "file://../../DOC/manual.pdf"
-      MaskIconFrame	      on
-      MaskIconOpaque	      on
-      MaskIconRotate	      "none"
-      MaskPortRotate	      "default"
-      MaskIconUnits	      "autoscale"
-    }
-    Line {
-      SrcBlock		      "From\nWorkspace1"
-      SrcPort		      1
-      Points		      [180, 0; 0, 165]
-      DstBlock		      "qpOASES"
-      DstPort		      1
-    }
-    Line {
-      SrcBlock		      "From\nWorkspace2"
-      SrcPort		      1
-      Points		      [115, 0; 0, 110]
-      DstBlock		      "qpOASES"
-      DstPort		      2
-    }
-    Line {
-      Labels		      [3, 0]
-      SrcBlock		      "From\nWorkspace7"
-      SrcPort		      1
-      Points		      [180, 0; 0, -170]
-      DstBlock		      "qpOASES"
-      DstPort		      7
-    }
-    Line {
-      SrcBlock		      "From\nWorkspace5"
-      SrcPort		      1
-      Points		      [55, 0; 0, -55]
-      DstBlock		      "qpOASES"
-      DstPort		      5
-    }
-    Line {
-      SrcBlock		      "From\nWorkspace4"
-      SrcPort		      1
-      DstBlock		      "qpOASES"
-      DstPort		      4
-    }
-    Line {
-      SrcBlock		      "From\nWorkspace3"
-      SrcPort		      1
-      Points		      [55, 0; 0, 55]
-      DstBlock		      "qpOASES"
-      DstPort		      3
-    }
-    Line {
-      Labels		      [3, 0]
-      SrcBlock		      "From\nWorkspace6"
-      SrcPort		      1
-      Points		      [115, 0; 0, -110]
-      DstBlock		      "qpOASES"
-      DstPort		      6
-    }
     Line {
       SrcBlock		      "qpOASES"
       SrcPort		      1
-      DstBlock		      "fval,\nx,\nexitflag,\niter"
+      DstBlock		      "x,\nfval,\nexitflag,\niter"
       DstPort		      1
     }
     Line {
       SrcBlock		      "qpOASES"
       SrcPort		      2
-      DstBlock		      "fval,\nx,\nexitflag,\niter"
+      DstBlock		      "x,\nfval,\nexitflag,\niter"
       DstPort		      2
     }
     Line {
       SrcBlock		      "qpOASES"
       SrcPort		      3
-      DstBlock		      "fval,\nx,\nexitflag,\niter"
+      DstBlock		      "x,\nfval,\nexitflag,\niter"
       DstPort		      3
     }
     Line {
       SrcBlock		      "qpOASES"
       SrcPort		      4
-      DstBlock		      "fval,\nx,\nexitflag,\niter"
+      DstBlock		      "x,\nfval,\nexitflag,\niter"
       DstPort		      4
+    }
+    Line {
+      SrcBlock		      "ub"
+      SrcPort		      1
+      DstBlock		      "qpOASES"
+      DstPort		      3
+    }
+    Line {
+      SrcBlock		      "lb"
+      SrcPort		      1
+      Points		      [55, 0; 0, 30]
+      DstBlock		      "qpOASES"
+      DstPort		      2
+    }
+    Line {
+      SrcBlock		      "g"
+      SrcPort		      1
+      Points		      [80, 0; 0, 60]
+      DstBlock		      "qpOASES"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "lbA"
+      SrcPort		      1
+      Points		      [55, 0; 0, -30]
+      DstBlock		      "qpOASES"
+      DstPort		      4
+    }
+    Line {
+      SrcBlock		      "ubA"
+      SrcPort		      1
+      Points		      [80, 0; 0, -60]
+      DstBlock		      "qpOASES"
+      DstPort		      5
     }
     Annotation {
       Position		      [335, 96]
     }
     Annotation {
       Name		      "This file is part of qpOASES.\n\nqpOASES -- An Implementation of the Online Active Set Strategy.\nC"
-      "opyright (C) 2007-2014 by Hans Joachim Ferreau, Andreas Potschka, Christian Kirches et al.\nAll rights reserved."
+      "opyright (C) 2007-2015 by Hans Joachim Ferreau, Andreas Potschka, Christian Kirches et al.\nAll rights reserved."
       Position		      [693, 128]
     }
   }
