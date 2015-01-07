@@ -120,6 +120,7 @@ interfaces/simulink/make.m -text
 interfaces/simulink/qpOASES_QProblem.cpp -text
 interfaces/simulink/qpOASES_QProblemB.cpp -text
 interfaces/simulink/qpOASES_SQProblem.cpp -text
+interfaces/simulink/qpOASES_simulink_utils.cpp -text
 /make.mk -text
 /make_cygwin.mk -text
 /make_linux.mk -text

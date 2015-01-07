@@ -37,6 +37,7 @@
 #include <stdlib.h>
 
 #include <qpOASES.hpp>
+#include "qpOASES_simulink_utils.cpp"
 
 
 #ifdef __cplusplus
@@ -56,6 +57,7 @@ extern "C" {
 #define SAMPLINGTIME   -1						/**< Sampling time. */
 #define NCONTROLINPUTS  2						/**< Number of control inputs. */
 #define MAXITER         100						/**< Maximum number of iteration. */
+#define HESSIANTYPE     HST_UNKNOWN				/**< Hessian type, see documentation of QProblemB class constructor. */
 
 
 static void mdlInitializeSizes (SimStruct *S)   /* Init sizes array */
@@ -157,6 +159,16 @@ static void mdlStart(SimStruct *S)
 
 	if ( mxIsEmpty(in_H) == 1 )
 	{
+		if ( ( HESSIANTYPE != HST_ZERO ) && ( HESSIANTYPE != HST_IDENTITY ) )
+		{
+			#ifndef __DSPACE__
+			#ifndef __XPCTARGET__
+			mexErrMsgTxt( "ERROR (qpOASES): Hessian can only be empty if type is set to HST_ZERO or HST_IDENTITY!" );
+			#endif
+			#endif
+			return;
+		}
+		
 	    nRows_H = 0;
 		nCols_H = 0;
 		size_H  = 0;
@@ -196,11 +208,11 @@ static void mdlStart(SimStruct *S)
 		return;
 	}
 
-	if ( size_H != nV*nV )
+	if ( ( size_H != nV*nV ) && ( size_H != 0 ) )
 	{
 		#ifndef __DSPACE__
 		#ifndef __XPCTARGET__
-		mexErrMsgTxt( "ERROR (qpOASES): Dimension mismatch!" );
+		mexErrMsgTxt( "ERROR (qpOASES): Dimension mismatch in H!" );
 		#endif
 		#endif
 		return;
@@ -220,7 +232,7 @@ static void mdlStart(SimStruct *S)
 	{
 		#ifndef __DSPACE__
 		#ifndef __XPCTARGET__
-		mexErrMsgTxt( "ERROR (qpOASES): Dimension mismatch!" );
+		mexErrMsgTxt( "ERROR (qpOASES): Invalid number of control inputs!" );
 		#endif
 		#endif
 		return;
@@ -230,7 +242,7 @@ static void mdlStart(SimStruct *S)
 	{
 		#ifndef __DSPACE__
 		#ifndef __XPCTARGET__
-		mexErrMsgTxt( "ERROR (qpOASES): Dimension mismatch!" );
+		mexErrMsgTxt( "ERROR (qpOASES): Dimension mismatch in lb!" );
 		#endif
 		#endif
 		return;
@@ -240,7 +252,7 @@ static void mdlStart(SimStruct *S)
 	{
 		#ifndef __DSPACE__
 		#ifndef __XPCTARGET__
-		mexErrMsgTxt( "ERROR (qpOASES): Dimension mismatch!" );
+		mexErrMsgTxt( "ERROR (qpOASES): Dimension mismatch in ub!" );
 		#endif
 		#endif
 		return;
@@ -248,7 +260,7 @@ static void mdlStart(SimStruct *S)
 
 
 	/* allocate QProblemB object */
-	problem = new QProblemB( nV );
+	problem = new QProblemB( nV,HESSIANTYPE );
 	if ( problem == 0 )
 	{
 		#ifndef __DSPACE__
@@ -276,7 +288,11 @@ static void mdlStart(SimStruct *S)
 	ssGetPWork(S)[0] = (void *) problem;
 
 	/* allocate memory for QP data ... */
-	ssGetPWork(S)[1] = (void *) calloc( size_H, sizeof(real_t) );	/* H */
+	if ( size_H > 0 )
+		ssGetPWork(S)[1] = (void *) calloc( size_H, sizeof(real_t) );	/* H */
+	else
+		ssGetPWork(S)[1] = 0;
+
 	ssGetPWork(S)[2] = (void *) calloc( size_g, sizeof(real_t) );	/* g */
 	ssGetPWork(S)[3] = (void *) calloc( size_lb, sizeof(real_t) );	/* lb */
 	ssGetPWork(S)[4] = (void *) calloc( size_ub, sizeof(real_t) );	/* ub */
@@ -329,8 +345,12 @@ static void mdlOutputs(SimStruct *S, int_T tid)
 	/* setup QP data */
 	nV = ssGetInputPortWidth(S, 1); /* nV = size_g */
 
-	for ( i=0; i<nV*nV; ++i )
-		H[i] = (mxGetPr(in_H))[i];
+	if ( ( HESSIANTYPE != HST_ZERO ) && ( HESSIANTYPE != HST_IDENTITY ) )
+	{
+		/* no conversion from FORTRAN to C as Hessian is symmetric! */
+		for ( i=0; i<nV*nV; ++i )
+			H[i] = (mxGetPr(in_H))[i];
+	}
 
 	for ( i=0; i<nV; ++i )
 	{
@@ -378,6 +398,11 @@ static void mdlOutputs(SimStruct *S, int_T tid)
     out_objVal[0] = (real_T)(problem->getObjVal());
 	out_status[0] = (real_t)(getSimpleStatus( status ));
 	out_nWSR[0]   = (real_T)(nWSR);
+
+	removeNaNs( out_uOpt,nU );
+	removeInfs( out_uOpt,nU );
+	removeNaNs( out_objVal,1 );
+	removeInfs( out_objVal,1 );
 
 	/* increase counter */
 	count[0] = count[0] + 1;

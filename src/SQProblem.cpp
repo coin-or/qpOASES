@@ -353,10 +353,18 @@ returnValue SQProblem::setupAuxiliaryQP( const real_t* const H_new, const real_t
 	int nV = getNV( );
 	int nC = getNC( );
 
-	DenseMatrix *dA = new DenseMatrix(nC, nV, nV, (real_t*) A_new);
-	SymDenseMat *sH = new SymDenseMat(nV, nV, nV, (real_t*) H_new);
+	DenseMatrix *dA = 0;
+	SymDenseMat *sH = 0;
 
-	returnValue returnvalue = setupAuxiliaryQP ( sH, dA, lb_new, ub_new, lbA_new, ubA_new );
+	if ( A_new != 0 )
+		dA = new DenseMatrix(nC, nV, nV, (real_t*) A_new);
+	else
+		return THROWERROR( RET_INVALID_ARGUMENTS );
+
+	if ( H_new != 0 )
+		sH = new SymDenseMat(nV, nV, nV, (real_t*) H_new);
+
+	returnValue returnvalue = setupAuxiliaryQP( sH,dA, lb_new,ub_new,lbA_new,ubA_new );
 
 	if ( H_new != 0 )
 		freeHessian = BT_TRUE;
@@ -373,7 +381,6 @@ returnValue SQProblem::setupAuxiliaryQP ( SymmetricMatrix *H_new, Matrix *A_new,
     const real_t *lb_new, const real_t *ub_new, const real_t *lbA_new, const real_t *ubA_new
 )
 {
-
 	int i;
 	int nV = getNV( );
 	int nC = getNC( );

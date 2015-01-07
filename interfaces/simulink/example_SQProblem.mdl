@@ -6,7 +6,7 @@ Model {
     NumRootInports	    0
     NumRootOutports	    0
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.63"
+    ComputedModelVersion    "1.67"
     NumModelReferences	    0
     NumTestPointedSignals   0
   }
@@ -25,9 +25,9 @@ Model {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "chjofer2"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Tue Jan 06 16:19:33 2015"
-  RTWModifiedTimeStamp	  342461970
-  ModelVersionFormat	  "1.%<AutoIncrement:63>"
+  LastModifiedDate	  "Wed Jan 07 09:31:42 2015"
+  RTWModifiedTimeStamp	  342523898
+  ModelVersionFormat	  "1.%<AutoIncrement:67>"
   ConfigurationManager	  "None"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -593,7 +593,7 @@ Model {
   }
   System {
     Name		    "example_SQProblem"
-    Location		    [1922, 224, 3598, 1179]
+    Location		    [122, 122, 1798, 1077]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -607,7 +607,7 @@ Model {
     ShowPageBoundaries	    off
     ZoomFactor		    "125"
     ReportName		    "simulink-default.rpt"
-    SIDHighWatermark	    9
+    SIDHighWatermark	    14
     Block {
       BlockType		      FromWorkspace
       Name		      "A"

@@ -44,19 +44,19 @@ g.time = simulationTime;
 data1 = [ 1.5,1.0 ];
 data2 = [ 1.0,1.5 ];
 g.signals.values = [data1; data2];
-g.signals.dimensions = length(data1);
+g.signals.dimensions = numel(data1);
 
 lb.time = simulationTime;
 data1 = [0.5,-2.0];
 data2 = [0.0,-1.0];
 lb.signals.values = [data1; data2];
-lb.signals.dimensions = length(data1);
+lb.signals.dimensions = numel(data1);
 
 ub.time = simulationTime;
 data1 = [ 5.0,2.0 ];
 data2 = [ 5.0,-0.5 ];
 ub.signals.values = [data1; data2];
-ub.signals.dimensions = length(data1);
+ub.signals.dimensions = numel(data1);
 
 
 clear simulationTime data1 data2

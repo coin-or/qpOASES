@@ -38,7 +38,6 @@
 
 USING_NAMESPACE_QPOASES
 
-
 #include "qpOASES_matlab_utils.hpp"
 
 /** initialise handle counter of QPInstance class */

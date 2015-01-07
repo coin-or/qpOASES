@@ -37,6 +37,7 @@
 #include <stdlib.h>
 
 #include <qpOASES.hpp>
+#include "qpOASES_simulink_utils.cpp"
 
 
 #ifdef __cplusplus
@@ -56,6 +57,7 @@ extern "C" {
 #define SAMPLINGTIME   -1						/**< Sampling time. */
 #define NCONTROLINPUTS  2						/**< Number of control inputs. */
 #define MAXITER         100	    				/**< Maximum number of iterations. */
+#define HESSIANTYPE     HST_UNKNOWN				/**< Hessian type, see documentation of SQProblem class constructor. */
 
 
 static void mdlInitializeSizes (SimStruct *S)   /* Init sizes array */
@@ -94,7 +96,11 @@ static void mdlInitializeSizes (SimStruct *S)   /* Init sizes array */
 	}
 
 	/* Specify dimension information for the input ports */
-	ssSetInputPortVectorDimension(S, 0, DYNAMICALLY_SIZED);	/* H */
+	if ( ( HESSIANTYPE != HST_ZERO ) && ( HESSIANTYPE != HST_IDENTITY ) )
+		ssSetInputPortVectorDimension(S, 0, DYNAMICALLY_SIZED);	/* H */
+	else
+		ssSetInputPortVectorDimension(S, 0, 0);	/* H */
+
 	ssSetInputPortVectorDimension(S, 1, DYNAMICALLY_SIZED); /* g */
 	ssSetInputPortVectorDimension(S, 2, DYNAMICALLY_SIZED); /* A */
 	ssSetInputPortVectorDimension(S, 3, DYNAMICALLY_SIZED); /* lb */
@@ -210,11 +216,11 @@ static void mdlStart(SimStruct *S)
 		return;
 	}
 
-	if ( size_H != nV*nV )
+	if ( ( size_H != nV*nV ) && ( size_H != 0 ) )
 	{
 		#ifndef __DSPACE__
 		#ifndef __XPCTARGET__
-		mexErrMsgTxt( "ERROR (qpOASES): Dimension mismatch!" );
+		mexErrMsgTxt( "ERROR (qpOASES): Dimension mismatch in H!" );
 		#endif
 		#endif
 		return;
@@ -234,7 +240,7 @@ static void mdlStart(SimStruct *S)
 	{
 		#ifndef __DSPACE__
 		#ifndef __XPCTARGET__
-		mexErrMsgTxt( "ERROR (qpOASES): Dimension mismatch!" );
+		mexErrMsgTxt( "ERROR (qpOASES): Dimension mismatch in lb!" );
 		#endif
 		#endif
 		return;
@@ -244,7 +250,7 @@ static void mdlStart(SimStruct *S)
 	{
 		#ifndef __DSPACE__
 		#ifndef __XPCTARGET__
-		mexErrMsgTxt( "ERROR (qpOASES): Dimension mismatch!" );
+		mexErrMsgTxt( "ERROR (qpOASES): Dimension mismatch in ub!" );
 		#endif
 		#endif
 		return;
@@ -254,7 +260,7 @@ static void mdlStart(SimStruct *S)
 	{
 		#ifndef __DSPACE__
 		#ifndef __XPCTARGET__
-		mexErrMsgTxt( "ERROR (qpOASES): Dimension mismatch!" );
+		mexErrMsgTxt( "ERROR (qpOASES): Dimension mismatch in lbA!" );
 		#endif
 		#endif
 		return;
@@ -264,7 +270,7 @@ static void mdlStart(SimStruct *S)
 	{
 		#ifndef __DSPACE__
 		#ifndef __XPCTARGET__
-		mexErrMsgTxt( "ERROR (qpOASES): Dimension mismatch!" );
+		mexErrMsgTxt( "ERROR (qpOASES): Dimension mismatch in ubA!" );
 		#endif
 		#endif
 		return;
@@ -272,12 +278,12 @@ static void mdlStart(SimStruct *S)
 
 
 	/* allocate QProblem object */
-	problem = new SQProblem( nV,nC );
+	problem = new SQProblem( nV,nC,HESSIANTYPE );
 	if ( problem == 0 )
 	{
 		#ifndef __DSPACE__
 		#ifndef __XPCTARGET__
-		mexErrMsgTxt( "ERROR (qpOASES): Unable to create QProblem object!" );
+		mexErrMsgTxt( "ERROR (qpOASES): Unable to create SQProblem object!" );
 		#endif
 		#endif
 		return;
@@ -300,7 +306,11 @@ static void mdlStart(SimStruct *S)
 	ssGetPWork(S)[0] = (void *) problem;
 
 	/* allocate memory for QP data ... */
-	ssGetPWork(S)[1] = (void *) calloc( size_H, sizeof(real_t) );	/* H */
+	if ( size_H > 0 )
+		ssGetPWork(S)[1] = (void *) calloc( size_H, sizeof(real_t) );	/* H */
+	else
+		ssGetPWork(S)[1] = 0;
+
 	ssGetPWork(S)[2] = (void *) calloc( size_g, sizeof(real_t) );	/* g */
 	ssGetPWork(S)[3] = (void *) calloc( size_A, sizeof(real_t) );	/* A */
 	ssGetPWork(S)[4] = (void *) calloc( size_lb, sizeof(real_t) );	/* lb */
@@ -324,7 +334,7 @@ static void mdlOutputs(SimStruct *S, int_T tid)
 	int nV, nC;
 	returnValue status;
 
-	int nWSR  = MAXITER;
+	int nWSR = MAXITER;
 	int nU   = NCONTROLINPUTS;
 
 	InputRealPtrsType in_H, in_g, in_A, in_lb, in_ub, in_lbA, in_ubA;
@@ -365,11 +375,14 @@ static void mdlOutputs(SimStruct *S, int_T tid)
 	nV = ssGetInputPortWidth(S, 1); /* nV = size_g */
 	nC = (int) ( ((real_t) ssGetInputPortWidth(S, 2)) / ((real_t) nV) ); /* nC = size_A / size_g */
 
-	for ( i=0; i<nV*nV; ++i )
-		H[i] = (*in_H)[i];
+	if ( ( HESSIANTYPE != HST_ZERO ) && ( HESSIANTYPE != HST_IDENTITY ) )
+	{
+		/* no conversion from FORTRAN to C as Hessian is symmetric! */
+		for ( i=0; i<nV*nV; ++i )
+			H[i] = (*in_H)[i];
+	}
 
-	for ( i=0; i<nC*nV; ++i )
-		A[i] = (*in_A)[i];
+	convertFortranToC( *in_A,nV,nC, A );
 
 	for ( i=0; i<nV; ++i )
 	{
@@ -423,6 +436,11 @@ static void mdlOutputs(SimStruct *S, int_T tid)
 	out_objVal[0] = (real_T)(problem->getObjVal( ));
 	out_status[0] = (real_t)(getSimpleStatus( status ));
 	out_nWSR[0]   = (real_T)(nWSR);
+
+	removeNaNs( out_uOpt,nU );
+	removeInfs( out_uOpt,nU );
+	removeNaNs( out_objVal,1 );
+	removeInfs( out_objVal,1 );
 
 	/* increase counter */
 	count[0] = count[0] + 1;

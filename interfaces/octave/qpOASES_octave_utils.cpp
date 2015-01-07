@@ -357,13 +357,19 @@ BooleanType containsNaNorInf(	const mxArray* prhs[], unsigned int dim, int rhs_i
 /*
  *	c o n v e r t F o r t r a n T o C
  */
-returnValue convertFortranToC( const real_t* const A_for, int nV, int nC, real_t* const A )
+returnValue convertFortranToC( const real_t* const M_for, int nV, int nC, real_t* const M )
 {
 	int i,j;
 
+	if ( ( M_for == 0 ) || ( M == 0 ) )
+		return RET_INVALID_ARGUMENTS;
+
+	if ( ( nV < 0 ) || ( nC < 0 ) )
+		return RET_INVALID_ARGUMENTS;
+
 	for ( i=0; i<nC; ++i )
 		for ( j=0; j<nV; ++j )
-			A[i*nV + j] = A_for[j*nC + i];
+			M[i*nV + j] = M_for[j*nC + i];
 
 	return SUCCESSFUL_RETURN;
 }
