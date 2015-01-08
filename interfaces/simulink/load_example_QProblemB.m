@@ -47,8 +47,8 @@ g.signals.values = [data1; data2];
 g.signals.dimensions = numel(data1);
 
 lb.time = simulationTime;
-data1 = [0.5,-2.0];
-data2 = [0.0,-1.0];
+data1 = [ 0.5,-2.0 ];
+data2 = [ 0.0,-1.0 ];
 lb.signals.values = [data1; data2];
 lb.signals.dimensions = numel(data1);
 

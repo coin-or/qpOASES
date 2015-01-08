@@ -238,7 +238,7 @@ static void mdlStart(SimStruct *S)
 		return;
 	}
 
-	if ( size_lb != nV )
+	if ( ( size_lb != nV ) && ( size_lb != 0 ) )
 	{
 		#ifndef __DSPACE__
 		#ifndef __XPCTARGET__
@@ -248,7 +248,7 @@ static void mdlStart(SimStruct *S)
 		return;
 	}
 
-	if ( size_ub != nV )
+	if ( ( size_ub != nV ) && ( size_ub != 0 ) )
 	{
 		#ifndef __DSPACE__
 		#ifndef __XPCTARGET__
@@ -293,10 +293,19 @@ static void mdlStart(SimStruct *S)
 	else
 		ssGetPWork(S)[1] = 0;
 
-	ssGetPWork(S)[2] = (void *) calloc( size_g, sizeof(real_t) );	/* g */
-	ssGetPWork(S)[3] = (void *) calloc( size_lb, sizeof(real_t) );	/* lb */
-	ssGetPWork(S)[4] = (void *) calloc( size_ub, sizeof(real_t) );	/* ub */
-	ssGetPWork(S)[5] = (void *) calloc( 1, sizeof(real_t) );		/* count */
+	ssGetPWork(S)[2] = (void *) calloc( size_g, sizeof(real_t) );		/* g */
+
+	if ( size_lb > 0 )
+		ssGetPWork(S)[3] = (void *) calloc( size_lb, sizeof(real_t) );	/* lb */
+	else
+		ssGetPWork(S)[3] = 0;
+
+	if ( size_ub > 0 )
+		ssGetPWork(S)[4] = (void *) calloc( size_ub, sizeof(real_t) );	/* ub */
+	else
+		ssGetPWork(S)[4] = 0;
+	
+	ssGetPWork(S)[5] = (void *) calloc( 1, sizeof(real_t) );			/* count */
 
 	/* reset counter */
 	count = (real_t *) ssGetPWork(S)[5];
@@ -345,7 +354,7 @@ static void mdlOutputs(SimStruct *S, int_T tid)
 	/* setup QP data */
 	nV = ssGetInputPortWidth(S, 1); /* nV = size_g */
 
-	if ( ( HESSIANTYPE != HST_ZERO ) && ( HESSIANTYPE != HST_IDENTITY ) )
+	if ( H != 0 )
 	{
 		/* no conversion from FORTRAN to C as Hessian is symmetric! */
 		for ( i=0; i<nV*nV; ++i )
@@ -353,10 +362,18 @@ static void mdlOutputs(SimStruct *S, int_T tid)
 	}
 
 	for ( i=0; i<nV; ++i )
-	{
 		g[i] = (*in_g)[i];
-		lb[i] = (*in_lb)[i];
-		ub[i] = (*in_ub)[i];
+
+	if ( lb != 0 )
+	{
+		for ( i=0; i<nV; ++i )
+			lb[i] = (*in_lb)[i];
+	}
+
+	if ( ub != 0 )
+	{
+		for ( i=0; i<nV; ++i )
+			ub[i] = (*in_ub)[i];
 	}
 
 	xOpt = new real_t[nV];
