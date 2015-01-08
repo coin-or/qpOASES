@@ -51,7 +51,7 @@ example = SQProblem(2, 1)
 analyser = SolutionAnalysis()
 
 #  Solve first QP ...
-nWSR = 10
+nWSR = np.array([10])
 example.init(H, g, A, lb, ub, lbA, ubA, nWSR)
 
 #  ... and analyse it.
@@ -60,7 +60,7 @@ analyser.getMaxKKTviolation(example, maxKKTviolation)
 print("maxKKTviolation: %e\n"%maxKKTviolation)
 
 #  Solve second QP ...
-nWSR = 10;
+nWSR = np.array([10])
 example.hotstart(H_new, g_new, A_new, lb_new, ub_new,
                  lbA_new, ubA_new, nWSR)
 

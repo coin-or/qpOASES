@@ -56,12 +56,12 @@ options.numRefinementSteps   = 1
 example.setOptions(options)
 
 # Solve first QP.
-nWSR = 10
-example.init(H, g, lb, ub, nWSR);
+nWSR = np.array([10])
+example.init(H, g, lb, ub, nWSR)
 print("\nnWSR = %d\n\n"%nWSR)
 
 # Solve second QP.
-nWSR = 10;
+nWSR = np.array([10])
 example.hotstart(g_new, lb_new, ub_new, nWSR)
 print("\nnWSR = %d\n\n"% nWSR)
 

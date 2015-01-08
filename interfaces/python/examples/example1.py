@@ -56,12 +56,12 @@ options.printLevel = PrintLevel.NONE
 example.setOptions(options)
 
 # Solve first QP.
-nWSR = 10;
+nWSR = np.array([10])
 example.init(H, g, A, lb, ub, lbA, ubA, nWSR)
 
 
 # Solve second QP.
-nWSR = 10
+nWSR = np.array([10])
 
 for i in range(100000):
     for j in range(1, 100):
@@ -71,6 +71,6 @@ for i in range(100000):
 # Get and print solution of second QP.
 
 xOpt = np.zeros(2)
-example.getPrimalSolution(xOpt);
+example.getPrimalSolution(xOpt)
 print("\nxOpt = [ %e, %e ];  objVal = %e\n\n"%(xOpt[0],xOpt[1],example.getObjVal()))
-example.printOptions();
+example.printOptions()
