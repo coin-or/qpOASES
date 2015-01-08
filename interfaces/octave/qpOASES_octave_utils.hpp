@@ -60,6 +60,7 @@ class QPInstance
 	public:
 		QPInstance(	int _nV = 0,
 					int _nC = 0,
+					HessianType _hessianType = HST_UNKNOWN,
 					BooleanType _isSimplyBounded = BT_FALSE
 					);
 

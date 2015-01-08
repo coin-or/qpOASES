@@ -199,6 +199,7 @@ testing/matlab/tests/runBenchmarkEXAMPLE1.m -text
 testing/matlab/tests/runBenchmarkEXAMPLE1A.m -text
 testing/matlab/tests/runBenchmarkEXAMPLE1B.m -text
 testing/matlab/tests/runBenchmarkIDHESSIAN1.m -text
+testing/matlab/tests/runEmptyHessianTests.m -text
 testing/matlab/tests/runInterfaceSeqTest.m -text
 testing/matlab/tests/runInterfaceTest.m -text
 testing/matlab/tests/runQAP8.m -text

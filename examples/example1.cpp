@@ -87,6 +87,7 @@ int main( )
 			xOpt[0],xOpt[1],yOpt[0],yOpt[1],yOpt[2],example.getObjVal() );
 
 	example.printOptions();
+	/*example.printProperties();*/
 
 	return 0;
 }

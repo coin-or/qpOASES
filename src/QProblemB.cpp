@@ -1301,19 +1301,32 @@ returnValue QProblemB::determineHessianType( )
 	real_t curDiag;
 
 	/* if Hessian type has been set by user, do NOT change it! */
-	if ( hessianType != HST_UNKNOWN )
+	switch ( hessianType )
 	{
-		if ( hessianType == HST_ZERO )
-		{
+		case HST_ZERO:
 			/* ensure regularisation as default options do not always solve LPs */
 			if ( options.enableRegularisation == BT_FALSE )
 			{
 				options.enableRegularisation = BT_TRUE;
 				options.numRegularisationSteps = 1;
 			}
-		}
+			return SUCCESSFUL_RETURN;
+		
+		case HST_IDENTITY:
+			return SUCCESSFUL_RETURN;
 
-		return SUCCESSFUL_RETURN;
+		case HST_POSDEF:
+        case HST_POSDEF_NULLSPACE:
+        case HST_SEMIDEF:
+		case HST_INDEF:
+			/* if H == 0, continue to reset hessianType to HST_ZERO
+			 *  to avoid segmentation faults! */
+			if ( H != 0 )
+				return SUCCESSFUL_RETURN;
+
+		default:
+			/* HST_UNKNOWN, continue */
+			break;
 	}
 
 	/* if Hessian has not been allocated, assume it to be all zeros! */

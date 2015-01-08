@@ -35,7 +35,8 @@
 
 
 
-QPInstance::QPInstance(	int _nV, int _nC, BooleanType _isSimplyBounded
+QPInstance::QPInstance(	int _nV, int _nC, HessianType _hessianType,
+						BooleanType _isSimplyBounded
 						)
 {
 	handle = s_nexthandle++;
@@ -48,11 +49,11 @@ QPInstance::QPInstance(	int _nV, int _nC, BooleanType _isSimplyBounded
 	if ( isSimplyBounded == BT_TRUE )
 	{
 		sqp = 0;
-		qpb = new QProblemB( _nV );
+		qpb = new QProblemB( _nV,_hessianType );
 	}
 	else
 	{
-		sqp = new SQProblem( _nV,_nC );
+		sqp = new SQProblem( _nV,_nC,_hessianType );
 		qpb = 0;
 	}
 
@@ -160,13 +161,28 @@ int QPInstance::getNC() const
 }
 
 
+
+/*
+ *	m x I s S c a l a r
+ */
+bool mxIsScalar( const mxArray *pm )
+{
+	if ( ( mxGetM(pm) == 1 ) && ( mxGetN(pm) == 1 ) )
+		return true;
+	else
+		return false;
+}
+
+
+
 /*
  *	a l l o c a t e Q P r o b l e m I n s t a n c e
  */
-int allocateQPInstance(	int nV, int nC, BooleanType isSimplyBounded, const Options *options
+int allocateQPInstance(	int nV, int nC, HessianType hessianType,
+						BooleanType isSimplyBounded, const Options *options
 						)
 {
-	QPInstance* inst = new QPInstance( nV,nC,isSimplyBounded );
+	QPInstance* inst = new QPInstance( nV,nC,hessianType, isSimplyBounded );
 
 	if ( inst->sqp != 0 )
 		inst->sqp->setOptions ( *options );
@@ -393,7 +409,7 @@ BooleanType hasOptionsValue( const mxArray* optionsPtr, const char* const option
 		return BT_FALSE;
 	}
 
-	if ( ( mxIsEmpty(optionName) == false ) && ( mxGetM( optionName ) == 1 ) && ( mxGetN( optionName ) == 1 ) )
+	if ( ( mxIsEmpty(optionName) == false ) && ( mxIsScalar( optionName ) == true ) )
 	{
 		*optionValue = mxGetPr( optionName );
 		return BT_TRUE;
@@ -567,10 +583,35 @@ returnValue setupOptions( Options* options, const mxArray* optionsPtr, int& nWSR
  *	s e t u p A u x i l i a r y I n p u t s
  */
 returnValue setupAuxiliaryInputs(	const mxArray* auxInput, unsigned int nV, unsigned int nC,
-									double** x0, double** guessedBounds, double** guessedConstraints, double** R
+									HessianType* hessianType, double** x0, double** guessedBounds, double** guessedConstraints, double** R
 									)
 {
 	mxArray* curField = 0;
+
+	/* hessianType */
+	curField = mxGetField( auxInput,0,"hessianType" );
+	if ( curField == NULL )
+		mexWarnMsgTxt( "auxInput struct does not contain entry 'hessianType'!\n         Type 'help qpOASES_auxInput' for further information." );
+	else
+	{
+		if ( mxIsEmpty(curField) == true )
+		{
+			*hessianType = HST_UNKNOWN;
+		}
+		else
+		{
+			if ( mxIsScalar(curField) == false )
+				return RET_INVALID_ARGUMENTS;
+
+			double* hessianTypeTmp = mxGetPr(curField);
+			int hessianTypeInt = (int)*hessianTypeTmp;
+			if ( hessianTypeInt < 0 ) 
+				hessianTypeInt = 6; /* == HST_UNKNOWN */
+			if ( hessianTypeInt > 5 ) 
+				hessianTypeInt = 6; /* == HST_UNKNOWN */
+			*hessianType = (REFER_NAMESPACE_QPOASES HessianType)hessianTypeInt;
+		}
+	}
 
 	/* x0 */
 	curField = mxGetField( auxInput,0,"x0" );
@@ -693,7 +734,7 @@ returnValue allocateOutputs(	int nlhs, mxArray* plhs[], int nV, int nC = 0, int 
 /*
  *	o b t a i n O u t p u t s
  */
-returnValue obtainOutputs(	int k, QProblemB* qp, returnValue returnvalue, int _nWSRout, real_t _cpuTime,
+returnValue obtainOutputs(	int k, QProblemB* qp, returnValue returnvalue, int _nWSRout, double _cpuTime,
 							int nlhs, mxArray* plhs[], int nV, int nC = 0, int handle = -1
 							)
 {
@@ -718,13 +759,13 @@ returnValue obtainOutputs(	int k, QProblemB* qp, returnValue returnvalue, int _n
 		{
 			/* exitflag */
 			double* status = mxGetPr( plhs[curIdx++] );
-			status[k] = (real_t)getSimpleStatus( returnvalue );
+			status[k] = (double)getSimpleStatus( returnvalue );
 
 			if ( nlhs > curIdx )
 			{
 				/* iter */
 				double* nWSRout = mxGetPr( plhs[curIdx++] );
-				nWSRout[k] = (real_t) _nWSRout;
+				nWSRout[k] = (double) _nWSRout;
 
 				if ( nlhs > curIdx )
 				{
@@ -772,7 +813,7 @@ returnValue obtainOutputs(	int k, QProblemB* qp, returnValue returnvalue, int _n
 						/* cpu time */
 						curField = mxGetField( auxOutput,0,"cpuTime" );
 						double* cpuTime = mxGetPr(curField);
-						cpuTime[0] = (real_t) _cpuTime;
+						cpuTime[0] = (double) _cpuTime;
 					}
 				}
 			}

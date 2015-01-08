@@ -32,8 +32,11 @@ function [ successFlag ] = runAllTests( doPrint )
     fprintf( 'Running tests with random QPs having identity Hessian... ' )
     successFlag = updateSuccessFlag( successFlag, runRandomIdHessian( 12,12, doPrint,4242 ) );
     
-    %fprintf( 'Running tests with random QPs having zero Hessian... ' )
-    %successFlag = updateSuccessFlag( successFlag, runRandomZeroHessian( 11,41, doPrint,4242 ) );
+    fprintf( 'Running tests with random QPs having zero Hessian... ' )
+    successFlag = updateSuccessFlag( successFlag, runRandomZeroHessian( 11,41, doPrint,4242 ) );
+    
+    fprintf( 'Running qpOASES passing an empty Hessian matrix argument... ' )
+    successFlag = updateSuccessFlag( successFlag, runEmptyHessianTests( doPrint ) );
     
     fprintf( 'Running alternativeX0 test... ' )
     successFlag = updateSuccessFlag( successFlag, runAlternativeX0Test( 50,300,doPrint,4242 ) );

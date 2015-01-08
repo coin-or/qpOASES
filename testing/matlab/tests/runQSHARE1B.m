@@ -14,8 +14,9 @@ function [ successFlag ] = runQSHARE1B( doPrint )
     end
     
     options = qpOASES_options('default', 'maxIter',550, 'maxCpuTime',2.0, 'printLevel',0 );
+    auxInput = qpOASES_auxInput( 'hessianType',[] );
     tic
-    [xD,fvalD,exitflagD,iterD,lambdaD] = qpOASES( H,g,A,lb,ub,lbA,ubA,options );
+    [xD,fvalD,exitflagD,iterD,lambdaD] = qpOASES( H,g,A,lb,ub,lbA,ubA,options,auxInput );
     tD = toc;
     kktD = getKktResidual( H,g,A,lb,ub,lbA,ubA, xD,lambdaD );
     

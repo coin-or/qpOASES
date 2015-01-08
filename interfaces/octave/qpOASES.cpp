@@ -52,20 +52,20 @@ static std::vector<QPInstance *> g_instances;
 /*
  *	Q P r o b l e m _ q p O A S E S
  */
-int QProblem_qpOASES(	int nV, int nC, int nP,
+int QProblem_qpOASES(	int nV, int nC, HessianType hessianType, int nP,
 						SymmetricMatrix *H, real_t* g, Matrix *A,
 						real_t* lb, real_t* ub, real_t* lbA, real_t* ubA,
 						int nWSRin, real_t maxCpuTimeIn,
 						real_t* x0, Options* options,
 						int nOutputs, mxArray* plhs[],
-						real_t* guessedBounds, real_t* guessedConstraints
+						double* guessedBounds, double* guessedConstraints
 						)
 {
 	int nWSRout;
 	real_t maxCpuTimeOut;
 	
 	/* 1) Setup initial QP. */
-	QProblem QP( nV,nC );
+	QProblem QP( nV,nC,hessianType );
 	QP.setOptions( *options );
 
 	/* 2) Solve initial QP. */
@@ -162,20 +162,20 @@ int QProblem_qpOASES(	int nV, int nC, int nP,
 /*
  *	Q P r o b l e m B _ q p O A S E S
  */
-int QProblemB_qpOASES(	int nV, int nP,
+int QProblemB_qpOASES(	int nV, HessianType hessianType, int nP,
 						SymmetricMatrix *H, real_t* g,
 						real_t* lb, real_t* ub,
 						int nWSRin, real_t maxCpuTimeIn,
 						real_t* x0, Options* options,
 						int nOutputs, mxArray* plhs[],
-						real_t* guessedBounds
+						double* guessedBounds
 						)
 {
 	int nWSRout;
 	real_t maxCpuTimeOut;
 
 	/* 1) Setup initial QP. */
-	QProblemB QP( nV );
+	QProblemB QP( nV,hessianType );
 	QP.setOptions( *options );
 
 	/* 2) Solve initial QP. */
@@ -251,7 +251,9 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 	Matrix *A=0;
 
 	real_t *g=0, *lb=0, *ub=0, *lbA=0, *ubA=0;
-	real_t *x0=0, *guessedBounds=0, *guessedConstraints=0, *R=0;
+	HessianType hessianType = HST_UNKNOWN;
+	real_t *x0=0, *R=0;
+	double *guessedBounds=0, *guessedConstraints=0;
 
 	int H_idx=-1, g_idx=-1, A_idx=-1, lb_idx=-1, ub_idx=-1, lbA_idx=-1, ubA_idx=-1;
 	int options_idx=-1, x0_idx=-1, auxInput_idx=-1;
@@ -499,7 +501,7 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 	}
 
 	if ( auxInput_idx >= 0 )
-		setupAuxiliaryInputs( prhs[auxInput_idx],nV,nC, &x0,&guessedBounds,&guessedConstraints,&R );
+		setupAuxiliaryInputs( prhs[auxInput_idx],nV,nC, &hessianType,&x0,&guessedBounds,&guessedConstraints,&R );
 
 	
 	/* III) ACTUALLY PERFORM QPOASES FUNCTION CALL: */
@@ -522,7 +524,7 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 	if ( nC == 0 )
 	{
 		/* Call qpOASES (using QProblemB class). */
-		QProblemB_qpOASES(	nV,nP,
+		QProblemB_qpOASES(	nV,hessianType, nP,
 							H,g,
 							lb,ub,
 							nWSRin,maxCpuTimeIn,
@@ -540,7 +542,7 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 	else
 	{
 		/* Call qpOASES (using QProblem class). */
-		QProblem_qpOASES(	nV,nC,nP,
+		QProblem_qpOASES(	nV,nC,hessianType, nP,
 							H,g,A,
 							lb,ub,lbA,ubA,
 							nWSRin,maxCpuTimeIn,

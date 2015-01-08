@@ -29,6 +29,15 @@
 %
 %
 %qpOASES features the following auxiliary inputs:
+%  hessianType          -  Provide information on Hessian matrix:
+%                          0: Hessian is zero matrix (i.e. LP formulation)
+%                          1: Hessian is identity matrix
+%                          2: Hessian is (strictly) positive definite
+%                          3: Hessian is positive definite on null space 
+%                             of active bounds/constraints
+%                          4: Hessian is positive semi-definite.
+%                          5: Hessian is indefinite
+%                          Leave hessianType empty if Hessian type is unknown.
 %  x0                   -  Initial guess for optimal primal solution.
 %  guessedWorkingSetB   -  Initial guess for working set of bounds at 
 %                          optimal solution (nV elements or empty).
@@ -99,7 +108,8 @@ end
 function [ auxInput ] = qpOASES_emptyAuxInput( )
 
 	% setup auxiliary input struct with all entries empty
-	auxInput = struct(	'x0',                 [], ...
+	auxInput = struct(	'hessianType',        [], ...
+                        'x0',                 [], ...
 						'guessedWorkingSetB', [], ...
                         'guessedWorkingSetC', [], ...
                         'R',                  []  ...

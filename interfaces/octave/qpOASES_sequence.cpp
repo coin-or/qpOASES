@@ -61,7 +61,7 @@ int QProblemB_init(	int handle,
 					int nWSRin, real_t maxCpuTimeIn,
 					const real_t* const x0, Options* options,
 					int nOutputs, mxArray* plhs[],
-					real_t* guessedBounds
+					double* guessedBounds
 					)
 {
 	int nWSRout = nWSRin;
@@ -125,7 +125,7 @@ int SQProblem_init(	int handle,
 					int nWSRin, real_t maxCpuTimeIn,
 					const real_t* const x0, Options* options,
 					int nOutputs, mxArray* plhs[],
-					real_t* guessedBounds, real_t* guessedConstraints
+					double* guessedBounds, double* guessedConstraints
 					)
 {
 	int nWSRout = nWSRin;
@@ -327,7 +327,9 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 	char typeString[2];
 
 	real_t *g=0, *lb=0, *ub=0, *lbA=0, *ubA=0;
-	real_t *x0=0, *guessedBounds=0, *guessedConstraints=0, *R=0;
+	HessianType hessianType = HST_UNKNOWN;
+	real_t *x0=0, *R=0;
+	double* guessedBounds=0, *guessedConstraints=0;
 
 	int H_idx=-1, g_idx=-1, A_idx=-1, lb_idx=-1, ub_idx=-1, lbA_idx=-1, ubA_idx=-1;
 	int x0_idx=-1, auxInput_idx=-1;
@@ -591,11 +593,11 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 			return;
 
 		if ( auxInput_idx >= 0 )
-			setupAuxiliaryInputs( prhs[auxInput_idx],nV,nC, &x0,&guessedBounds,&guessedConstraints,&R );
+			setupAuxiliaryInputs( prhs[auxInput_idx],nV,nC, &hessianType,&x0,&guessedBounds,&guessedConstraints,&R );
 
 
 		/* allocate instance */
-		handle = allocateQPInstance( nV,nC,isSimplyBoundedQp, &options );	
+		handle = allocateQPInstance( nV,nC,hessianType, isSimplyBoundedQp,&options );	
 		globalQP = getQPInstance( handle );
 
 		/* make a deep-copy of the user-specified Hessian matrix (possibly sparse) */
@@ -659,7 +661,7 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 			isSimplyBoundedQp = BT_FALSE;
 
 
-		if ( ( mxIsDouble( prhs[1] ) == false ) || ( mxGetM( prhs[1] ) != 1 ) || ( mxGetN( prhs[1] ) != 1 ) )
+		if ( ( mxIsDouble( prhs[1] ) == false ) || ( mxIsScalar( prhs[1] ) == false ) )
 		{
 			myMexErrMsgTxt( "ERROR (qpOASES): Expecting a handle to QP object as second argument!\nType 'help qpOASES_sequence' for further information." );
 			return;
@@ -794,7 +796,7 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 			return;
 		}
 
-		if ( ( mxIsDouble( prhs[1] ) == false ) || ( mxGetM( prhs[1] ) != 1 ) || ( mxGetN( prhs[1] ) != 1 ) )
+		if ( ( mxIsDouble( prhs[1] ) == false ) || ( mxIsScalar( prhs[1] ) == false ) )
 		{
 			myMexErrMsgTxt( "ERROR (qpOASES): Expecting a handle to QP object as second argument!\nType 'help qpOASES_sequence' for further information." );
 			return;
@@ -951,7 +953,7 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 			return;
 		}
 
-		if ( ( mxIsDouble( prhs[1] ) == false ) || ( mxGetM( prhs[1] ) != 1 ) || ( mxGetN( prhs[1] ) != 1 ) )
+		if ( ( mxIsDouble( prhs[1] ) == false ) || ( mxIsScalar( prhs[1] ) == false ) )
 		{
 			myMexErrMsgTxt( "ERROR (qpOASES): Expecting a handle to QP object as second argument!\nType 'help qpOASES_sequence' for further information." );
 			return;
@@ -1077,7 +1079,7 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 			return;
 		}
 
-		if ( ( mxIsDouble( prhs[1] ) == false ) || ( mxGetM( prhs[1] ) != 1 ) || ( mxGetN( prhs[1] ) != 1 ) )
+		if ( ( mxIsDouble( prhs[1] ) == false ) || ( mxIsScalar( prhs[1] ) == false ) )
 		{
 			myMexErrMsgTxt( "ERROR (qpOASES): Expecting a handle to QP object as second argument!\nType 'help qpOASES_sequence' for further information." );
 			return;

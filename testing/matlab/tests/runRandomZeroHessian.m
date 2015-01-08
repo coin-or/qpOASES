@@ -229,9 +229,11 @@ function [ successFlag ] = callQpOasesSeq( qpData1,qpData2,hasA,hasOptions,hasX0
     
     if ( hasWS > 0 )
         if ( hasWS == 1 )
-            WS = 0 * ones( nV+nC,1 );
+            wsB = 0 * ones( nV,1 );
+            wsC = 0 * ones( nC,1 );
         else
-            WS = [];
+            wsB = [];
+            wsC = [];
         end
         
         if ( hasX0 > 0 )
@@ -241,7 +243,7 @@ function [ successFlag ] = callQpOasesSeq( qpData1,qpData2,hasA,hasOptions,hasX0
                 x0 = [];
             end
             
-            auxInput = qpOASES_auxInput( 'x0',x0,'guessedWorkingSet',WS );
+            auxInput = qpOASES_auxInput( 'x0',x0,'guessedWorkingSetB',wsB,'guessedWorkingSetC',wsC );
 
             if ( hasOptions > 0 )
                 if ( hasOptions == 1 )
@@ -281,7 +283,7 @@ function [ successFlag ] = callQpOasesSeq( qpData1,qpData2,hasA,hasOptions,hasX0
 
         else % hasX0 == 0
 
-            auxInput = qpOASES_auxInput( 'guessedWorkingSet',WS );
+            auxInput = qpOASES_auxInput( 'guessedWorkingSetB',wsB,'guessedWorkingSetC',wsC );
             
             if ( hasOptions > 0 )
                 if ( hasOptions == 1 )
