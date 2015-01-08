@@ -1302,15 +1302,32 @@ returnValue QProblemB::determineHessianType( )
 
 	/* if Hessian type has been set by user, do NOT change it! */
 	if ( hessianType != HST_UNKNOWN )
+	{
+		if ( hessianType == HST_ZERO )
+		{
+			/* ensure regularisation as default options do not always solve LPs */
+			if ( options.enableRegularisation == BT_FALSE )
+			{
+				options.enableRegularisation = BT_TRUE;
+				options.numRegularisationSteps = 1;
+			}
+		}
+
 		return SUCCESSFUL_RETURN;
+	}
 
 	/* if Hessian has not been allocated, assume it to be all zeros! */
 	if ( H == 0 )
 	{
 		hessianType = HST_ZERO;
+		THROWINFO( RET_ZERO_HESSIAN_ASSUMED );
 
+		/* ensure regularisation as default options do not always solve LPs */
 		if ( options.enableRegularisation == BT_FALSE )
+		{
 			options.enableRegularisation = BT_TRUE;
+			options.numRegularisationSteps = 1;
+		}
 
 		return SUCCESSFUL_RETURN;
 	}
@@ -1318,7 +1335,7 @@ returnValue QProblemB::determineHessianType( )
 	/* 1) If Hessian has outer-diagonal elements,
 	 *    Hessian is assumed to be positive definite. */
 	hessianType = HST_POSDEF;
-	if (H->isDiag() == BT_FALSE)
+	if ( H->isDiag() == BT_FALSE )
 		return SUCCESSFUL_RETURN;
 
 	/* 2) Otherwise it is diagonal and test for identity or zero matrix is performed. */
@@ -1351,10 +1368,16 @@ returnValue QProblemB::determineHessianType( )
 		hessianType = HST_IDENTITY;
 
 	if ( isZero == BT_TRUE )
+	{
 		hessianType = HST_ZERO;
 
-	if ( ( hessianType == HST_ZERO ) && ( options.enableRegularisation == BT_FALSE ) )
-		options.enableRegularisation = BT_TRUE;
+		/* ensure regularisation as default options do not always solve LPs */
+		if ( options.enableRegularisation == BT_FALSE )
+		{
+			options.enableRegularisation = BT_TRUE;
+			options.numRegularisationSteps = 1;
+		}
+	}
 
 	return SUCCESSFUL_RETURN;
 }
@@ -1459,10 +1482,10 @@ returnValue QProblemB::computeCholesky( )
 		R[i] = 0.0;
 
 	/* 2) Calculate Cholesky decomposition of H (projected to free variables). */
-	if ( ( hessianType == HST_ZERO ) || ( hessianType == HST_IDENTITY ) )
+	switch ( hessianType )
 	{
-		if ( hessianType == HST_ZERO )
-		{
+		case HST_ZERO:
+		
 			/* if Hessian is zero matrix and it has been regularised,
 			 * its Cholesky factor is the identity matrix scaled by sqrt(eps). */
 			if ( usingRegularisation( ) == BT_TRUE )
@@ -1470,51 +1493,55 @@ returnValue QProblemB::computeCholesky( )
 				for( i=0; i<nV; ++i )
 					RR(i,i) = getSqrt( regVal );
 			}
-			/*else
-				return THROWERROR( RET_CHOLESKY_OF_ZERO_HESSIAN );*/
-		}
-		else
-		{
+			else
+			{
+				return THROWERROR( RET_CHOLESKY_OF_ZERO_HESSIAN );
+			}
+			break;
+		
+
+		case HST_IDENTITY:
+		
 			/* if Hessian is identity, so is its Cholesky factor. */
 			for( i=0; i<nV; ++i )
 				RR(i,i) = 1.0;
-		}
-	}
-	else
-	{
-		if ( nFR > 0 )
-		{
-			int* FR_idx;
-			bounds.getFree( )->getNumberArray( &FR_idx );
+			break;
 
-			/* get H */
-			for ( j=0; j < nFR; ++j )
-				H->getCol (FR_idx[j], bounds.getFree (), 1.0, &(R[j*nV]) );
 
-			/* R'*R = H */
-			long info = 0;
-			unsigned long _nFR = (unsigned long)nFR, _nV = (unsigned long)nV;
+		default:
+	
+			if ( nFR > 0 )
+			{
+				int* FR_idx;
+				bounds.getFree( )->getNumberArray( &FR_idx );
 
-			POTRF( "U", &_nFR, R, &_nV, &info );
+				/* get H */
+				for ( j=0; j < nFR; ++j )
+					H->getCol (FR_idx[j], bounds.getFree (), 1.0, &(R[j*nV]) );
 
-			/* <0 = invalid call, =0 ok, >0 not spd */
-			if (info > 0) {
-				if ( R[0] < 0.0 )
-				{
-					/* Cholesky decomposition has tunneled a negative
-					 * diagonal element. */ 
-					options.epsRegularisation = getMin( -R[0]+options.epsRegularisation,getSqrt(getAbs(options.epsRegularisation)) );
+				/* R'*R = H */
+				long info = 0;
+				unsigned long _nFR = (unsigned long)nFR, _nV = (unsigned long)nV;
+
+				POTRF( "U", &_nFR, R, &_nV, &info );
+
+				/* <0 = invalid call, =0 ok, >0 not spd */
+				if (info > 0) {
+					if ( R[0] < 0.0 )
+					{
+						/* Cholesky decomposition has tunneled a negative
+						 * diagonal element. */ 
+						options.epsRegularisation = getMin( -R[0]+options.epsRegularisation,getSqrt(getAbs(options.epsRegularisation)) );
+					}
+
+					hessianType = HST_SEMIDEF;
+					return RET_HESSIAN_NOT_SPD;
 				}
 
-				hessianType = HST_SEMIDEF;
-				return RET_HESSIAN_NOT_SPD;
+				/* zero first subdiagonal to make givens updates work */
+				for ( i=0; i<nFR-1; ++i )
+					RR(i+1,i) = 0.0;
 			}
-
-			/* zero first subdiagonal to make givens updates work */
-			for (i=0;i<nFR-1;++i)
-				RR(i+1,i) = 0.0;
-
-		}
 	}
 
 	return SUCCESSFUL_RETURN;

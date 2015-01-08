@@ -64,8 +64,12 @@ int main( )
 
 	/* Solve first QP. */
 	int nWSR = 10;
-	example.init( H,g,lb,ub, nWSR,0 );
-// 	printf( "\nnWSR = %d\n\n", nWSR );
+	example.init( (real_t*)0,g,lb,ub, nWSR,0 );
+
+	/* Get and print solution of first QP. */
+	real_t xOpt[2];
+	example.getPrimalSolution( xOpt );
+	printf( "\nxOpt = [ %e, %e ];  objVal = %e\n\n", xOpt[0],xOpt[1],example.getObjVal() );
 	
 	/* Solve second QP. */
 	nWSR = 10;
@@ -73,7 +77,6 @@ int main( )
 // 	printf( "\nnWSR = %d\n\n", nWSR );
 
 	/* Get and print solution of second QP. */
-	real_t xOpt[2];
 	example.getPrimalSolution( xOpt );
 	printf( "\nxOpt = [ %e, %e ];  objVal = %e\n\n", xOpt[0],xOpt[1],example.getObjVal() );
 

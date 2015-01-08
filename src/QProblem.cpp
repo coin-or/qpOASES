@@ -4093,7 +4093,7 @@ returnValue QProblem::removeBound(	int number,
 
 
 	if ( ( updateCholesky == BT_TRUE ) &&
-		 /*( hessianType != HST_ZERO )   &&*/ ( hessianType != HST_IDENTITY ) )
+	     ( hessianType != HST_ZERO ) && ( hessianType != HST_IDENTITY ) )
 	{
 		/* III) UPDATE CHOLESKY DECOMPOSITION,
 		 *      calculate new additional column (i.e. [r sqrt(rho2)]')
@@ -4101,10 +4101,17 @@ returnValue QProblem::removeBound(	int number,
 		real_t z2 = QQ(nnFRp1,nZ);
 		real_t rho2;
 
-		if ( hessianType != HST_ZERO )
-			rho2 = H->diag(nnFRp1)*z2*z2; /* rho2 = h2*z2*z2 */
-		else
-			rho2 = 0.0;
+		switch ( hessianType ) 
+		{
+			case HST_ZERO:
+				rho2 = regVal * z2*z2;
+
+			case HST_IDENTITY:
+				rho2 = 1.0 * z2*z2;
+
+			default:
+				rho2 = H->diag(nnFRp1) * z2*z2; /* rho2 = h2*z2*z2 */
+		}
 
 		if ( nFR > 0 )
 		{
@@ -4116,9 +4123,32 @@ returnValue QProblem::removeBound(	int number,
 			for( j=0; j<nFR; ++j )
 				z[j] = QQ(FR_idx[j],nZ);
 			z[nFR] = 0.0;
-			H->times(bounds.getFree(), bounds.getFree(), 1, 1.0, z, nFR+1, 0.0, Hz, nFR+1);
 
-			H->getCol(nnFRp1, bounds.getFree(), 1.0, z);
+			switch ( hessianType )
+			{
+				case HST_ZERO:
+					for( i=0; i<nFR+1; ++i )
+					{
+						Hz[i] = regVal * z[i];
+						z[i] = 0.0;
+					}
+					z[nFR] = regVal;
+					break;
+
+				case HST_IDENTITY:
+					for( i=0; i<nFR+1; ++i )
+					{
+						Hz[i] = 1.0 * z[i];
+						z[i] = 0.0;
+					}
+					z[nFR] = 1.0;
+					break;
+
+				default:
+					H->times(bounds.getFree(), bounds.getFree(), 1, 1.0, z, nFR+1, 0.0, Hz, nFR+1);
+					H->getCol(nnFRp1, bounds.getFree(), 1.0, z);
+					break;
+			}
 
 			if ( nZ > 0 )
 			{

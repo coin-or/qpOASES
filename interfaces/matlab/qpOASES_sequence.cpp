@@ -398,18 +398,36 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 			return;
 		}
 
+		g_idx = 2;
+
+		if ( mxIsEmpty(prhs[1]) == 1 )
+		{
+			H_idx = -1;
+			nV = (unsigned int)mxGetM( prhs[ g_idx ] ); /* row number of Hessian matrix */
+		}
+		else
+		{
+			H_idx = 1;
+			nV = (unsigned int)mxGetM( prhs[ H_idx ] ); /* row number of Hessian matrix */
+		}
+
+
 		/* ensure that data is given in double precision */
-		if ((mxIsDouble(prhs[1]) == 0) || (mxIsDouble(prhs[2]) == 0)) {
-			myMexErrMsgTxt(
-					"ERROR (qpOASES): All data has to be provided in double precision!");
+		if ( ( ( H_idx >= 0 ) && ( mxIsDouble( prhs[ H_idx ] ) == 0 ) ) ||
+		     ( mxIsDouble( prhs[ g_idx ] ) == 0 ) )
+		{
+			myMexErrMsgTxt( "ERROR (qpOASES): All data has to be provided in double precision!" );
 			return;
 		}
 
-        nV = (unsigned int)mxGetM( prhs[1] ); /* row number of Hessian matrix */
+		if ( ( H_idx >= 0 ) && ( ( mxGetN( prhs[ H_idx ] ) != nV ) || ( mxGetM( prhs[ H_idx ] ) != nV ) ) )
+		{
+			myMexErrMsgTxt( "ERROR (qpOASES): Hessian matrix dimension mismatch!" );
+			return;
+		}
+
 
 		/* Check for 'Inf' and 'Nan' in Hessian */
-		H_idx = 1;
-		g_idx = 2;
 		if (containsNaNorInf(prhs, nV*nV, H_idx, 0) == BT_TRUE) {
 			return;
 		}
@@ -440,11 +458,6 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 			/* Check inputs dimensions and assign pointers to inputs. */
 			nC = 0; /* row number of constraint matrix */
 
-			if ( mxGetN( prhs[1] ) != nV )
-			{
-				myMexErrMsgTxt( "ERROR (qpOASES): Input dimension mismatch!" );
-				return;
-			}
 
 			if ( smartDimensionCheck( &g,nV,1, BT_FALSE,prhs,2 ) != SUCCESSFUL_RETURN )
 				return;
@@ -487,19 +500,18 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 		}
 		else
 		{
+			A_idx = 3;
+
 			/* ensure that data is given in double precision */
-			if ( ( mxIsDouble( prhs[1] ) == 0 ) ||
-				 ( mxIsDouble( prhs[2] ) == 0 ) ||
-				 ( mxIsDouble( prhs[3] ) == 0 ) )
+			if ( mxIsDouble( prhs[ A_idx ] ) == 0 )
 			{
 				myMexErrMsgTxt( "ERROR (qpOASES): All data has to be provided in double precision!" );
 				return;
 			}
 		
 			/* Check inputs dimensions and assign pointers to inputs. */
-			nC = (unsigned int)mxGetM( prhs[3] ); /* row number of constraint matrix */
+			nC = (unsigned int)mxGetM( prhs[ A_idx ] ); /* row number of constraint matrix */
 
-			A_idx = 3;
 			lb_idx = 4;
 			ub_idx = 5;
 			lbA_idx = 6;
@@ -521,25 +533,25 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 				return;
 			}
 
-			if ( ( mxGetN( prhs[1] ) != nV ) || ( ( mxGetN( prhs[3] ) != 0 ) && ( mxGetN( prhs[3] ) != nV ) ) )
+			if ( ( mxGetN( prhs[ A_idx ] ) != 0 ) && ( mxGetN( prhs[ A_idx ] ) != nV ) )
 			{
-				myMexErrMsgTxt( "ERROR (qpOASES): Input dimension mismatch!" );
+				myMexErrMsgTxt( "ERROR (qpOASES): Constraint matrix dimension mismatch!" );
 				return;
 			}
 		
-			if ( smartDimensionCheck( &g,nV,1, BT_FALSE,prhs,2 ) != SUCCESSFUL_RETURN )
+			if ( smartDimensionCheck( &g,nV,1, BT_FALSE,prhs,g_idx ) != SUCCESSFUL_RETURN )
 				return;
 
-			if ( smartDimensionCheck( &lb,nV,1, BT_TRUE,prhs,4 ) != SUCCESSFUL_RETURN )
+			if ( smartDimensionCheck( &lb,nV,1, BT_TRUE,prhs,lb_idx ) != SUCCESSFUL_RETURN )
 				return;
 
-			if ( smartDimensionCheck( &ub,nV,1, BT_TRUE,prhs,5 ) != SUCCESSFUL_RETURN )
+			if ( smartDimensionCheck( &ub,nV,1, BT_TRUE,prhs,ub_idx ) != SUCCESSFUL_RETURN )
 				return;
 
-			if ( smartDimensionCheck( &lbA,nC,1, BT_TRUE,prhs,6 ) != SUCCESSFUL_RETURN )
+			if ( smartDimensionCheck( &lbA,nC,1, BT_TRUE,prhs,lbA_idx ) != SUCCESSFUL_RETURN )
 				return;
 			
-			if ( smartDimensionCheck( &ubA,nC,1, BT_TRUE,prhs,7 ) != SUCCESSFUL_RETURN )
+			if ( smartDimensionCheck( &ubA,nC,1, BT_TRUE,prhs,ubA_idx ) != SUCCESSFUL_RETURN )
 				return;
 
 			/* default value for nWSR */
@@ -587,11 +599,12 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 		globalQP = getQPInstance( handle );
 
 		/* make a deep-copy of the user-specified Hessian matrix (possibly sparse) */
-		setupHessianMatrix(	prhs[1],nV, &(globalQP->H),&(globalQP->Hir),&(globalQP->Hjc),&(globalQP->Hv) );
-
+		if ( H_idx >= 0 )
+			setupHessianMatrix(	prhs[H_idx],nV, &(globalQP->H),&(globalQP->Hir),&(globalQP->Hjc),&(globalQP->Hv) );
+		
 		/* make a deep-copy of the user-specified constraint matrix (possibly sparse) */
-		if ( nC > 0 )
-			setupConstraintMatrix( prhs[3],nV,nC, &(globalQP->A),&(globalQP->Air),&(globalQP->Ajc),&(globalQP->Av) );
+		if ( ( nC > 0 ) && ( A_idx >= 0 ) )
+			setupConstraintMatrix( prhs[A_idx],nV,nC, &(globalQP->A),&(globalQP->Air),&(globalQP->Ajc),&(globalQP->Av) );
 
 		/* Create output vectors and assign pointers to them. */
 		allocateOutputs( nlhs,plhs, nV,nC,1,handle );
@@ -684,13 +697,13 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 		{
 			nC = 0;
 
-			if ( smartDimensionCheck( &g,nV,1, BT_FALSE,prhs,2 ) != SUCCESSFUL_RETURN )
+			if ( smartDimensionCheck( &g,nV,1, BT_FALSE,prhs,g_idx ) != SUCCESSFUL_RETURN )
 				return;
 
-			if ( smartDimensionCheck( &lb,nV,1, BT_TRUE,prhs,3 ) != SUCCESSFUL_RETURN )
+			if ( smartDimensionCheck( &lb,nV,1, BT_TRUE,prhs,lb_idx ) != SUCCESSFUL_RETURN )
 				return;
 
-			if ( smartDimensionCheck( &ub,nV,1, BT_TRUE,prhs,4 ) != SUCCESSFUL_RETURN )
+			if ( smartDimensionCheck( &ub,nV,1, BT_TRUE,prhs,ub_idx ) != SUCCESSFUL_RETURN )
 				return;
 
 			/* default value for nWSR */
@@ -715,19 +728,19 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 				return;
 			}
 
-			if ( smartDimensionCheck( &g,nV,1, BT_FALSE,prhs,2 ) != SUCCESSFUL_RETURN )
+			if ( smartDimensionCheck( &g,nV,1, BT_FALSE,prhs,g_idx ) != SUCCESSFUL_RETURN )
 				return;
 
-			if ( smartDimensionCheck( &lb,nV,1, BT_TRUE,prhs,3 ) != SUCCESSFUL_RETURN )
+			if ( smartDimensionCheck( &lb,nV,1, BT_TRUE,prhs,lb_idx ) != SUCCESSFUL_RETURN )
 				return;
 
-			if ( smartDimensionCheck( &ub,nV,1, BT_TRUE,prhs,4 ) != SUCCESSFUL_RETURN )
+			if ( smartDimensionCheck( &ub,nV,1, BT_TRUE,prhs,ub_idx ) != SUCCESSFUL_RETURN )
 				return;
 
-			if ( smartDimensionCheck( &lbA,nC,1, BT_TRUE,prhs,5 ) != SUCCESSFUL_RETURN )
+			if ( smartDimensionCheck( &lbA,nC,1, BT_TRUE,prhs,lbA_idx ) != SUCCESSFUL_RETURN )
 				return;
 
-			if ( smartDimensionCheck( &ubA,nC,1, BT_TRUE,prhs,6 ) != SUCCESSFUL_RETURN )
+			if ( smartDimensionCheck( &ubA,nC,1, BT_TRUE,prhs,ubA_idx ) != SUCCESSFUL_RETURN )
 				return;
 
 			/* default value for nWSR */
@@ -787,17 +800,9 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 			return;
 		}
 
-		/* ensure that data is given in double precision */
-		if ( ( mxIsDouble( prhs[2] ) == 0 ) ||
-			 ( mxIsDouble( prhs[3] ) == 0 ) ||
-			 ( mxIsDouble( prhs[4] ) == 0 ) )
-		{
-			myMexErrMsgTxt( "ERROR (qpOASES): All data has to be provided in real_t precision!" );
-			return;
-		}
 
 		/* get QP instance */
-		handle = (unsigned int)mxGetScalar( prhs[1]);
+		handle = (unsigned int)mxGetScalar( prhs[1] );
 		globalQP = getQPInstance( handle );
 		if ( globalQP == 0 )
 		{
@@ -806,19 +811,39 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 		}
 
 		/* Check inputs dimensions and assign pointers to inputs. */
-		nV = (unsigned int)mxGetM( prhs[2] ); /* row number of Hessian matrix */
-		nC = (unsigned int)mxGetM( prhs[4] ); /* row number of constraint matrix */
-		
-		H_idx = 2;
 		g_idx = 3;
+		
+		if ( mxIsEmpty(prhs[2]) == 1 )
+		{
+			H_idx = -1;
+			nV = (unsigned int)mxGetM( prhs[ g_idx ] ); /* if Hessian is empty, row number of gradient vector */
+		}
+		else
+		{
+			H_idx = 2;
+			nV = (unsigned int)mxGetM( prhs[ H_idx ] ); /* row number of Hessian matrix */
+		}
+		
 		A_idx = 4;
+		nC = (unsigned int)mxGetM( prhs[ A_idx ] ); /* row number of constraint matrix */
+				
 		lb_idx = 5;
 		ub_idx = 6;
 		lbA_idx = 7;
 		ubA_idx = 8;
 
+
+		/* ensure that data is given in double precision */
+		if ( ( ( H_idx >= 0 ) && ( mxIsDouble( prhs[H_idx] ) == 0 ) ) ||
+			 ( mxIsDouble( prhs[g_idx] ) == 0 ) ||
+			 ( mxIsDouble( prhs[A_idx] ) == 0 ) )
+		{
+			myMexErrMsgTxt( "ERROR (qpOASES): All data has to be provided in real_t precision!" );
+			return;
+		}
+
 		/* check if supplied data contains 'NaN' or 'Inf' */
-		if (containsNaNorInf(prhs, nV * nV, H_idx, 0) == BT_TRUE) {
+		if (containsNaNorInf(prhs, nV*nV, H_idx, 0) == BT_TRUE) {
 			return;
 		}
 
@@ -826,7 +851,7 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 			return;
 		}
 
-		if (containsNaNorInf(prhs, nV * nC, A_idx, 0) == BT_TRUE) {
+		if (containsNaNorInf(prhs, nV*nC, A_idx, 0) == BT_TRUE) {
 			return;
 		}
 
@@ -851,25 +876,31 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 			return;
 		}
 
-		if ( ( mxGetN( prhs[2] ) != nV ) || ( ( mxGetN( prhs[4] ) != 0 ) && ( mxGetN( prhs[4] ) != nV ) ) )
+		if ( ( H_idx >= 0 ) && ( ( mxGetN( prhs[ H_idx ] ) != nV ) || ( mxGetM( prhs[ H_idx ] ) != nV ) ) )
 		{
-			myMexErrMsgTxt( "ERROR (qpOASES): Input dimension mismatch!" );
+			myMexErrMsgTxt( "ERROR (qpOASES): Hessian matrix dimension mismatch!" );
 			return;
 		}
 
-		if ( smartDimensionCheck( &g,nV,1, BT_FALSE,prhs,3 ) != SUCCESSFUL_RETURN )
+		if ( ( mxGetN( prhs[ A_idx ] ) != 0 ) && ( mxGetN( prhs[ A_idx ] ) != nV ) )
+		{
+			myMexErrMsgTxt( "ERROR (qpOASES): Constraint matrix dimension mismatch!" );
+			return;
+		}
+
+		if ( smartDimensionCheck( &g,nV,1, BT_FALSE,prhs,g_idx ) != SUCCESSFUL_RETURN )
 			return;
 
-		if ( smartDimensionCheck( &lb,nV,1, BT_TRUE,prhs,5 ) != SUCCESSFUL_RETURN )
+		if ( smartDimensionCheck( &lb,nV,1, BT_TRUE,prhs,lb_idx ) != SUCCESSFUL_RETURN )
 			return;
 
-		if ( smartDimensionCheck( &ub,nV,1, BT_TRUE,prhs,6 ) != SUCCESSFUL_RETURN )
+		if ( smartDimensionCheck( &ub,nV,1, BT_TRUE,prhs,ub_idx ) != SUCCESSFUL_RETURN )
 			return;
 
-		if ( smartDimensionCheck( &lbA,nC,1, BT_TRUE,prhs,7 ) != SUCCESSFUL_RETURN )
+		if ( smartDimensionCheck( &lbA,nC,1, BT_TRUE,prhs,lbA_idx ) != SUCCESSFUL_RETURN )
 			return;
 
-		if ( smartDimensionCheck( &ubA,nC,1, BT_TRUE,prhs,8 ) != SUCCESSFUL_RETURN )
+		if ( smartDimensionCheck( &ubA,nC,1, BT_TRUE,prhs,ubA_idx ) != SUCCESSFUL_RETURN )
 			return;
 
 		/* default value for nWSR */
@@ -883,11 +914,12 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 		globalQP->deleteQPMatrices( );
 
 		/* make a deep-copy of the user-specified Hessian matrix (possibly sparse) */
-		setupHessianMatrix(	prhs[2],nV, &(globalQP->H),&(globalQP->Hir),&(globalQP->Hjc),&(globalQP->Hv) );
+		if ( H_idx >= 0 )
+			setupHessianMatrix(	prhs[H_idx],nV, &(globalQP->H),&(globalQP->Hir),&(globalQP->Hjc),&(globalQP->Hv) );
 
 		/* make a deep-copy of the user-specified constraint matrix (possibly sparse) */
-		if ( nC > 0 )
-			setupConstraintMatrix( prhs[4],nV,nC, &(globalQP->A),&(globalQP->Air),&(globalQP->Ajc),&(globalQP->Av) );
+		if ( ( nC > 0 ) && ( A_idx >= 0 ) )
+			setupConstraintMatrix( prhs[A_idx],nV,nC, &(globalQP->A),&(globalQP->Air),&(globalQP->Ajc),&(globalQP->Av) );
 
 		/* Create output vectors and assign pointers to them. */
 		allocateOutputs( nlhs,plhs, nV,nC );
@@ -964,19 +996,19 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 			return;
 		}
 
-		if ( smartDimensionCheck( &g,nV,nRHS, BT_FALSE,prhs,2 ) != SUCCESSFUL_RETURN )
+		if ( smartDimensionCheck( &g,nV,nRHS, BT_FALSE,prhs,g_idx ) != SUCCESSFUL_RETURN )
 			return;
 
-		if ( smartDimensionCheck( &lb,nV,nRHS, BT_TRUE,prhs,3 ) != SUCCESSFUL_RETURN )
+		if ( smartDimensionCheck( &lb,nV,nRHS, BT_TRUE,prhs,lb_idx ) != SUCCESSFUL_RETURN )
 			return;
 
-		if ( smartDimensionCheck( &ub,nV,nRHS, BT_TRUE,prhs,4 ) != SUCCESSFUL_RETURN )
+		if ( smartDimensionCheck( &ub,nV,nRHS, BT_TRUE,prhs,ub_idx ) != SUCCESSFUL_RETURN )
 			return;
 
-		if ( smartDimensionCheck( &lbA,nC,nRHS, BT_TRUE,prhs,5 ) != SUCCESSFUL_RETURN )
+		if ( smartDimensionCheck( &lbA,nC,nRHS, BT_TRUE,prhs,lbA_idx ) != SUCCESSFUL_RETURN )
 			return;
 
-		if ( smartDimensionCheck( &ubA,nC,nRHS, BT_TRUE,prhs,6 ) != SUCCESSFUL_RETURN )
+		if ( smartDimensionCheck( &ubA,nC,nRHS, BT_TRUE,prhs,ubA_idx ) != SUCCESSFUL_RETURN )
 			return;
 
 		/* Check whether options are specified .*/

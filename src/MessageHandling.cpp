@@ -173,6 +173,7 @@ MessageHandling::ReturnValueList returnValueList[] =
 { RET_NO_REGSTEP_NWSR, "No additional regularisation step could be performed due to limits", VS_VISIBLE },
 { RET_FEWER_REGSTEPS_NWSR, "Fewer additional regularisation steps have been performed due to limits", VS_VISIBLE },
 { RET_CHOLESKY_OF_ZERO_HESSIAN, "Cholesky decomposition of (unregularised) zero Hessian matrix", VS_VISIBLE },
+{ RET_ZERO_HESSIAN_ASSUMED, "Zero Hessian matrix assumed as null pointer passed without specifying hessianType", VS_VISIBLE },
 { RET_CONSTRAINTS_ARE_NOT_SCALED, "(should not be thrown, no longer in use)", VS_VISIBLE },
 { RET_INITIAL_BOUNDS_STATUS_NYI, "(should not be thrown, no longer in use)", VS_VISIBLE },
 { RET_ERROR_IN_CONSTRAINTPRODUCT, "Error in user-defined constraint product function", VS_VISIBLE },

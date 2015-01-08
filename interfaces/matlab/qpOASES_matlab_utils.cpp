@@ -93,19 +93,19 @@ returnValue QPInstance::deleteQPMatrices( )
 		H = 0;
 	}
 
-	if (Hv != 0)
+	if ( Hv != 0 )
 	{
 		delete[] Hv;
 		Hv = 0;
 	}
 	
-	if (Hjc != 0)
+	if ( Hjc != 0 )
 	{
 		delete[] Hjc;
 		Hjc = 0;
 	}
 	
-	if (Hir != 0)
+	if ( Hir != 0 )
 	{
 		delete[] Hir;
 		Hir = 0;
@@ -117,19 +117,19 @@ returnValue QPInstance::deleteQPMatrices( )
 		A = 0;
 	}
 
-	if (Av != 0)
+	if ( Av != 0 )
 	{
 		delete[] Av;
 		Av = 0;
 	}
 	
-	if (Ajc != 0)
+	if ( Ajc != 0 )
 	{
 		delete[] Ajc;
 		Ajc = 0;
 	}
 	
-	if (Air != 0)
+	if ( Air != 0 )
 	{
 		delete[] Air;
 		Air = 0;
@@ -328,7 +328,10 @@ BooleanType containsNaNorInf(	const mxArray* prhs[], unsigned int dim, int rhs_i
 {
 	char msg[MAX_STRING_LENGTH];
 
-	// overwrite dim for sparse matrices
+	if ( rhs_index < 0 )
+		return BT_FALSE;
+
+	/* overwrite dim for sparse matrices */
 	if (mxIsSparse(prhs[rhs_index]) == 1) {
 		dim = (unsigned int)mxGetNzmax(prhs[rhs_index]);
 	}
@@ -788,6 +791,9 @@ returnValue setupHessianMatrix(	const mxArray* prhsH, int nV,
 								SymmetricMatrix** H, sparse_int_t** Hir, sparse_int_t** Hjc, real_t** Hv
 								)
 {
+	if ( prhsH == 0 )
+		return SUCCESSFUL_RETURN;
+
 	if ( mxIsSparse( prhsH ) != 0 )
 	{
 		mwIndex *mat_ir = mxGetIr( prhsH );
@@ -856,6 +862,9 @@ returnValue setupConstraintMatrix(	const mxArray* prhsA, int nV, int nC,
 									Matrix** A, sparse_int_t** Air, sparse_int_t** Ajc, real_t** Av
 									)
 {
+	if ( prhsA == 0 )
+		return SUCCESSFUL_RETURN;
+
 	if ( mxIsSparse( prhsA ) != 0 )
 	{
 		mwIndex i;

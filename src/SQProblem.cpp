@@ -453,6 +453,8 @@ returnValue SQProblem::setupAuxiliaryQP ( SymmetricMatrix *H_new, Matrix *A_new,
 	}
 	else
 	{
+		/* if no Hessian is specified, keep previous trivial Hessian (HST_ZERO or HST_IDENTITY),
+		   otherwise abort */
 		if ( H != 0 )
 			return THROWERROR( RET_NO_HESSIAN_SPECIFIED );
 	}

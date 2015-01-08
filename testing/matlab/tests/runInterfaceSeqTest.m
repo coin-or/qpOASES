@@ -167,7 +167,7 @@ function [ successFlag ] = runSingleInterfaceSeqTest( nV,nC,hasA,isSparseH,isSpa
 
     string = [string,' )... '];
     if ( doPrint > 0 )
-        %disp( string );
+        disp( string );
     end
     
     curSuccessFlag = callQpOasesSeq( qpData1,qpData2,hasA,hasOptions,hasX0,hasWS,changeMat );

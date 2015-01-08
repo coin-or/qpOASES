@@ -23,7 +23,7 @@ function [ successFlag ] = runAllTests( doPrint )
     %% run interface tests
     fprintf( 'Running qpOASES interface tests... ' )
     successFlag = updateSuccessFlag( successFlag, runInterfaceTest( 10,20, doPrint,42 ) );
-    
+
     fprintf( 'Running qpOASES_sequence interface tests... ' )
     successFlag = updateSuccessFlag( successFlag, runInterfaceSeqTest( 8,5, doPrint,42 ) );
     

@@ -66,9 +66,9 @@ int main( )
 
 	/* Solve first QP. */
 	int nWSR = 10;
-	example.init( H,g,A,lb,ub,lbA,ubA, nWSR );
+	example.init( 0,g,A,lb,ub,lbA,ubA, nWSR );
 
-	/* Get and print solution of second QP. */
+	/* Get and print solution of first QP. */
 	real_t xOpt[2];
 	real_t yOpt[2+1];
 	example.getPrimalSolution( xOpt );

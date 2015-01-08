@@ -271,8 +271,8 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 	BooleanType isSimplyBoundedQp = BT_FALSE;
 
 	/* sparse matrix indices and values */
-	sparse_int_t *Hir = 0, *Hjc = 0, *Air = 0, *Ajc = 0;
-	real_t *Hv = 0, *Av = 0;
+	sparse_int_t *Hir=0, *Hjc=0, *Air=0, *Ajc=0;
+	real_t *Hv=0, *Av=0;
 
 	/* I) CONSISTENCY CHECKS: */
 	/* 1a) Ensure that qpOASES is called with a feasible number of input arguments. */
@@ -298,9 +298,19 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 	/* II) PREPARE RESPECTIVE QPOASES FUNCTION CALL: */
 	/*     Choose between QProblem and QProblemB object and assign the corresponding
 	 *     indices of the input pointer array in to order to access QP data correctly. */
-	H_idx = 0;
 	g_idx = 1;
-	nV = (int)mxGetM( prhs[ H_idx ] ); /* row number of Hessian matrix */
+
+	if ( mxIsEmpty(prhs[0]) == 1 )
+	{
+		H_idx = -1;
+		nV = (int)mxGetM( prhs[ g_idx ] ); /* if Hessian is empty, row number of gradient vector */
+	}
+	else
+	{
+		H_idx = 0;
+		nV = (int)mxGetM( prhs[ H_idx ] ); /* row number of Hessian matrix */
+	}
+	
 	nP = (int)mxGetN( prhs[ g_idx ] ); /* number of columns of the gradient matrix (vectors series have to be stored columnwise!) */
 
 	if ( nrhs <= 6 )
@@ -403,7 +413,7 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 
 
 	/* ensure that data is given in real_t precision */
-	if ( ( mxIsDouble( prhs[ H_idx ] ) == 0 ) ||
+	if ( ( ( H_idx >= 0 ) && ( mxIsDouble( prhs[ H_idx ] ) == 0 ) ) ||
 		 ( mxIsDouble( prhs[ g_idx ] ) == 0 ) )
 	{
 		myMexErrMsgTxt( "ERROR (qpOASES): All data has to be provided in double precision!" );
@@ -427,10 +437,10 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 	}
 
 	/* Check inputs dimensions and assign pointers to inputs. */
-	if ( mxGetN( prhs[ H_idx ] ) != nV )
+	if ( ( H_idx >= 0 ) && ( ( mxGetN( prhs[ H_idx ] ) != nV ) || ( mxGetM( prhs[ H_idx ] ) != nV ) ) )
 	{
 		char msg[MAX_STRING_LENGTH]; 
-		snprintf(msg, MAX_STRING_LENGTH, "ERROR (qpOASES): Hessian matrix input dimension mismatch (%ld != %d)!", 
+		snprintf(msg, MAX_STRING_LENGTH, "ERROR (qpOASES): Hessian matrix dimension mismatch (%ld != %d)!", 
 				(long int)mxGetN(prhs[H_idx]), nV);
 		myMexErrMsgTxt(msg);
 		return;
@@ -500,8 +510,9 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 		setupOptions( &options,prhs[options_idx],nWSRin,maxCpuTimeIn );
 
 	/* make a deep-copy of the user-specified Hessian matrix (possibly sparse) */
-	setupHessianMatrix(	prhs[H_idx],nV, &H,&Hir,&Hjc,&Hv );
-
+	if ( H_idx >= 0 )
+		setupHessianMatrix(	prhs[H_idx],nV, &H,&Hir,&Hjc,&Hv );
+	
 	/* make a deep-copy of the user-specified constraint matrix (possibly sparse) */
 	if ( nC > 0 )
 		setupConstraintMatrix( prhs[A_idx],nV,nC, &A,&Air,&Ajc,&Av );
@@ -520,7 +531,7 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 							guessedBounds
 							);
 		
-        delete H;
+        if (H != 0) delete H;
 		if (Hv != 0) delete[] Hv;
 		if (Hjc != 0) delete[] Hjc;
 		if (Hir != 0) delete[] Hir;
@@ -538,8 +549,8 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 							guessedBounds,guessedConstraints
 							);
 		
-		delete A;
-		delete H;
+		if (A != 0) delete A;
+		if (H != 0) delete H;
 		if (Av != 0) delete[] Av;
 		if (Ajc != 0) delete[] Ajc;
 		if (Air != 0) delete[] Air;

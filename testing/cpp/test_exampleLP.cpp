@@ -42,7 +42,7 @@ int main( )
 {
 	USING_NAMESPACE_QPOASES
 
-	real_t tol = EPS;
+	real_t tol = 1e-14;
 
 	/* Setup data of first LP. */
 	real_t A[1*2] = { 1.0, 1.0 };
@@ -64,7 +64,7 @@ int main( )
 	QProblem example( 2,1,HST_ZERO );
 
 	Options options;
- 	//options.setToMPC(); tol = 1e-12;
+ 	/*options.setToMPC();*/
 	example.setOptions( options );
 
 	/* Solve first LP. */

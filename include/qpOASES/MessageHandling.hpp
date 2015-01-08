@@ -186,6 +186,7 @@ RET_CANNOT_REGULARISE_SPARSE,					/**< Sparse matrix cannot be regularised as di
 RET_NO_REGSTEP_NWSR,							/**< No additional regularisation step could be performed due to limits. */
 RET_FEWER_REGSTEPS_NWSR,						/**< Fewer additional regularisation steps have been performed due to limits. */
 RET_CHOLESKY_OF_ZERO_HESSIAN, 					/**< Cholesky decomposition of (unregularised) zero Hessian matrix. */
+RET_ZERO_HESSIAN_ASSUMED,						/**< Zero Hessian matrix assumed as null pointer passed without specifying hessianType. */
 RET_CONSTRAINTS_ARE_NOT_SCALED, 				/**< (no longer in use) */
 RET_INITIAL_BOUNDS_STATUS_NYI, 					/**< (no longer in use) */
 RET_ERROR_IN_CONSTRAINTPRODUCT,					/**< Error in user-defined constraint product function. */

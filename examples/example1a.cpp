@@ -65,11 +65,11 @@ int main( )
 
 	/* Solve first QP. */
 	int nWSR = 10;
-	example.init( H,g,A,lb,ub,lbA,ubA, nWSR,0 );
+	example.init( 0,g,A,lb,ub,lbA,ubA, nWSR,0 );
 
 	/* Solve second QP. */
 	nWSR = 10;
-	example.hotstart( H_new,g_new,A_new,lb_new,ub_new,lbA_new,ubA_new, nWSR,0 );
+	example.hotstart( 0,g_new,A_new,lb_new,ub_new,lbA_new,ubA_new, nWSR,0 );
 
 	/* Get and print solution of second QP. */
 	real_t xOpt[2];
