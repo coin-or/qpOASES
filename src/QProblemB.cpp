@@ -126,6 +126,7 @@ QProblemB::QProblemB( int _nV, HessianType _hessianType )
 	bounds.init( _nV );
 
 	R = new real_t[_nV*_nV];
+	for( i=0; i<_nV*_nV; ++i ) R[i] = 0.0;
 	haveCholesky = BT_FALSE;
 
 	x = new real_t[_nV];
@@ -214,7 +215,6 @@ returnValue QProblemB::reset( )
 	/* 2) Reset Cholesky decomposition. */
 	for( i=0; i<nV*nV; ++i )
 		R[i] = 0.0;
-	
 	haveCholesky = BT_FALSE;
 
 	/* 3) Reset steplength and status flags. */
@@ -247,7 +247,8 @@ returnValue QProblemB::init( 	SymmetricMatrix *_H, const real_t* const _g,
 								const real_t* const _lb, const real_t* const _ub,
 								int& nWSR, real_t* const cputime,
 								const real_t* const xOpt, const real_t* const yOpt,
-								const Bounds* const guessedBounds
+								const Bounds* const guessedBounds,
+								const real_t* const _R
 								)
 {
 	int i;
@@ -276,12 +277,15 @@ returnValue QProblemB::init( 	SymmetricMatrix *_H, const real_t* const _g,
 	if ( ( xOpt == 0 ) && ( yOpt != 0 ) && ( guessedBounds != 0 ) )
 		return THROWERROR( RET_INVALID_ARGUMENTS );
 
+	if ( ( _R != 0 ) && ( ( xOpt != 0 ) || ( yOpt != 0 ) || ( guessedBounds != 0 ) ) )
+		return THROWERROR( RET_NO_CHOLESKY_WITH_INITIAL_GUESS );
+
 	/* 2) Setup QP data. */
 	if ( setupQPdata( _H,_g,_lb,_ub ) != SUCCESSFUL_RETURN )
 		return THROWERROR( RET_INVALID_ARGUMENTS );
 
 	/* 3) Call to main initialisation routine. */
-	return solveInitialQP( xOpt,yOpt,guessedBounds, nWSR,cputime );
+	return solveInitialQP( xOpt,yOpt,guessedBounds,_R, nWSR,cputime );
 }
 
 
@@ -292,7 +296,8 @@ returnValue QProblemB::init( 	const real_t* const _H, const real_t* const _g,
 								const real_t* const _lb, const real_t* const _ub,
 								int& nWSR, real_t* const cputime,
 								const real_t* const xOpt, const real_t* const yOpt,
-								const Bounds* const guessedBounds
+								const Bounds* const guessedBounds,
+								const real_t* const _R
 								)
 {
 	int i;
@@ -321,12 +326,15 @@ returnValue QProblemB::init( 	const real_t* const _H, const real_t* const _g,
 	if ( ( xOpt == 0 ) && ( yOpt != 0 ) && ( guessedBounds != 0 ) )
 		return THROWERROR( RET_INVALID_ARGUMENTS );
 
+	if ( ( _R != 0 ) && ( ( xOpt != 0 ) || ( yOpt != 0 ) || ( guessedBounds != 0 ) ) )
+		return THROWERROR( RET_NO_CHOLESKY_WITH_INITIAL_GUESS );
+
 	/* 2) Setup QP data. */
 	if ( setupQPdata( _H,_g,_lb,_ub ) != SUCCESSFUL_RETURN )
 		return THROWERROR( RET_INVALID_ARGUMENTS );
 
 	/* 3) Call to main initialisation routine. */
-	return solveInitialQP( xOpt,yOpt,guessedBounds, nWSR,cputime );
+	return solveInitialQP( xOpt,yOpt,guessedBounds,_R, nWSR,cputime );
 }
 
 
@@ -337,7 +345,8 @@ returnValue QProblemB::init( 	const char* const H_file, const char* const g_file
 								const char* const lb_file, const char* const ub_file,
 								int& nWSR, real_t* const cputime,
 								const real_t* const xOpt, const real_t* const yOpt,
-								const Bounds* const guessedBounds
+								const Bounds* const guessedBounds,
+								const char* const R_file
 								)
 {
 	int i;
@@ -366,12 +375,23 @@ returnValue QProblemB::init( 	const char* const H_file, const char* const g_file
 	if ( ( xOpt == 0 ) && ( yOpt != 0 ) && ( guessedBounds != 0 ) )
 		return THROWERROR( RET_INVALID_ARGUMENTS );
 
+	if ( ( R_file != 0 ) && ( ( xOpt != 0 ) || ( yOpt != 0 ) || ( guessedBounds != 0 ) ) )
+		return THROWERROR( RET_NO_CHOLESKY_WITH_INITIAL_GUESS );
+
 	/* 2) Setup QP data from files. */
 	if ( setupQPdataFromFile( H_file,g_file,lb_file,ub_file ) != SUCCESSFUL_RETURN )
 		return THROWERROR( RET_UNABLE_TO_READ_FILE );
 
-	/* 3) Call to main initialisation routine. */
-	return solveInitialQP( xOpt,yOpt,guessedBounds, nWSR,cputime );
+	/* Also read Cholesky factor from file and store it directly into R (thus... */
+	if ( R_file != 0 )
+	{
+		returnValue returnvalue = readFromFile( R, nV,nV, R_file );
+		if ( returnvalue != SUCCESSFUL_RETURN )
+			return THROWWARNING( returnvalue );
+	}
+
+	/* 3) Call to main initialisation routine. (...passing R here!) */
+	return solveInitialQP( xOpt,yOpt,guessedBounds,R, nWSR,cputime );
 }
 
 
@@ -2215,10 +2235,11 @@ returnValue QProblemB::updateFarBounds(	real_t curFarBound, int nRamp,
  */
 returnValue QProblemB::solveInitialQP(	const real_t* const xOpt, const real_t* const yOpt,
 										const Bounds* const guessedBounds,
+										const real_t* const _R,
 										int& nWSR, real_t* const cputime
 										)
 {
-	int i;
+	int i,j;
 	int nV = getNV( );
 
 
@@ -2256,7 +2277,7 @@ returnValue QProblemB::solveInitialQP(	const real_t* const xOpt, const real_t* c
 	if ( obtainAuxiliaryWorkingSet( xOpt,yOpt,guessedBounds, &auxiliaryBounds ) != SUCCESSFUL_RETURN )
 		return THROWERROR( RET_INIT_FAILED );
 
-	/* 4) Setup working set of auxiliary QP and setup cholesky decomposition. */
+	/* 4) Setup working set of auxiliary QP and possibly cholesky decomposition. */
 	/* a) Working set of auxiliary QP. */
 	if ( setupAuxiliaryWorkingSet( &auxiliaryBounds,BT_TRUE ) != SUCCESSFUL_RETURN )
 		return THROWERROR( RET_INIT_FAILED );
@@ -2268,7 +2289,31 @@ returnValue QProblemB::solveInitialQP(	const real_t* const xOpt, const real_t* c
 			return THROWERROR( RET_INIT_FAILED_REGULARISATION );
 	}
 
+	/* c) Copy external Cholesky factor if provided */
 	haveCholesky = BT_FALSE;
+
+	if ( _R != 0 )
+	{
+		if ( options.initialStatusBounds != ST_INACTIVE )
+		{
+			THROWWARNING( RET_NO_CHOLESKY_WITH_INITIAL_GUESS );
+		}
+		else
+		{
+			if ( _R == R )
+			{
+				/* Cholesky factor read from file and already loaded into R. */
+				haveCholesky = BT_TRUE;
+			}
+			else if ( ( xOpt == 0 ) && ( yOpt == 0 ) && ( guessedBounds == 0 ) )
+			{
+				for( i=0; i<nV; ++i )
+					for( j=i; j<nV; ++j )
+						RR(i,j) = _R[i*nV+j];
+				haveCholesky = BT_TRUE;
+			}
+		}
+	}
 
 	/* 5) Store original QP formulation... */
 	real_t* g_original = new real_t[nV];

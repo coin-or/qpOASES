@@ -655,9 +655,6 @@ returnValue setupAuxiliaryInputs(	const mxArray* auxInput, unsigned int nV, unsi
 		*R = mxGetPr(curField);
 		if ( smartDimensionCheck( R,nV,nV, BT_TRUE,((const mxArray**)&curField),0 ) != SUCCESSFUL_RETURN )
 			return RET_INVALID_ARGUMENTS;
-
-		if ( mxIsEmpty(curField) == 0 )
-			mexWarnMsgTxt( "Use of auxInput.R is not yet implemented!" );
 	}
 
 	return SUCCESSFUL_RETURN;

@@ -245,7 +245,8 @@ returnValue QProblem::init(	SymmetricMatrix *_H, const real_t* const _g, Matrix 
 							const real_t* const _lbA, const real_t* const _ubA,
 							int& nWSR, real_t* const cputime,
 							const real_t* const xOpt, const real_t* const yOpt,
-							const Bounds* const guessedBounds, const Constraints* const guessedConstraints
+							const Bounds* const guessedBounds, const Constraints* const guessedConstraints,
+							const real_t* const _R
 							)
 {
 	int i;
@@ -282,12 +283,15 @@ returnValue QProblem::init(	SymmetricMatrix *_H, const real_t* const _g, Matrix 
 	if ( ( xOpt == 0 ) && ( yOpt != 0 ) && ( ( guessedBounds != 0 ) || ( guessedConstraints != 0 ) ) )
 		return THROWERROR( RET_INVALID_ARGUMENTS );
 
+	if ( ( _R != 0 ) && ( ( xOpt != 0 ) || ( yOpt != 0 ) || ( guessedBounds != 0 ) || ( guessedConstraints != 0 ) ) )
+		return THROWERROR( RET_NO_CHOLESKY_WITH_INITIAL_GUESS );
+
 	/* 2) Setup QP data. */
 	if ( setupQPdata( _H,_g,_A,_lb,_ub,_lbA,_ubA ) != SUCCESSFUL_RETURN )
 		return THROWERROR( RET_INVALID_ARGUMENTS );
 
 	/* 3) Call to main initialisation routine. */
-	return solveInitialQP( xOpt,yOpt,guessedBounds,guessedConstraints, nWSR,cputime );
+	return solveInitialQP( xOpt,yOpt,guessedBounds,guessedConstraints,_R, nWSR,cputime );
 }
 
 
@@ -299,7 +303,8 @@ returnValue QProblem::init(	const real_t* const _H, const real_t* const _g, cons
 							const real_t* const _lbA, const real_t* const _ubA,
 							int& nWSR, real_t* const cputime,
 							const real_t* const xOpt, const real_t* const yOpt,
-							const Bounds* const guessedBounds, const Constraints* const guessedConstraints
+							const Bounds* const guessedBounds, const Constraints* const guessedConstraints,
+							const real_t* const _R
 							)
 {
 	int i;
@@ -336,12 +341,15 @@ returnValue QProblem::init(	const real_t* const _H, const real_t* const _g, cons
 	if ( ( xOpt == 0 ) && ( yOpt != 0 ) && ( ( guessedBounds != 0 ) || ( guessedConstraints != 0 ) ) )
 		return THROWERROR( RET_INVALID_ARGUMENTS );
 
+	if ( ( _R != 0 ) && ( ( xOpt != 0 ) || ( yOpt != 0 ) || ( guessedBounds != 0 ) || ( guessedConstraints != 0 ) ) )
+		return THROWERROR( RET_NO_CHOLESKY_WITH_INITIAL_GUESS );
+
 	/* 2) Setup QP data. */
 	if ( setupQPdata( _H,_g,_A,_lb,_ub,_lbA,_ubA ) != SUCCESSFUL_RETURN )
 		return THROWERROR( RET_INVALID_ARGUMENTS );
 
 	/* 3) Call to main initialisation routine. */
-	return solveInitialQP( xOpt,yOpt,guessedBounds,guessedConstraints, nWSR,cputime );
+	return solveInitialQP( xOpt,yOpt,guessedBounds,guessedConstraints,_R, nWSR,cputime );
 }
 
 
@@ -353,7 +361,8 @@ returnValue QProblem::init(	const char* const H_file, const char* const g_file, 
 							const char* const lbA_file, const char* const ubA_file,
 							int& nWSR, real_t* const cputime,
 							const real_t* const xOpt, const real_t* const yOpt,
-							const Bounds* const guessedBounds, const Constraints* const guessedConstraints
+							const Bounds* const guessedBounds, const Constraints* const guessedConstraints,
+							const char* const R_file
 							)
 {
 	int i;
@@ -390,12 +399,23 @@ returnValue QProblem::init(	const char* const H_file, const char* const g_file, 
 	if ( ( xOpt == 0 ) && ( yOpt != 0 ) && ( ( guessedBounds != 0 ) || ( guessedConstraints != 0 ) ) )
 		return THROWERROR( RET_INVALID_ARGUMENTS );
 
+	if ( ( R_file != 0 ) && ( ( xOpt != 0 ) || ( yOpt != 0 ) || ( guessedBounds != 0 ) || ( guessedConstraints != 0 ) ) )
+		return THROWERROR( RET_NO_CHOLESKY_WITH_INITIAL_GUESS );
+
 	/* 2) Setup QP data from files. */
 	if ( setupQPdataFromFile( H_file,g_file,A_file,lb_file,ub_file,lbA_file,ubA_file ) != SUCCESSFUL_RETURN )
 		return THROWERROR( RET_UNABLE_TO_READ_FILE );
 
-	/* 3) Call to main initialisation routine. */
-	return solveInitialQP( xOpt,yOpt,guessedBounds,guessedConstraints, nWSR,cputime );
+	/* Also read Cholesky factor from file and store it directly into R (thus... */
+	if ( R_file != 0 )
+	{
+		returnValue returnvalue = readFromFile( R, nV,nV, R_file );
+		if ( returnvalue != SUCCESSFUL_RETURN )
+			return THROWWARNING( returnvalue );
+	}
+
+	/* 3) Call to main initialisation routine. (...passing R here!) */
+	return solveInitialQP( xOpt,yOpt,guessedBounds,guessedConstraints,R, nWSR,cputime );
 }
 
 
@@ -1236,10 +1256,11 @@ returnValue QProblem::copy(	const QProblem& rhs
  */
 returnValue QProblem::solveInitialQP(	const real_t* const xOpt, const real_t* const yOpt,
 										const Bounds* const guessedBounds, const Constraints* const guessedConstraints,
+										const real_t* const _R,
 										int& nWSR, real_t* const cputime
 										)
 {
-	int i;
+	int i,j;
 
 	/* some definitions */
 	int nV = getNV( );
@@ -1303,7 +1324,35 @@ returnValue QProblem::solveInitialQP(	const real_t* const xOpt, const real_t* co
 	if ( setupAuxiliaryWorkingSet( &auxiliaryBounds,&auxiliaryConstraints,BT_TRUE ) != SUCCESSFUL_RETURN )
 		return THROWERROR( RET_INIT_FAILED );
 
+	/* d) Copy external Cholesky factor if provided */
 	haveCholesky = BT_FALSE;
+
+	if ( _R != 0 )
+	{
+		if ( options.initialStatusBounds != ST_INACTIVE )
+		{
+			THROWWARNING( RET_NO_CHOLESKY_WITH_INITIAL_GUESS );
+		}
+		else
+		{
+			if ( _R == R )
+			{
+				/* Cholesky factor read from file and already loaded into R. */
+				haveCholesky = BT_TRUE;
+			}
+			else if ( ( xOpt == 0 ) && ( yOpt == 0 ) && ( guessedBounds == 0 ) && ( guessedConstraints == 0 ) )
+			{
+				for( i=0; i<nV; ++i )
+					for( j=i; j<nV; ++j )
+						RR(i,j) = _R[i*nV+j];
+				haveCholesky = BT_TRUE;
+			}
+			else
+			{
+				THROWWARNING( RET_NO_CHOLESKY_WITH_INITIAL_GUESS );
+			}
+		}
+	}
 
 	/* 5) Store original QP formulation... */
 	real_t* g_original = new real_t[nV];

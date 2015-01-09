@@ -77,6 +77,8 @@ function [ successFlag ] = runAllTests( doPrint )
     fprintf( 'Running testWorkingSetLI... ' )
     successFlag = updateSuccessFlag( successFlag, runTestWorkingSetLI( doPrint ) );
     
+    fprintf( 'Running runExternalCholeskyTests... ' )
+    successFlag = updateSuccessFlag( successFlag, runExternalCholeskyTests( doPrint ) );
 
     fprintf( 'Running EXAMPEL1... ' );
     successFlag = updateSuccessFlag( successFlag, runBenchmarkEXAMPLE1( 10 ) );

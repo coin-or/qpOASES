@@ -99,6 +99,7 @@ MessageHandling::ReturnValueList returnValueList[] =
 { RET_OBTAINING_WORKINGSET_FAILED, "Failed to obtain working set for auxiliary QP", VS_VISIBLE },
 { RET_SETUP_WORKINGSET_FAILED, "Failed to setup working set for auxiliary QP", VS_VISIBLE },
 { RET_SETUP_AUXILIARYQP_FAILED, "Failed to setup auxiliary QP for initialised homotopy", VS_VISIBLE },
+{ RET_NO_CHOLESKY_WITH_INITIAL_GUESS, "Externally computed Cholesky factor cannot be combined with an initial guess", VS_VISIBLE },
 { RET_NO_EXTERN_SOLVER, "No extern QP solver available", VS_VISIBLE },
 { RET_QP_UNBOUNDED, "QP is unbounded", VS_VISIBLE },
 { RET_QP_INFEASIBLE, "QP is infeasible", VS_VISIBLE },

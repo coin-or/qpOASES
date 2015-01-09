@@ -139,8 +139,12 @@ class QProblem : public QProblemB
 																				 (If a null pointer is passed, the old dual solution is kept!) */
 							const Bounds* const guessedBounds = 0,			/**< Optimal working set of bounds for solution (xOpt,yOpt). \n
 																				 (If a null pointer is passed, all bounds are assumed inactive!) */
-							const Constraints* const guessedConstraints = 0	/**< Optimal working set of constraints for solution (xOpt,yOpt). \n
+							const Constraints* const guessedConstraints = 0,/**< Optimal working set of constraints for solution (xOpt,yOpt). \n
 																				 (If a null pointer is passed, all constraints are assumed inactive!) */
+							const real_t* const _R = 0						/**< Pre-computed (upper triangular) Cholesky factor of Hessian matrix. 
+																			 	 The Cholesky factor must be stored in a real_t array of size nV*nV
+																				 in row-major format. Note: Only used if xOpt/yOpt and gB are NULL! \n
+																				 (If a null pointer is passed, Cholesky decomposition is computed internally!) */
 							);
 
 
@@ -187,8 +191,12 @@ class QProblem : public QProblemB
 																				 (If a null pointer is passed, the old dual solution is kept!) */
 							const Bounds* const guessedBounds = 0,			/**< Optimal working set of bounds for solution (xOpt,yOpt). \n
 																				 (If a null pointer is passed, all bounds are assumed inactive!) */
-							const Constraints* const guessedConstraints = 0	/**< Optimal working set of constraints for solution (xOpt,yOpt). \n
+							const Constraints* const guessedConstraints = 0,/**< Optimal working set of constraints for solution (xOpt,yOpt). \n
 																				 (If a null pointer is passed, all constraints are assumed inactive!) */
+							const real_t* const _R = 0						/**< Pre-computed (upper triangular) Cholesky factor of Hessian matrix. 
+																			 	 The Cholesky factor must be stored in a real_t array of size nV*nV
+																				 in row-major format. Note: Only used if xOpt/yOpt and gB are NULL! \n
+																				 (If a null pointer is passed, Cholesky decomposition is computed internally!) */
 							);
 
 		/** Initialises a QP problem with given data to be read from files and solves it
@@ -235,8 +243,11 @@ class QProblem : public QProblemB
 																				 (If a null pointer is passed, the old dual solution is kept!) */
 							const Bounds* const guessedBounds = 0,			/**< Optimal working set of bounds for solution (xOpt,yOpt). \n
 																				 (If a null pointer is passed, all bounds are assumed inactive!) */
-							const Constraints* const guessedConstraints = 0	/**< Optimal working set of constraints for solution (xOpt,yOpt). \n
+							const Constraints* const guessedConstraints = 0,/**< Optimal working set of constraints for solution (xOpt,yOpt). \n
 																				 (If a null pointer is passed, all constraints are assumed inactive!) */
+							const char* const R_file = 0					/**< Name of the file where a pre-computed (upper triangular) Cholesky factor 
+																			 	 of the Hessian matrix is stored. \n
+																				 (If a null pointer is passed, Cholesky decomposition is computed internally!) */
 							);
 
 
@@ -424,18 +435,15 @@ class QProblem : public QProblemB
 					RET_INIT_FAILED_INFEASIBILITY \n
 					RET_INIT_FAILED_UNBOUNDEDNESS \n
 					RET_MAX_NWSR_REACHED */
-		returnValue solveInitialQP(	const real_t* const xOpt,						/**< Optimal primal solution vector.
-																					 *	 A NULL pointer can be passed. */
-									const real_t* const yOpt,						/**< Optimal dual solution vector.
-																					 *	 A NULL pointer can be passed. */
-									const Bounds* const guessedBounds,				/**< Guessed working set of bounds for solution (xOpt,yOpt).
-																		 			 *	 A NULL pointer can be passed. */
-									const Constraints* const guessedConstraints,	/**< Optimal working set of constraints for solution (xOpt,yOpt).
-																		 			 *	 A NULL pointer can be passed. */
+		returnValue solveInitialQP(	const real_t* const xOpt,						/**< Optimal primal solution vector.*/
+									const real_t* const yOpt,						/**< Optimal dual solution vector. */
+									const Bounds* const guessedBounds,				/**< Optimal working set of bounds for solution (xOpt,yOpt). */
+									const Constraints* const guessedConstraints,	/**< Optimal working set of constraints for solution (xOpt,yOpt). */
+									const real_t* const _R,							/**< Pre-computed (upper triangular) Cholesky factor of Hessian matrix. */
 									int& nWSR, 										/**< Input: Maximum number of working set recalculations; \n
 																 					 *	 Output: Number of performed working set recalculations. */
 									real_t* const cputime							/**< Input: Maximum CPU time allowed for QP solution. \n
-																			 		 Output: CPU time spend for QP solution (or to perform nWSR iterations). */
+																			 			 Output: CPU time spend for QP solution (or to perform nWSR iterations). */
 									);
 
 		/** Solves QProblem using online active set strategy.
