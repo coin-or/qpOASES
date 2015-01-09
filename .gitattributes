@@ -162,6 +162,7 @@ testing/cpp/test_example5.cpp -text
 testing/cpp/test_example6.cpp -text
 testing/cpp/test_example7.cpp -text
 testing/cpp/test_exampleLP.cpp -text
+testing/cpp/test_externalChol1.cpp -text
 testing/cpp/test_gradientShift.cpp -text
 testing/cpp/test_guessedWS1.cpp -text
 testing/cpp/test_hs268.cpp -text

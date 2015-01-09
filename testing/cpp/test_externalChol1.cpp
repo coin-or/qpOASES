@@ -23,12 +23,13 @@
 
 
 /**
- *	\file examples/example1.cpp
+ *	\file testing/cpp/test_externalChol1.cpp
  *	\author Hans Joachim Ferreau
  *	\version 3.0
- *	\date 2007-2014
+ *	\date 2015
  *
- *	Very simple example for testing qpOASES using the QProblem class.
+ *	Very simple example for testing qpOASES using the QProblem class
+ *	and providing a pre-computed Cholesky factor of the Hessian matrix.
  */
 
 
@@ -56,6 +57,8 @@ int main( )
 	real_t ub_new[2] = { 5.0, -0.5 };
 	real_t lbA_new[1] = { -2.0 };
 	real_t ubA_new[1] = { 1.0 };
+	
+	real_t R[2*2] = { sqrt(1.0), 0.0, 0.0, sqrt(0.5) };
 
 
 	/* Setting up QProblem object. */
@@ -66,7 +69,7 @@ int main( )
 
 	/* Solve first QP. */
 	int nWSR = 10;
-	example.init( H,g,A,lb,ub,lbA,ubA, nWSR );
+	example.init( H,g,A,lb,ub,lbA,ubA, nWSR,0, 0,0,0,0, R );
 
 	/* Get and print solution of first QP. */
 	real_t xOpt[2];

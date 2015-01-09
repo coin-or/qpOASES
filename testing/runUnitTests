@@ -88,6 +88,7 @@ runTest $counter ../bin/test_janick2;
 runTest $counter ../bin/test_constraintProduct1;
 runTest $counter ../bin/test_constraintProduct2;
 runTest $counter ../bin/test_guessedWS1;
+runTest $counter ../bin/test_externalChol1;
 runTest $counter ../bin/test_gradientShift;
 runTest $counter ../bin/test_runAllOqpExamples;
 

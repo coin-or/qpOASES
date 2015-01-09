@@ -88,6 +88,7 @@ callValgrind $counter ../bin/test_janick2;
 callValgrind $counter ../bin/test_constraintProduct1;
 callValgrind $counter ../bin/test_constraintProduct2;
 callValgrind $counter ../bin/test_guessedWS1;
+callValgrind $counter ../bin/test_externalChol1;
 callValgrind $counter ../bin/test_runAllOqpExamples;
 
 
