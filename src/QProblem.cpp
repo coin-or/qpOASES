@@ -236,89 +236,6 @@ returnValue QProblem::reset( )
 }
 
 
-/*
- *	i n i t
- */
-returnValue QProblem::init(	SymmetricMatrix *_H, const real_t* const _g, Matrix *_A,
-							const real_t* const _lb, const real_t* const _ub,
-							const real_t* const _lbA, const real_t* const _ubA,
-							int& nWSR, real_t* const cputime
-							)
-{
-	if ( getNV( ) == 0 )
-		return THROWERROR( RET_QPOBJECT_NOT_SETUP );
-
-	/* 1) Consistency check. */
-	if ( isInitialised( ) == BT_TRUE )
-	{
-		THROWWARNING( RET_QP_ALREADY_INITIALISED );
-		reset( );
-	}
-
-	/* 2) Setup QP data. */
-	if ( setupQPdata( _H,_g,_A,_lb,_ub,_lbA,_ubA ) != SUCCESSFUL_RETURN )
-		return THROWERROR( RET_INVALID_ARGUMENTS );
-
-	/* 3) Call to main initialisation routine (without any additional information). */
-	return solveInitialQP( 0,0,0,0, nWSR,cputime );
-}
-
-
-/*
- *	i n i t
- */
-returnValue QProblem::init(	const real_t* const _H, const real_t* const _g, const real_t* const _A,
-							const real_t* const _lb, const real_t* const _ub,
-							const real_t* const _lbA, const real_t* const _ubA,
-							int& nWSR, real_t* const cputime
-							)
-{
-	if ( getNV( ) == 0 )
-		return THROWERROR( RET_QPOBJECT_NOT_SETUP );
-
-	/* 1) Consistency check. */
-	if ( isInitialised( ) == BT_TRUE )
-	{
-		THROWWARNING( RET_QP_ALREADY_INITIALISED );
-		reset( );
-	}
-
-	/* 2) Setup QP data. */
-	if ( setupQPdata( _H,_g,_A,_lb,_ub,_lbA,_ubA ) != SUCCESSFUL_RETURN )
-		return THROWERROR( RET_INVALID_ARGUMENTS );
-
-	/* 3) Call to main initialisation routine (without any additional information). */
-	return solveInitialQP( 0,0,0,0, nWSR,cputime );
-}
-
-
-/*
- *	i n i t
- */
-returnValue QProblem::init(	const char* const H_file, const char* const g_file, const char* const A_file,
-							const char* const lb_file, const char* const ub_file,
-							const char* const lbA_file, const char* const ubA_file,
-							int& nWSR, real_t* const cputime
-							)
-{
-	if ( getNV( ) == 0 )
-		return THROWERROR( RET_QPOBJECT_NOT_SETUP );
-
-	/* 1) Consistency check. */
-	if ( isInitialised( ) == BT_TRUE )
-	{
-		THROWWARNING( RET_QP_ALREADY_INITIALISED );
-		reset( );
-	}
-
-	/* 2) Setup QP data from files. */
-	if ( setupQPdataFromFile( H_file,g_file,A_file,lb_file,ub_file,lbA_file,ubA_file ) != SUCCESSFUL_RETURN )
-		return THROWERROR( RET_UNABLE_TO_READ_FILE );
-
-	/* 3) Call to main initialisation routine (without any additional information). */
-	return solveInitialQP( 0,0,0,0, nWSR,cputime );
-}
-
 
 /*
  *	i n i t
@@ -453,15 +370,21 @@ returnValue QProblem::init(	const char* const H_file, const char* const g_file, 
 		reset( );
 	}
 
-	for( i=0; i<nV; ++i )
+	if ( guessedBounds != 0 )
 	{
-		if ( guessedBounds->getStatus( i ) == ST_UNDEFINED )
-			return THROWERROR( RET_INVALID_ARGUMENTS );
+		for( i=0; i<nV; ++i )
+		{
+			if ( guessedBounds->getStatus( i ) == ST_UNDEFINED )
+				return THROWERROR( RET_INVALID_ARGUMENTS );
+		}
 	}
 
-	for( i=0; i<nC; ++i )
-		if ( guessedConstraints->getStatus( i ) == ST_UNDEFINED )
-			return THROWERROR( RET_INVALID_ARGUMENTS );
+	if ( guessedConstraints != 0 )
+	{
+		for( i=0; i<nC; ++i )
+			if ( guessedConstraints->getStatus( i ) == ST_UNDEFINED )
+				return THROWERROR( RET_INVALID_ARGUMENTS );
+	}
 
 	/* exclude these possibilities in order to avoid inconsistencies */
 	if ( ( xOpt == 0 ) && ( yOpt != 0 ) && ( ( guessedBounds != 0 ) || ( guessedConstraints != 0 ) ) )
@@ -474,6 +397,7 @@ returnValue QProblem::init(	const char* const H_file, const char* const g_file, 
 	/* 3) Call to main initialisation routine. */
 	return solveInitialQP( xOpt,yOpt,guessedBounds,guessedConstraints, nWSR,cputime );
 }
+
 
 
 /*
@@ -482,16 +406,42 @@ returnValue QProblem::init(	const char* const H_file, const char* const g_file, 
 returnValue QProblem::hotstart(	const real_t* const g_new,
 								const real_t* const lb_new, const real_t* const ub_new,
 								const real_t* const lbA_new, const real_t* const ubA_new,
-								int& nWSR, real_t* const cputime
+								int& nWSR, real_t* const cputime,
+								const Bounds* const guessedBounds, const Constraints* const guessedConstraints
 								)
 {
 	int i, nActiveFar;
 	int nV = getNV ();
 	int nC = getNC ();
-
-	if (nV == 0)
+	real_t starttime = 0.0;
+	real_t auxTime = 0.0;
+	
+	if ( nV == 0 )
 		return THROWERROR( RET_QPOBJECT_NOT_SETUP );
 
+	
+	/* Possibly update working sets according to guesses for working sets of bounds and constraints. */
+	if ( ( guessedBounds != 0 ) || ( guessedConstraints != 0 ) )
+	{
+		if ( cputime != 0 )
+			starttime = getCPUtime( );
+
+		const Bounds*      actualGuessedBounds      = ( guessedBounds != 0 )      ? guessedBounds      : &bounds;
+		const Constraints* actualGuessedConstraints = ( guessedConstraints != 0 ) ? guessedConstraints : &constraints;
+
+		if ( setupAuxiliaryQP( actualGuessedBounds,actualGuessedConstraints ) != SUCCESSFUL_RETURN )
+			return THROWERROR( RET_SETUP_AUXILIARYQP_FAILED );
+
+		status = QPS_AUXILIARYQPSOLVED;
+
+		/* Allow only remaining CPU time for usual hotstart. */
+		if ( cputime != 0 )
+		{
+			auxTime = getCPUtime( ) - starttime;
+			*cputime -= auxTime;
+		}
+	}
+		
 	returnValue returnvalue = SUCCESSFUL_RETURN;
 
 	/* Simple check for consistency of bounds and constraints. */
@@ -639,8 +589,9 @@ returnValue QProblem::hotstart(	const real_t* const g_new,
 		}
 
 		farewell:
+			/* add time to setup auxiliary QP */
 			if ( cputime != 0 )
-				*cputime = cputime_needed;
+				*cputime = cputime_needed + auxTime;
 			delete[] lbA_new_far; delete[] ubA_new_far;
 			delete[] lb_new_far; delete[] ub_new_far;
 	}
@@ -655,7 +606,8 @@ returnValue QProblem::hotstart(	const real_t* const g_new,
 returnValue QProblem::hotstart(	const char* const g_file,
 								const char* const lb_file, const char* const ub_file,
 								const char* const lbA_file, const char* const ubA_file,
-								int& nWSR, real_t* const cputime
+								int& nWSR, real_t* const cputime,
+								const Bounds* const guessedBounds, const Constraints* const guessedConstraints
 								)
 {
 	int nV = getNV( );
@@ -670,20 +622,12 @@ returnValue QProblem::hotstart(	const char* const g_file,
 
 
 	/* 1) Allocate memory (if bounds exist). */
-	real_t* g_new  = new real_t[nV];
-	real_t* lb_new = 0;
-	real_t* ub_new = 0;
-	real_t* lbA_new = 0;
-	real_t* ubA_new = 0;
+	real_t* g_new   = new real_t[nV];
+	real_t* lb_new  = ( lb_file != 0 )  ? new real_t[nV] : 0;
+	real_t* ub_new  = ( ub_file != 0 )  ? new real_t[nV] : 0;
+	real_t* lbA_new = ( lbA_file != 0 ) ? new real_t[nC] : 0;
+	real_t* ubA_new = ( ubA_file != 0 ) ? new real_t[nC] : 0;
 
-	if ( lb_file != 0 )
-		lb_new = new real_t[nV];
-	if ( ub_file != 0 )
-		ub_new = new real_t[nV];
-	if ( lbA_file != 0 )
-		lbA_new = new real_t[nC];
-	if ( ubA_file != 0 )
-		ubA_new = new real_t[nC];
 
 	/* 2) Load new QP vectors from file. */
 	returnValue returnvalue;
@@ -705,151 +649,14 @@ returnValue QProblem::hotstart(	const char* const g_file,
 		return THROWERROR( RET_UNABLE_TO_READ_FILE );
 	}
 
+
 	/* 3) Actually perform hotstart. */
-	returnvalue = hotstart( g_new,lb_new,ub_new,lbA_new,ubA_new, nWSR,cputime );
-
-	/* 4) Free memory. */
-	if ( ubA_file != 0 )
-		delete[] ubA_new;
-	if ( lbA_file != 0 )
-		delete[] lbA_new;
-	if ( ub_file != 0 )
-		delete[] ub_new;
-	if ( lb_file != 0 )
-		delete[] lb_new;
-	delete[] g_new;
-
-	return returnvalue;
-}
-
-
-/*
- *	h o t s t a r t
- */
-returnValue QProblem::hotstart(	const real_t* const g_new,
-								const real_t* const lb_new, const real_t* const ub_new,
-								const real_t* const lbA_new, const real_t* const ubA_new,
-								int& nWSR, real_t* const cputime,
-								const Bounds* const guessedBounds, const Constraints* const guessedConstraints
-								)
-{
-	int nV = getNV( );
-	int nC = getNC( );
-
-	if ( nV == 0 )
-		return THROWERROR( RET_QPOBJECT_NOT_SETUP );
-
-
-	/* start runtime measurement */
-	real_t starttime = 0.0;
-	if ( cputime != 0 )
-		starttime = getCPUtime( );
-
-
-	/* 1) Update working sets according to guesses for working sets of bounds and constraints. */
-	if ( ( guessedBounds != 0 ) && ( guessedConstraints != 0 ) )
-	{
-		if ( setupAuxiliaryQP( guessedBounds,guessedConstraints ) != SUCCESSFUL_RETURN )
-			return THROWERROR( RET_SETUP_AUXILIARYQP_FAILED );
-	}
-
-	if ( ( guessedBounds == 0 ) && ( guessedConstraints != 0 ) )
-	{
-		/* create empty bounds for setting up auxiliary QP */
-		Bounds emptyBounds( nV );
-		if ( emptyBounds.setupAllFree( ) != SUCCESSFUL_RETURN )
-			return THROWERROR( RET_SETUP_AUXILIARYQP_FAILED );
-
-		if ( setupAuxiliaryQP( &emptyBounds,guessedConstraints ) != SUCCESSFUL_RETURN )
-			return THROWERROR( RET_SETUP_AUXILIARYQP_FAILED );
-	}
-
-	if ( ( guessedBounds != 0 ) && ( guessedConstraints == 0 ) )
-	{
-		/* create empty constraints for setting up auxiliary QP */
-		Constraints emptyConstraints( nC );
-		if ( emptyConstraints.setupAllInactive( ) != SUCCESSFUL_RETURN )
-			return THROWERROR( RET_SETUP_AUXILIARYQP_FAILED );
-
-		if ( setupAuxiliaryQP( guessedBounds,&emptyConstraints ) != SUCCESSFUL_RETURN )
-			return THROWERROR( RET_SETUP_AUXILIARYQP_FAILED );
-	}
-
-	if ( ( guessedBounds == 0 ) && ( guessedConstraints == 0 ) )
-	{
-		/* create empty bounds and constraints for setting up auxiliary QP */
-		Bounds emptyBounds( nV );
-		Constraints emptyConstraints( nC );
-		if ( emptyBounds.setupAllFree( ) != SUCCESSFUL_RETURN )
-			return THROWERROR( RET_SETUP_AUXILIARYQP_FAILED );
-		if ( emptyConstraints.setupAllInactive( ) != SUCCESSFUL_RETURN )
-			return THROWERROR( RET_SETUP_AUXILIARYQP_FAILED );
-
-		if ( setupAuxiliaryQP( &emptyBounds,&emptyConstraints ) != SUCCESSFUL_RETURN )
-			return THROWERROR( RET_SETUP_AUXILIARYQP_FAILED );
-	}
-
-	status = QPS_AUXILIARYQPSOLVED;
-
-
-	/* 2) Perform usual homotopy. */
-
-	/* Allow only remaining CPU time for usual hotstart. */
-	if ( cputime != 0 )
-		*cputime -= getCPUtime( ) - starttime;
-
-	returnValue returnvalue = hotstart( g_new,lb_new,ub_new,lbA_new,ubA_new, nWSR,cputime );
-
-	/* stop runtime measurement */
-	if ( cputime != 0 )
-		*cputime = getCPUtime( ) - starttime;
-
-	return returnvalue;
-}
-
-
-/*
- *	h o t s t a r t
- */
-returnValue QProblem::hotstart(	const char* const g_file,
-								const char* const lb_file, const char* const ub_file,
-								const char* const lbA_file, const char* const ubA_file,
-								int& nWSR, real_t* const cputime,
-								const Bounds* const guessedBounds, const Constraints* const guessedConstraints
-								)
-{
-	int nV = getNV( );
-	int nC = getNC( );
-
-	if ( nV == 0 )
-		return THROWERROR( RET_QPOBJECT_NOT_SETUP );
-
-	/* consistency check */
-	if ( g_file == 0 )
-		return THROWERROR( RET_INVALID_ARGUMENTS );
-
-	/* 1) Allocate memory (if bounds exist). */
-	real_t* g_new   = new real_t[nV];
-	real_t* lb_new  = ( lb_file != 0 ) ? new real_t[nV] : 0;
-	real_t* ub_new  = ( ub_file != 0 ) ? new real_t[nV] : 0;
-	real_t* lbA_new = ( lbA_file != 0 ) ? new real_t[nC] : 0;
-	real_t* ubA_new = ( ubA_file != 0 ) ? new real_t[nC] : 0;
-
-	/* 2) Load new QP vectors from file. */
-	returnValue returnvalue;
-	returnvalue = loadQPvectorsFromFile(	g_file,lb_file,ub_file,lbA_file,ubA_file,
-											g_new,lb_new,ub_new,lbA_new,ubA_new
-											);
-	if (returnvalue != SUCCESSFUL_RETURN) {
-		returnvalue = RET_UNABLE_TO_READ_FILE;
-		goto farewell;
-	}
-
-	/* 3) Actually perform hotstart using initialised homotopy. */
-	returnvalue = hotstart(	g_new,lb_new,ub_new,lbA_new,ubA_new, nWSR,cputime,
+	returnvalue = hotstart(	g_new,lb_new,ub_new,lbA_new,ubA_new,
+							nWSR,cputime,
 							guessedBounds,guessedConstraints
 							);
-farewell:
+
+
 	/* 4) Free memory. */
 	if ( ubA_file != 0 )
 		delete[] ubA_new;
@@ -861,12 +668,13 @@ farewell:
 		delete[] lb_new;
 	delete[] g_new;
 
-	return ( returnvalue != SUCCESSFUL_RETURN ) ? THROWERROR ( returnvalue ) : returnvalue;
+	return returnvalue;
 }
 
 
+
 /*
- *
+ *	s o l v e C u r r e n t E Q P
  */
 returnValue QProblem::solveCurrentEQP(	const int n_rhs,
 										const real_t* g_in,
@@ -878,6 +686,9 @@ returnValue QProblem::solveCurrentEQP(	const int n_rhs,
 										real_t* y_out
 										)
 {
+	if ( ( x_out == 0 ) || ( y_out == 0 ) )
+		return THROWERROR( RET_INVALID_ARGUMENTS );
+
 	returnValue returnvalue = SUCCESSFUL_RETURN;
 	int ii, jj;
 	int nV  = getNV( );
@@ -5631,6 +5442,7 @@ returnValue QProblem::performDriftCorrection( )
 
 	return setupAuxiliaryQPgradient( );
 }
+
 
 /*
  *	s e t u p A u x i l i a r y Q P

@@ -62,7 +62,6 @@ int main( )
 	options.enableCholeskyRefactorisation = 1;
 	example.setOptions( options );
 
-	printf( "\ncount = %d\n",example.getCount() );
 
 	/* Solve first QP. */
 	int nWSR = 10;
