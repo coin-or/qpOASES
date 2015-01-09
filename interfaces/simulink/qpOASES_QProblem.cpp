@@ -113,11 +113,10 @@ static void mdlInitializeSizes (SimStruct *S)   /* Init sizes array */
      * 5: ub
      * 6: lbA
      * 7: ubA
-     * 8: count
      */
 
 	/* Specify the size of the block's pointer work vector */
-    ssSetNumPWork(S, 9);
+    ssSetNumPWork(S, 8);
 }
 
 
@@ -158,7 +157,6 @@ static void mdlStart(SimStruct *S)
 	int nV, nC;
 
 	QProblem* problem;
-	real_t* count;
 
 
 	/* get block inputs dimensions */
@@ -360,12 +358,6 @@ static void mdlStart(SimStruct *S)
 		ssGetPWork(S)[7] = (void *) calloc( size_ubA, sizeof(real_t) );	/* ubA */
 	else
 		ssGetPWork(S)[7] = 0;
-
-	ssGetPWork(S)[8] = (void *) calloc( 1, sizeof(real_t) );			/* count */
-
-	/* reset counter */
-	count = (real_t *) ssGetPWork(S)[8];
-	count[0] = 0.0;
 }
 
 
@@ -383,7 +375,7 @@ static void mdlOutputs(SimStruct *S, int_T tid)
 	InputRealPtrsType in_g, in_lb, in_ub, in_lbA, in_ubA;
 
 	QProblem* problem;
-	real_t *H, *g, *A, *lb, *ub, *lbA, *ubA, *count;
+	real_t *H, *g, *A, *lb, *ub, *lbA, *ubA;
 
 	real_t *xOpt;
 
@@ -410,8 +402,6 @@ static void mdlOutputs(SimStruct *S, int_T tid)
 	ub  = (real_t *) ssGetPWork(S)[5];
 	lbA = (real_t *) ssGetPWork(S)[6];
 	ubA = (real_t *) ssGetPWork(S)[7];
-
-	count = (real_t *) ssGetPWork(S)[8];
 
 
 	/* setup QP data */
@@ -456,7 +446,7 @@ static void mdlOutputs(SimStruct *S, int_T tid)
 
 	xOpt = new real_t[nV];
 
-	if ( count[0] == 0 )
+	if ( problem->getCount() == 0 )
 	{
 		/* initialise and solve first QP */
 		status = problem->init( H,g,A,lb,ub,lbA,ubA, nWSR,0 );
@@ -500,9 +490,6 @@ static void mdlOutputs(SimStruct *S, int_T tid)
 	removeNaNs( out_objVal,1 );
 	removeInfs( out_objVal,1 );
 
-	/* increase counter */
-	count[0] = count[0] + 1;
-
 	delete[] xOpt;
 }
 
@@ -519,7 +506,7 @@ static void mdlTerminate(SimStruct *S)
 	if ( ssGetPWork(S)[0] != 0 )
 		delete ssGetPWork(S)[0];
 
-	for ( i=1; i<9; ++i )
+	for ( i=1; i<8; ++i )
 	{
 		if ( ssGetPWork(S)[i] != 0 )
 			free( ssGetPWork(S)[i] );

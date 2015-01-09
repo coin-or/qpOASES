@@ -62,9 +62,11 @@ int main( )
 	options.enableCholeskyRefactorisation = 1;
 	example.setOptions( options );
 
+	printf( "\ncount = %d\n",example.getCount() );
+
 	/* Solve first QP. */
 	int nWSR = 10;
-	example.init( H,g,lb,0, nWSR,0 );
+	example.init( H,g,lb,ub, nWSR,0 );
 
 	/* Get and print solution of first QP. */
 	real_t xOpt[2];
@@ -73,7 +75,7 @@ int main( )
 	
 	/* Solve second QP. */
 	nWSR = 10;
-	example.hotstart( g_new,lb_new,0, nWSR,0 );
+	example.hotstart( g_new,lb_new,ub_new, nWSR,0 );
 // 	printf( "\nnWSR = %d\n\n", nWSR );
 
 	/* Get and print solution of second QP. */

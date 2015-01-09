@@ -518,10 +518,15 @@ returnValue QProblem::hotstart(	const real_t* const g_new,
 			return THROWERROR(returnvalue);
 	}
 
+	BooleanType isFirstCall = BT_TRUE;
+
 	if ( options.enableFarBounds == BT_FALSE )
 	{
 		/* Automatically call standard solveQP if regularisation is not active. */
-		returnvalue = solveRegularisedQP( g_new,lb_new,ub_new,lbA_new,ubA_new, nWSR,cputime,0 );
+		returnvalue = solveRegularisedQP(	g_new,lb_new,ub_new,lbA_new,ubA_new, 
+											nWSR,cputime,0,
+											isFirstCall
+											);
 	}
 	else
 	{
@@ -561,10 +566,14 @@ returnValue QProblem::hotstart(	const real_t* const g_new,
 				pcputime_rem = 0;
 
 			/* Automatically call standard solveQP if regularisation is not active. */
-			returnvalue = solveRegularisedQP( g_new,lb_new_far,ub_new_far,lbA_new_far,ubA_new_far, nWSR,pcputime_rem,nWSR_performed );
+			returnvalue = solveRegularisedQP(	g_new,lb_new_far,ub_new_far,lbA_new_far,ubA_new_far,
+												nWSR,pcputime_rem,nWSR_performed,
+												isFirstCall
+												);
 
 			nWSR_performed  = nWSR;
 			cputime_needed += cputime_remaining;
+			isFirstCall     = BT_FALSE;
 
 			/* Check for active far-bounds and move them away */
 			nActiveFar = 0;
@@ -1565,7 +1574,8 @@ returnValue QProblem::solveInitialQP(	const real_t* const xOpt, const real_t* co
 returnValue QProblem::solveQP(	const real_t* const g_new,
 								const real_t* const lb_new, const real_t* const ub_new,
 								const real_t* const lbA_new, const real_t* const ubA_new,
-								int& nWSR, real_t* const cputime, int nWSRperformed
+								int& nWSR, real_t* const cputime, int nWSRperformed,
+								BooleanType isFirstCall
 								)
 {
 	int iter;
@@ -1646,7 +1656,10 @@ returnValue QProblem::solveQP(	const real_t* const g_new,
 		status = QPS_PERFORMINGHOMOTOPY;
 
 		#ifndef __XPCTARGET__
-		snprintf( messageString,MAX_STRING_LENGTH,"%d ...",iter );
+		if ( isFirstCall == BT_TRUE )
+			snprintf( messageString,MAX_STRING_LENGTH,"%d ...",iter );
+		else
+			snprintf( messageString,MAX_STRING_LENGTH,"%d* ...",iter );
 		getGlobalMessageHandler( )->throwInfo( RET_ITERATION_STARTED,messageString,__FUNCTION__,__FILE__,__LINE__,VS_VISIBLE );
 		#endif
 
@@ -1719,7 +1732,7 @@ returnValue QProblem::solveQP(	const real_t* const g_new,
 
 			THROWINFO( RET_OPTIMAL_SOLUTION_FOUND );
 
-			if ( printIteration( iter,BC_idx,BC_status,BC_isBound,homotopyLength ) != SUCCESSFUL_RETURN )
+			if ( printIteration( iter,BC_idx,BC_status,BC_isBound,homotopyLength,isFirstCall ) != SUCCESSFUL_RETURN )
 				THROWERROR( RET_PRINT_ITERATION_FAILED ); /* do not pass this as return value! */
 
 			nWSR = iter;
@@ -1775,7 +1788,7 @@ returnValue QProblem::solveQP(	const real_t* const g_new,
 		/* 7) Output information of successful QP iteration. */
 		status = QPS_HOMOTOPYQPSOLVED;
 
-		if ( printIteration( iter,BC_idx,BC_status,BC_isBound,homotopyLength ) != SUCCESSFUL_RETURN )
+		if ( printIteration( iter,BC_idx,BC_status,BC_isBound,homotopyLength,isFirstCall ) != SUCCESSFUL_RETURN )
 			THROWERROR( RET_PRINT_ITERATION_FAILED ); /* do not pass this as return value! */
 
 		/* 8) Perform Ramping Strategy on zero homotopy step or drift correction (if desired). */
@@ -1821,7 +1834,8 @@ returnValue QProblem::solveQP(	const real_t* const g_new,
 returnValue QProblem::solveRegularisedQP(	const real_t* const g_new,
 											const real_t* const lb_new, const real_t* const ub_new,
 											const real_t* const lbA_new, const real_t* const ubA_new,
-											int& nWSR, real_t* const cputime, int nWSRperformed
+											int& nWSR, real_t* const cputime, int nWSRperformed,
+											BooleanType isFirstCall
 											)
 {
 	int i, step;
@@ -1830,7 +1844,7 @@ returnValue QProblem::solveRegularisedQP(	const real_t* const g_new,
 
 	/* Perform normal QP solution if QP has not been regularised. */
 	if ( usingRegularisation( ) == BT_FALSE )
-		return solveQP( g_new,lb_new,ub_new,lbA_new,ubA_new, nWSR,cputime,nWSRperformed );
+		return solveQP( g_new,lb_new,ub_new,lbA_new,ubA_new, nWSR,cputime,nWSRperformed,isFirstCall );
 
 
 	/* I) SOLVE USUAL REGULARISED QP */
@@ -1844,15 +1858,16 @@ returnValue QProblem::solveRegularisedQP(	const real_t* const g_new,
 
 	if ( cputime == 0 )
 	{
-		returnvalue = solveQP( g_new,lb_new,ub_new,lbA_new,ubA_new, nWSR,0,nWSRperformed );
+		returnvalue = solveQP( g_new,lb_new,ub_new,lbA_new,ubA_new, nWSR,0,nWSRperformed,isFirstCall );
 	}
 	else
 	{
 		cputime_cur = *cputime;
-		returnvalue = solveQP( g_new,lb_new,ub_new,lbA_new,ubA_new, nWSR,&cputime_cur,nWSRperformed );
+		returnvalue = solveQP( g_new,lb_new,ub_new,lbA_new,ubA_new, nWSR,&cputime_cur,nWSRperformed,isFirstCall );
 	}
 	nWSR_total     = nWSR;
 	cputime_total += cputime_cur;
+	isFirstCall    = BT_FALSE;
 
 	/* Only continue if QP solution has been successful. */
 	if ( returnvalue != SUCCESSFUL_RETURN )
@@ -1884,12 +1899,12 @@ returnValue QProblem::solveRegularisedQP(	const real_t* const g_new,
 
 		if ( cputime == 0 )
 		{
-			returnvalue = solveQP( gMod,lb_new,ub_new,lbA_new,ubA_new, nWSR,0,nWSR_total );
+			returnvalue = solveQP( gMod,lb_new,ub_new,lbA_new,ubA_new, nWSR,0,nWSR_total,isFirstCall );
 		}
 		else
 		{
 			cputime_cur = *cputime - cputime_total;
-			returnvalue = solveQP( gMod,lb_new,ub_new,lbA_new,ubA_new, nWSR,&cputime_cur,nWSR_total );
+			returnvalue = solveQP( gMod,lb_new,ub_new,lbA_new,ubA_new, nWSR,&cputime_cur,nWSR_total,isFirstCall );
 		}
 
 		nWSR_total     = nWSR;
@@ -3307,7 +3322,7 @@ returnValue QProblem::addBound(	int number, SubjectToStatus B_status,
 	/* I) ENSURE LINEAR INDEPENDENCE OF THE WORKING SET,
 	 *    i.e. remove a constraint or bound if linear dependence occurs. */
 	/* check for LI only if Cholesky decomposition shall be updated! */
-	if ( updateCholesky == BT_TRUE && ensureLI == BT_TRUE )
+	if ( ( updateCholesky == BT_TRUE ) && ( ensureLI == BT_TRUE ) )
 	{
 		returnValue ensureLIreturnvalue = addBound_ensureLI( number,B_status );
 
@@ -4099,19 +4114,7 @@ returnValue QProblem::removeBound(	int number,
 		 *      calculate new additional column (i.e. [r sqrt(rho2)]')
 		 *      of the Cholesky factor R: */
 		real_t z2 = QQ(nnFRp1,nZ);
-		real_t rho2;
-
-		switch ( hessianType ) 
-		{
-			case HST_ZERO:
-				rho2 = regVal * z2*z2;
-
-			case HST_IDENTITY:
-				rho2 = 1.0 * z2*z2;
-
-			default:
-				rho2 = H->diag(nnFRp1) * z2*z2; /* rho2 = h2*z2*z2 */
-		}
+		real_t rho2 = H->diag(nnFRp1) * z2*z2;
 
 		if ( nFR > 0 )
 		{
@@ -4124,32 +4127,9 @@ returnValue QProblem::removeBound(	int number,
 				z[j] = QQ(FR_idx[j],nZ);
 			z[nFR] = 0.0;
 
-			switch ( hessianType )
-			{
-				case HST_ZERO:
-					for( i=0; i<nFR+1; ++i )
-					{
-						Hz[i] = regVal * z[i];
-						z[i] = 0.0;
-					}
-					z[nFR] = regVal;
-					break;
-
-				case HST_IDENTITY:
-					for( i=0; i<nFR+1; ++i )
-					{
-						Hz[i] = 1.0 * z[i];
-						z[i] = 0.0;
-					}
-					z[nFR] = 1.0;
-					break;
-
-				default:
-					H->times(bounds.getFree(), bounds.getFree(), 1, 1.0, z, nFR+1, 0.0, Hz, nFR+1);
-					H->getCol(nnFRp1, bounds.getFree(), 1.0, z);
-					break;
-			}
-
+			H->times(bounds.getFree(), bounds.getFree(), 1, 1.0, z, nFR+1, 0.0, Hz, nFR+1);
+			H->getCol(nnFRp1, bounds.getFree(), 1.0, z);
+			
 			if ( nZ > 0 )
 			{
 				real_t* r = new real_t[nZ];
@@ -4776,7 +4756,7 @@ returnValue QProblem::determineStepDirection(	const real_t* const delta_g, const
 					}
 					else
 					{
-						/* When solving LPs without regularisation, iterates must always ne at a vertex. */
+						/* When solving LPs without regularisation, iterates must always be at a vertex. */
 						if ( nZ > 0 )
 							return THROWERROR( RET_UNKNOWN_BUG );
 					}
@@ -4964,21 +4944,22 @@ returnValue QProblem::determineStepDirection(	const real_t* const delta_g, const
 
 		A->transTimes(constraints.getActive(), bounds.getFixed(), 1, -1.0, delta_yAC, nAC, 1.0, delta_yFX, nFX);
 
-		if ( hessianType == HST_ZERO )
+		switch( hessianType )
 		{
-			if ( usingRegularisation( ) == BT_TRUE )
+			case HST_ZERO:
+				if ( usingRegularisation( ) == BT_TRUE )
+					for( i=0; i<nFX; ++i )
+						delta_yFX[i] += regVal*delta_xFX[i];
+				break;
+
+			case HST_IDENTITY:
 				for( i=0; i<nFX; ++i )
-					delta_yFX[i] += regVal*delta_xFX[i];
-		}
-		else if ( hessianType == HST_IDENTITY )
-		{
-			for( i=0; i<nFX; ++i )
-				delta_yFX[i] += delta_xFX[i];
-		}
-		else
-		{
-			H->times(bounds.getFixed(), bounds.getFree(), 1, 1.0, delta_xFR, nFR, 1.0, delta_yFX, nFX);
-			H->times(bounds.getFixed(), bounds.getFixed(), 1, 1.0, delta_xFX, nFX, 1.0, delta_yFX, nFX);
+					delta_yFX[i] += 1.0 * delta_xFX[i];
+				break;
+		
+			default:
+				H->times(bounds.getFixed(), bounds.getFree(), 1, 1.0, delta_xFR, nFR, 1.0, delta_yFX, nFX);
+				H->times(bounds.getFixed(), bounds.getFixed(), 1, 1.0, delta_xFX, nFX, 1.0, delta_yFX, nFX);
 		}
 	}
 
@@ -5972,7 +5953,8 @@ returnValue QProblem::loadQPvectorsFromFile(	const char* const g_file, const cha
  *	p r i n t I t e r a t i o n
  */
 returnValue QProblem::printIteration( 	int iter,
-										int BC_idx,	SubjectToStatus BC_status, BooleanType BC_isBound, real_t homotopyLength
+										int BC_idx,	SubjectToStatus BC_status, BooleanType BC_isBound, real_t homotopyLength,
+										BooleanType isFirstCall
 		  								)
 {
 	#ifndef __XPCTARGET__
@@ -6004,7 +5986,24 @@ returnValue QProblem::printIteration( 	int iter,
 
 			/* stationarity */
 			for (i = 0; i < nV; i++) grad[i] = g[i] - y[i];
-			H->times(1, 1.0, x, nV, 1.0, grad, nV);
+			
+			switch ( hessianType )
+			{
+				case HST_ZERO:
+					for( i=0; i<nV; ++i )
+						grad[i] += regVal * x[i];
+					break;
+					
+				case HST_IDENTITY:
+					for( i=0; i<nV; ++i )
+						grad[i] += 1.0 * x[i];
+					break;
+					
+				default:
+					H->times(1, 1.0, x, nV, 1.0, grad, nV);
+					break;
+			}
+			
 			A->transTimes(1, -1.0, y+nV, nC, 1.0, grad, nV);
 			for (i = 0; i < nV; i++) if (getAbs(grad[i]) > stat) stat = getAbs(grad[i]);
 
@@ -6029,7 +6028,7 @@ returnValue QProblem::printIteration( 	int iter,
 					Tmax = getAbs(TT(i,sizeT-i-1));
 			Tmaxomin = Tmax/Tmin;
 
-			if (iter % 10 == 0)
+			if ( (iter % 10 == 0) && ( isFirstCall == BT_TRUE ) )
 			{
 				snprintf( myPrintfString,MAX_STRING_LENGTH, "\n%5s %4s %4s %4s %4s %9s %9s %9s %9s %9s %9s %9s %9s\n",
 						"iter", "addB", "remB", "addC", "remC", "hom len", "tau", "stat",
@@ -6037,7 +6036,10 @@ returnValue QProblem::printIteration( 	int iter,
 				myPrintf( myPrintfString );
 			}
 
-			snprintf( myPrintfString,MAX_STRING_LENGTH, "%5d ", iter);
+			if ( isFirstCall == BT_TRUE )
+				snprintf( myPrintfString,MAX_STRING_LENGTH, "%5d ", iter);
+			else
+				snprintf( myPrintfString,MAX_STRING_LENGTH, "%5d*", iter);
 			myPrintf( myPrintfString );
 
 			if (tabularOutput.idxAddB >= 0)
@@ -6089,13 +6091,16 @@ returnValue QProblem::printIteration( 	int iter,
 			break;
 
 		case PL_TABULAR:
-			if (iter % 10 == 0)
+			if ( (iter % 10 == 0) && ( isFirstCall == BT_TRUE ) )
 			{
 				snprintf( myPrintfString,MAX_STRING_LENGTH, "\n%5s %6s %6s %6s %6s %9s %9s\n",
 						"iter", "addB", "remB", "addC", "remC", "hom len", "tau" );
 				myPrintf( myPrintfString );
 			}
-			snprintf( myPrintfString,MAX_STRING_LENGTH, "%5d ",iter);
+			if ( isFirstCall == BT_TRUE )
+				snprintf( myPrintfString,MAX_STRING_LENGTH, "%5d ",iter);
+			else
+				snprintf( myPrintfString,MAX_STRING_LENGTH, "%5d*",iter);
 			myPrintf( myPrintfString );
 
 			if (tabularOutput.idxAddB >= 0)
@@ -6144,7 +6149,7 @@ returnValue QProblem::printIteration( 	int iter,
 
 		case PL_MEDIUM:
 			/* 1) Print header at first iteration. */
- 			if ( iter == 0 )
+ 			if ( ( iter == 0 ) && ( isFirstCall == BT_TRUE ) )
 			{
 				snprintf( myPrintfString,MAX_STRING_LENGTH,"\n\n####################   qpOASES  --  QP NO. %3.0d   #####################\n\n", count );
 				myPrintf( myPrintfString );
@@ -6161,7 +6166,10 @@ returnValue QProblem::printIteration( 	int iter,
 				else
 					snprintf( info,3,"QP" );
 
-				snprintf( myPrintfString,MAX_STRING_LENGTH,"   %5.1d   |   %1.6e   |    %s SOLVED     |  %4.1d   |  %4.1d   \n", iter,tau,info,getNFX( ),getNAC( ) );
+				if ( isFirstCall == BT_TRUE )
+					snprintf( myPrintfString,MAX_STRING_LENGTH,"   %5.1d   |   %1.6e   |    %s SOLVED     |  %4.1d   |  %4.1d   \n", iter,tau,info,getNFX( ),getNAC( ) );
+				else
+					snprintf( myPrintfString,MAX_STRING_LENGTH,"   %5.1d*  |   %1.6e   |    %s SOLVED     |  %4.1d   |  %4.1d   \n", iter,tau,info,getNFX( ),getNAC( ) );
 				myPrintf( myPrintfString );
 			}
 			else

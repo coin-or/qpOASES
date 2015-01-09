@@ -59,14 +59,14 @@ int main( )
 
 
 	/* Setting up QProblem object. */
-	QProblem example( 2,1 );
+	QProblem example( 2,1,HST_IDENTITY );
 
 	Options options;
 	example.setOptions( options );
 
 	/* Solve first QP. */
 	int nWSR = 10;
-	example.init( 0,g,A,lb,ub,lbA,ubA, nWSR );
+	example.init( H,g,A,lb,ub,lbA,ubA, nWSR );
 
 	/* Get and print solution of first QP. */
 	real_t xOpt[2];

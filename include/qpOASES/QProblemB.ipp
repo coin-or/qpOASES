@@ -210,6 +210,25 @@ inline PrintLevel QProblemB::getPrintLevel( ) const
 
 
 
+/*
+ *	g e t C o u n t
+ */
+inline unsigned int QProblemB::getCount( ) const
+{
+	return count;
+}
+
+
+/*
+ *	r e s e t C o u n t e r
+ */
+inline returnValue QProblemB::resetCounter( )
+{
+	count = 0;
+	return SUCCESSFUL_RETURN;
+}
+
+
 /*****************************************************************************
  *  P R O T E C T E D                                                        *
  *****************************************************************************/

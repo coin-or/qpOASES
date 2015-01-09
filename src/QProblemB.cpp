@@ -490,10 +490,15 @@ returnValue QProblemB::hotstart(	const real_t* const g_new,
 			return THROWERROR(returnvalue);
 	}
 
+	BooleanType isFirstCall = BT_TRUE;
+
 	if ( options.enableFarBounds == BT_FALSE )
 	{
 		/* Automatically call standard solveQP if regularisation is not active. */
-		returnvalue = solveRegularisedQP( g_new,lb_new,ub_new, nWSR,cputime,0 );
+		returnvalue = solveRegularisedQP(	g_new,lb_new,ub_new,
+											nWSR,cputime,0,
+											isFirstCall
+											);
 	}
 	else
 	{
@@ -519,10 +524,14 @@ returnValue QProblemB::hotstart(	const real_t* const g_new,
 				cputime_remaining = *cputime - cputime_needed;
 
 			/* Automatically call standard solveQP if regularisation is not active. */
-			returnvalue = solveRegularisedQP( g_new,lb_new_far,ub_new_far, nWSR,&cputime_remaining,nWSR_performed );
+			returnvalue = solveRegularisedQP(	g_new,lb_new_far,ub_new_far,
+												nWSR,&cputime_remaining,nWSR_performed,
+												isFirstCall
+												);
 
 			nWSR_performed  = nWSR;
 			cputime_needed += cputime_remaining;
+			isFirstCall     = BT_FALSE;
 
 			/* Check for active far-bounds and move them away */
 			nActiveFar = 0;
@@ -2492,7 +2501,8 @@ returnValue QProblemB::solveInitialQP(	const real_t* const xOpt, const real_t* c
  */
 returnValue QProblemB::solveQP(	const real_t* const g_new,
 								const real_t* const lb_new, const real_t* const ub_new,
-								int& nWSR, real_t* const cputime, int nWSRperformed
+								int& nWSR, real_t* const cputime, int nWSRperformed,
+								BooleanType isFirstCall
 								)
 {
 	int iter;
@@ -2564,7 +2574,10 @@ returnValue QProblemB::solveQP(	const real_t* const g_new,
 		status = QPS_PERFORMINGHOMOTOPY;
 
 		#ifndef __XPCTARGET__
-		snprintf( messageString,MAX_STRING_LENGTH,"%d ...",iter );
+		if ( isFirstCall == BT_TRUE )
+			snprintf( messageString,MAX_STRING_LENGTH,"%d ...",iter );
+		else
+			snprintf( messageString,MAX_STRING_LENGTH,"%d* ...",iter );
 		getGlobalMessageHandler( )->throwInfo( RET_ITERATION_STARTED,messageString,__FUNCTION__,__FILE__,__LINE__,VS_VISIBLE );
 		#endif
 
@@ -2635,7 +2648,7 @@ returnValue QProblemB::solveQP(	const real_t* const g_new,
 
 			THROWINFO( RET_OPTIMAL_SOLUTION_FOUND );
 
-			if ( printIteration( iter,BC_idx,BC_status,homotopyLength ) != SUCCESSFUL_RETURN )
+			if ( printIteration( iter,BC_idx,BC_status,homotopyLength,isFirstCall ) != SUCCESSFUL_RETURN )
 				THROWERROR( RET_PRINT_ITERATION_FAILED ); /* do not pass this as return value! */
 
 			nWSR = iter;
@@ -2700,7 +2713,7 @@ returnValue QProblemB::solveQP(	const real_t* const g_new,
 		/* 8) Output information of successful QP iteration. */
 		status = QPS_HOMOTOPYQPSOLVED;
 
-		if ( printIteration( iter,BC_idx,BC_status,homotopyLength ) != SUCCESSFUL_RETURN )
+		if ( printIteration( iter,BC_idx,BC_status,homotopyLength,isFirstCall ) != SUCCESSFUL_RETURN )
 			THROWERROR( RET_PRINT_ITERATION_FAILED ); /* do not pass this as return value! */
 	}
 
@@ -2735,7 +2748,8 @@ returnValue QProblemB::solveQP(	const real_t* const g_new,
  */
 returnValue QProblemB::solveRegularisedQP(	const real_t* const g_new,
 											const real_t* const lb_new, const real_t* const ub_new,
-											int& nWSR, real_t* const cputime, int nWSRperformed
+											int& nWSR, real_t* const cputime, int nWSRperformed,
+											BooleanType isFirstCall
 											)
 {
 	int i, step;
@@ -2744,7 +2758,7 @@ returnValue QProblemB::solveRegularisedQP(	const real_t* const g_new,
 
 	/* Perform normal QP solution if QP has not been regularised. */
 	if ( usingRegularisation( ) == BT_FALSE )
-		return solveQP( g_new,lb_new,ub_new, nWSR,cputime,nWSRperformed );
+		return solveQP( g_new,lb_new,ub_new, nWSR,cputime,nWSRperformed,isFirstCall );
 
 
 	/* I) SOLVE USUAL REGULARISED QP */
@@ -2758,15 +2772,16 @@ returnValue QProblemB::solveRegularisedQP(	const real_t* const g_new,
 
 	if ( cputime == 0 )
 	{
-		returnvalue = solveQP( g_new,lb_new,ub_new, nWSR,0,nWSRperformed );
+		returnvalue = solveQP( g_new,lb_new,ub_new, nWSR,0,nWSRperformed,isFirstCall );
 	}
 	else
 	{
 		cputime_cur = *cputime;
-		returnvalue = solveQP( g_new,lb_new,ub_new, nWSR,&cputime_cur,nWSRperformed );
+		returnvalue = solveQP( g_new,lb_new,ub_new, nWSR,&cputime_cur,nWSRperformed,isFirstCall );
 	}
 	nWSR_total     = nWSR;
 	cputime_total += cputime_cur;
+	isFirstCall    = BT_FALSE;
 
 
 	/* Only continue if QP solution has been successful. */
@@ -2798,13 +2813,13 @@ returnValue QProblemB::solveRegularisedQP(	const real_t* const g_new,
 		if ( cputime == 0 )
 		{
 			nWSR = nWSR_max;
-			returnvalue = solveQP( gMod,lb_new,ub_new, nWSR,0,nWSR_total );
+			returnvalue = solveQP( gMod,lb_new,ub_new, nWSR,0,nWSR_total,isFirstCall );
 		}
 		else
 		{
 			nWSR = nWSR_max;
 			cputime_cur = *cputime - cputime_total;
-			returnvalue = solveQP( gMod,lb_new,ub_new, nWSR,&cputime_cur,nWSR_total );
+			returnvalue = solveQP( gMod,lb_new,ub_new, nWSR,&cputime_cur,nWSR_total,isFirstCall );
 		}
 
 		nWSR_total     = nWSR;
@@ -3766,8 +3781,9 @@ returnValue QProblemB::removeBound(	int number,
  *	p r i n t I t e r a t i o n
  */
 returnValue QProblemB::printIteration( 	int iter,
-											int BC_idx,	SubjectToStatus BC_status, real_t homotopyLength
-											)
+										int BC_idx,	SubjectToStatus BC_status, real_t homotopyLength,
+										BooleanType isFirstCall
+										)
 {
 	#ifndef __XPCTARGET__
 
@@ -3781,6 +3797,7 @@ returnValue QProblemB::printIteration( 	int iter,
 	real_t *grad = 0;
 		
 	char myPrintfString[MAX_STRING_LENGTH];
+	char info[MAX_STRING_LENGTH];
 	const char excStr[] = " ef";
 
 	switch ( options.printLevel )
@@ -3802,7 +3819,7 @@ returnValue QProblemB::printIteration( 	int iter,
 			for (i = 0; i < nV; i++) if (y[i] > +EPS && getAbs((lb[i] - x[i])*y[i]) > bcmpl) bcmpl = getAbs((lb[i] - x[i])*y[i]);
 			for (i = 0; i < nV; i++) if (y[i] < -EPS && getAbs((ub[i] - x[i])*y[i]) > bcmpl) bcmpl = getAbs((ub[i] - x[i])*y[i]);
 
-			if (iter % 10 == 0)
+			if ( (iter % 10 == 0) && ( isFirstCall == BT_TRUE ) )
 			{
 				snprintf( myPrintfString,MAX_STRING_LENGTH, "\n%5s %4s %4s %9s %9s %9s %9s %9s\n",
 						"iter", "addB", "remB", "hom len", "tau", "stat", "bfeas", "bcmpl");
@@ -3840,7 +3857,7 @@ returnValue QProblemB::printIteration( 	int iter,
 			break;
 
 		case PL_TABULAR:
-			if (iter % 10 == 0)
+			if ( (iter % 10 == 0) && ( isFirstCall == BT_TRUE ) )
 			{
 				snprintf( myPrintfString,MAX_STRING_LENGTH, "\n%5s %6s %6s %9s %9s\n",
 						"iter", "addB", "remB", "hom len", "tau");
@@ -3876,7 +3893,7 @@ returnValue QProblemB::printIteration( 	int iter,
 
 		case PL_MEDIUM:
 			/* 1) Print header at first iteration. */
- 			if ( iter == 0 )
+ 			if ( ( iter == 0 ) && ( isFirstCall == BT_TRUE ) )
 			{
 				snprintf( myPrintfString,MAX_STRING_LENGTH,"\n\n#################   qpOASES  --  QP NO. %3.0d   ##################\n\n", count );
 				myPrintf( myPrintfString );
@@ -3889,15 +3906,18 @@ returnValue QProblemB::printIteration( 	int iter,
 			if ( BC_status == ST_UNDEFINED )
 			{
 				if ( hessianType == HST_ZERO )
-					snprintf( myPrintfString,MAX_STRING_LENGTH,"   %5.1d   |   %1.6e   |    LP SOLVED     |  %4.1d   \n", iter,tau,getNFX( ) );
+					snprintf( info,3,"LP" );
 				else
-					snprintf( myPrintfString,MAX_STRING_LENGTH,"   %5.1d   |   %1.6e   |    QP SOLVED     |  %4.1d   \n", iter,tau,getNFX( ) );
+					snprintf( info,3,"QP" );
+
+				if ( isFirstCall == BT_TRUE )
+					snprintf( myPrintfString,MAX_STRING_LENGTH,"   %5.1d   |   %1.6e   |    %s SOLVED     |  %4.1d   \n", iter,tau,info,getNFX( ) );
+				else
+					snprintf( myPrintfString,MAX_STRING_LENGTH,"   %5.1d*  |   %1.6e   |    %s SOLVED     |  %4.1d   \n", iter,tau,info,getNFX( ) );
 				myPrintf( myPrintfString );
 			}
 			else
 			{
-				char info[MAX_STRING_LENGTH];
-
 				if ( BC_status == ST_INACTIVE )
 					snprintf( info,8,"REM BND" );
 				else

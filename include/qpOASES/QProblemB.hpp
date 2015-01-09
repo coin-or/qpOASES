@@ -519,6 +519,15 @@ class QProblemB
 									);
 
 
+		/** Returns the current number of QP problems solved.
+		 *	\return Number of QP problems solved. */
+		inline unsigned int getCount( ) const;
+
+		/** Resets QP problem counter (to zero).
+		 *	\return SUCCESSFUL_RETURN. */
+		inline returnValue resetCounter( );
+
+
 		/** Prints concise list of properties of the current QP.
 		 *	\return  SUCCESSFUL_RETURN \n */
 		virtual returnValue printProperties( );
@@ -889,19 +898,20 @@ class QProblemB
 					RET_HOMOTOPY_STEP_FAILED \n
 					RET_HOTSTART_STOPPED_INFEASIBILITY \n
 					RET_HOTSTART_STOPPED_UNBOUNDEDNESS */
-		returnValue solveQP(	const real_t* const g_new,	/**< Gradient of neighbouring QP to be solved. */
-								const real_t* const lb_new,	/**< Lower bounds of neighbouring QP to be solved. \n
-													 			 If no lower bounds exist, a NULL pointer can be passed. */
-								const real_t* const ub_new,	/**< Upper bounds of neighbouring QP to be solved. \n
-													 			 If no upper bounds exist, a NULL pointer can be passed. */
-								int& nWSR,					/**< Input: Maximum number of working set recalculations; \n
-																 Output: Number of performed working set recalculations. */
-								real_t* const cputime,		/**< Input: Maximum CPU time allowed for QP solution. \n
-																 Output: CPU time spend for QP solution (or to perform nWSR iterations). */
-								int  nWSRperformed = 0		/**< Number of working set recalculations already performed to solve
-																 this QP within previous solveQP() calls. This number is
-																 always zero, except for successive calls from solveRegularisedQP()
-																 or when using the far bound strategy. */
+		returnValue solveQP(	const real_t* const g_new,			/**< Gradient of neighbouring QP to be solved. */
+								const real_t* const lb_new,			/**< Lower bounds of neighbouring QP to be solved. \n
+													 					 If no lower bounds exist, a NULL pointer can be passed. */
+								const real_t* const ub_new,			/**< Upper bounds of neighbouring QP to be solved. \n
+													 					 If no upper bounds exist, a NULL pointer can be passed. */
+								int& nWSR,							/**< Input: Maximum number of working set recalculations; \n
+																		 Output: Number of performed working set recalculations. */
+								real_t* const cputime,				/**< Input: Maximum CPU time allowed for QP solution. \n
+																		 Output: CPU time spend for QP solution (or to perform nWSR iterations). */
+								int  nWSRperformed = 0,				/**< Number of working set recalculations already performed to solve
+																		 this QP within previous solveQP() calls. This number is
+																		 always zero, except for successive calls from solveRegularisedQP()
+																		 or when using the far bound strategy. */
+								BooleanType isFirstCall = BT_TRUE	/**< Indicating whether this is the first call for current QP. */
 								);
 
 
@@ -917,18 +927,19 @@ class QProblemB
 					RET_HOMOTOPY_STEP_FAILED \n
 					RET_HOTSTART_STOPPED_INFEASIBILITY \n
 					RET_HOTSTART_STOPPED_UNBOUNDEDNESS */
-		returnValue solveRegularisedQP(	const real_t* const g_new,	/**< Gradient of neighbouring QP to be solved. */
-										const real_t* const lb_new,	/**< Lower bounds of neighbouring QP to be solved. \n
-															 			 If no lower bounds exist, a NULL pointer can be passed. */
-										const real_t* const ub_new,	/**< Upper bounds of neighbouring QP to be solved. \n
-															 			 If no upper bounds exist, a NULL pointer can be passed. */
-										int& nWSR,					/**< Input: Maximum number of working set recalculations; \n
-																		 Output: Number of performed working set recalculations. */
-										real_t* const cputime,		/**< Input: Maximum CPU time allowed for QP solution. \n
-																		 Output: CPU time spend for QP solution (or to perform nWSR iterations). */
-										int  nWSRperformed = 0		/**< Number of working set recalculations already performed to solve
-																		 this QP within previous solveRegularisedQP() calls. This number is
-																		 always zero, except for successive calls when using the far bound strategy. */
+		returnValue solveRegularisedQP(	const real_t* const g_new,			/**< Gradient of neighbouring QP to be solved. */
+										const real_t* const lb_new,			/**< Lower bounds of neighbouring QP to be solved. \n
+															 					 If no lower bounds exist, a NULL pointer can be passed. */
+										const real_t* const ub_new,			/**< Upper bounds of neighbouring QP to be solved. \n
+															 					 If no upper bounds exist, a NULL pointer can be passed. */
+										int& nWSR,							/**< Input: Maximum number of working set recalculations; \n
+																				 Output: Number of performed working set recalculations. */
+										real_t* const cputime,				/**< Input: Maximum CPU time allowed for QP solution. \n
+																				 Output: CPU time spend for QP solution (or to perform nWSR iterations). */
+										int  nWSRperformed = 0,				/**< Number of working set recalculations already performed to solve
+																				 this QP within previous solveRegularisedQP() calls. This number is
+																				 always zero, except for successive calls when using the far bound strategy. */
+										BooleanType isFirstCall = BT_TRUE	/**< Indicating whether this is the first call for current QP. */
 										);
 
 
@@ -1041,10 +1052,11 @@ class QProblemB
 
 		/** Prints concise information on the current iteration.
 		 *	\return  SUCCESSFUL_RETURN \n */
-		returnValue printIteration(	int iter,					/**< Number of current iteration. */
-									int BC_idx, 				/**< Index of blocking bound. */
-									SubjectToStatus BC_status,	/**< Status of blocking bound. */
-									real_t homotopyLength		/**< Current homotopy distance. */
+		returnValue printIteration(	int iter,							/**< Number of current iteration. */
+									int BC_idx, 						/**< Index of blocking bound. */
+									SubjectToStatus BC_status,			/**< Status of blocking bound. */
+									real_t homotopyLength,				/**< Current homotopy distance. */
+									BooleanType isFirstCall = BT_TRUE	/**< Indicating whether this is the first call for current QP. */
 									);
 
 
@@ -1077,7 +1089,7 @@ class QProblemB
 		HessianType hessianType;	/**< Type of Hessian matrix. */
 		real_t regVal;				/**< Holds the offset used to regularise Hessian matrix (zero by default). */
 
-		int count;					/**< Counts the number of hotstart function calls (internal usage only!). */
+		unsigned int count;			/**< Counts the number of hotstart function calls. */
 
 		real_t *delta_xFR_TMP;		/**< Temporary for determineStepDirection */
 
