@@ -1,4 +1,8 @@
-function [ successFlag ] = runBenchmarkEXAMPLE1( nWSR )
+function [ successFlag ] = runBenchmarkEXAMPLE1( nWSR,doPrint )
+
+	if ( nargin < 2 )
+		doPrint = 0;
+	end
 
     successFlag = 0;
 	maxViolation = 0;
@@ -24,7 +28,7 @@ function [ successFlag ] = runBenchmarkEXAMPLE1( nWSR )
     objOpt = zeros(1,nP);
     
 	%options = qpOASES_options( 'maxIter',nWSR );
-    options = qpOASES_options( 'fast','maxIter',nWSR );
+    options = qpOASES_options( 'fast','maxIter',nWSR, 'printLevel',2*doPrint );
 
 	for i=1:nP
 		%disp(i);
@@ -45,7 +49,7 @@ function [ successFlag ] = runBenchmarkEXAMPLE1( nWSR )
 	
 	qpOASES_sequence( 'c',QP );
 	
-    if ( ( maxViolation < 1e-13 ) && ( status == 0 ) )
+    if ( ( maxViolation < 1e-12 ) && ( status == 0 ) )
         successFlag = 1;
     end
     

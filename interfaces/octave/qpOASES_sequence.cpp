@@ -59,9 +59,10 @@ int QProblemB_init(	int handle,
 					SymmetricMatrix *H, real_t* g,
 					const real_t* const lb, const real_t* const ub,
 					int nWSRin, real_t maxCpuTimeIn,
-					const real_t* const x0, Options* options,
+					const double* const x0, Options* options,
 					int nOutputs, mxArray* plhs[],
-					double* guessedBounds
+					const double* const guessedBounds,
+					const double* const _R
 					)
 {
 	int nWSRout = nWSRin;
@@ -102,11 +103,12 @@ int QProblemB_init(	int handle,
 		}
 	}
 
-	if (x0 == 0 && guessedBounds == 0)
-		returnvalue = globalQPB->init( H,g,lb,ub, nWSRout,&maxCpuTimeOut );
-	else
-		returnvalue = globalQPB->init( H,g,lb,ub, nWSRout,&maxCpuTimeOut, x0, 0,
-				guessedBounds != 0 ? &bounds : 0);
+	returnvalue = globalQPB->init(	H,g,lb,ub,
+									nWSRout,&maxCpuTimeOut,
+									x0,0,
+									(guessedBounds != 0) ? &bounds : 0,
+									_R
+									);
 
 	/* 3) Assign lhs arguments. */
 	obtainOutputs(	0,globalQPB,returnvalue,nWSRout,maxCpuTimeOut,
@@ -121,11 +123,13 @@ int QProblemB_init(	int handle,
  */
 int SQProblem_init(	int handle, 
 					SymmetricMatrix *H, real_t* g, Matrix *A,
-					const real_t* const lb, const real_t* const ub, const real_t* const lbA, const real_t* const ubA,
+					const real_t* const lb, const real_t* const ub,
+					const real_t* const lbA, const real_t* const ubA,
 					int nWSRin, real_t maxCpuTimeIn,
-					const real_t* const x0, Options* options,
+					const double* const x0, Options* options,
 					int nOutputs, mxArray* plhs[],
-					double* guessedBounds, double* guessedConstraints
+					const double* const guessedBounds, const double* const guessedConstraints,
+					const double* const _R
 					)
 {
 	int nWSRout = nWSRin;
@@ -186,12 +190,12 @@ int SQProblem_init(	int handle,
 		}
 	}
 
-	if (x0 == 0 && guessedBounds == 0 && guessedConstraints == 0)
-		returnvalue = globalSQP->init( H,g,A,lb,ub,lbA,ubA, nWSRout,&maxCpuTimeOut);
-	else
-		returnvalue = globalSQP->init( H,g,A,lb,ub,lbA,ubA, nWSRout,&maxCpuTimeOut, x0, 0,
-				guessedBounds != 0 ? &bounds : 0,
-				guessedConstraints != 0 ? &constraints : 0);
+	returnvalue = globalSQP->init(	H,g,A,lb,ub,lbA,ubA,
+									nWSRout,&maxCpuTimeOut,
+									x0,0,
+									(guessedBounds != 0) ? &bounds : 0, (guessedConstraints != 0) ? &constraints : 0,
+									_R
+									);
 
 	/* 3) Assign lhs arguments. */
 	obtainOutputs(	0,globalSQP,returnvalue,nWSRout,maxCpuTimeOut,
@@ -328,8 +332,8 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 
 	real_t *g=0, *lb=0, *ub=0, *lbA=0, *ubA=0;
 	HessianType hessianType = HST_UNKNOWN;
-	real_t *x0=0, *R=0;
-	double* guessedBounds=0, *guessedConstraints=0;
+	double *x0=0, *R=0, *R_for=0;
+	double *guessedBounds=0, *guessedConstraints=0;
 
 	int H_idx=-1, g_idx=-1, A_idx=-1, lb_idx=-1, ub_idx=-1, lbA_idx=-1, ubA_idx=-1;
 	int x0_idx=-1, auxInput_idx=-1;
@@ -593,9 +597,15 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 			return;
 
 		if ( auxInput_idx >= 0 )
-			setupAuxiliaryInputs( prhs[auxInput_idx],nV,nC, &hessianType,&x0,&guessedBounds,&guessedConstraints,&R );
+			setupAuxiliaryInputs( prhs[auxInput_idx],nV,nC, &hessianType,&x0,&guessedBounds,&guessedConstraints,&R_for );
 
-
+		/* convert Cholesky factor to C storage format */
+		if ( R_for != 0 )
+		{
+			R = new real_t[nV*nV];
+			convertFortranToC( R_for, nV,nV, R );
+		}
+		
 		/* allocate instance */
 		handle = allocateQPInstance( nV,nC,hessianType, isSimplyBoundedQp,&options );	
 		globalQP = getQPInstance( handle );
@@ -620,7 +630,7 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 							nWSRin,maxCpuTimeIn,
 							x0,&options,
 							nlhs,plhs,
-							guessedBounds
+							guessedBounds,R
 							);
 		}
 		else
@@ -631,10 +641,11 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 							nWSRin,maxCpuTimeIn,
 							x0,&options,
 							nlhs,plhs,
-							guessedBounds,guessedConstraints
+							guessedBounds,guessedConstraints,R
 							);
 		}
 
+		if (R != 0) delete R;
 		return;
 	}
 

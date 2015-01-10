@@ -455,7 +455,7 @@ function [ successFLAG ] = callQpOases( qpData,hasA,hasOptions,hasX0,hasWS, doPr
         successFLAG = 1;
     else
         if ( doPrint > 0 )
-            disp('error')
+            disp( ['kkt error: ',num2str(kktTol)] )
         end
     end
     

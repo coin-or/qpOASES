@@ -182,7 +182,7 @@ function [ successFlag ] = runEmptyHessianTests( doPrint )
     end
     
     
-    load 'benchmarkEXAMPLE1b.mat';
+    load 'benchmarkEXAMPLE1B.mat';
     
     %% test qpOASES (simply bounded) with zero Hessian
     [ x1,obj1,status1,nWSRout1,lambda1 ] = qpOASES( 0*H,g(:,1),lb(:,1),ub(:,1),options );

@@ -53,12 +53,14 @@ static std::vector<QPInstance *> g_instances;
  *	Q P r o b l e m _ q p O A S E S
  */
 int QProblem_qpOASES(	int nV, int nC, HessianType hessianType, int nP,
-						SymmetricMatrix *H, real_t* g, Matrix *A,
-						real_t* lb, real_t* ub, real_t* lbA, real_t* ubA,
+						SymmetricMatrix *H, double* g, Matrix *A,
+						double* lb, double* ub,
+						double* lbA, double* ubA,
 						int nWSRin, real_t maxCpuTimeIn,
-						real_t* x0, Options* options,
+						const double* const x0, Options* options,
 						int nOutputs, mxArray* plhs[],
-						double* guessedBounds, double* guessedConstraints
+						const double* const guessedBounds, const double* const guessedConstraints,
+						const double* const _R
 						)
 {
 	int nWSRout;
@@ -111,12 +113,13 @@ int QProblem_qpOASES(	int nV, int nC, HessianType hessianType, int nP,
 
 	nWSRout = nWSRin;
 	maxCpuTimeOut = (maxCpuTimeIn >= 0.0) ? maxCpuTimeIn : INFTY;
-	if (x0 == 0 && guessedBounds == 0 && guessedConstraints == 0)
-		returnvalue = QP.init( H,g,A,lb,ub,lbA,ubA, nWSRout,&maxCpuTimeOut);
-	else
-		returnvalue = QP.init( H,g,A,lb,ub,lbA,ubA, nWSRout,&maxCpuTimeOut, x0, 0,
-				guessedBounds != 0 ? &bounds : 0,
-				guessedConstraints != 0 ? &constraints : 0);
+	
+	returnvalue = QP.init(	H,g,A,lb,ub,lbA,ubA,
+							nWSRout,&maxCpuTimeOut,
+							x0,0,
+							(guessedBounds != 0) ? &bounds : 0, (guessedConstraints != 0) ? &constraints : 0,
+							_R
+							);
 
 	/* 3) Solve remaining QPs and assign lhs arguments. */
 	/*    Set up pointers to the current QP vectors */
@@ -163,12 +166,13 @@ int QProblem_qpOASES(	int nV, int nC, HessianType hessianType, int nP,
  *	Q P r o b l e m B _ q p O A S E S
  */
 int QProblemB_qpOASES(	int nV, HessianType hessianType, int nP,
-						SymmetricMatrix *H, real_t* g,
-						real_t* lb, real_t* ub,
+						SymmetricMatrix *H, double* g,
+						double* lb, double* ub,
 						int nWSRin, real_t maxCpuTimeIn,
-						real_t* x0, Options* options,
+						const double* const x0, Options* options,
 						int nOutputs, mxArray* plhs[],
-						double* guessedBounds
+						const double* const guessedBounds,
+						const double* const _R
 						)
 {
 	int nWSRout;
@@ -202,11 +206,13 @@ int QProblemB_qpOASES(	int nV, HessianType hessianType, int nP,
 
 	nWSRout = nWSRin;
 	maxCpuTimeOut = (maxCpuTimeIn >= 0.0) ? maxCpuTimeIn : INFTY;
-	if (x0 == 0 && guessedBounds == 0)
-		returnvalue = QP.init( H,g,lb,ub, nWSRout,&maxCpuTimeOut );
-	else
-		returnvalue = QP.init( H,g,lb,ub, nWSRout,&maxCpuTimeOut, x0, 0,
-				guessedBounds != 0 ? &bounds : 0);
+	
+	returnvalue = QP.init(	H,g,lb,ub,
+							nWSRout,&maxCpuTimeOut,
+							x0,0,
+							(guessedBounds != 0) ? &bounds : 0,
+							_R
+							);
 
 	/* 3) Solve remaining QPs and assign lhs arguments. */
 	/*    Set up pointers to the current QP vectors */
@@ -252,7 +258,7 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 
 	real_t *g=0, *lb=0, *ub=0, *lbA=0, *ubA=0;
 	HessianType hessianType = HST_UNKNOWN;
-	real_t *x0=0, *R=0;
+	double *x0=0, *R=0, *R_for=0;
 	double *guessedBounds=0, *guessedConstraints=0;
 
 	int H_idx=-1, g_idx=-1, A_idx=-1, lb_idx=-1, ub_idx=-1, lbA_idx=-1, ubA_idx=-1;
@@ -501,8 +507,14 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 	}
 
 	if ( auxInput_idx >= 0 )
-		setupAuxiliaryInputs( prhs[auxInput_idx],nV,nC, &hessianType,&x0,&guessedBounds,&guessedConstraints,&R );
+		setupAuxiliaryInputs( prhs[auxInput_idx],nV,nC, &hessianType,&x0,&guessedBounds,&guessedConstraints,&R_for );
 
+	/* convert Cholesky factor to C storage format */
+	if ( R_for != 0 )
+	{
+		R = new real_t[nV*nV];
+		convertFortranToC( R_for, nV,nV, R );
+	}
 	
 	/* III) ACTUALLY PERFORM QPOASES FUNCTION CALL: */
 	int nWSRin = 5*(nV+nC);
@@ -530,10 +542,11 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 							nWSRin,maxCpuTimeIn,
 							x0,&options,
 							nlhs,plhs,
-							guessedBounds
+							guessedBounds,R
 							);
 		
-        if (H != 0) delete H;
+        if (R != 0) delete R;
+		if (H != 0) delete H;
 		if (Hv != 0) delete[] Hv;
 		if (Hjc != 0) delete[] Hjc;
 		if (Hir != 0) delete[] Hir;
@@ -548,9 +561,10 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 							nWSRin,maxCpuTimeIn,
 							x0,&options,
 							nlhs,plhs,
-							guessedBounds,guessedConstraints
+							guessedBounds,guessedConstraints,R
 							);
 		
+		if (R != 0) delete R;
 		if (A != 0) delete A;
 		if (H != 0) delete H;
 		if (Av != 0) delete[] Av;

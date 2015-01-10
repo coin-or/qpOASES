@@ -179,18 +179,18 @@ bool mxIsScalar( const mxArray *pm )
  *	a l l o c a t e Q P r o b l e m I n s t a n c e
  */
 int allocateQPInstance(	int nV, int nC, HessianType hessianType,
-						BooleanType isSimplyBounded, const Options *options
+						BooleanType isSimplyBounded, const Options* options
 						)
 {
 	QPInstance* inst = new QPInstance( nV,nC,hessianType, isSimplyBounded );
 
-	if ( inst->sqp != 0 )
-		inst->sqp->setOptions ( *options );
+	if ( ( inst->sqp != 0 ) && ( options != 0 ) )
+		inst->sqp->setOptions( *options );
 	
-	if ( inst->qpb != 0 )
-		inst->qpb->setOptions ( *options );
+	if ( ( inst->qpb != 0 ) && ( options != 0 ) )
+		inst->qpb->setOptions( *options );
 
-	g_instances.push_back (inst);
+	g_instances.push_back(inst);
 	return inst->handle;
 }
 
@@ -342,6 +342,7 @@ BooleanType containsInf( const real_t* const data, unsigned int dim )
 BooleanType containsNaNorInf(	const mxArray* prhs[], unsigned int dim, int rhs_index,
 								bool mayContainInf )
 {
+	unsigned int actualDim = dim;
 	char msg[MAX_STRING_LENGTH];
 
 	if ( rhs_index < 0 )
@@ -349,10 +350,12 @@ BooleanType containsNaNorInf(	const mxArray* prhs[], unsigned int dim, int rhs_i
 
 	/* overwrite dim for sparse matrices */
 	if (mxIsSparse(prhs[rhs_index]) == 1) {
-		dim = (unsigned int)mxGetNzmax(prhs[rhs_index]);
+		actualDim = (unsigned int)mxGetNzmax(prhs[rhs_index]);
 	}
+	else
+		actualDim = mxGetM(prhs[rhs_index])*mxGetN(prhs[rhs_index]);
 
-	if (containsNaN((real_t*) mxGetPr(prhs[rhs_index]), dim) == BT_TRUE) {
+	if (containsNaN((real_t*) mxGetPr(prhs[rhs_index]), actualDim) == BT_TRUE) {
 		snprintf(msg, MAX_STRING_LENGTH,
 				"ERROR (qpOASES): Argument %d contains 'NaN' !", rhs_index + 1);
 		myMexErrMsgTxt(msg);
@@ -360,7 +363,7 @@ BooleanType containsNaNorInf(	const mxArray* prhs[], unsigned int dim, int rhs_i
 	}
 
 	if (mayContainInf == 0) {
-		if (containsInf((real_t*) mxGetPr(prhs[rhs_index]), dim) == BT_TRUE) {
+		if (containsInf((real_t*) mxGetPr(prhs[rhs_index]), actualDim) == BT_TRUE) {
 			snprintf(msg, MAX_STRING_LENGTH,
 					"ERROR (qpOASES): Argument %d contains 'Inf' !",
 					rhs_index + 1);
@@ -655,9 +658,6 @@ returnValue setupAuxiliaryInputs(	const mxArray* auxInput, unsigned int nV, unsi
 		*R = mxGetPr(curField);
 		if ( smartDimensionCheck( R,nV,nV, BT_TRUE,((const mxArray**)&curField),0 ) != SUCCESSFUL_RETURN )
 			return RET_INVALID_ARGUMENTS;
-
-		if ( mxIsEmpty(curField) == 0 )
-			mexWarnMsgTxt( "Use of auxInput.R is not yet implemented!" );
 	}
 
 	return SUCCESSFUL_RETURN;

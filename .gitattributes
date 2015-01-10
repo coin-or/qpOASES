@@ -185,6 +185,7 @@ testing/matlab/auxFiles/setupQpDataStruct.m -text
 testing/matlab/auxFiles/setupQpFeaturesStruct.m -text
 testing/matlab/data/fetch_matlab_data -text
 testing/matlab/runAllTests.m -text
+testing/matlab/setupTestingPaths.m -text
 testing/matlab/tests/runAlexInfeas1.m -text
 testing/matlab/tests/runAlexInfeas2.m -text
 testing/matlab/tests/runAlternativeX0Test.m -text

@@ -417,13 +417,18 @@ function [ successFlag ] = callQpOasesSeq( qpData1,qpData2,hasA,hasOptions,hasX0
 
 
     kktTol1 = getKktResidual( H1,g1,A1,lb1,ub1,lbA1,ubA1, x1,l1 );
-    kktTol2 = getKktResidual( H1,g1,A1,lb1,ub1,lbA1,ubA1, x2,l2 );
+    
+    if ( changeMat > 0 )
+		kktTol2 = getKktResidual( H2,g2,A2,lb2,ub2,lbA2,ubA2, x2,l2 );
+	else
+		kktTol2 = getKktResidual( H1,g2,A1,lb2,ub2,lbA2,ubA2, x2,l2 );
+	end
     
     if ( ( kktTol1 <= KKTTOL ) && ( e1 >= 0 ) && ( kktTol2 <= KKTTOL ) && ( e2 >= 0 ) )
         successFlag = 1;
     else
-        if ( doPrint > 1 )
-            disp('error')
+        if ( doPrint > 0 )
+            disp( ['kkt error: ',num2str(kktTol1),'/',num2str(kktTol2)] )
         end
     end
     

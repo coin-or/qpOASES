@@ -4,19 +4,13 @@ function [ successFlag ] = runAllTests( doPrint )
         doPrint = 0;
     end
     
-    
-    %% add sub-folders to Matlab path
-    addpath('../../interfaces/matlab/');
-    addpath(genpath(pwd));
-    addpath(genpath([pwd 'auxFiles']));
-    addpath(genpath([pwd 'data']));
-    addpath(genpath([pwd 'tests']));
-    
-    
     successFlag = 1;
     
     curWarnLevel = warning;
     warning('off');
+    
+    % add sub-folders to Matlab path
+	setupTestingPaths();
     
     clc;
 
@@ -81,40 +75,40 @@ function [ successFlag ] = runAllTests( doPrint )
     successFlag = updateSuccessFlag( successFlag, runExternalCholeskyTests( doPrint ) );
 
     fprintf( 'Running EXAMPEL1... ' );
-    successFlag = updateSuccessFlag( successFlag, runBenchmarkEXAMPLE1( 10 ) );
+    successFlag = updateSuccessFlag( successFlag, runBenchmarkEXAMPLE1( 10,doPrint ) );
 	
     fprintf( 'Running EXAMPLE1A... ' );
-    successFlag = updateSuccessFlag( successFlag, runBenchmarkEXAMPLE1A( 10 ) );
+    successFlag = updateSuccessFlag( successFlag, runBenchmarkEXAMPLE1A( 10,doPrint ) );
 	
     fprintf( 'Running EXAMPLE1B... ' );
-    successFlag = updateSuccessFlag( successFlag, runBenchmarkEXAMPLE1B( 10 ) );
+    successFlag = updateSuccessFlag( successFlag, runBenchmarkEXAMPLE1B( 10,doPrint ) );
 
 	fprintf( 'Running CHAIN1... ' );
-    successFlag = updateSuccessFlag( successFlag, runBenchmarkCHAIN1( 20 ) );
+    successFlag = updateSuccessFlag( successFlag, runBenchmarkCHAIN1( 20,doPrint ) );
 	
     fprintf( 'Running CHAIN1A... ' );
-    successFlag = updateSuccessFlag( successFlag, runBenchmarkCHAIN1A( 20 ) );
+    successFlag = updateSuccessFlag( successFlag, runBenchmarkCHAIN1A( 20,doPrint ) );
 
 	fprintf( 'Running CRANE1... ' );
-    successFlag = updateSuccessFlag( successFlag, runBenchmarkCRANE1( 100 ) );
+    successFlag = updateSuccessFlag( successFlag, runBenchmarkCRANE1( 100,doPrint ) );
 
     fprintf( 'Running CRANE2... ' );
-    successFlag = updateSuccessFlag( successFlag, runBenchmarkCRANE2( 100 ) );
+    successFlag = updateSuccessFlag( successFlag, runBenchmarkCRANE2( 100,doPrint ) );
 
     fprintf( 'Running CRANE3... ' );
-    successFlag = updateSuccessFlag( successFlag, runBenchmarkCRANE3( 100 ) );
+    successFlag = updateSuccessFlag( successFlag, runBenchmarkCRANE3( 100,doPrint ) );
 	
 	fprintf( 'Running EQUALITY1... ' );
-    successFlag = updateSuccessFlag( successFlag, runBenchmarkEQUALITY1( 100 ) );
+    successFlag = updateSuccessFlag( successFlag, runBenchmarkEQUALITY1( 100,doPrint ) );
 
     fprintf( 'Running EQUALITY2... ' );
-    successFlag = updateSuccessFlag( successFlag, runBenchmarkEQUALITY2( 3200 ) );
+    successFlag = updateSuccessFlag( successFlag, runBenchmarkEQUALITY2( 3200,doPrint ) );
 
     %fprintf( 'Running IDHESSIAN1... ' );
-	%successFlag = updateSuccessFlag( successFlag, runBenchmarkIDHESSIAN1( 1200 ) );
+	%successFlag = updateSuccessFlag( successFlag, runBenchmarkIDHESSIAN1( 1200,doPrint ) );
 
     fprintf( 'Running DIESEL... ' );
-    successFlag = updateSuccessFlag( successFlag, runBenchmarkDIESEL( 230 ) );
+    successFlag = updateSuccessFlag( successFlag, runBenchmarkDIESEL( 230,doPrint ) );
     
     fprintf( 'Running QSHARE1B... ' )
     successFlag = updateSuccessFlag( successFlag, runQSHARE1B( doPrint ) );
