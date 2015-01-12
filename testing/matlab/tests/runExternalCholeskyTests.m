@@ -10,7 +10,7 @@ function [ successFlag ] = runExternalCholeskyTests( doPrint )
 	
     load 'benchmarkCHAIN1.mat';
     
-	options  = qpOASES_options( 'MPC', 'printLevel',0*doPrint );
+	options  = qpOASES_options( 'MPC', 'printLevel',2*doPrint );
     auxInput = qpOASES_auxInput( 'R',chol(H) );
     
     %% test qpOASES

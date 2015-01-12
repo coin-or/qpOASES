@@ -339,23 +339,23 @@ BooleanType containsInf( const real_t* const data, unsigned int dim )
 /*
  *	c o n t a i n s N a N o r I n f
  */
-BooleanType containsNaNorInf(	const mxArray* prhs[], unsigned int dim, int rhs_index,
-								bool mayContainInf )
+BooleanType containsNaNorInf(	const mxArray* prhs[], int rhs_index,
+								bool mayContainInf
+								)
 {
-	unsigned int actualDim = dim;
+	unsigned int dim;
 	char msg[MAX_STRING_LENGTH];
 
 	if ( rhs_index < 0 )
 		return BT_FALSE;
 
 	/* overwrite dim for sparse matrices */
-	if (mxIsSparse(prhs[rhs_index]) == 1) {
-		actualDim = (unsigned int)mxGetNzmax(prhs[rhs_index]);
-	}
+	if (mxIsSparse(prhs[rhs_index]) == 1)
+		dim = (unsigned int)mxGetNzmax(prhs[rhs_index]);
 	else
-		actualDim = mxGetM(prhs[rhs_index])*mxGetN(prhs[rhs_index]);
+		dim = mxGetM(prhs[rhs_index]) * mxGetN(prhs[rhs_index]);
 
-	if (containsNaN((real_t*) mxGetPr(prhs[rhs_index]), actualDim) == BT_TRUE) {
+	if (containsNaN((real_t*) mxGetPr(prhs[rhs_index]), dim) == BT_TRUE) {
 		snprintf(msg, MAX_STRING_LENGTH,
 				"ERROR (qpOASES): Argument %d contains 'NaN' !", rhs_index + 1);
 		myMexErrMsgTxt(msg);
@@ -363,7 +363,7 @@ BooleanType containsNaNorInf(	const mxArray* prhs[], unsigned int dim, int rhs_i
 	}
 
 	if (mayContainInf == 0) {
-		if (containsInf((real_t*) mxGetPr(prhs[rhs_index]), actualDim) == BT_TRUE) {
+		if (containsInf((real_t*) mxGetPr(prhs[rhs_index]), dim) == BT_TRUE) {
 			snprintf(msg, MAX_STRING_LENGTH,
 					"ERROR (qpOASES): Argument %d contains 'Inf' !",
 					rhs_index + 1);

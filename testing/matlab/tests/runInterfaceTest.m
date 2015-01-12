@@ -195,8 +195,8 @@ function [ successFLAG ] = callQpOases( qpData,hasA,hasOptions,hasX0,hasWS, doPr
     lbA = [qpData.beq;qpData.lbA];
     ubA = [qpData.beq;qpData.ubA];
 
-    [nV,dummy] = size(H);
-    [nC,dummy] = size(A);
+    [nV,dummy] = size(H); %#ok<NASGU>
+    [nC,dummy] = size(A); %#ok<NASGU>
     
     if ( hasWS > 0 )
         if ( hasWS == 1 )
@@ -229,14 +229,14 @@ function [ successFLAG ] = callQpOases( qpData,hasA,hasOptions,hasX0,hasWS, doPr
                     [ x3,f3,e3 ] = qpOASES( H,g,A,lb,ub,lbA,ubA,options,auxInput );
                     [ x4,f4,e4,i4 ] = qpOASES( H,g,A,lb,ub,lbA,ubA,options,auxInput );
                     [ x5,f5,e5,i5,l5 ] = qpOASES( H,g,A,lb,ub,lbA,ubA,options,auxInput );
-                    [ x6,f6,e6,i6,l6,w6 ] = qpOASES( H,g,A,lb,ub,lbA,ubA,options,auxInput );
+                    [ x6,f6,e6,i6,l6,w6 ] = qpOASES( H,g,A,lb,ub,lbA,ubA,options,auxInput ); %#ok<NASGU>
                 else                        
                     [ x1 ] = qpOASES( H,g,lb,ub,options,auxInput );
                     [ x2,f2 ] = qpOASES( H,g,lb,ub,options,auxInput );
                     [ x3,f3,e3 ] = qpOASES( H,g,lb,ub,options,auxInput );
                     [ x4,f4,e4,i4 ] = qpOASES( H,g,lb,ub,options,auxInput );
                     [ x5,f5,e5,i5,l5 ] = qpOASES( H,g,lb,ub,options,auxInput );
-                    [ x6,f6,e6,i6,l6,w6 ] = qpOASES( H,g,lb,ub,options,auxInput );
+                    [ x6,f6,e6,i6,l6,w6 ] = qpOASES( H,g,lb,ub,options,auxInput ); %#ok<NASGU>
                 end
             else
                 if ( hasA > 0 )
@@ -245,14 +245,14 @@ function [ successFLAG ] = callQpOases( qpData,hasA,hasOptions,hasX0,hasWS, doPr
                     [ x3,f3,e3 ] = qpOASES( H,g,A,lb,ub,lbA,ubA,[],auxInput );
                     [ x4,f4,e4,i4 ] = qpOASES( H,g,A,lb,ub,lbA,ubA,[],auxInput );
                     [ x5,f5,e5,i5,l5 ] = qpOASES( H,g,A,lb,ub,lbA,ubA,[],auxInput );
-                    [ x6,f6,e6,i6,l6,w6 ] = qpOASES( H,g,A,lb,ub,lbA,ubA,[],auxInput );
+                    [ x6,f6,e6,i6,l6,w6 ] = qpOASES( H,g,A,lb,ub,lbA,ubA,[],auxInput ); %#ok<NASGU>
                 else
                     [ x1 ] = qpOASES( H,g,lb,ub,[],auxInput );
                     [ x2,f2 ] = qpOASES( H,g,lb,ub,[],auxInput );
                     [ x3,f3,e3 ] = qpOASES( H,g,lb,ub,[],auxInput );
                     [ x4,f4,e4,i4 ] = qpOASES( H,g,lb,ub,[],auxInput );
                     [ x5,f5,e5,i5,l5 ] = qpOASES( H,g,lb,ub,[],auxInput );
-                    [ x6,f6,e6,i6,l6,w6 ] = qpOASES( H,g,lb,ub,[],auxInput );
+                    [ x6,f6,e6,i6,l6,w6 ] = qpOASES( H,g,lb,ub,[],auxInput ); %#ok<NASGU>
                 end
             end
 
@@ -274,14 +274,14 @@ function [ successFLAG ] = callQpOases( qpData,hasA,hasOptions,hasX0,hasWS, doPr
                     [ x3,f3,e3 ] = qpOASES( H,g,A,lb,ub,lbA,ubA,options,auxInput );
                     [ x4,f4,e4,i4 ] = qpOASES( H,g,A,lb,ub,lbA,ubA,options,auxInput );
                     [ x5,f5,e5,i5,l5 ] = qpOASES( H,g,A,lb,ub,lbA,ubA,options,auxInput );
-                    [ x6,f6,e6,i6,l6,w6 ] = qpOASES( H,g,A,lb,ub,lbA,ubA,options,auxInput );
+                    [ x6,f6,e6,i6,l6,w6 ] = qpOASES( H,g,A,lb,ub,lbA,ubA,options,auxInput ); %#ok<NASGU>
                 else
                     [ x1 ] = qpOASES( H,g,lb,ub,options,auxInput );
                     [ x2,f2 ] = qpOASES( H,g,lb,ub,options,auxInput );
                     [ x3,f3,e3 ] = qpOASES( H,g,lb,ub,options,auxInput );
                     [ x4,f4,e4,i4 ] = qpOASES( H,g,lb,ub,options,auxInput );
                     [ x5,f5,e5,i5,l5 ] = qpOASES( H,g,lb,ub,options,auxInput );
-                    [ x6,f6,e6,i6,l6,w6 ] = qpOASES( H,g,lb,ub,options,auxInput );
+                    [ x6,f6,e6,i6,l6,w6 ] = qpOASES( H,g,lb,ub,options,auxInput ); %#ok<NASGU>
                 end
             else
                 if ( hasA > 0 )
@@ -290,14 +290,14 @@ function [ successFLAG ] = callQpOases( qpData,hasA,hasOptions,hasX0,hasWS, doPr
                     [ x3,f3,e3 ] = qpOASES( H,g,A,lb,ub,lbA,ubA,[],auxInput );
                     [ x4,f4,e4,i4 ] = qpOASES( H,g,A,lb,ub,lbA,ubA,[],auxInput );
                     [ x5,f5,e5,i5,l5 ] = qpOASES( H,g,A,lb,ub,lbA,ubA,[],auxInput );
-                    [ x6,f6,e6,i6,l6,w6 ] = qpOASES( H,g,A,lb,ub,lbA,ubA,[],auxInput );
+                    [ x6,f6,e6,i6,l6,w6 ] = qpOASES( H,g,A,lb,ub,lbA,ubA,[],auxInput ); %#ok<NASGU>
                 else
                     [ x1 ] = qpOASES( H,g,lb,ub,[],auxInput );
                     [ x2,f2 ] = qpOASES( H,g,lb,ub,[],auxInput );
                     [ x3,f3,e3 ] = qpOASES( H,g,lb,ub,[],auxInput );
                     [ x4,f4,e4,i4 ] = qpOASES( H,g,lb,ub,[],auxInput );
                     [ x5,f5,e5,i5,l5 ] = qpOASES( H,g,lb,ub,[],auxInput );
-                    [ x6,f6,e6,i6,l6,w6 ] = qpOASES( H,g,lb,ub,[],auxInput );
+                    [ x6,f6,e6,i6,l6,w6 ] = qpOASES( H,g,lb,ub,[],auxInput ); %#ok<NASGU>
                 end
             end
 
@@ -327,14 +327,14 @@ function [ successFLAG ] = callQpOases( qpData,hasA,hasOptions,hasX0,hasWS, doPr
                     [ x3,f3,e3 ] = qpOASES( H,g,A,lb,ub,lbA,ubA,options,auxInput );
                     [ x4,f4,e4,i4 ] = qpOASES( H,g,A,lb,ub,lbA,ubA,options,auxInput );
                     [ x5,f5,e5,i5,l5 ] = qpOASES( H,g,A,lb,ub,lbA,ubA,options,auxInput );
-                    [ x6,f6,e6,i6,l6,w6 ] = qpOASES( H,g,A,lb,ub,lbA,ubA,options,auxInput );
+                    [ x6,f6,e6,i6,l6,w6 ] = qpOASES( H,g,A,lb,ub,lbA,ubA,options,auxInput ); %#ok<NASGU>
                 else
                     [ x1 ] = qpOASES( H,g,lb,ub,options,auxInput );
                     [ x2,f2 ] = qpOASES( H,g,lb,ub,options,auxInput );
                     [ x3,f3,e3 ] = qpOASES( H,g,lb,ub,options,auxInput );
                     [ x4,f4,e4,i4 ] = qpOASES( H,g,lb,ub,options,auxInput );
                     [ x5,f5,e5,i5,l5 ] = qpOASES( H,g,lb,ub,options,auxInput );
-                    [ x6,f6,e6,i6,l6,w6 ] = qpOASES( H,g,lb,ub,options,auxInput );
+                    [ x6,f6,e6,i6,l6,w6 ] = qpOASES( H,g,lb,ub,options,auxInput ); %#ok<NASGU>
                 end
                     
             else
@@ -344,14 +344,14 @@ function [ successFLAG ] = callQpOases( qpData,hasA,hasOptions,hasX0,hasWS, doPr
                     [ x3,f3,e3 ] = qpOASES( H,g,A,lb,ub,lbA,ubA,[],auxInput );
                     [ x4,f4,e4,i4 ] = qpOASES( H,g,A,lb,ub,lbA,ubA,[],auxInput );
                     [ x5,f5,e5,i5,l5 ] = qpOASES( H,g,A,lb,ub,lbA,ubA,[],auxInput );
-                    [ x6,f6,e6,i6,l6,w6 ] = qpOASES( H,g,A,lb,ub,lbA,ubA,[],auxInput );
+                    [ x6,f6,e6,i6,l6,w6 ] = qpOASES( H,g,A,lb,ub,lbA,ubA,[],auxInput ); %#ok<NASGU>
                 else
                     [ x1 ] = qpOASES( H,g,lb,ub,[],auxInput );
                     [ x2,f2 ] = qpOASES( H,g,lb,ub,[],auxInput );
                     [ x3,f3,e3 ] = qpOASES( H,g,lb,ub,[],auxInput );
                     [ x4,f4,e4,i4 ] = qpOASES( H,g,lb,ub,[],auxInput );
                     [ x5,f5,e5,i5,l5 ] = qpOASES( H,g,lb,ub,[],auxInput );
-                    [ x6,f6,e6,i6,l6,w6 ] = qpOASES( H,g,lb,ub,[],auxInput );
+                    [ x6,f6,e6,i6,l6,w6 ] = qpOASES( H,g,lb,ub,[],auxInput ); %#ok<NASGU>
                 end
             end
 
@@ -370,14 +370,14 @@ function [ successFLAG ] = callQpOases( qpData,hasA,hasOptions,hasX0,hasWS, doPr
                     [ x3,f3,e3 ] = qpOASES( H,g,A,lb,ub,lbA,ubA,options );
                     [ x4,f4,e4,i4 ] = qpOASES( H,g,A,lb,ub,lbA,ubA,options );
                     [ x5,f5,e5,i5,l5 ] = qpOASES( H,g,A,lb,ub,lbA,ubA,options );
-                    [ x6,f6,e6,i6,l6,w6 ] = qpOASES( H,g,A,lb,ub,lbA,ubA,options );
+                    [ x6,f6,e6,i6,l6,w6 ] = qpOASES( H,g,A,lb,ub,lbA,ubA,options ); %#ok<NASGU>
                 else
                     [ x1 ] = qpOASES( H,g,lb,ub,options );
                     [ x2,f2 ] = qpOASES( H,g,lb,ub,options );
                     [ x3,f3,e3 ] = qpOASES( H,g,lb,ub,options );
                     [ x4,f4,e4,i4 ] = qpOASES( H,g,lb,ub,options );
                     [ x5,f5,e5,i5,l5 ] = qpOASES( H,g,lb,ub,options );
-                    [ x6,f6,e6,i6,l6,w6 ] = qpOASES( H,g,lb,ub,options );
+                    [ x6,f6,e6,i6,l6,w6 ] = qpOASES( H,g,lb,ub,options ); %#ok<NASGU>
                 end
             else
                 if ( hasA > 0 )
@@ -386,14 +386,14 @@ function [ successFLAG ] = callQpOases( qpData,hasA,hasOptions,hasX0,hasWS, doPr
                     [ x3,f3,e3 ] = qpOASES( H,g,A,lb,ub,lbA,ubA );
                     [ x4,f4,e4,i4 ] = qpOASES( H,g,A,lb,ub,lbA,ubA );
                     [ x5,f5,e5,i5,l5 ] = qpOASES( H,g,A,lb,ub,lbA,ubA );
-                    [ x6,f6,e6,i6,l6,w6 ] = qpOASES( H,g,A,lb,ub,lbA,ubA );
+                    [ x6,f6,e6,i6,l6,w6 ] = qpOASES( H,g,A,lb,ub,lbA,ubA ); %#ok<NASGU>
                 else
                     [ x1 ] = qpOASES( H,g,lb,ub );
                     [ x2,f2 ] = qpOASES( H,g,lb,ub );
                     [ x3,f3,e3 ] = qpOASES( H,g,lb,ub );
                     [ x4,f4,e4,i4 ] = qpOASES( H,g,lb,ub );
                     [ x5,f5,e5,i5,l5 ] = qpOASES( H,g,lb,ub );
-                    [ x6,f6,e6,i6,l6,w6 ] = qpOASES( H,g,lb,ub );
+                    [ x6,f6,e6,i6,l6,w6 ] = qpOASES( H,g,lb,ub ); %#ok<NASGU>
                 end
             end
 

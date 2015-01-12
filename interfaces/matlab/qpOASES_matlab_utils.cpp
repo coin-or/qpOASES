@@ -179,18 +179,18 @@ bool mxIsScalar( const mxArray *pm )
  *	a l l o c a t e Q P r o b l e m I n s t a n c e
  */
 int allocateQPInstance(	int nV, int nC, HessianType hessianType,
-						BooleanType isSimplyBounded, const Options *options
+						BooleanType isSimplyBounded, const Options* options
 						)
 {
 	QPInstance* inst = new QPInstance( nV,nC,hessianType, isSimplyBounded );
 
-	if ( inst->sqp != 0 )
-		inst->sqp->setOptions ( *options );
+	if ( ( inst->sqp != 0 ) && ( options != 0 ) )
+		inst->sqp->setOptions( *options );
 	
-	if ( inst->qpb != 0 )
-		inst->qpb->setOptions ( *options );
+	if ( ( inst->qpb != 0 ) && ( options != 0 ) )
+		inst->qpb->setOptions( *options );
 
-	g_instances.push_back (inst);
+	g_instances.push_back(inst);
 	return inst->handle;
 }
 
@@ -339,18 +339,21 @@ BooleanType containsInf( const real_t* const data, unsigned int dim )
 /*
  *	c o n t a i n s N a N o r I n f
  */
-BooleanType containsNaNorInf(	const mxArray* prhs[], unsigned int dim, int rhs_index,
-								bool mayContainInf )
+BooleanType containsNaNorInf(	const mxArray* prhs[], int rhs_index,
+								bool mayContainInf
+								)
 {
+	unsigned int dim;
 	char msg[MAX_STRING_LENGTH];
 
 	if ( rhs_index < 0 )
 		return BT_FALSE;
 
 	/* overwrite dim for sparse matrices */
-	if (mxIsSparse(prhs[rhs_index]) == 1) {
+	if (mxIsSparse(prhs[rhs_index]) == 1)
 		dim = (unsigned int)mxGetNzmax(prhs[rhs_index]);
-	}
+	else
+		dim = mxGetM(prhs[rhs_index]) * mxGetN(prhs[rhs_index]);
 
 	if (containsNaN((real_t*) mxGetPr(prhs[rhs_index]), dim) == BT_TRUE) {
 		snprintf(msg, MAX_STRING_LENGTH,

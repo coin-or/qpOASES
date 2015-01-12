@@ -21,7 +21,7 @@ function [ successFlag ] = runTestWorkingSetLI( doPrint )
     
     qpFeatures.makeInfeas = 1;
     
-    options = qpOASES_options( 'default', 'printLevel',0, 'initialStatusBounds',0 );
+    options = qpOASES_options( 'default', 'printLevel',2*doPrint, 'initialStatusBounds',0 );
     
     exitflag = 0;
     counter = 0;

@@ -222,8 +222,8 @@ function [ successFlag ] = callQpOasesSeq( qpData1,qpData2,hasA,hasOptions,hasX0
     lbA2 = [qpData2.beq;qpData2.lbA];
     ubA2 = [qpData2.beq;qpData2.ubA];
 
-    [nV,dummy] = size(H1);
-    [nC,dummy] = size(A1);
+    [nV,dummy] = size(H1); %#ok<NASGU>
+    [nC,dummy] = size(A1); %#ok<NASGU>
     
     if ( hasWS > 0 )
         if ( hasWS == 1 )
@@ -251,30 +251,30 @@ function [ successFlag ] = callQpOasesSeq( qpData1,qpData2,hasA,hasOptions,hasX0
                 end
 
                 if ( hasA > 0 )
-                    [ QP,x1,f1,e1,i1,l1,w1 ] = qpOASES_sequence( 'i',H1,g1,A1,lb1,ub1,lbA1,ubA1,options,auxInput );
+                    [ QP,x1,f1,e1,i1,l1,w1 ] = qpOASES_sequence( 'i',H1,g1,A1,lb1,ub1,lbA1,ubA1,options,auxInput ); %#ok<NASGU>
                     if ( changeMat > 0 )
-                        [ x2,f2,e2,i2,l2,w2 ] = qpOASES_sequence( 'm',QP,H2,g2,A2,lb2,ub2,lbA2,ubA2,options );
+                        [ x2,f2,e2,i2,l2,w2 ] = qpOASES_sequence( 'm',QP,H2,g2,A2,lb2,ub2,lbA2,ubA2,options ); %#ok<NASGU>
                     else
-                        [ x2,f2,e2,i2,l2,w2 ] = qpOASES_sequence( 'h',QP,g2,lb2,ub2,lbA2,ubA2,options );
+                        [ x2,f2,e2,i2,l2,w2 ] = qpOASES_sequence( 'h',QP,g2,lb2,ub2,lbA2,ubA2,options ); %#ok<NASGU>
                     end
                     qpOASES_sequence( 'c',QP );
                 else
-                    [ QP,x1,f1,e1,i1,l1,w1 ] = qpOASES_sequence( 'i',H1,g1,lb1,ub1,options,auxInput );
-                    [ x2,f2,e2,i2,l2,w2 ] = qpOASES_sequence( 'h',QP,g2,lb2,ub2,options );
+                    [ QP,x1,f1,e1,i1,l1,w1 ] = qpOASES_sequence( 'i',H1,g1,lb1,ub1,options,auxInput ); %#ok<NASGU>
+                    [ x2,f2,e2,i2,l2,w2 ] = qpOASES_sequence( 'h',QP,g2,lb2,ub2,options ); %#ok<NASGU>
                     qpOASES_sequence( 'c',QP );
                 end
             else
                 if ( hasA > 0 )
-                    [ QP,x1,f1,e1,i1,l1,w1 ] = qpOASES_sequence( 'i',H1,g1,A1,lb1,ub1,lbA1,ubA1,[],auxInput );
+                    [ QP,x1,f1,e1,i1,l1,w1 ] = qpOASES_sequence( 'i',H1,g1,A1,lb1,ub1,lbA1,ubA1,[],auxInput ); %#ok<NASGU>
                     if ( changeMat > 0 )
-                        [ x2,f2,e2,i2,l2,w2 ] = qpOASES_sequence( 'm',QP,H2,g2,A2,lb2,ub2,lbA2,ubA2 );
+                        [ x2,f2,e2,i2,l2,w2 ] = qpOASES_sequence( 'm',QP,H2,g2,A2,lb2,ub2,lbA2,ubA2 ); %#ok<NASGU>
                     else
-                        [ x2,f2,e2,i2,l2,w2 ] = qpOASES_sequence( 'h',QP,g2,lb2,ub2,lbA2,ubA2 );
+                        [ x2,f2,e2,i2,l2,w2 ] = qpOASES_sequence( 'h',QP,g2,lb2,ub2,lbA2,ubA2 ); %#ok<NASGU>
                     end
                     qpOASES_sequence( 'c',QP );
                 else
-                    [ QP,x1,f1,e1,i1,l1,w1 ] = qpOASES_sequence( 'i',H1,g1,lb1,ub1,[],auxInput );
-                    [ x2,f2,e2,i2,l2,w2 ] = qpOASES_sequence( 'h',QP,g2,lb2,ub2 );
+                    [ QP,x1,f1,e1,i1,l1,w1 ] = qpOASES_sequence( 'i',H1,g1,lb1,ub1,[],auxInput ); %#ok<NASGU>
+                    [ x2,f2,e2,i2,l2,w2 ] = qpOASES_sequence( 'h',QP,g2,lb2,ub2 ); %#ok<NASGU>
                     qpOASES_sequence( 'c',QP );
                 end
             end
@@ -292,30 +292,30 @@ function [ successFlag ] = callQpOasesSeq( qpData1,qpData2,hasA,hasOptions,hasX0
                 end
 
                 if ( hasA > 0 )
-                    [ QP,x1,f1,e1,i1,l1,w1 ] = qpOASES_sequence( 'i',H1,g1,A1,lb1,ub1,lbA1,ubA1,options,auxInput );
+                    [ QP,x1,f1,e1,i1,l1,w1 ] = qpOASES_sequence( 'i',H1,g1,A1,lb1,ub1,lbA1,ubA1,options,auxInput ); %#ok<NASGU>
                     if ( changeMat > 0 )
-                        [ x2,f2,e2,i2,l2,w2 ] = qpOASES_sequence( 'm',QP,H2,g2,A2,lb2,ub2,lbA2,ubA2,options );
+                        [ x2,f2,e2,i2,l2,w2 ] = qpOASES_sequence( 'm',QP,H2,g2,A2,lb2,ub2,lbA2,ubA2,options ); %#ok<NASGU>
                     else
-                        [ x2,f2,e2,i2,l2,w2 ] = qpOASES_sequence( 'h',QP,g2,lb2,ub2,lbA2,ubA2,options );
+                        [ x2,f2,e2,i2,l2,w2 ] = qpOASES_sequence( 'h',QP,g2,lb2,ub2,lbA2,ubA2,options ); %#ok<NASGU>
                     end
                     qpOASES_sequence( 'c',QP );
                 else
-                    [ QP,x1,f1,e1,i1,l1,w1 ] = qpOASES_sequence( 'i',H1,g1,lb1,ub1,options,auxInput );
-                    [ x2,f2,e2,i2,l2,w2 ] = qpOASES_sequence( 'h',QP,g2,lb2,ub2,options );
+                    [ QP,x1,f1,e1,i1,l1,w1 ] = qpOASES_sequence( 'i',H1,g1,lb1,ub1,options,auxInput ); %#ok<NASGU>
+                    [ x2,f2,e2,i2,l2,w2 ] = qpOASES_sequence( 'h',QP,g2,lb2,ub2,options ); %#ok<NASGU>
                     qpOASES_sequence( 'c',QP );
                 end
             else
                 if ( hasA > 0 )
-                    [ QP,x1,f1,e1,i1,l1,w1 ] = qpOASES_sequence( 'i',H1,g1,A1,lb1,ub1,lbA1,ubA1,[],auxInput );
+                    [ QP,x1,f1,e1,i1,l1,w1 ] = qpOASES_sequence( 'i',H1,g1,A1,lb1,ub1,lbA1,ubA1,[],auxInput ); %#ok<NASGU>
                     if ( changeMat > 0 )
-                        [ x2,f2,e2,i2,l2,w2 ] = qpOASES_sequence( 'm',QP,H2,g2,A2,lb2,ub2,lbA2,ubA2,[] );
+                        [ x2,f2,e2,i2,l2,w2 ] = qpOASES_sequence( 'm',QP,H2,g2,A2,lb2,ub2,lbA2,ubA2,[] ); %#ok<NASGU>
                     else
-                        [ x2,f2,e2,i2,l2,w2 ] = qpOASES_sequence( 'h',QP,g2,lb2,ub2,lbA2,ubA2,[] );
+                        [ x2,f2,e2,i2,l2,w2 ] = qpOASES_sequence( 'h',QP,g2,lb2,ub2,lbA2,ubA2,[] ); %#ok<NASGU>
                     end
                     qpOASES_sequence( 'c',QP );
                 else
-                    [ QP,x1,f1,e1,i1,l1,w1 ] = qpOASES_sequence( 'i',H1,g1,lb1,ub1,[],auxInput );
-                    [ x2,f2,e2,i2,l2,w2 ] = qpOASES_sequence( 'h',QP,g2,lb2,ub2 );
+                    [ QP,x1,f1,e1,i1,l1,w1 ] = qpOASES_sequence( 'i',H1,g1,lb1,ub1,[],auxInput ); %#ok<NASGU>
+                    [ x2,f2,e2,i2,l2,w2 ] = qpOASES_sequence( 'h',QP,g2,lb2,ub2 ); %#ok<NASGU>
                     qpOASES_sequence( 'c',QP );
                 end
             end
@@ -341,31 +341,31 @@ function [ successFlag ] = callQpOasesSeq( qpData1,qpData2,hasA,hasOptions,hasX0
                 end
 
                 if ( hasA > 0 )
-                    [ QP,x1,f1,e1,i1,l1,w1 ] = qpOASES_sequence( 'i',H1,g1,A1,lb1,ub1,lbA1,ubA1,options,auxInput );
+                    [ QP,x1,f1,e1,i1,l1,w1 ] = qpOASES_sequence( 'i',H1,g1,A1,lb1,ub1,lbA1,ubA1,options,auxInput ); %#ok<NASGU>
                     if ( changeMat > 0 )
-                        [ x2,f2,e2,i2,l2,w2 ] = qpOASES_sequence( 'm',QP,H2,g2,A2,lb2,ub2,lbA2,ubA2,options );
+                        [ x2,f2,e2,i2,l2,w2 ] = qpOASES_sequence( 'm',QP,H2,g2,A2,lb2,ub2,lbA2,ubA2,options ); %#ok<NASGU>
                     else
-                        [ x2,f2,e2,i2,l2,w2 ] = qpOASES_sequence( 'h',QP,g2,lb2,ub2,lbA2,ubA2,options );
+                        [ x2,f2,e2,i2,l2,w2 ] = qpOASES_sequence( 'h',QP,g2,lb2,ub2,lbA2,ubA2,options ); %#ok<NASGU>
                     end
                     qpOASES_sequence( 'c',QP );
                 else
-                    [ QP,x1,f1,e1,i1,l1,w1 ] = qpOASES_sequence( 'i',H1,g1,lb1,ub1,options,auxInput );
-                    [ x2,f2,e2,i2,l2,w2 ] = qpOASES_sequence( 'h',QP,g2,lb2,ub2,options );
+                    [ QP,x1,f1,e1,i1,l1,w1 ] = qpOASES_sequence( 'i',H1,g1,lb1,ub1,options,auxInput ); %#ok<NASGU>
+                    [ x2,f2,e2,i2,l2,w2 ] = qpOASES_sequence( 'h',QP,g2,lb2,ub2,options ); %#ok<NASGU>
                     qpOASES_sequence( 'c',QP );
                 end
                     
             else
                 if ( hasA > 0 )
-                    [ QP,x1,f1,e1,i1,l1,w1 ] = qpOASES_sequence( 'i',H1,g1,A1,lb1,ub1,lbA1,ubA1,[],auxInput );
+                    [ QP,x1,f1,e1,i1,l1,w1 ] = qpOASES_sequence( 'i',H1,g1,A1,lb1,ub1,lbA1,ubA1,[],auxInput ); %#ok<NASGU>
                     if ( changeMat > 0 )
-                        [ x2,f2,e2,i2,l2,w2 ] = qpOASES_sequence( 'm',QP,H2,g2,A2,lb2,ub2,lbA2,ubA2 );
+                        [ x2,f2,e2,i2,l2,w2 ] = qpOASES_sequence( 'm',QP,H2,g2,A2,lb2,ub2,lbA2,ubA2 ); %#ok<NASGU>
                     else
-                        [ x2,f2,e2,i2,l2,w2 ] = qpOASES_sequence( 'h',QP,g2,lb2,ub2,lbA2,ubA2 );
+                        [ x2,f2,e2,i2,l2,w2 ] = qpOASES_sequence( 'h',QP,g2,lb2,ub2,lbA2,ubA2 ); %#ok<NASGU>
                     end
                     qpOASES_sequence( 'c',QP );
                 else
-                    [ QP,x1,f1,e1,i1,l1,w1 ] = qpOASES_sequence( 'i',H1,g1,lb1,ub1,[],auxInput );
-                    [ x2,f2,e2,i2,l2,w2 ] = qpOASES_sequence( 'h',QP,g2,lb2,ub2 );
+                    [ QP,x1,f1,e1,i1,l1,w1 ] = qpOASES_sequence( 'i',H1,g1,lb1,ub1,[],auxInput ); %#ok<NASGU>
+                    [ x2,f2,e2,i2,l2,w2 ] = qpOASES_sequence( 'h',QP,g2,lb2,ub2 ); %#ok<NASGU>
                     qpOASES_sequence( 'c',QP );
                 end
             end
@@ -380,30 +380,30 @@ function [ successFlag ] = callQpOasesSeq( qpData1,qpData2,hasA,hasOptions,hasX0
                 end
 
                 if ( hasA > 0 )
-                    [ QP,x1,f1,e1,i1,l1,w1 ] = qpOASES_sequence( 'i',H1,g1,A1,lb1,ub1,lbA1,ubA1,options );
+                    [ QP,x1,f1,e1,i1,l1,w1 ] = qpOASES_sequence( 'i',H1,g1,A1,lb1,ub1,lbA1,ubA1,options ); %#ok<NASGU>
                     if ( changeMat > 0 )
-                        [ x2,f2,e2,i2,l2,w2 ] = qpOASES_sequence( 'm',QP,H2,g2,A2,lb2,ub2,lbA2,ubA2,options );
+                        [ x2,f2,e2,i2,l2,w2 ] = qpOASES_sequence( 'm',QP,H2,g2,A2,lb2,ub2,lbA2,ubA2,options ); %#ok<NASGU>
                     else
-                        [ x2,f2,e2,i2,l2,w2 ] = qpOASES_sequence( 'h',QP,g2,lb2,ub2,lbA2,ubA2,options );
+                        [ x2,f2,e2,i2,l2,w2 ] = qpOASES_sequence( 'h',QP,g2,lb2,ub2,lbA2,ubA2,options ); %#ok<NASGU>
                     end
                     qpOASES_sequence( 'c',QP );
                 else
-                    [ QP,x1,f1,e1,i1,l1,w1 ] = qpOASES_sequence( 'i',H1,g1,lb1,ub1,options );
-                    [ x2,f2,e2,i2,l2,w2 ] = qpOASES_sequence( 'h',QP,g2,lb2,ub2,options );
+                    [ QP,x1,f1,e1,i1,l1,w1 ] = qpOASES_sequence( 'i',H1,g1,lb1,ub1,options ); %#ok<NASGU>
+                    [ x2,f2,e2,i2,l2,w2 ] = qpOASES_sequence( 'h',QP,g2,lb2,ub2,options ); %#ok<NASGU>
                     qpOASES_sequence( 'c',QP );
                 end
             else
                 if ( hasA > 0 )
-                    [ QP,x1,f1,e1,i1,l1,w1 ] = qpOASES_sequence( 'i',H1,g1,A1,lb1,ub1,lbA1,ubA1 );
+                    [ QP,x1,f1,e1,i1,l1,w1 ] = qpOASES_sequence( 'i',H1,g1,A1,lb1,ub1,lbA1,ubA1 ); %#ok<NASGU>
                     if ( changeMat > 0 )
-                        [ x2,f2,e2,i2,l2,w2 ] = qpOASES_sequence( 'm',QP,H2,g2,A2,lb2,ub2,lbA2,ubA2 );
+                        [ x2,f2,e2,i2,l2,w2 ] = qpOASES_sequence( 'm',QP,H2,g2,A2,lb2,ub2,lbA2,ubA2 ); %#ok<NASGU>
                     else
-                        [ x2,f2,e2,i2,l2,w2 ] = qpOASES_sequence( 'h',QP,g2,lb2,ub2,lbA2,ubA2 );
+                        [ x2,f2,e2,i2,l2,w2 ] = qpOASES_sequence( 'h',QP,g2,lb2,ub2,lbA2,ubA2 ); %#ok<NASGU>
                     end
                     qpOASES_sequence( 'c',QP );
                 else
-                    [ QP,x1,f1,e1,i1,l1,w1 ] = qpOASES_sequence( 'i',H1,g1,lb1,ub1 );
-                    [ x2,f2,e2,i2,l2,w2 ] = qpOASES_sequence( 'h',QP,g2,lb2,ub2 );
+                    [ QP,x1,f1,e1,i1,l1,w1 ] = qpOASES_sequence( 'i',H1,g1,lb1,ub1 ); %#ok<NASGU>
+                    [ x2,f2,e2,i2,l2,w2 ] = qpOASES_sequence( 'h',QP,g2,lb2,ub2 ); %#ok<NASGU>
                     qpOASES_sequence( 'c',QP );
                 end
             end
@@ -417,9 +417,9 @@ function [ successFlag ] = callQpOasesSeq( qpData1,qpData2,hasA,hasOptions,hasX0
     
     if ( changeMat > 0 )
 		kktTol2 = getKktResidual( H2,g2,A2,lb2,ub2,lbA2,ubA2, x2,l2 );
-	else
+    else
 		kktTol2 = getKktResidual( H1,g2,A1,lb2,ub2,lbA2,ubA2, x2,l2 );
-	end
+    end
     
     if ( ( kktTol1 <= KKTTOL ) && ( e1 >= 0 ) && ( kktTol2 <= KKTTOL ) && ( e2 >= 0 ) )
         successFlag = 1;
