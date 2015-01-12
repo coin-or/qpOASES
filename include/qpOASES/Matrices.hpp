@@ -2,7 +2,7 @@
  *	This file is part of qpOASES.
  *
  *	qpOASES -- An Implementation of the Online Active Set Strategy.
- *	Copyright (C) 2007-2014 by Hans Joachim Ferreau, Andreas Potschka,
+ *	Copyright (C) 2007-2015 by Hans Joachim Ferreau, Andreas Potschka,
  *	Christian Kirches et al. All rights reserved.
  *
  *	qpOASES is free software; you can redistribute it and/or
@@ -25,8 +25,8 @@
 /**
  *	\file include/qpOASES/Matrices.hpp
  *	\author Andreas Potschka, Hans Joachim Ferreau, Christian Kirches
- *	\version 3.0
- *	\date 2009-2014
+ *	\version 3.1
+ *	\date 2009-2015
  *
  *  Various matrix classes: Abstract base matrix class, dense and sparse matrices,
  *  including symmetry exploiting specializations.
@@ -118,8 +118,8 @@ typedef int sparse_int_t;
  *  index lists (see \a SubjectTo).
  *
  *	\author Andreas Potschka, Christian Kirches, Hans Joachim Ferreau
- *	\version 3.0
- *	\date 2011-2014
+ *	\version 3.1
+ *	\date 2011-2015
  */
 class Matrix
 {
@@ -271,8 +271,8 @@ class Matrix
  *  bilinear form evaluation.
  *
  *	\author Andreas Potschka, Christian Kirches, Hans Joachim Ferreau
- *	\version 3.0
- *	\date 2011-2014
+ *	\version 3.1
+ *	\date 2011-2015
  */
 class SymmetricMatrix : public virtual Matrix
 {
@@ -307,8 +307,8 @@ class SymmetricMatrix : public virtual Matrix
  *	Dense matrix class (row major format).
  *
  *	\author Andreas Potschka, Christian Kirches, Hans Joachim Ferreau
- *	\version 3.0
- *	\date 2011-2014
+ *	\version 3.1
+ *	\date 2011-2015
  */
 class DenseMatrix : public virtual Matrix
 {
@@ -460,8 +460,8 @@ class DenseMatrix : public virtual Matrix
  *	Symmetric dense matrix class.
  *
  *	\author Andreas Potschka, Christian Kirches, Hans Joachim Ferreau
- *	\version 3.0
- *	\date 2011-2014
+ *	\version 3.1
+ *	\date 2011-2015
  */
 class SymDenseMat : public DenseMatrix, public SymmetricMatrix
 {
@@ -506,8 +506,8 @@ class SymDenseMat : public DenseMatrix, public SymmetricMatrix
  *	Sparse matrix class (col compressed format).
  *
  *	\author Andreas Potschka, Christian Kirches, Hans Joachim Ferreau
- *	\version 3.0
- *	\date 2011-2014
+ *	\version 3.1
+ *	\date 2011-2015
  */
 class SparseMatrix : public virtual Matrix
 {
@@ -663,8 +663,8 @@ class SparseMatrix : public virtual Matrix
  *	Sparse matrix class (row compressed format).
  *
  *	\author Andreas Potschka, Christian Kirches, Hans Joachim Ferreau
- *	\version 3.0
- *	\date 2011-2014
+ *	\version 3.1
+ *	\date 2011-2015
  */
 class SparseMatrixRow : public virtual Matrix
 {
@@ -820,8 +820,8 @@ class SparseMatrixRow : public virtual Matrix
  *	Symmetric sparse matrix class (column compressed format).
  *
  *	\author Andreas Potschka, Christian Kirches, Hans Joachim Ferreau
- *	\version 3.0
- *	\date 2011-2014
+ *	\version 3.1
+ *	\date 2011-2015
  */
 class SymSparseMat : public SymmetricMatrix, public SparseMatrix
 {

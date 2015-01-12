@@ -25,7 +25,7 @@
 /**
  *	\file interfaces/simulink/qpOASES_QProblem.cpp
  *	\author Hans Joachim Ferreau (thanks to Aude Perrin)
- *	\version 3.0
+ *	\version 3.1
  *	\date 2007-2015
  *
  *	Interface for Simulink(R) that enables to call qpOASES as a S function

@@ -39,7 +39,7 @@ function [] = make( varargin )
 %%
 %%	Filename:  interfaces/simulink/make.m
 %%	Author:    Hans Joachim Ferreau, Andreas Potschka, Christian Kirches
-%%	Version:   3.0
+%%	Version:   3.1
 %%	Date:      2007-2015
 %%
 

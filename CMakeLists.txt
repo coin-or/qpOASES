@@ -2,7 +2,7 @@
 ##     This file is part of qpOASES.
 ##
 ##     qpOASES -- An Implementation of the Online Active Set Strategy.
-##     Copyright (C) 2007-2014 by Hans Joachim Ferreau, Andreas Potschka,
+##     Copyright (C) 2007-2015 by Hans Joachim Ferreau, Andreas Potschka,
 ##     Christian Kirches et al. All rights reserved.
 ##
 ##     qpOASES is free software; you can redistribute it and/or
@@ -25,8 +25,8 @@
 ##
 ##     Filename:  CMakeLists.txt
 ##     Author:    Hans Joachim Ferreau (thanks to Milan Vukov)
-##     Version:   3.0
-##     Date:      2007-2014
+##     Version:   3.1
+##     Date:      2007-2015
 ##
 
 cmake_minimum_required(VERSION 2.6)

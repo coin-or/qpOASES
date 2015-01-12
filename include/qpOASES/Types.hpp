@@ -2,7 +2,7 @@
  *	This file is part of qpOASES.
  *
  *	qpOASES -- An Implementation of the Online Active Set Strategy.
- *	Copyright (C) 2007-2014 by Hans Joachim Ferreau, Andreas Potschka,
+ *	Copyright (C) 2007-2015 by Hans Joachim Ferreau, Andreas Potschka,
  *	Christian Kirches et al. All rights reserved.
  *
  *	qpOASES is free software; you can redistribute it and/or
@@ -25,8 +25,8 @@
 /**
  *	\file include/qpOASES/Types.hpp
  *	\author Hans Joachim Ferreau, Andreas Potschka, Christian Kirches
- *	\version 3.0
- *	\date 2007-2014
+ *	\version 3.1
+ *	\date 2007-2015
  *
  *	Declaration of all non-built-in types (except for classes).
  */
@@ -229,8 +229,8 @@ enum SubjectToStatus
  *	when using the (S)QProblem(B) objects.
  *
  *	\author Hans Joachim Ferreau
- *	\version 3.0
- *	\date 2013-2014
+ *	\version 3.1
+ *	\date 2013-2015
  */
 struct TabularOutput {
 	int idxAddB;		/**< Index of bound that has been added to working set. */
@@ -256,8 +256,8 @@ struct TabularOutput {
  *  "Matlab(R) MAT-file Format, R2013b" by MathWorks
  *
  *	\author Hans Joachim Ferreau
- *	\version 3.0
- *	\date 2013-2014
+ *	\version 3.1
+ *	\date 2013-2015
  */ 
 typedef struct {
 	long numericFormat;		/**< Flag indicating numerical format. */
