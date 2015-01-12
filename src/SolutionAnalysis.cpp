@@ -90,8 +90,8 @@ SolutionAnalysis& SolutionAnalysis::operator=( const SolutionAnalysis& rhs )
 /*
  *	g e t K k t V i o l a t i o n
  */
-real_t SolutionAnalysis::getKktViolation(	QProblemB* qp,
-											real_t* const _maxStat, real_t* const _maxFeas, real_t* const _maxCmpl
+real_t SolutionAnalysis::getKktViolation(	QProblemB* const qp,
+											real_t* const maxStat, real_t* const maxFeas, real_t* const maxCmpl
 											) const
 {
 	int i;
@@ -143,14 +143,14 @@ real_t SolutionAnalysis::getKktViolation(	QProblemB* qp,
 		THROWERROR( returnvalue );
 
 	/* assign return values */
-	if ( _maxStat != 0 )
-		*_maxStat = stat;
+	if ( maxStat != 0 )
+		*maxStat = stat;
 
-	if ( _maxFeas != 0 )
-		*_maxFeas = feas;
+	if ( maxFeas != 0 )
+		*maxFeas = feas;
 
-	if ( _maxCmpl != 0 )
-		*_maxCmpl = cmpl;
+	if ( maxCmpl != 0 )
+		*maxCmpl = cmpl;
 
 	maxKktViolation = getMax( maxKktViolation,stat );
 	maxKktViolation = getMax( maxKktViolation,feas );
@@ -163,8 +163,8 @@ real_t SolutionAnalysis::getKktViolation(	QProblemB* qp,
 /*
  *	g e t K k t V i o l a t i o n
  */
-real_t SolutionAnalysis::getKktViolation(	QProblem* qp,
-											real_t* const _maxStat, real_t* const _maxFeas, real_t* const _maxCmpl
+real_t SolutionAnalysis::getKktViolation(	QProblem* const qp,
+											real_t* const maxStat, real_t* const maxFeas, real_t* const maxCmpl
 											) const
 {
 	int i;
@@ -230,14 +230,14 @@ real_t SolutionAnalysis::getKktViolation(	QProblem* qp,
 		THROWERROR( returnvalue );
 
 	/* assign return values */
-	if ( _maxStat != 0 )
-		*_maxStat = stat;
+	if ( maxStat != 0 )
+		*maxStat = stat;
 
-	if ( _maxFeas != 0 )
-		*_maxFeas = feas;
+	if ( maxFeas != 0 )
+		*maxFeas = feas;
 
-	if ( _maxCmpl != 0 )
-		*_maxCmpl = cmpl;
+	if ( maxCmpl != 0 )
+		*maxCmpl = cmpl;
 
 	maxKktViolation = getMax( maxKktViolation,stat );
 	maxKktViolation = getMax( maxKktViolation,feas );
@@ -250,11 +250,11 @@ real_t SolutionAnalysis::getKktViolation(	QProblem* qp,
 /*
  *	g e t K k t V i o l a t i o n
  */
-real_t SolutionAnalysis::getKktViolation(	SQProblem* qp,
-											real_t* const _maxStat, real_t* const _maxFeas, real_t* const _maxCmpl
+real_t SolutionAnalysis::getKktViolation(	SQProblem* const qp,
+											real_t* const maxStat, real_t* const maxFeas, real_t* const maxCmpl
 											) const
 {
-	return getKktViolation( (QProblem*)qp, _maxStat,_maxFeas,_maxCmpl );
+	return getKktViolation( (QProblem*)qp, maxStat,maxFeas,maxCmpl );
 }
 
 
@@ -262,7 +262,7 @@ real_t SolutionAnalysis::getKktViolation(	SQProblem* qp,
 /*
  *	g e t V a r i a n c e C o v a r i a n c e
  */
-returnValue SolutionAnalysis::getVarianceCovariance(	QProblemB* qp,
+returnValue SolutionAnalysis::getVarianceCovariance(	QProblemB* const qp,
 														const real_t* const g_b_bA_VAR, real_t* const Primal_Dual_VAR
 														) const
 {
@@ -509,7 +509,7 @@ returnValue SolutionAnalysis::getVarianceCovariance(	QProblem* qp,
 /*
  *	g e t V a r i a n c e C o v a r i a n c e
  */
-returnValue SolutionAnalysis::getVarianceCovariance(	SQProblem* qp,
+returnValue SolutionAnalysis::getVarianceCovariance(	SQProblem* const qp,
 														const real_t* const g_b_bA_VAR, real_t* const Primal_Dual_VAR
 														) const
 {

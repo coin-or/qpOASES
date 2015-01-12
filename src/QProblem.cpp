@@ -406,16 +406,21 @@ returnValue QProblem::init(	const char* const H_file, const char* const g_file, 
 	if ( setupQPdataFromFile( H_file,g_file,A_file,lb_file,ub_file,lbA_file,ubA_file ) != SUCCESSFUL_RETURN )
 		return THROWERROR( RET_UNABLE_TO_READ_FILE );
 
-	/* Also read Cholesky factor from file and store it directly into R (thus... */
-	if ( R_file != 0 )
+	if ( R_file == 0 )
 	{
+		/* 3) Call to main initialisation routine. */
+		return solveInitialQP( xOpt,yOpt,guessedBounds,guessedConstraints,0, nWSR,cputime );
+	}
+	else
+	{
+		/* Also read Cholesky factor from file and store it directly into R [thus... */
 		returnValue returnvalue = readFromFile( R, nV,nV, R_file );
 		if ( returnvalue != SUCCESSFUL_RETURN )
 			return THROWWARNING( returnvalue );
-	}
 
-	/* 3) Call to main initialisation routine. (...passing R here!) */
-	return solveInitialQP( xOpt,yOpt,guessedBounds,guessedConstraints,R, nWSR,cputime );
+		/* 3) Call to main initialisation routine. ...passing R here!] */
+		return solveInitialQP( xOpt,yOpt,guessedBounds,guessedConstraints,R, nWSR,cputime );
+	}
 }
 
 
