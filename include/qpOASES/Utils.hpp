@@ -258,35 +258,42 @@ inline real_t getSqrt(	real_t x	/**< Non-negative real number. */
 						);
 
 
-/** Computes "residual" of KKT system.  */
-void getKKTResidual(	int nV,						/**< Number of variables. */
-						int nC,						/**< Number of constraints. */
-						const real_t* const H,		/**< Hessian matrix. */
-						const real_t* const g,		/**< Sequence of gradient vectors. */
-						const real_t* const A,		/**< Constraint matrix. */
-						const real_t* const lb,		/**< Sequence of lower bound vectors (on variables). */
-						const real_t* const ub,		/**< Sequence of upper bound vectors (on variables). */
-						const real_t* const lbA,	/**< Sequence of lower constraints' bound vectors. */
-						const real_t* const ubA,	/**< Sequence of upper constraints' bound vectors. */
-						const real_t* const x,		/**< Sequence of primal trial vectors. */
-						const real_t* const y,		/**< Sequence of dual trial vectors. */
-						real_t& stat,				/**< Maximum value of stationarity condition residual. */
-						real_t& feas,				/**< Maximum value of primal feasibility violation. */
-						real_t& cmpl				/**< Maximum value of complementarity residual. */
-						);
+/** Computes the maximum violation of the KKT optimality conditions
+ *	of given iterate for given QP data . */
+returnValue getKktViolation(	int nV,										/**< Number of variables. */
+								int nC,										/**< Number of constraints. */
+								const real_t* const H,						/**< Hessian matrix (may be NULL if Hessian is zero or identity matrix). */
+								const real_t* const g,						/**< Gradient vector. */
+								const real_t* const A,						/**< Constraint matrix. */
+								const real_t* const lb,						/**< Lower bound vector (on variables). */
+								const real_t* const ub,						/**< Upper bound vector (on variables). */
+								const real_t* const lbA,					/**< Lower constraints' bound vector. */
+								const real_t* const ubA,					/**< Upper constraints' bound vector. */
+								const real_t* const x,						/**< Primal trial vector. */
+								const real_t* const y,						/**< Dual trial vector. */
+								real_t& stat,								/**< Output: maximum value of stationarity condition residual. */
+								real_t& feas,								/**< Output: maximum value of primal feasibility violation. */
+								real_t& cmpl,								/**< Output: maximum value of complementarity residual. */
+								const real_t* const workingSetB = 0,		/**< Working set of bounds (used to determine active bounds). */
+								const real_t* const workingSetC = 0,		/**< Working set of constraints (used to determine active constraints). */
+								BooleanType hasIdentityHessian = BT_FALSE	/**< Indicating whether Hessian matrix is identity matrix or not if NULL pointer is passed. */
+								);
 
-/** Computes "residual" of KKT system (for simply bounded QPs).  */
-void getKKTResidual(	int nV,						/**< Number of variables. */
-						const real_t* const H,		/**< Hessian matrix. */
-						const real_t* const g,		/**< Sequence of gradient vectors. */
-						const real_t* const lb,		/**< Sequence of lower bound vectors (on variables). */
-						const real_t* const ub,		/**< Sequence of upper bound vectors (on variables). */
-						const real_t* const x,		/**< Sequence of primal trial vectors. */
-						const real_t* const y,		/**< Sequence of dual trial vectors. */
-						real_t& stat,				/**< Maximum value of stationarity condition residual. */
-						real_t& feas,				/**< Maximum value of primal feasibility violation. */
-						real_t& cmpl				/**< Maximum value of complementarity residual. */
-						);
+/** Computes the maximum violation of the KKT optimality conditions
+ *	of given iterate for given QP data . */
+returnValue getKktViolation(	int nV,										/**< Number of variables. */
+								const real_t* const H,						/**< Hessian matrix (may be NULL if Hessian is zero or identity matrix). */
+								const real_t* const g,						/**< Gradient vector. */
+								const real_t* const lb,						/**< Lower bound vector (on variables). */
+								const real_t* const ub,						/**< Upper bound vector (on variables). */
+								const real_t* const x,						/**< Primal trial vector. */
+								const real_t* const y,						/**< Dual trial vector. */
+								real_t& stat,								/**< Output: maximum value of stationarity condition residual. */
+								real_t& feas,								/**< Output: maximum value of primal feasibility violation. */
+								real_t& cmpl,								/**< Output: maximum value of complementarity residual. */
+								const real_t* const workingSetB = 0,		/**< Working set of bounds (used to determine active bounds). */
+								BooleanType hasIdentityHessian = BT_FALSE	/**< Indicating whether Hessian matrix is identity matrix or not if NULL pointer is passed */
+								);
 
 
 /** Writes a value of BooleanType into a string.

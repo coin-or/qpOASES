@@ -51,7 +51,7 @@ BEGIN_NAMESPACE_QPOASES
  *
  *	\author Hans Joachim Ferreau (thanks to Boris Houska)
  *	\version 3.1
- *	\date 2007-2015
+ *	\date 2008-2015
  */
 class SolutionAnalysis
 {
@@ -74,29 +74,32 @@ class SolutionAnalysis
 										);
 
 
-		/** Determines the maximum violation of the KKT optimality conditions
+		/** Computes the maximum violation of the KKT optimality conditions
 		 *  of the current iterate within the QProblemB object.
-		 *	\return SUCCESSFUL_RETURN \n
-					RET_UNABLE_TO_ANALYSE_QPROBLEM */
-		returnValue getMaxKKTviolation(	QProblemB* qp,			/**< QProblemB to be analysed. */
-										real_t& maxKKTviolation	/**< OUTPUT: maximum violation of the KKT conditions. */
-										) const;
+		 *	\return Maximum violation of the KKT conditions (or INFTY on error). */
+		real_t getKktViolation(	QProblemB* qp,				/**< QProblemB to be analysed. */
+								real_t* const _maxStat = 0,	/**< Output: maximum value of stationarity condition residual. */
+								real_t* const _maxFeas = 0,	/**< Output: maximum value of primal feasibility violation. */
+								real_t* const _maxCmpl = 0	/**< Output: maximum value of complementarity residual. */
+								) const;
 
-		/** Determines the maximum violation of the KKT optimality conditions
+		/** Computes the maximum violation of the KKT optimality conditions
 		 *  of the current iterate within the QProblem object.
-		 *	\return SUCCESSFUL_RETURN \n
-					RET_UNABLE_TO_ANALYSE_QPROBLEM */
-		returnValue getMaxKKTviolation(	QProblem* qp,			/**< QProblem to be analysed. */
-										real_t& maxKKTviolation	/**< OUTPUT: maximum violation of the KKT conditions. */
-										) const;
+		 *	\return Maximum violation of the KKT conditions (or INFTY on error). */
+		real_t getKktViolation(	QProblem* qp,				/**< QProblem to be analysed. */
+								real_t* const _maxStat = 0,	/**< Output: maximum value of stationarity condition residual. */
+								real_t* const _maxFeas = 0,	/**< Output: maximum value of primal feasibility violation. */
+								real_t* const _maxCmpl = 0	/**< Output: maximum value of complementarity residual. */
+								) const;
 
-		/** Determines the maximum violation of the KKT optimality conditions
+		/** Computes the maximum violation of the KKT optimality conditions
 		 *  of the current iterate within the SQProblem object.
-		 *	\return SUCCESSFUL_RETURN \n
-					RET_UNABLE_TO_ANALYSE_QPROBLEM */
-		returnValue getMaxKKTviolation(	SQProblem* qp,			/**< SQProblem to be analysed. */
-										real_t& maxKKTviolation	/**< OUTPUT: maximum violation of the KKT conditions. */
-										) const;
+		 *	\return Maximum violation of the KKT conditions (or INFTY on error). */
+		real_t getKktViolation(	SQProblem* qp,				/**< SQProblem to be analysed. */
+								real_t* const _maxStat = 0,	/**< Output: maximum value of stationarity condition residual. */
+								real_t* const _maxFeas = 0,	/**< Output: maximum value of primal feasibility violation. */
+								real_t* const _maxCmpl = 0	/**< Output: maximum value of complementarity residual. */
+								) const;
 
 
 		/** Computes the variance-covariance matrix of the QP output for uncertain 
@@ -105,9 +108,11 @@ class SolutionAnalysis
 					RET_HOTSTART_FAILED \n
 		 			RET_STEPDIRECTION_FAILED_TQ \n
 					RET_STEPDIRECTION_FAILED_CHOLESKY */
-		returnValue getVarianceCovariance(	QProblemB* qp,			/**< QProblemB to be analysed. */
-											real_t* g_b_bA_VAR,		/**< INPUT : Variance-covariance of g, the bounds lb and ub, and lbA and ubA respectively. Dimension: 2nV x 2nV */
-											real_t* Primal_Dual_VAR	/**< OUTPUT: The result for the variance-covariance of the primal and dual variables. Dimension: 2nV x 2nV */
+		returnValue getVarianceCovariance(	QProblemB* qp,					/**< QProblemB to be analysed. */
+											const real_t* const g_b_bA_VAR,	/**< Input:  Variance-covariance of g, the bounds lb and ub, 
+																			 *			 and lbA and ubA respectively. Dimension: 2nV x 2nV */
+											real_t* const Primal_Dual_VAR	/**< Output: The result for the variance-covariance of the primal 
+																			 *			 and dual variables. Dimension: 2nV x 2nV */
 											) const;
 
 		/** Computes the variance-covariance matrix of the QP output for uncertain 
@@ -116,9 +121,11 @@ class SolutionAnalysis
 					RET_HOTSTART_FAILED \n
 		 			RET_STEPDIRECTION_FAILED_TQ \n
 					RET_STEPDIRECTION_FAILED_CHOLESKY */
-		returnValue getVarianceCovariance(	QProblem* qp,			/**< QProblem to be analysed. */
-											real_t* g_b_bA_VAR,		/**< INPUT : Variance-covariance of g, the bounds lb and ub, and lbA and ubA respectively. Dimension:  (2nV+nC) x (2nV+nC) */
-											real_t* Primal_Dual_VAR	/**< OUTPUT: The result for the variance-covariance of the primal and dual variables. Dimension:  (2nV+nC) x (2nV+nC) */
+		returnValue getVarianceCovariance(	QProblem* qp,					/**< QProblem to be analysed. */
+											const real_t* const g_b_bA_VAR,	/**< Input:  Variance-covariance of g, the bounds lb and ub, 
+																			 *			 and lbA and ubA respectively. Dimension:  (2nV+nC) x (2nV+nC) */
+											real_t* const Primal_Dual_VAR	/**< Output: The result for the variance-covariance of the primal 
+																			 *			 and dual variables. Dimension:  (2nV+nC) x (2nV+nC) */
 											) const;
 
 		/** Computes the variance-covariance matrix of the QP output for uncertain 
@@ -127,9 +134,11 @@ class SolutionAnalysis
 					RET_HOTSTART_FAILED \n
 		 			RET_STEPDIRECTION_FAILED_TQ \n
 					RET_STEPDIRECTION_FAILED_CHOLESKY */
-		returnValue getVarianceCovariance(	SQProblem* qp,			/**< SQProblem to be analysed. */
-											real_t* g_b_bA_VAR,		/**< INPUT : Variance-covariance of g, the bounds lb and ub, and lbA and ubA respectively. Dimension:  (2nV+nC) x (2nV+nC) */
-											real_t* Primal_Dual_VAR	/**< OUTPUT: The result for the variance-covariance of the primal and dual variables. Dimension:  (2nV+nC) x (2nV+nC) */
+		returnValue getVarianceCovariance(	SQProblem* qp,					/**< SQProblem to be analysed. */
+											const real_t* const g_b_bA_VAR,	/**< Input:  Variance-covariance of g, the bounds lb and ub, 
+																			 *			 and lbA and ubA respectively. Dimension:  (2nV+nC) x (2nV+nC) */
+											real_t* const Primal_Dual_VAR	/**< Output: The result for the variance-covariance of the primal 
+																			 *			 and dual variables. Dimension:  (2nV+nC) x (2nV+nC) */
 											) const;
 
 		/** Checks if a direction of negative curvature shows up if we remove all bounds that just recently became active */

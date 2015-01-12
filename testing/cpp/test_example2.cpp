@@ -71,11 +71,10 @@ int main( )
 	example.init( H,g,A,lb,ub,lbA,ubA, nWSR,0 );
 
 	/* ... and analyse it. */
-	real_t maxKKTviolation;
-    analyser.getMaxKKTviolation( &example, maxKKTviolation );
-    printf( "maxKKTviolation: %e\n", maxKKTviolation );
+	real_t maxKktViolation = analyser.getKktViolation( &example );
+    printf( "maxKktViolation: %e\n", maxKktViolation );
 
-	QPOASES_TEST_FOR_TOL( maxKKTviolation,1e-15 );
+	QPOASES_TEST_FOR_TOL( maxKktViolation,1e-15 );
 
 
 	/* Solve second QP ... */
@@ -83,10 +82,10 @@ int main( )
 	example.hotstart( H_new,g_new,A_new,lb_new,ub_new,lbA_new,ubA_new, nWSR,0 );
 
 	/* ... and analyse it. */
-	analyser.getMaxKKTviolation( &example, maxKKTviolation );
-    printf( "maxKKTviolation: %e\n", maxKKTviolation );
+	maxKktViolation = analyser.getKktViolation( &example );
+    printf( "maxKktViolation: %e\n", maxKktViolation );
 
-	QPOASES_TEST_FOR_TOL( maxKKTviolation,1e-15 );
+	QPOASES_TEST_FOR_TOL( maxKktViolation,1e-15 );
 
 
 //  ------------ VARIANCE-COVARIANCE EVALUATION --------------------

@@ -79,12 +79,9 @@ int main( )
 	
 	/* Compute KKT tolerances */
 	real_t stat, feas, cmpl;
+	SolutionAnalysis analyzer;
 
-	getKKTResidual(	4,3,
-					H,g,A,lb,ub,lbA,ubA,
-					xOpt,yOpt,
-					stat,feas,cmpl
-					);
+	analyzer.getKktViolation( &example, &stat,&feas,&cmpl );
 	printf( "stat = %e\nfeas = %e\ncmpl = %e\n", stat,feas,cmpl );
 
 	QPOASES_TEST_FOR_TOL( stat,1e-15 );
@@ -110,11 +107,7 @@ int main( )
 	printf( "objVal = %e\n\n", example.getObjVal() );
 	
 	/* Compute KKT tolerances */
-	getKKTResidual(	4,3,
-					H,g,A,lb,ub,lbA,ubA,
-					xOpt,yOpt,
-					stat,feas,cmpl
-					);
+	analyzer.getKktViolation( &example, &stat,&feas,&cmpl );
 	printf( "stat = %e\nfeas = %e\ncmpl = %e\n", stat,feas,cmpl );
 
 	QPOASES_TEST_FOR_TOL( stat,1e-15 );
@@ -144,11 +137,7 @@ int main( )
 	printf( "objVal = %e\n\n", example.getObjVal() );
 	
 	/* Compute KKT tolerances */
-	getKKTResidual(	4,3,
-					H,g,A,lb,ub,lbA,ubA,
-					xOpt,yOpt,
-					stat,feas,cmpl
-					);
+	analyzer.getKktViolation( &example, &stat,&feas,&cmpl );
 	printf( "stat = %e\nfeas = %e\ncmpl = %e\n", stat,feas,cmpl );
 
 	QPOASES_TEST_FOR_TOL( stat,1e-15 );

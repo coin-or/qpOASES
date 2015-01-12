@@ -78,12 +78,10 @@ int main( )
 
 	/* Compute KKT tolerances */
 	real_t stat, feas, cmpl;
+	SolutionAnalysis analyzer;
+	printf( "%d\n",example.getHessianType() );
 
-	getKKTResidual(	2,1,
-					0,g,A,lb,ub,lbA,ubA,
-					xOpt,yOpt,
-					stat,feas,cmpl
-					);
+	analyzer.getKktViolation( &example, &stat,&feas,&cmpl );
 	printf( "stat = %e\nfeas = %e\ncmpl = %e\n", stat,feas,cmpl );
 
 	QPOASES_TEST_FOR_TOL( stat,tol );
@@ -101,11 +99,7 @@ int main( )
 	example.getDualSolution( yOpt );
 	printf( "\nxOpt = [ %e, %e ];  objVal = %e\n\n", xOpt[0],xOpt[1],example.getObjVal() );
 
-	getKKTResidual(	2,1,
-					0,g_new,A,lb_new,ub_new,lbA_new,ubA_new,
-					xOpt,yOpt,
-					stat,feas,cmpl
-					);
+	analyzer.getKktViolation( &example, &stat,&feas,&cmpl );
 	printf( "stat = %e\nfeas = %e\ncmpl = %e\n", stat,feas,cmpl );
 
 	QPOASES_TEST_FOR_TOL( stat,tol );

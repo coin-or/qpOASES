@@ -75,12 +75,9 @@ int main( )
 
 	/* Compute KKT tolerances */
 	real_t stat, feas, cmpl;
+	SolutionAnalysis analyzer;
 
-	getKKTResidual(	2,
-					H,g,lb,ub,
-					xOpt,yOpt,
-					stat,feas,cmpl
-					);
+	analyzer.getKktViolation( &example, &stat,&feas,&cmpl );
 	printf( "stat = %e\nfeas = %e\ncmpl = %e\n", stat,feas,cmpl );
 
 	QPOASES_TEST_FOR_TOL( stat,1e-15 );
@@ -99,11 +96,7 @@ int main( )
 	printf( "\nxOpt = [ %e, %e ];  objVal = %e\n\n", xOpt[0],xOpt[1],example.getObjVal() );
 
 	/* Compute KKT tolerances */
-	getKKTResidual(	2,
-					H,g_new,lb_new,ub_new,
-					xOpt,yOpt,
-					stat,feas,cmpl
-					);
+	analyzer.getKktViolation( &example, &stat,&feas,&cmpl );
 	printf( "stat = %e\nfeas = %e\ncmpl = %e\n", stat,feas,cmpl );
 
 	QPOASES_TEST_FOR_TOL( stat,1e-15 );

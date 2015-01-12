@@ -377,7 +377,7 @@ returnValue solveOQPbenchmark(	int nQP, int nV, int nC, int nEC,
 		//obj = qp.getObjVal( );
 
 		/* 5) Compute KKT residuals */
-		getKKTResidual( nV, nC, _H,gCur,_A,lbCur,ubCur,lbACur,ubACur, x, y, stat, feas, cmpl );
+		getKktViolation( nV,nC, _H,gCur,_A,lbCur,ubCur,lbACur,ubACur, x,y, stat,feas,cmpl );
 		
 		/* 6) Update maximum and average values. */
 		if ( ((double)nWSRcur) > maxNWSR )
@@ -539,7 +539,7 @@ returnValue solveOQPbenchmark(	int nQP, int nV,
 		//obj = qp.getObjVal( );
 
 		/* 5) Compute KKT residuals */
-		getKKTResidual( nV, _H,gCur,lbCur,ubCur, x,y, stat,feas,cmpl );
+		getKktViolation( nV, _H,gCur,lbCur,ubCur, x,y, stat,feas,cmpl );
 
 		/* 6) update maximum values. */
 		if ( nWSRcur > maxNWSR )

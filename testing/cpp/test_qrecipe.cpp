@@ -77,14 +77,11 @@ int main( )
 	fprintf(stdFile, "Solved dense problem in %d iterations, %.3f seconds.\n", nWSR, toc-tic);
 
 	/* Compute KKT tolerances */
-	real_t stat, feas, cmpl;
+	real_t statD, feasD, cmplD;
+	SolutionAnalysis analyzerD;
 
-	getKKTResidual(	180,91,
-					H_full,g,A_full,lb,ub,lbA,ubA,
-					x1,y1,
-					stat,feas,cmpl
-					);
-	printf( "stat = %e\nfeas = %e\ncmpl = %e\n\n", stat,feas,cmpl );
+	analyzerD.getKktViolation( &qrecipeD, &statD,&feasD,&cmplD );
+	printf( "stat = %e\nfeas = %e\ncmpl = %e\n\n", statD,feasD,cmplD );
 
 
 	/* solve with sparse matrices */
@@ -99,13 +96,11 @@ int main( )
 	fprintf(stdFile, "Solved sparse problem in %d iterations, %.3f seconds.\n", nWSR, toc-tic);
 	
 	/* Compute KKT tolerances */
-	real_t stat2, feas2, cmpl2;
-	getKKTResidual(	180,91,
-					H_full,g,A_full,lb,ub,lbA,ubA,
-					x2,y2,
-					stat2,feas2,cmpl2
-					);
-	printf( "stat = %e\nfeas = %e\ncmpl = %e\n\n", stat2,feas2,cmpl2 );
+	real_t statS, feasS, cmplS;
+	SolutionAnalysis analyzerS;
+
+	analyzerS.getKktViolation( &qrecipeS, &statS,&feasS,&cmplS );
+	printf( "stat = %e\nfeas = %e\ncmpl = %e\n\n", statS,feasS,cmplS );
 
 	/* check distance of solutions */
 	for (i = 0; i < 180; i++)
@@ -130,13 +125,13 @@ int main( )
 	delete[] y1;
 	delete[] x1;
 
-	QPOASES_TEST_FOR_TOL( stat,1e-14 );
-	QPOASES_TEST_FOR_TOL( feas,1e-14 );
-	QPOASES_TEST_FOR_TOL( cmpl,1e-13 );
+	QPOASES_TEST_FOR_TOL( statD,1e-14 );
+	QPOASES_TEST_FOR_TOL( feasD,1e-14 );
+	QPOASES_TEST_FOR_TOL( cmplD,1e-13 );
 	
-	QPOASES_TEST_FOR_TOL( stat2,1e-14 );
-	QPOASES_TEST_FOR_TOL( feas2,1e-14 );
-	QPOASES_TEST_FOR_TOL( cmpl2,1e-13 );
+	QPOASES_TEST_FOR_TOL( statS,1e-14 );
+	QPOASES_TEST_FOR_TOL( feasS,1e-14 );
+	QPOASES_TEST_FOR_TOL( cmplS,1e-13 );
 
 	QPOASES_TEST_FOR_TOL( errP,1e-13 );
 

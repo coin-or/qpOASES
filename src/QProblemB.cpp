@@ -2722,6 +2722,9 @@ returnValue QProblemB::solveRegularisedQP(	const real_t* const g_new,
 		}
 	}
 
+	for( i=0; i<nV; ++i )
+		g[i] = g_new[i];
+
 	delete[] gMod;
 
 	if ( cputime != 0 )
