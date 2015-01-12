@@ -26,11 +26,13 @@ VERSION HISTORY
 ===============
 
 
-3.1 (released on XXth January 2015):
+3.1 (released on 23rd January 2015):
 ------------------------------------
 
-+ ...
-+ Several bugfixes
++ Addition of C interface
++ Further improved Matlab, Simulink, octave and Python interfaces
++ Possibility to provide pre-computed Cholesky factor of Hessian matrix
++ Source code clean-up and bugfixes
 
 
 3.0 (released on 29th July 2014, last updated on 17th December 2014):
@@ -66,7 +68,7 @@ VERSION HISTORY
   objects for specifying guessed active sets
 + Allows to specify a CPU time in addition to an iteration limit
 + Improved efficiency for QPs comprising many constraints
-+ Source code cleanup and bugfixing
++ Source code cleanup and bugfixes
 
 
 1.3 (released on 2nd June 2008, last updated on 13th August 2008):
