@@ -259,7 +259,7 @@ inline real_t getSqrt(	real_t x	/**< Non-negative real number. */
 
 
 /** Computes the maximum violation of the KKT optimality conditions
- *	of given iterate for given QP data . */
+ *	of given iterate for given QP data. */
 returnValue getKktViolation(	int nV,										/**< Number of variables. */
 								int nC,										/**< Number of constraints. */
 								const real_t* const H,						/**< Hessian matrix (may be NULL if Hessian is zero or identity matrix). */
@@ -280,7 +280,7 @@ returnValue getKktViolation(	int nV,										/**< Number of variables. */
 								);
 
 /** Computes the maximum violation of the KKT optimality conditions
- *	of given iterate for given QP data . */
+ *	of given iterate for given QP data. */
 returnValue getKktViolation(	int nV,										/**< Number of variables. */
 								const real_t* const H,						/**< Hessian matrix (may be NULL if Hessian is zero or identity matrix). */
 								const real_t* const g,						/**< Gradient vector. */

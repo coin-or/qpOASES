@@ -1426,6 +1426,7 @@ returnValue QProblemB::computeCholesky( )
 				for ( i=0; i<nFR-1; ++i )
 					RR(i+1,i) = 0.0;
 			}
+			break;
 	}
 
 	return SUCCESSFUL_RETURN;

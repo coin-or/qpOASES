@@ -120,7 +120,7 @@ class SQProblem : public QProblem
 								int& nWSR,										/**< Input: Maximum number of working set recalculations; \n
 																					 Output: Number of performed working set recalculations. */
 								real_t* const cputime = 0,						/**< Input: Maximum CPU time allowed for QP solution. \n
-																					 Output: CPU time spend for QP solution (or to perform nWSR iterations). */
+																					 Output: CPU time spen for QP solution (or to perform nWSR iterations). */
 								const Bounds* const guessedBounds = 0,			/**< Optimal working set of bounds for solution (xOpt,yOpt). \n
 																					 (If a null pointer is passed, the previous working set of bounds is kept!) */
 								const Constraints* const guessedConstraints = 0	/**< Optimal working set of constraints for solution (xOpt,yOpt). \n
@@ -157,7 +157,7 @@ class SQProblem : public QProblem
 								int& nWSR,										/**< Input: Maximum number of working set recalculations; \n
 																					 Output: Number of performed working set recalculations. */
 								real_t* const cputime = 0,						/**< Input: Maximum CPU time allowed for QP solution. \n
-																					 Output: CPU time spend for QP solution (or to perform nWSR iterations). */
+																					 Output: CPU time spent for QP solution (or to perform nWSR iterations). */
 								const Bounds* const guessedBounds = 0,			/**< Optimal working set of bounds for solution (xOpt,yOpt). \n
 																					 (If a null pointer is passed, the previous working set of bounds is kept!) */
 								const Constraints* const guessedConstraints = 0	/**< Optimal working set of constraints for solution (xOpt,yOpt). \n
@@ -196,7 +196,7 @@ class SQProblem : public QProblem
 								int& nWSR,										/**< Input: Maximum number of working set recalculations; \n
 																					 Output: Number of performed working set recalculations. */
 								real_t* const cputime = 0,						/**< Input: Maximum CPU time allowed for QP solution. \n
-																					 Output: CPU time spend for QP solution (or to perform nWSR iterations). */
+																					 Output: CPU time spent for QP solution (or to perform nWSR iterations). */
 								const Bounds* const guessedBounds = 0,			/**< Optimal working set of bounds for solution (xOpt,yOpt). \n
 																					 (If a null pointer is passed, the previous working set of bounds is kept!) */
 								const Constraints* const guessedConstraints = 0	/**< Optimal working set of constraints for solution (xOpt,yOpt). \n
@@ -233,7 +233,7 @@ class SQProblem : public QProblem
 								int& nWSR,										/**< Input: Maximum number of working set recalculations; \n
 																			 		 Output: Number of performed working set recalculations. */
 								real_t* const cputime = 0,						/**< Input: Maximum CPU time allowed for QP solution. \n
-																				 	 Output: CPU time spend for QP solution (or to perform nWSR iterations). */
+																				 	 Output: CPU time spent for QP solution (or to perform nWSR iterations). */
 								const Bounds* const guessedBounds = 0,			/**< Optimal working set of bounds for solution (xOpt,yOpt). \n
 																					 (If a null pointer is passed, the previous working set of bounds is kept!) */
 								const Constraints* const guessedConstraints = 0	/**< Optimal working set of constraints for solution (xOpt,yOpt). \n
@@ -272,7 +272,7 @@ class SQProblem : public QProblem
 								int& nWSR, 										/**< Input: Maximum number of working set recalculations; \n
 																					 Output: Number of performed working set recalculations. */
 								real_t* const cputime = 0,						/**< Input: Maximum CPU time allowed for QP solution. \n
-																				 	 Output: CPU time spend for QP solution (or to perform nWSR iterations). */
+																				 	 Output: CPU time spent for QP solution (or to perform nWSR iterations). */
 								const Bounds* const guessedBounds = 0,			/**< Optimal working set of bounds for solution (xOpt,yOpt). \n
 																					 (If a null pointer is passed, the previous working set of bounds is kept!) */
 								const Constraints* const guessedConstraints = 0	/**< Optimal working set of constraints for solution (xOpt,yOpt). \n

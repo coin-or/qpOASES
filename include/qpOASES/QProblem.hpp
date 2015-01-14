@@ -132,7 +132,7 @@ class QProblem : public QProblemB
 							int& nWSR,										/**< Input: Maximum number of working set recalculations when using initial homotopy.
 																				 Output: Number of performed working set recalculations. */
 							real_t* const cputime = 0,						/**< Input: Maximum CPU time allowed for QP initialisation. \n
-																				 Output: CPU time spend for QP initialisation (if pointer passed). */
+																				 Output: CPU time spent for QP initialisation (if pointer passed). */
 							const real_t* const xOpt = 0,					/**< Optimal primal solution vector. \n
 																				 (If a null pointer is passed, the old primal solution is kept!) */
 							const real_t* const yOpt = 0,					/**< Optimal dual solution vector. \n
@@ -184,7 +184,7 @@ class QProblem : public QProblemB
 							int& nWSR,										/**< Input: Maximum number of working set recalculations when using initial homotopy.
 																				 Output: Number of performed working set recalculations. */
 							real_t* const cputime = 0,						/**< Input: Maximum CPU time allowed for QP initialisation. \n
-																				 Output: CPU time spend for QP initialisation (if pointer passed). */
+																				 Output: CPU time spent for QP initialisation (if pointer passed). */
 							const real_t* const xOpt = 0,					/**< Optimal primal solution vector. \n
 																				 (If a null pointer is passed, the old primal solution is kept!) */
 							const real_t* const yOpt = 0,					/**< Optimal dual solution vector. \n
@@ -236,7 +236,7 @@ class QProblem : public QProblemB
 							int& nWSR,										/**< Input: Maximum number of working set recalculations when using initial homotopy.
 																				 Output: Number of performed working set recalculations. */
 							real_t* const cputime = 0,						/**< Input: Maximum CPU time allowed for QP initialisation. \n
-																				 Output: CPU time spend for QP initialisation (if pointer passed). */
+																				 Output: CPU time spent for QP initialisation (if pointer passed). */
 							const real_t* const xOpt = 0,					/**< Optimal primal solution vector. \n
 																				 (If a null pointer is passed, the old primal solution is kept!) */
 							const real_t* const yOpt = 0,					/**< Optimal dual solution vector. \n
@@ -280,7 +280,7 @@ class QProblem : public QProblemB
 								int& nWSR,										/**< Input: Maximum number of working set recalculations; \n
 																			 		 Output: Number of performed working set recalculations. */
 								real_t* const cputime = 0,						/**< Input: Maximum CPU time allowed for QP solution. \n
-																				 	 Output: CPU time spend for QP solution (or to perform nWSR iterations). */
+																				 	 Output: CPU time spent for QP solution (or to perform nWSR iterations). */
 								const Bounds* const guessedBounds = 0,			/**< Optimal working set of bounds for solution (xOpt,yOpt). \n
 																					 (If a null pointer is passed, the previous working set of bounds is kept!) */
 								const Constraints* const guessedConstraints = 0	/**< Optimal working set of constraints for solution (xOpt,yOpt). \n
@@ -319,7 +319,7 @@ class QProblem : public QProblemB
 								int& nWSR, 										/**< Input: Maximum number of working set recalculations; \n
 																					 Output: Number of performed working set recalculations. */
 								real_t* const cputime = 0,						/**< Input: Maximum CPU time allowed for QP solution. \n
-																				 	 Output: CPU time spend for QP solution (or to perform nWSR iterations). */
+																				 	 Output: CPU time spent for QP solution (or to perform nWSR iterations). */
 								const Bounds* const guessedBounds = 0,			/**< Optimal working set of bounds for solution (xOpt,yOpt). \n
 																					 (If a null pointer is passed, the previous working set of bounds is kept!) */
 								const Constraints* const guessedConstraints = 0	/**< Optimal working set of constraints for solution (xOpt,yOpt). \n
@@ -443,7 +443,7 @@ class QProblem : public QProblemB
 									int& nWSR, 										/**< Input: Maximum number of working set recalculations; \n
 																 					 *	 Output: Number of performed working set recalculations. */
 									real_t* const cputime							/**< Input: Maximum CPU time allowed for QP solution. \n
-																			 			 Output: CPU time spend for QP solution (or to perform nWSR iterations). */
+																			 			 Output: CPU time spent for QP solution (or to perform nWSR iterations). */
 									);
 
 		/** Solves QProblem using online active set strategy.
@@ -470,7 +470,7 @@ class QProblem : public QProblemB
 								int& nWSR,							/**< Input: Maximum number of working set recalculations; \n
 																 		 Output: Number of performed working set recalculations. */
 								real_t* const cputime,				/**< Input: Maximum CPU time allowed for QP solution. \n
-																	 	 Output: CPU time spend for QP solution (or to perform nWSR iterations). */
+																	 	 Output: CPU time spent for QP solution (or to perform nWSR iterations). */
 								int  nWSRperformed = 0,				/**< Number of working set recalculations already performed to solve
 																		 this QP within previous solveQP() calls. This number is
 																		 always zero, except for successive calls from solveRegularisedQP()
@@ -503,7 +503,7 @@ class QProblem : public QProblemB
 										int& nWSR,							/**< Input: Maximum number of working set recalculations; \n
 																		 		 Output: Number of performed working set recalculations. */
 										real_t* const cputime,				/**< Input: Maximum CPU time allowed for QP solution. \n
-																			 	 Output: CPU time spend for QP solution (or to perform nWSR iterations). */
+																			 	 Output: CPU time spent for QP solution (or to perform nWSR iterations). */
 										int  nWSRperformed = 0,				/**< Number of working set recalculations already performed to solve
 																				 this QP within previous solveRegularisedQP() calls. This number is
 																				 always zero, except for successive calls when using the far bound strategy. */
