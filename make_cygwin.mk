@@ -41,7 +41,6 @@ BINDIR = ${TOP}/bin
 MATLAB_IDIR   = /cygdrive/c/progra~2/matlab/r2009b/extern/include/
 MATLAB_LIBDIR = /cygdrive/c/progra~2/matlab/r2009b/extern/lib/win32/microsoft
 
-
 # system or replacement BLAS/LAPACK
 REPLACE_LINALG = 1
 
@@ -52,6 +51,7 @@ else
 	LIB_BLAS =   /usr/lib/lapack/cygblas-0.dll
 	LIB_LAPACK = /usr/lib/lapack/cyglapack-0.dll
 endif	
+
 
 ################################################################################
 # do not touch this

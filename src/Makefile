@@ -71,7 +71,8 @@ QPOASES_DEPENDS = \
 	${IDIR}/qpOASES/Types.hpp \
 	${IDIR}/qpOASES/Options.hpp \
 	${IDIR}/qpOASES/Matrices.hpp \
-	${IDIR}/qpOASES/MessageHandling.hpp
+	${IDIR}/qpOASES/MessageHandling.hpp \
+	${IDIR}/qpOASES/UnitTesting.hpp
 
 
 ##

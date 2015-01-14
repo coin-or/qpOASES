@@ -41,11 +41,17 @@ BINDIR = ${TOP}/bin
 MATLAB_IDIR   = /Applications/MATLAB_R2011a.app/extern/include/
 MATLAB_LIBDIR = 
 
-## system BLAS or qpOASES replacement BLAS
-#LIB_BLAS = "-framework Accelerate"
+# system or replacement BLAS/LAPACK
+REPLACE_LINALG = 1
 
-## system LAPACK or qpOASES replacement LAPACK
-#LIB_LAPACK = "-framework Accelerate"
+ifeq ($(REPLACE_LINALG), 1)
+	LIB_BLAS =   ${SRCDIR}/BLASReplacement.o
+	LIB_LAPACK = ${SRCDIR}/LAPACKReplacement.o
+else
+	LIB_BLAS =   "-framework Accelerate"
+	LIB_LAPACK = ""
+endif
+
 
 ################################################################################
 # do not touch this
@@ -84,8 +90,8 @@ FFLAGS = -Wall -O3 -fPIC -DLINUX -Wno-uninitialized
 #        -g 
 
 # libraries to link against when building qpOASES .so files
-LINK_LIBRARIES = -framework Accelerate -lm
-LINK_LIBRARIES_AW = -framework Accelerate ${LIB_LAPACK} ${LIB_BLAS} -lm -lgfortran -lhsl_ma57 -lfakemetis
+LINK_LIBRARIES = ${LIB_LAPACK} ${LIB_BLAS} -lm
+LINK_LIBRARIES_AW = ${LIB_LAPACK} ${LIB_BLAS} -lm -lgfortran -lhsl_ma57 -lfakemetis
 LINK_LIBRARIES_WRAPPER = -lm
 
 # how to link against the qpOASES shared library

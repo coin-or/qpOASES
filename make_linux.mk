@@ -42,7 +42,6 @@ BINDIR = ${TOP}/bin
 MATLAB_IDIR   = /usr/local/matlab/extern/include/
 MATLAB_LIBDIR = /usr/local/matlab/bin/glnxa64/
 
-
 # system or replacement BLAS/LAPACK
 REPLACE_LINALG = 1
 
@@ -53,6 +52,7 @@ else
 	LIB_BLAS =   /usr/lib/libblas.so
 	LIB_LAPACK = /usr/lib/liblapack.so
 endif
+
 
 ################################################################################
 # do not touch this
