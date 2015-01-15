@@ -38,7 +38,11 @@ from cython.operator cimport dereference as deref
 cimport qpoases
 
 def deprecation_warning_nWSR():
-    warnings.warn("\nInteger nWSR will be deprecated in qpOASES 4.0.\nUse nWSR = numpy.array([10]) as input to QProblem.init and hotstart", DeprecationWarning, stacklevel=2)
+    warnings.warn("\nInteger nWSR will be deprecated in qpOASES 4.0.\nUse nWSR = numpy.array([10]) as input to qp.init() and qp.hotstart()", DeprecationWarning, stacklevel=2)
+
+def deprecation_warning_cputime():
+    warnings.warn("\nFloat cputime will be deprecated in qpOASES 4.0.\nUse cputime = numpy.array([2.0]) as input to qp.init() and qp.hotstart()", DeprecationWarning, stacklevel=2)
+
 
 cdef class PyBooleanType:
     FALSE = BT_FALSE
@@ -389,26 +393,34 @@ cdef class PyQProblemB:
              np.ndarray[np.double_t, ndim=1] lb,
              np.ndarray[np.double_t, ndim=1] ub,
              nWSR,
-             double cputime=0):
-
-
+             cputime = 0.0
+        ):
         # FIXME: add asserts
+        cdef np.ndarray nWSR_tmp
+        cdef np.ndarray cput_tmp
 
-        cdef np.ndarray tmp
+        # enable nWSR as return value in argument list
         if isinstance(nWSR, int):
             deprecation_warning_nWSR()
-            tmp = np.array([nWSR], dtype=int)
+            nWSR_tmp = np.array([nWSR], dtype=int)
         else:
-            tmp = nWSR
+            nWSR_tmp = nWSR
 
         if cputime > 1.e-16:
+            # enable cputime as return value in argument list
+            if isinstance(cputime, float):
+                deprecation_warning_cputime()
+                cput_tmp = np.array([cputime], dtype=float)
+            else:
+                cput_tmp = cputime
+
             return self.thisptr.init(
                     <double*> H.data,
                     <double*> g.data,
                     <double*> lb.data,
                     <double*> ub.data,
-                    <int&> tmp.data[0],
-                    &cputime
+                    <int&>    nWSR_tmp.data[0],
+                    <double*> &cput_tmp.data[0]
                     )
 
         return self.thisptr.init(
@@ -416,39 +428,49 @@ cdef class PyQProblemB:
                     <double*> g.data,
                     <double*> lb.data,
                     <double*> ub.data,
-                    <int&> tmp.data[0])
+                    <int&> nWSR_tmp.data[0]
+                    )
 
     def hotstart(self,
              np.ndarray[np.double_t, ndim=1] g,
              np.ndarray[np.double_t, ndim=1] lb,
              np.ndarray[np.double_t, ndim=1] ub,
              nWSR,
-             double cputime=0):
-
+             cputime = 0.0
+        ):
         # FIXME: add asserts
+        cdef np.ndarray nWSR_tmp
+        cdef np.ndarray cput_tmp
 
-        cdef np.ndarray tmp
+        # enable nWSR as return value in argument list
         if isinstance(nWSR, int):
             deprecation_warning_nWSR()
-            tmp = np.array([nWSR], dtype=int)
+            nWSR_tmp = np.array([nWSR], dtype=int)
         else:
-            tmp = nWSR
-
+            nWSR_tmp = nWSR#np.asarray(nWSR, dtype=int)
 
         if cputime > 1.e-16:
+            # enable cputime as return value in argument list
+            if isinstance(cputime, float):
+                deprecation_warning_cputime()
+                cput_tmp = np.array([cputime], dtype=float)
+            else:
+                cput_tmp = cputime#np.asarray(cputime, dtype=float)
+
             return self.thisptr.hotstart(
                     <double*> g.data,
                     <double*> lb.data,
                     <double*> ub.data,
-                    <int&> tmp.data[0],
-                    &cputime
-                    )
+                    <int&>    nWSR_tmp.data[0],
+                    <double*> &cput_tmp.data[0]
+                )
 
         return self.thisptr.hotstart(
                     <double*> g.data,
                     <double*> lb.data,
                     <double*> ub.data,
-                    <int&> tmp.data[0])
+                    <int&>    nWSR_tmp.data[0]
+            )
 
     def getPrimalSolution(self, np.ndarray[np.double_t, ndim=1] xOpt):
         return self.thisptr.getPrimalSolution(<double*> xOpt.data)
@@ -489,18 +511,27 @@ cdef class PyQProblem:
              np.ndarray[np.double_t, ndim=1] lbA,
              np.ndarray[np.double_t, ndim=1] ubA,
              nWSR,
-             double cputime=0):
+             cputime=0.0):
 
         # FIXME: add asserts
+        cdef np.ndarray nWSR_tmp
+        cdef np.ndarray cput_tmp
 
-        cdef np.ndarray tmp
+        # enable nWSR as return value in argument list
         if isinstance(nWSR, int):
             deprecation_warning_nWSR()
-            tmp = np.array([nWSR], dtype=int)
+            nWSR_tmp = np.array([nWSR], dtype=int)
         else:
-            tmp = nWSR
+            nWSR_tmp = nWSR
 
         if cputime > 1.e-16:
+            # enable cputime as return value in argument list
+            if isinstance(cputime, float):
+                deprecation_warning_cputime()
+                cput_tmp = np.array([cputime], dtype=float)
+            else:
+                cput_tmp = cputime
+
             return self.thisptr.init(
                     <double*> H.data,
                     <double*> g.data,
@@ -509,8 +540,9 @@ cdef class PyQProblem:
                     <double*> ub.data,
                     <double*> lbA.data,
                     <double*> ubA.data,
-                    <int&> tmp.data[0],
-                    &cputime)
+                    <int&>    nWSR_tmp.data[0],
+                    <double*> &cput_tmp.data[0]
+                )
 
         return self.thisptr.init(
                     <double*> H.data,
@@ -520,7 +552,8 @@ cdef class PyQProblem:
                     <double*> ub.data,
                     <double*> lbA.data,
                     <double*> ubA.data,
-                    <int&> tmp.data[0])
+                    <int&>    nWSR_tmp.data[0]
+                )
 
     cpdef hotstart(self,
              np.ndarray[np.double_t, ndim=1] g,
@@ -529,27 +562,37 @@ cdef class PyQProblem:
              np.ndarray[np.double_t, ndim=1] lbA,
              np.ndarray[np.double_t, ndim=1] ubA,
              nWSR,
-             double cputime=0):
+             cputime=0.0
+        ):
 
         # FIXME: add asserts
+        cdef np.ndarray nWSR_tmp
+        cdef np.ndarray cput_tmp
 
-        cdef np.ndarray tmp
+        # enable nWSR as return value in argument list
         if isinstance(nWSR, int):
             deprecation_warning_nWSR()
-            tmp = np.array([nWSR], dtype=int)
+            nWSR_tmp = np.array([nWSR], dtype=int)
         else:
-            tmp = nWSR
+            nWSR_tmp = nWSR
 
         if cputime > 1.e-16:
+            # enable cputime as return value in argument list
+            if isinstance(cputime, float):
+                deprecation_warning_cputime()
+                cput_tmp = np.array([cputime], dtype=float)
+            else:
+                cput_tmp = cputime
+
             return self.thisptr.hotstart(
                     <double*> g.data,
                     <double*> lb.data,
                     <double*> ub.data,
                     <double*> lbA.data,
                     <double*> ubA.data,
-                    <int&> tmp.data[0],
-                    &cputime
-                    )
+                    <int&>    nWSR_tmp.data[0],
+                    <double*> &cput_tmp.data[0]
+                )
 
         return self.thisptr.hotstart(
                     <double*> g.data,
@@ -557,7 +600,8 @@ cdef class PyQProblem:
                     <double*> ub.data,
                     <double*> lbA.data,
                     <double*> ubA.data,
-                    <int&> tmp.data[0])
+                    <int&>    nWSR_tmp.data[0]
+                )
 
     cpdef getPrimalSolution(self, np.ndarray[np.double_t, ndim=1] xOpt):
         return self.thisptr.getPrimalSolution(<double*> xOpt.data)
@@ -590,18 +634,27 @@ cdef class PySQProblem:
              np.ndarray[np.double_t, ndim=1] lbA,
              np.ndarray[np.double_t, ndim=1] ubA,
              nWSR,
-             double cputime=0):
+             cputime=0.0):
 
         # FIXME: add asserts
+        cdef np.ndarray nWSR_tmp
+        cdef np.ndarray cput_tmp
 
-        cdef np.ndarray tmp
+        # enable nWSR as return value in argument list
         if isinstance(nWSR, int):
             deprecation_warning_nWSR()
-            tmp = np.array([nWSR], dtype=int)
+            nWSR_tmp = np.array([nWSR], dtype=int)
         else:
-            tmp = nWSR
+            nWSR_tmp = np.asarray(nWSR, dtype=int)
 
         if cputime > 1.e-16:
+            # enable cputime as return value in argument list
+            if isinstance(cputime, float):
+                deprecation_warning_cputime()
+                cput_tmp = np.array([cputime], dtype=float)
+            else:
+                cput_tmp = cputime
+
             return self.thisptr.init(
                         <double*> H.data,
                         <double*> g.data,
@@ -610,9 +663,9 @@ cdef class PySQProblem:
                         <double*> ub.data,
                         <double*> lbA.data,
                         <double*> ubA.data,
-                        <int&> tmp.data[0],
-                        &cputime
-            )
+                        <int&>    nWSR_tmp.data[0],
+                        <double*> &cput_tmp.data[0]
+                )
 
         return self.thisptr.init(
                     <double*> H.data,
@@ -622,7 +675,7 @@ cdef class PySQProblem:
                     <double*> ub.data,
                     <double*> lbA.data,
                     <double*> ubA.data,
-                    <int&> tmp.data[0]
+                    <int&>    nWSR_tmp.data[0],
         )
 
     cpdef hotstart(self,
@@ -634,19 +687,27 @@ cdef class PySQProblem:
              np.ndarray[np.double_t, ndim=1] lbA,
              np.ndarray[np.double_t, ndim=1] ubA,
              nWSR,
-             double cputime=0):
+             cputime=0.0):
 
         # FIXME: add asserts
+        cdef np.ndarray nWSR_tmp
+        cdef np.ndarray cput_tmp
 
-        cdef np.ndarray tmp
+        # enable nWSR as return value in argument list
         if isinstance(nWSR, int):
             deprecation_warning_nWSR()
-            tmp = np.array([nWSR], dtype=int)
+            nWSR_tmp = np.array([nWSR], dtype=int)
         else:
-            tmp = nWSR
-
+            nWSR_tmp = nWSR
 
         if cputime > 1.e-16:
+            # enable cputime as return value in argument list
+            if isinstance(cputime, float):
+                deprecation_warning_cputime()
+                cput_tmp = np.array([cputime], dtype=float)
+            else:
+                cput_tmp = cputime
+
             return self.thisptr.hotstart(
                     <double*> H.data,
                     <double*> g.data,
@@ -655,8 +716,8 @@ cdef class PySQProblem:
                     <double*> ub.data,
                     <double*> lbA.data,
                     <double*> ubA.data,
-                    <int&> tmp.data[0],
-                    &cputime
+                    <int&>    nWSR_tmp.data[0],
+                    <double*> &cput_tmp.data[0]
             )
 
         return self.thisptr.hotstart(
@@ -667,7 +728,7 @@ cdef class PySQProblem:
                     <double*> ub.data,
                     <double*> lbA.data,
                     <double*> ubA.data,
-                    <int&> tmp.data[0]
+                    <int&>    nWSR_tmp.data[0],
         )
 
     cpdef getPrimalSolution(self, np.ndarray[np.double_t, ndim=1] xOpt):
@@ -693,31 +754,63 @@ cdef class PySolutionAnalysis:
     def __dealloc__(self):
         del self.thisptr
 
-    cpdef getMaxKKTviolation(self, qp, np.ndarray[np.double_t, ndim=1] maxKKTviolation):
-
+    cpdef getKktViolation(self, qp,
+        np.ndarray[np.double_t, ndim=1] maxStat,
+        np.ndarray[np.double_t, ndim=1] maxFeas,
+        np.ndarray[np.double_t, ndim=1] maxCmpl
+    ):
+        """ """
         if isinstance(qp, PyQProblemB):
-            return self._getMaxKKTviolation_QProblemB(qp, maxKKTviolation)
+            return self._getKktViolation_QProblemB(qp, maxStat, maxFeas, maxCmpl)
 
         elif isinstance(qp, PyQProblem):
-            return self._getMaxKKTviolation_QProblem(qp, maxKKTviolation)
+            return self._getKktViolation_QProblem(qp, maxStat, maxFeas, maxCmpl)
 
         elif isinstance(qp, PySQProblem):
-            return self._getMaxKKTviolation_SQProblem(qp, maxKKTviolation)
+            return self._getKktViolation_SQProblem(qp, maxStat, maxFeas, maxCmpl)
 
         else:
             raise ValueError('argument 1 must be QProblemB, QProblem or SQProblem')
 
+    cpdef _getKktViolation_QProblemB(self,
+            PyQProblemB qp,
+            np.ndarray[np.double_t, ndim=1] maxStat,
+            np.ndarray[np.double_t, ndim=1] maxFeas,
+            np.ndarray[np.double_t, ndim=1] maxCmpl
+        ):
+        return self.thisptr.getKktViolation(
+                qp.thisptr,
+                <real_t*> maxStat.data[0],
+                <real_t*> maxFeas.data[0],
+                <real_t*> maxCmpl.data[0]
+            )
 
-    cpdef _getMaxKKTviolation_QProblemB(self, PyQProblemB qp, np.ndarray[np.double_t, ndim=1] maxKKTviolation):
-        return self.thisptr.getMaxKKTviolation(qp.thisptr, <double&> maxKKTviolation.data[0])
+    cpdef _getKktViolation_QProblem(self,
+            PyQProblem qp,
+            np.ndarray[np.double_t, ndim=1] maxStat,
+            np.ndarray[np.double_t, ndim=1] maxFeas,
+            np.ndarray[np.double_t, ndim=1] maxCmpl
+        ):
+        return self.thisptr.getKktViolation(
+                qp.thisptr,
+                <real_t*> maxStat.data[0],
+                <real_t*> maxFeas.data[0],
+                <real_t*> maxCmpl.data[0]
+            )
 
-    cpdef _getMaxKKTviolation_QProblem(self, PyQProblem qp, np.ndarray[np.double_t, ndim=1] maxKKTviolation):
-        return self.thisptr.getMaxKKTviolation(qp.thisptr, <double&> maxKKTviolation.data[0])
 
-    cpdef _getMaxKKTviolation_SQProblem(self, PySQProblem qp, np.ndarray[np.double_t, ndim=1] maxKKTviolation):
-        return self.thisptr.getMaxKKTviolation(qp.thisptr, <double&> maxKKTviolation.data[0])
-
-
+    cpdef _getKktViolation_SQProblem(self,
+            PySQProblem qp,
+            np.ndarray[np.double_t, ndim=1] maxStat,
+            np.ndarray[np.double_t, ndim=1] maxFeas,
+            np.ndarray[np.double_t, ndim=1] maxCmpl
+        ):
+        return self.thisptr.getKktViolation(
+                qp.thisptr,
+                <real_t*> maxStat.data[0],
+                <real_t*> maxFeas.data[0],
+                <real_t*> maxCmpl.data[0]
+            )
 
     cpdef getVarianceCovariance(self,
                               qp,
@@ -796,7 +889,7 @@ cpdef py_runOQPbenchmark(path,               # Full path of the benchmark files 
     return returnValue, maxNWSR, avgNWSR, maxCPUtime, avgCPUtime, \
            maxStationarity, maxFeasibility, maxComplementarity
 
-
+"""
 def py_getKKTResidual(int nV,                              # Number of variables.
                       int nC,                              # Number of constraints.
                       np.ndarray[np.double_t, ndim=2] H,   # Hessian matrix.
@@ -828,4 +921,5 @@ def py_getKKTResidual(int nV,                              # Number of variables
                    cmpl
                    )
     return stat, feas, cmpl
+    """
 

@@ -430,36 +430,37 @@ cdef extern from "qpOASES.hpp" namespace "qpOASES":
         Options getOptions()
         returnValue setOptions(Options&)
 
-
+cdef extern from "qpOASES/extras/SolutionAnalysis.hpp" namespace "qpOASES":
     cdef cppclass SolutionAnalysis:
         SolutionAnalysis()
         SolutionAnalysis(const SolutionAnalysis&)
         # ~SolutionAnalysis()
         # SolutionAnalysis& operator=(const SolutionAnalysis&)
-        returnValue getMaxKKTviolation(QProblem*, real_t& )
-        returnValue getMaxKKTviolation(QProblemB*, real_t&)
-        returnValue getMaxKKTviolation(SQProblem*, real_t&)
+        returnValue getKktViolation(const QProblem*,  const real_t*, const real_t*, const real_t*)
+        returnValue getKktViolation(const QProblemB*, const real_t*, const real_t*, const real_t*)
+        returnValue getKktViolation(const SQProblem*, const real_t*, const real_t*, const real_t*)
         returnValue getVarianceCovariance(QProblem*, real_t*, real_t*)
         returnValue getVarianceCovariance(QProblemB*, real_t*, real_t*)
         returnValue getVarianceCovariance(SQProblem*, real_t*, real_t*)
 
 
 cdef extern from "qpOASES/Utils.hpp" namespace "qpOASES":
-    void getKKTResidual(int nV,                  # Number of variables.
-                        int nC,                  # Number of constraints.
-                        const real_t* const H,   # Hessian matrix.
-                        const real_t* const g,   # Sequence of gradient vectors.
-                        const real_t* const A,   # Constraint matrix.
-                        const real_t* const lb,  # Sequence of lower bound vectors (on variables).
-                        const real_t* const ub,  # Sequence of upper bound vectors (on variables).
-                        const real_t* const lbA, # Sequence of lower constraints' bound vectors.
-                        const real_t* const ubA, # Sequence of upper constraints' bound vectors.
-                        const real_t* const x,   # Sequence of primal trial vectors.
-                        const real_t* const y,   # Sequence of dual trial vectors.
-                        real_t& stat,            # Maximum value of stationarity condition residual.
-                        real_t& feas,            # Maximum value of primal feasibility violation.
-                        real_t& cmpl             # Maximum value of complementarity residual.
-                        )
+    pass
+    #void getKKTResidual(int nV,                  # Number of variables.
+    #                    int nC,                  # Number of constraints.
+    #                    const real_t* const H,   # Hessian matrix.
+    #                    const real_t* const g,   # Sequence of gradient vectors.
+    #                    const real_t* const A,   # Constraint matrix.
+    #                    const real_t* const lb,  # Sequence of lower bound vectors (on variables).
+    #                    const real_t* const ub,  # Sequence of upper bound vectors (on variables).
+    #                    const real_t* const lbA, # Sequence of lower constraints' bound vectors.
+    #                    const real_t* const ubA, # Sequence of upper constraints' bound vectors.
+    #                    const real_t* const x,   # Sequence of primal trial vectors.
+    #                    const real_t* const y,   # Sequence of dual trial vectors.
+    #                    real_t& stat,            # Maximum value of stationarity condition residual.
+    #                    real_t& feas,            # Maximum value of primal feasibility violation.
+    #                    real_t& cmpl             # Maximum value of complementarity residual.
+    #                    )
 
 
 cdef extern from "qpOASES/extras/OQPinterface.hpp" namespace "qpOASES":
