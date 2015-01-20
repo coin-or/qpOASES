@@ -646,7 +646,7 @@ BooleanType SparseMatrix::isDiag() const
 real_t SparseMatrix::getNorm(	int type
 								) const
 {
-	long length = jc[nCols];
+	int length = jc[nCols];
 	return REFER_NAMESPACE_QPOASES getNorm( val,length,type );
 }
 
@@ -1175,7 +1175,7 @@ returnValue SparseMatrix::addToDiag(real_t alpha)
 
 sparse_int_t *SparseMatrix::createDiagInfo()
 {
-	long i, j;
+	sparse_int_t i, j;
 
 	if (jd == 0) {
 		jd = new sparse_int_t[nCols];
@@ -1194,7 +1194,7 @@ sparse_int_t *SparseMatrix::createDiagInfo()
 
 real_t *SparseMatrix::full() const
 {
-	long i, j;
+	sparse_int_t i, j;
 	real_t *v = new real_t[nRows*nCols];
 
 	for (i = 0; i < nCols*nRows; i++)
@@ -1344,7 +1344,7 @@ BooleanType SparseMatrixRow::isDiag() const
 real_t SparseMatrixRow::getNorm(	int type
 									) const
 {
-	long length = jr[nRows];
+	int length = jr[nRows];
 	return REFER_NAMESPACE_QPOASES getNorm( val,length,type );
 
 }
@@ -1352,7 +1352,7 @@ real_t SparseMatrixRow::getNorm(	int type
 
 real_t SparseMatrixRow::getRowNorm( int rNum, int type ) const
 {
-	long length = jr[rNum+1] - jr[rNum];
+	int length = jr[rNum+1] - jr[rNum];
 	return REFER_NAMESPACE_QPOASES getNorm( &(val[jr[rNum]]),length,type );
 }
 
@@ -1843,7 +1843,7 @@ returnValue SparseMatrixRow::addToDiag(real_t alpha)
 
 sparse_int_t *SparseMatrixRow::createDiagInfo()
 {
-	long i, j;
+	sparse_int_t i, j;
 
 	if (jd == 0) {
 		jd = new sparse_int_t[nRows];
@@ -1861,7 +1861,7 @@ sparse_int_t *SparseMatrixRow::createDiagInfo()
 
 real_t *SparseMatrixRow::full() const
 {
-	long i, j;
+	sparse_int_t i, j;
 	real_t *v = new real_t[nRows*nCols];
 
 	for (i = 0; i < nCols*nRows; i++)

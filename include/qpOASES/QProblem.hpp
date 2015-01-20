@@ -519,6 +519,7 @@ class QProblem : public QProblemB
 		/** Determines type of new constraints and bounds (i.e. implicitly fixed, unbounded etc.).
 		 *	\return SUCCESSFUL_RETURN \n
 					RET_SETUPSUBJECTTOTYPE_FAILED */
+		using QProblemB::setupSubjectToType;
 		virtual returnValue setupSubjectToType(	const real_t* const lb_new,		/**< New lower bounds. */
 												const real_t* const ub_new,		/**< New upper bounds. */
 												const real_t* const lbA_new,	/**< New lower constraints' bounds. */
@@ -827,6 +828,7 @@ class QProblem : public QProblemB
 		 *	\return SUCCESSFUL_RETURN \n
 		 *			RET_SETUP_AUXILIARYQP_FAILED \n
 					RET_INVALID_ARGUMENTS */
+		using QProblemB::setupAuxiliaryQP;
 		virtual returnValue setupAuxiliaryQP(	const Bounds* const guessedBounds,			/**< Initial guess for working set of bounds. */
 												const Constraints* const guessedConstraints	/**< Initial guess for working set of constraints. */
 												);

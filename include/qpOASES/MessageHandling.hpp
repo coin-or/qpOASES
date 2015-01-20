@@ -50,7 +50,7 @@ BEGIN_NAMESPACE_QPOASES
 
 
 /** Default file to display messages. */
-static FILE* stdFile = stdout;
+extern FILE* stdFile;
 
 
 /**

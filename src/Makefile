@@ -83,12 +83,12 @@ all: ${LINK_DEPENDS}
 
 
 ${BINDIR}/libqpOASES.${LIBEXT}: ${QPOASES_OBJECTS} ${QPOASES_EXTRAS_OBJECTS}
-	@${ECHO} "Creating" $@
+	@${ECHO} "Creating static lib" $@
 	@${AR} r $@ $^
 
 ${BINDIR}/libqpOASES.${DLLEXT}: ${QPOASES_OBJECTS} ${QPOASES_EXTRAS_OBJECTS}
-	@${ECHO} "Creating" $@
-	@${CPP} ${SHARED} ${DEF_TARGET} $^ ${LINK_LIBRARIES}
+	@${ECHO} "Creating shared lib" $@
+	@${CPP} ${DEF_TARGET} ${SHARED} $^ ${LINK_LIBRARIES}
 
 clean:
 	@${ECHO} "Cleaning up (src)"

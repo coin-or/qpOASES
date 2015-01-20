@@ -83,8 +83,7 @@ class MyConstraintProduct : public ConstraintProduct
 				nC = rhs.nC;
 				A  = rhs.A;
 			}
-			else
-				return *this;
+			return *this;
 		};
 
 		virtual int operator() (	int constrIndex,

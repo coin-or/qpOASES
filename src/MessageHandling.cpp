@@ -45,6 +45,9 @@
 
 BEGIN_NAMESPACE_QPOASES
 
+/** Default file to display messages. */
+FILE* stdFile = stdout;
+
 
 
 #ifndef __XPCTARGET__

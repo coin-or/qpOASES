@@ -879,6 +879,7 @@ class QProblemB
 											);
 
 
+	protected:
 		/** Updates QP vectors, working sets and internal data structures in order to
 			start from an optimal solution corresponding to initial guesses of the working
 			set for bounds
@@ -887,6 +888,7 @@ class QProblemB
 		virtual returnValue setupAuxiliaryQP(	const Bounds* const guessedBounds	/**< Initial guess for working set of bounds. */
 												);
 
+	private:
 		/** Determines step direction of the homotopy path.
 		 *	\return SUCCESSFUL_RETURN \n
 		 			RET_STEPDIRECTION_FAILED_CHOLESKY */
