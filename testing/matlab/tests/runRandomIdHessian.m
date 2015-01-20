@@ -15,8 +15,8 @@ function [ successFlag ] = runRandomIdHessian( nV,nC, doPrint,seed )
     
     successFlag = 1;
 
-    for isSparseH=1:1
-        for isSparseA=1:1
+    for isSparseH=0:1
+        for isSparseA=0:1
             successFlag = runSeveralIdSeqTests( successFlag, nV,nC,isSparseH,isSparseA, doPrint,seed );
         end
     end
@@ -32,7 +32,7 @@ function [ successFlag ] = runSeveralIdSeqTests( successFlag, nV,nC, isSparseH,i
             for hasLowerB=0:1
                 for hasUpperB=0:1
                     for hasOptions=0:1
-                        for hasX0=0:1
+                        for hasX0=0:2
                             for hasWS=0:2
                                 curSuccessFLAG = runSingleIdSeqTest( nV,0,hasA,isSparseH,isSparseA, hasLowerB,hasUpperB,0,0,hasOptions,hasX0,hasWS,changeMat, doPrint,seed );
                                 successFlag = min( successFlag,curSuccessFLAG );
@@ -50,7 +50,7 @@ function [ successFlag ] = runSeveralIdSeqTests( successFlag, nV,nC, isSparseH,i
             for hasLowerC=0:1
                 for hasUpperC=0:1
                     for hasOptions=0:1
-                        for hasX0=0:1
+                        for hasX0=0:2
                             for hasWS=0:2
                                 for changeMat=0:1
                                     curSuccessFLAG = runSingleIdSeqTest( nV,nC,1,isSparseH,isSparseA, hasLowerB,hasUpperB,hasLowerC,hasUpperC,hasOptions,hasX0,hasWS,changeMat, doPrint,seed );

@@ -56,7 +56,7 @@ static std::vector<QPInstance *> g_instances;
  *	Q P r o b l e m B _ i n i t
  */
 int QProblemB_init(	int handle, 
-					SymmetricMatrix *H, real_t* g,
+					SymmetricMatrix* H, real_t* g,
 					const real_t* const lb, const real_t* const ub,
 					int nWSRin, real_t maxCpuTimeIn,
 					const double* const x0, Options* options,
@@ -122,7 +122,7 @@ int QProblemB_init(	int handle,
  *	S Q P r o b l e m _ i n i t
  */
 int SQProblem_init(	int handle, 
-					SymmetricMatrix *H, real_t* g, Matrix *A,
+					SymmetricMatrix* H, real_t* g, Matrix* A,
 					const real_t* const lb, const real_t* const ub,
 					const real_t* const lbA, const real_t* const ubA,
 					int nWSRin, real_t maxCpuTimeIn,
@@ -189,7 +189,7 @@ int SQProblem_init(	int handle,
 			}
 		}
 	}
-
+	
 	returnvalue = globalSQP->init(	H,g,A,lb,ub,lbA,ubA,
 									nWSRout,&maxCpuTimeOut,
 									x0,0,
@@ -228,13 +228,15 @@ int QProblemB_hotstart(	int handle,
 		return -1;
 	}
 
+	int nV = globalQPB->getNV();
+
 	/* 1) Solve QP with given options. */
 	globalQPB->setOptions( *options );
 	returnValue returnvalue = globalQPB->hotstart( g,lb,ub, nWSRout,&maxCpuTimeOut );
 
 	/* 2) Assign lhs arguments. */
 	obtainOutputs(	0,globalQPB,returnvalue,nWSRout,maxCpuTimeOut,
-					nOutputs,plhs,0,0 );
+					nOutputs,plhs,nV,0 );
 
 	return 0;
 }
@@ -263,13 +265,16 @@ int QProblem_hotstart(	int handle,
 		return -1;
 	}
 
+	int nV = globalSQP->getNV();
+	int nC = globalSQP->getNC();
+
 	/* 1) Solve QP with given options. */
 	globalSQP->setOptions( *options );
 	returnValue returnvalue = globalSQP->hotstart( g,lb,ub,lbA,ubA, nWSRout,&maxCpuTimeOut );
 
 	/* 2) Assign lhs arguments. */
 	obtainOutputs(	0,globalSQP,returnvalue,nWSRout,maxCpuTimeOut,
-					nOutputs,plhs,0,0 );
+					nOutputs,plhs,nV,nC );
 
 	return 0;
 }
@@ -279,7 +284,7 @@ int QProblem_hotstart(	int handle,
  *	S Q P r o b l e m _ h o t s t a r t
  */
 int SQProblem_hotstart(	int handle,
-						SymmetricMatrix *H, real_t* g, Matrix *A,
+						SymmetricMatrix* H, real_t* g, Matrix* A,
 						const real_t* const lb, const real_t* const ub, const real_t* const lbA, const real_t* const ubA,
 						int nWSRin, real_t maxCpuTimeIn,
 						Options* options,
@@ -296,6 +301,9 @@ int SQProblem_hotstart(	int handle,
 		myMexErrMsgTxt( "ERROR (qpOASES): QP needs to be initialised first!" );
 		return -1;
 	}
+
+	int nV = globalSQP->getNV();
+	int nC = globalSQP->getNC();
 
 	/* 1) Solve QP. */
 	globalSQP->setOptions( *options );
@@ -315,7 +323,7 @@ int SQProblem_hotstart(	int handle,
 
 	/* 2) Assign lhs arguments. */
 	obtainOutputs(	0,globalSQP,returnvalue,nWSRout,maxCpuTimeOut,
-					nOutputs,plhs,0,0 );
+					nOutputs,plhs,nV,nC );
 
 	return 0;
 }

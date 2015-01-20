@@ -106,7 +106,7 @@ returnValue Constraints::init(	int _n
 
 	clear( );
 
-	if ( _n > 0 )
+	if ( _n >= 0 )
 	{
 		active.init(   _n );
 		inactive.init( _n );

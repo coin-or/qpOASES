@@ -53,7 +53,7 @@ static std::vector<QPInstance *> g_instances;
  *	Q P r o b l e m _ q p O A S E S
  */
 int QProblem_qpOASES(	int nV, int nC, HessianType hessianType, int nP,
-						SymmetricMatrix *H, double* g, Matrix *A,
+						SymmetricMatrix* H, double* g, Matrix* A,
 						double* lb, double* ub,
 						double* lbA, double* ubA,
 						int nWSRin, real_t maxCpuTimeIn,
@@ -113,7 +113,7 @@ int QProblem_qpOASES(	int nV, int nC, HessianType hessianType, int nP,
 
 	nWSRout = nWSRin;
 	maxCpuTimeOut = (maxCpuTimeIn >= 0.0) ? maxCpuTimeIn : INFTY;
-	
+
 	returnvalue = QP.init(	H,g,A,lb,ub,lbA,ubA,
 							nWSRout,&maxCpuTimeOut,
 							x0,0,
@@ -524,7 +524,7 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 		setupHessianMatrix(	prhs[H_idx],nV, &H,&Hir,&Hjc,&Hv );
 	
 	/* make a deep-copy of the user-specified constraint matrix (possibly sparse) */
-	if ( nC > 0 )
+	if ( ( nC > 0 ) && ( A_idx >= 0 ) )
 		setupConstraintMatrix( prhs[A_idx],nV,nC, &A,&Air,&Ajc,&Av );
 
 	allocateOutputs( nlhs,plhs,nV,nC,nP );
@@ -550,6 +550,12 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 	}
 	else
 	{
+		if ( A == 0 )
+		{
+			myMexErrMsgTxt( "ERROR (qpOASES): Internal interface error related to constraint matrix!" );
+			return;
+		}
+
 		/* Call qpOASES (using QProblem class). */
 		QProblem_qpOASES(	nV,nC,hessianType, nP,
 							H,g,A,

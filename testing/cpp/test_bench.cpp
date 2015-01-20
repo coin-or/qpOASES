@@ -190,6 +190,7 @@ int main( int argc, char *argv[] )
 				return TEST_DATA_NOT_FOUND;
 		}
 		options.printLevel = PL_NONE;
+		//options.enableFlippingBounds = BT_FALSE;
 		
 		nproblems = argc-2;
 	}

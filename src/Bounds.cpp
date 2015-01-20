@@ -107,7 +107,7 @@ returnValue Bounds::init(	int _n
 
 	clear( );
 
-	if ( _n > 0 )
+	if ( _n >= 0 )
 	{
 		freee.init( _n );
 		fixed.init( _n );
