@@ -26,8 +26,8 @@ VERSION HISTORY
 ===============
 
 
-3.1 (released on 23rd January 2015):
-------------------------------------
+3.1 (released on 11th February 2015):
+-------------------------------------
 
 + Addition of C interface
 + Further improved Matlab, Simulink, octave and Python interfaces
