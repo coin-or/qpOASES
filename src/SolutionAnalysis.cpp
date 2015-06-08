@@ -562,17 +562,17 @@ returnValue SolutionAnalysis::getVarianceCovariance( SQProblem* qp, real_t* g_b_
 /*
  *	c h e c k C u r v a t u r e O n S e t S
  */
-int SolutionAnalysis::checkCurvatureOnStronglyActiveConstraints( SQProblem* qp )
+returnValue SolutionAnalysis::checkCurvatureOnStronglyActiveConstraints( SQProblem* qp )
 {
   printf("checkCurvatureOnStronglyActiveConstraints( SQProblem* qp ) not yet implemented for standard qpOASES!\n");
-  return 1;
+  return RET_INERTIA_CORRECTION_FAILED;
 }
 
 
 /*
  *	c h e c k C u r v a t u r e O n S t r o n g l y A c t i v e C o n s t r a i n t s
  */
-int SolutionAnalysis::checkCurvatureOnStronglyActiveConstraints( SQProblemSchur* qp )
+returnValue SolutionAnalysis::checkCurvatureOnStronglyActiveConstraints( SQProblemSchur* qp )
 {
   real_t eps = 1.0e-16;
   returnValue ret;
@@ -585,7 +585,7 @@ int SolutionAnalysis::checkCurvatureOnStronglyActiveConstraints( SQProblemSchur*
 
   // If no bounds are active reduced Hessian is positive definite (otherwise qpOASES wouldnt have finished)
   if( nFX == 0 )
-    return 0;
+    return SUCCESSFUL_RETURN;
 
   // Get active bounds (deep copy)
   qp->getBounds( saveBounds );
@@ -604,10 +604,8 @@ int SolutionAnalysis::checkCurvatureOnStronglyActiveConstraints( SQProblemSchur*
   // Do a new factorization and check the inertia
   ret = qp->resetSchurComplement( BT_FALSE );
   neig = qp->sparseSolver->getNegativeEigenvalues( );
-  if( ret != SUCCESSFUL_RETURN || neig != nAC )
-    fail = 1;
-  else
-    fail = 0;
+  if( ret == SUCCESSFUL_RETURN && neig != nAC )
+    ret = RET_INERTIA_CORRECTION_FAILED;
 
   // Add all bounds that have been removed
   for( k=0; k<nFX; k++ )
@@ -615,7 +613,7 @@ int SolutionAnalysis::checkCurvatureOnStronglyActiveConstraints( SQProblemSchur*
       qp->bounds.moveFreeToFixed( FX_idx[k], saveBounds.getStatus( FX_idx[k] ) );
 
   qp->status = saveStatus;
-  return fail;
+  return ret;
 }
 
 
