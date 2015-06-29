@@ -94,9 +94,6 @@ endif
 CPPFLAGS = -nologo -EHsc -DWIN32 -Dsnprintf=_snprintf
 #-g -D__DEBUG__ -D__NO_COPYRIGHT__ -D__SUPPRESSANYOUTPUT__
 
-FFLAGS = -Wall -O3 -fPIC -DWIN32 -Wno-uninitialized
-#        -g
-
 # libraries to link against when building qpOASES .so files
 LINK_LIBRARIES = ${LIB_LAPACK} ${LIB_BLAS}
 LINK_LIBRARIES_AW = ${LIB_LAPACK} ${LIB_BLAS} -lm -lgfortran -lhsl_ma57 -lfakemetis
