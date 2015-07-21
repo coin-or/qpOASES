@@ -1,0 +1,4 @@
+This branch contains a plain C translation of qpOASES for embedded applications, 
+called qpOASES_e. It contains a development  trunk  as well as the directory 
+releases  for creating point releases. In contrast to the main project, no 
+stable branch is maintained for qpOASES_e.
