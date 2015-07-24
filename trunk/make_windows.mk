@@ -82,7 +82,7 @@ else
 	MEXEXT = mexa64
 endif
 
-CPPFLAGS = -nologo -EHsc -DWIN32 -Dsnprintf=_snprintf
+CFLAGS = -nologo -EHsc -DWIN32 -Dsnprintf=_snprintf
 #-g -D__DEBUG__ -D__NO_COPYRIGHT__ -D__SUPPRESSANYOUTPUT__
 
 # libraries to link against when building qpOASES_e .so files

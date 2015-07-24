@@ -94,7 +94,7 @@ clobber: clean
 
 %.${OBJEXT}: %.c ${QPOASES_DEPENDS}
 	@${ECHO} "Creating" $@
-	${CC} ${DEF_TARGET} -c ${IFLAGS} ${CPPFLAGS} $<
+	${CC} ${DEF_TARGET} -c ${IFLAGS} ${CFLAGS} $<
 
 
 ##

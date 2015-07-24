@@ -65,26 +65,26 @@ function [] = make( varargin )
     %DEBUGFLAGS = ' -g CXXDEBUGFLAGS=''$CXXDEBUGFLAGS -Wall -pedantic -Wshadow'' ';
 
     IFLAGS = [ '-I. -I',QPOASESPATH,'include',' -I',QPOASESPATH,'src',' ' ];
-    CPPFLAGS = [ IFLAGS, DEBUGFLAGS, '-largeArrayDims -D__MATLAB__ -D__SINGLE_OBJECT__ -Dinline="" -Dsnprintf="_snprintf"',' ' ];
+    CFLAGS = [ IFLAGS, DEBUGFLAGS, '-largeArrayDims -D__MATLAB__ -D__SINGLE_OBJECT__ -Dinline="" -Dsnprintf="_snprintf"',' ' ];
     defaultFlags = '-O -D__NO_COPYRIGHT__ -D__SIMULINK_DEBUG__ '; %% -D__NO_COPYRIGHT__ -D__SUPPRESSANYOUTPUT__ -D__MANY_CONSTRAINTS__ 
 
     if ( ispc == 0 )
-        CPPFLAGS  = [ CPPFLAGS, '-DLINUX ',' ' ]; 
+        CFLAGS  = [ CFLAGS, '-DLINUX ',' ' ]; 
     else
-        CPPFLAGS  = [ CPPFLAGS, '-DWIN32 ',' ' ];
+        CFLAGS  = [ CFLAGS, '-DWIN32 ',' ' ];
     end
 
     if ( isempty(userFlags) > 0 )
-        CPPFLAGS = [ CPPFLAGS, defaultFlags,' ' ];
+        CFLAGS = [ CFLAGS, defaultFlags,' ' ];
     else
-        CPPFLAGS = [ CPPFLAGS, userFlags,' ' ];
+        CFLAGS = [ CFLAGS, userFlags,' ' ];
     end
 
     mexExt = eval('mexext');
     
   
 	%% ensure copyright notice is displayed
-    if ~isempty( strfind( CPPFLAGS,'-D__NO_COPYRIGHT__' ) )
+    if ~isempty( strfind( CFLAGS,'-D__NO_COPYRIGHT__' ) )
         printCopyrightNotice( );
     end
     
@@ -108,7 +108,7 @@ function [] = make( varargin )
     %% call mex compiler
     for ii=1:length(fcnNames)
         
-        cmd = [ 'mex -output ', fcnNames{ii}, ' ', CPPFLAGS, [fcnNames{ii},'.c'] ];
+        cmd = [ 'mex -output ', fcnNames{ii}, ' ', CFLAGS, [fcnNames{ii},'.c'] ];
         
         if ( exist( [fcnNames{ii},'.',mexExt],'file' ) == 0 )
             

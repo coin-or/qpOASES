@@ -1,14 +1,18 @@
 * text=auto !eol
 /README -text
+trunk/AUTHORS -text
 trunk/AUTHORS.txt -text
+trunk/INSTALL -text
 trunk/INSTALL.txt -text
 trunk/LICENSE.txt -text
 trunk/Makefile -text
+trunk/README -text
 trunk/README.txt -text
+trunk/VERSIONS -text
 trunk/VERSIONS.txt -text
 trunk/doc/Makefile -text
+trunk/doc/additionalNotes.pdf -text
 trunk/doc/doxygen.config -text
-trunk/doc/embeddedNotes.pdf -text
 trunk/doc/mainpage.dox -text
 trunk/doc/manual.pdf -text svneol=unset#unset
 trunk/examples/Makefile -text

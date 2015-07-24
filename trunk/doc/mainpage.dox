@@ -25,6 +25,14 @@
  *	<p>&nbsp;</p>
  *
  *
+ *	\section sec_note Important Note
+ *
+ *	This is an almost complete plain C, static memory translation of qpOASES, 
+ *	called qpOASES_e! Please consult the additional notes in <a href="../additionalNotes.pdf">doc/additionalNotes.pdf</a>
+ *	before getting started.
+ *	<p>&nbsp;</p>
+ *
+ *
  *	\section sec_developers Authors and Contributors
  *
  *	qpOASES's core functionality and software design have been developed by 
@@ -54,6 +62,16 @@
  *	<li>Milan Vukov
  *	<li>Thomas Wiese
  *	<li>Leonard Wirsching
+ *	</ul>
+ *
+ *	We also would like to thank two persons who had a major share in making 
+ *	qpOASES a success. Not by writing even a single line of code, but by 
+ *	establishing the idea of using a homotopy-based approach for high-speed 
+ *	QP solutions and by excellent scientific guidance during the development 
+ *	process:
+ *	<ul>
+ *	<li>Hans Georg Bock
+ *	<li>Moritz Diehl 
  *	</ul>
  *
  *	All users are invited to further improve qpOASES by providing comments, code enhancements, 
@@ -115,6 +133,7 @@
  *	\section sec_moreinfo More Information
  *
  *	More information can be found on <a href="http://www.qpOASES.org/">http://www.qpOASES.org/</a> 
- *	and in the <a href="../manual.pdf">qpOASES User's Manual</a>.
-*	<p>&nbsp;</p>
+ *	and in the <a href="../manual.pdf">qpOASES User's Manual</a>. Also carefully read the 
+ *	<a href="../additionalNotes.pdf">Additional Notes on qpOASES_e</a>.
+ *	<p>&nbsp;</p>
  */

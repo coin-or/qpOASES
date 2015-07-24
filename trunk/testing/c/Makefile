@@ -67,7 +67,7 @@ all: ${QPOASES_TEST_EXES}
 
 ${BINDIR}/%${EXE}: %.${OBJEXT} ${LINK_DEPENDS}
 	@${ECHO} "Creating" $@
-	@${CC} ${DEF_TARGET} ${CPPFLAGS} $< ${QPOASES_LINK} ${LINK_LIBRARIES}
+	@${CC} ${DEF_TARGET} ${CFLAGS} $< ${QPOASES_LINK} ${LINK_LIBRARIES}
 
 clean:
 	@${ECHO} "Cleaning up (testing/c)"
@@ -81,7 +81,7 @@ ${LINK_DEPENDS}:
 
 %.${OBJEXT}: %.c
 	@${ECHO} "Creating" $@
-	@${CC} ${DEF_TARGET} ${IFLAGS} ${CPPFLAGS} -c $<
+	@${CC} ${DEF_TARGET} ${IFLAGS} ${CFLAGS} -c $<
 
 
 ##
