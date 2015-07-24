@@ -407,11 +407,6 @@ returnValue MessageHandling_throwMessage(	MessageHandling* _THIS,
 											);
 
 
-#ifndef __FUNCTION__
-  /** Ensures that __FUNCTION__ macro is defined. */
-  #define __FUNCTION__ 0
-#endif
-
 #ifndef __FILE__
   /** Ensures that __FILE__ macro is defined. */
   #define __FILE__ 0
@@ -422,15 +417,21 @@ returnValue MessageHandling_throwMessage(	MessageHandling* _THIS,
   #define __LINE__ 0
 #endif
 
+/** Define __FUNC__ macro providing current function for debugging. */
+/*#define __FUNC__ 0*/
+#define __FUNC__ ("(no function name provided)")
+/*#define __FUNC__ __func__*/
+/*#define __FUNC__ __FUNCTION__*/
+
 
 /** Short version of throwError with default values, only returnValue is needed */
-#define THROWERROR(retval) ( MessageHandling_throwError( qpOASES_getGlobalMessageHandler(),(retval),0,__FUNCTION__,__FILE__,__LINE__,VS_VISIBLE) )
+#define THROWERROR(retval) ( MessageHandling_throwError( qpOASES_getGlobalMessageHandler(),(retval),0,__FUNC__,__FILE__,__LINE__,VS_VISIBLE) )
 
 /** Short version of throwWarning with default values, only returnValue is needed */
-#define THROWWARNING(retval) ( MessageHandling_throwWarning( qpOASES_getGlobalMessageHandler(),(retval),0,__FUNCTION__,__FILE__,__LINE__,VS_VISIBLE) )
+#define THROWWARNING(retval) ( MessageHandling_throwWarning( qpOASES_getGlobalMessageHandler(),(retval),0,__FUNC__,__FILE__,__LINE__,VS_VISIBLE) )
 
 /** Short version of throwInfo with default values, only returnValue is needed */
-#define THROWINFO(retval) ( MessageHandling_throwInfo( qpOASES_getGlobalMessageHandler(),(retval),0,__FUNCTION__,__FILE__,__LINE__,VS_VISIBLE) )
+#define THROWINFO(retval) ( MessageHandling_throwInfo( qpOASES_getGlobalMessageHandler(),(retval),0,__FUNC__,__FILE__,__LINE__,VS_VISIBLE) )
 
 
 /** Returns a pointer to global message handler.

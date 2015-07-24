@@ -273,7 +273,7 @@ returnValue MessageHandling_throwError(	MessageHandling* _THIS,
 {
 	/* consistency check */
 	if ( Enumber <= SUCCESSFUL_RETURN )
-		return MessageHandling_throwError( _THIS,RET_ERROR_UNDEFINED,0,__FUNCTION__,__FILE__,__LINE__,VS_VISIBLE );
+		return MessageHandling_throwError( _THIS,RET_ERROR_UNDEFINED,0,__FUNC__,__FILE__,__LINE__,VS_VISIBLE );
 
 	/* Call to common throwMessage function if error shall be displayed. */
 	if ( _THIS->errorVisibility == VS_VISIBLE )
@@ -297,7 +297,7 @@ returnValue MessageHandling_throwWarning(	MessageHandling* _THIS,
 {
 	/* consistency check */
   	if ( Wnumber <= SUCCESSFUL_RETURN )
-		return MessageHandling_throwError( _THIS,RET_WARNING_UNDEFINED,0,__FUNCTION__,__FILE__,__LINE__,VS_VISIBLE );
+		return MessageHandling_throwError( _THIS,RET_WARNING_UNDEFINED,0,__FUNC__,__FILE__,__LINE__,VS_VISIBLE );
 
 	/* Call to common throwMessage function if warning shall be displayed. */
 	if ( _THIS->warningVisibility == VS_VISIBLE )
@@ -321,7 +321,7 @@ returnValue MessageHandling_throwInfo(	MessageHandling* _THIS,
 {
 	/* consistency check */
 	if ( Inumber < SUCCESSFUL_RETURN )
-		return MessageHandling_throwError( _THIS,RET_INFO_UNDEFINED,0,__FUNCTION__,__FILE__,__LINE__,VS_VISIBLE );
+		return MessageHandling_throwError( _THIS,RET_INFO_UNDEFINED,0,__FUNC__,__FILE__,__LINE__,VS_VISIBLE );
 
 	/* Call to common throwMessage function if info shall be displayed. */
 	if ( _THIS->infoVisibility == VS_VISIBLE )
@@ -421,7 +421,7 @@ returnValue MessageHandling_throwMessage(	MessageHandling* _THIS,
 
 	if ( returnValueList[keypos].key == TERMINAL_LIST_ELEMENT )
 	{
-		MessageHandling_throwError( _THIS,RET_EWI_UNDEFINED,0,__FUNCTION__,__FILE__,__LINE__,VS_VISIBLE );
+		MessageHandling_throwError( _THIS,RET_EWI_UNDEFINED,0,__FUNC__,__FILE__,__LINE__,VS_VISIBLE );
 		return RETnumber;
 	}
 

@@ -89,6 +89,7 @@
 /* Apply pre-processor settings when using qpOASES within auto-generated code. */
 #ifdef __CODE_GENERATION__
   #define __NO_COPYRIGHT__
+  #define __EXTERNAL_DIMENSIONS__
 #endif /* __CODE_GENERATION__ */
 
 

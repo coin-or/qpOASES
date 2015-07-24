@@ -327,7 +327,7 @@ returnValue qpOASES_readFromFileM(	real_t* data, int nrow, int ncol,
 	if ( ( datafile = fopen( datafilename, "r" ) ) == 0 )
 	{
 		snprintf( errstr,QPOASES_MAX_STRING_LENGTH,"(%s)",datafilename );
-		return MessageHandling_throwError( qpOASES_getGlobalMessageHandler(),RET_UNABLE_TO_OPEN_FILE,errstr,__FUNCTION__,__FILE__,__LINE__,VS_VISIBLE );
+		return MessageHandling_throwError( qpOASES_getGlobalMessageHandler(),RET_UNABLE_TO_OPEN_FILE,errstr,__FUNC__,__FILE__,__LINE__,VS_VISIBLE );
 	}
 
 	/* 2) Read data from file. */
@@ -343,7 +343,7 @@ returnValue qpOASES_readFromFileM(	real_t* data, int nrow, int ncol,
 			{
 				fclose( datafile );
 				snprintf( errstr,QPOASES_MAX_STRING_LENGTH,"(%s)",datafilename );
-				return MessageHandling_throwError( qpOASES_getGlobalMessageHandler(),RET_UNABLE_TO_READ_FILE,errstr,__FUNCTION__,__FILE__,__LINE__,VS_VISIBLE );
+				return MessageHandling_throwError( qpOASES_getGlobalMessageHandler(),RET_UNABLE_TO_READ_FILE,errstr,__FUNC__,__FILE__,__LINE__,VS_VISIBLE );
 			}
 			data[i*ncol + j] = ( (real_t) float_data );
 		}
@@ -389,7 +389,7 @@ returnValue qpOASES_readFromFileI(	int* data, int n,
 	if ( ( datafile = fopen( datafilename, "r" ) ) == 0 )
 	{
 		snprintf( errstr,QPOASES_MAX_STRING_LENGTH,"(%s)",datafilename );
-		return MessageHandling_throwError( qpOASES_getGlobalMessageHandler(),RET_UNABLE_TO_OPEN_FILE,errstr,__FUNCTION__,__FILE__,__LINE__,VS_VISIBLE );
+		return MessageHandling_throwError( qpOASES_getGlobalMessageHandler(),RET_UNABLE_TO_OPEN_FILE,errstr,__FUNC__,__FILE__,__LINE__,VS_VISIBLE );
 	}
 
 	/* 2) Read data from file. */
@@ -399,7 +399,7 @@ returnValue qpOASES_readFromFileI(	int* data, int n,
 		{
 			fclose( datafile );
 			snprintf( errstr,QPOASES_MAX_STRING_LENGTH,"(%s)",datafilename );
-			return MessageHandling_throwError( qpOASES_getGlobalMessageHandler(),RET_UNABLE_TO_READ_FILE,errstr,__FUNCTION__,__FILE__,__LINE__,VS_VISIBLE );
+			return MessageHandling_throwError( qpOASES_getGlobalMessageHandler(),RET_UNABLE_TO_READ_FILE,errstr,__FUNC__,__FILE__,__LINE__,VS_VISIBLE );
 		}
 	}
 
@@ -434,7 +434,7 @@ returnValue qpOASES_writeIntoFileM(	const real_t* const data, int nrow, int ncol
 		if ( ( datafile = fopen( datafilename, "a" ) ) == 0 )
 		{
 			snprintf( errstr,QPOASES_MAX_STRING_LENGTH,"(%s)",datafilename );
-			return MessageHandling_throwError( qpOASES_getGlobalMessageHandler(),RET_UNABLE_TO_OPEN_FILE,errstr,__FUNCTION__,__FILE__,__LINE__,VS_VISIBLE );
+			return MessageHandling_throwError( qpOASES_getGlobalMessageHandler(),RET_UNABLE_TO_OPEN_FILE,errstr,__FUNC__,__FILE__,__LINE__,VS_VISIBLE );
 		}
 	}
 	else
@@ -443,7 +443,7 @@ returnValue qpOASES_writeIntoFileM(	const real_t* const data, int nrow, int ncol
 		if ( ( datafile = fopen( datafilename, "w" ) ) == 0 )
 		{
 			snprintf( errstr,QPOASES_MAX_STRING_LENGTH,"(%s)",datafilename );
-			return MessageHandling_throwError( qpOASES_getGlobalMessageHandler(),RET_UNABLE_TO_OPEN_FILE,errstr,__FUNCTION__,__FILE__,__LINE__,VS_VISIBLE );
+			return MessageHandling_throwError( qpOASES_getGlobalMessageHandler(),RET_UNABLE_TO_OPEN_FILE,errstr,__FUNC__,__FILE__,__LINE__,VS_VISIBLE );
 		}
 	}
 
@@ -499,7 +499,7 @@ returnValue qpOASES_writeIntoFileI(	const int* const integer, int n,
 		if ( ( datafile = fopen( datafilename, "a" ) ) == 0 )
 		{
 			snprintf( errstr,QPOASES_MAX_STRING_LENGTH,"(%s)",datafilename );
-			return MessageHandling_throwError( qpOASES_getGlobalMessageHandler(),RET_UNABLE_TO_OPEN_FILE,errstr,__FUNCTION__,__FILE__,__LINE__,VS_VISIBLE );
+			return MessageHandling_throwError( qpOASES_getGlobalMessageHandler(),RET_UNABLE_TO_OPEN_FILE,errstr,__FUNC__,__FILE__,__LINE__,VS_VISIBLE );
 		}
 	}
 	else
@@ -508,7 +508,7 @@ returnValue qpOASES_writeIntoFileI(	const int* const integer, int n,
 		if ( ( datafile = fopen( datafilename, "w" ) ) == 0 )
 		{
 			snprintf( errstr,QPOASES_MAX_STRING_LENGTH,"(%s)",datafilename );
-			return MessageHandling_throwError( qpOASES_getGlobalMessageHandler(),RET_UNABLE_TO_OPEN_FILE,errstr,__FUNCTION__,__FILE__,__LINE__,VS_VISIBLE );
+			return MessageHandling_throwError( qpOASES_getGlobalMessageHandler(),RET_UNABLE_TO_OPEN_FILE,errstr,__FUNC__,__FILE__,__LINE__,VS_VISIBLE );
 		}
 	}
 

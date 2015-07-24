@@ -2363,7 +2363,7 @@ returnValue QProblemB_solveQP(	QProblemB* _THIS, const real_t* const g_new,
 			snprintf( messageString,QPOASES_MAX_STRING_LENGTH,"%d ...",iter );
 		else
 			snprintf( messageString,QPOASES_MAX_STRING_LENGTH,"%d* ...",iter );
-		MessageHandling_throwInfo( qpOASES_getGlobalMessageHandler(),RET_ITERATION_STARTED,messageString,__FUNCTION__,__FILE__,__LINE__,VS_VISIBLE );
+		MessageHandling_throwInfo( qpOASES_getGlobalMessageHandler(),RET_ITERATION_STARTED,messageString,__FUNC__,__FILE__,__LINE__,VS_VISIBLE );
 		#endif
 
 		/* 2) Initialise shift direction of the gradient and the bounds. */
@@ -2497,7 +2497,7 @@ returnValue QProblemB_solveQP(	QProblemB* _THIS, const real_t* const g_new,
 	{
 		#ifndef __XPCTARGET__
 		snprintf( messageString,QPOASES_MAX_STRING_LENGTH,"(nWSR = %d)",iter );
-		return MessageHandling_throwWarning( qpOASES_getGlobalMessageHandler(),RET_MAX_NWSR_REACHED,messageString,__FUNCTION__,__FILE__,__LINE__,VS_VISIBLE );
+		return MessageHandling_throwWarning( qpOASES_getGlobalMessageHandler(),RET_MAX_NWSR_REACHED,messageString,__FUNC__,__FILE__,__LINE__,VS_VISIBLE );
 		#else
 		return RET_MAX_NWSR_REACHED;
 		#endif
@@ -3163,7 +3163,7 @@ returnValue QProblemB_performStep(	QProblemB* _THIS,
 	else
 		snprintf( messageString,QPOASES_MAX_STRING_LENGTH,"Stepsize is %.15e! (idx = %d, status = %d)",_THIS->tau,*BC_idx,*BC_status );
 
-	MessageHandling_throwInfo( qpOASES_getGlobalMessageHandler(),RET_STEPSIZE_NONPOSITIVE,messageString,__FUNCTION__,__FILE__,__LINE__,VS_VISIBLE );
+	MessageHandling_throwInfo( qpOASES_getGlobalMessageHandler(),RET_STEPSIZE_NONPOSITIVE,messageString,__FUNC__,__FILE__,__LINE__,VS_VISIBLE );
 	#endif
 
 
@@ -3197,7 +3197,7 @@ returnValue QProblemB_performStep(	QProblemB* _THIS,
 		/* print a warning if stepsize is zero */
 		#ifndef __XPCTARGET__
 		snprintf( messageString,QPOASES_MAX_STRING_LENGTH,"Stepsize is %.15e",_THIS->tau );
-		MessageHandling_throwWarning( qpOASES_getGlobalMessageHandler(),RET_STEPSIZE,messageString,__FUNCTION__,__FILE__,__LINE__,VS_VISIBLE );
+		MessageHandling_throwWarning( qpOASES_getGlobalMessageHandler(),RET_STEPSIZE,messageString,__FUNC__,__FILE__,__LINE__,VS_VISIBLE );
 		#endif
 	}
 
@@ -3227,7 +3227,7 @@ returnValue QProblemB_changeActiveSet( QProblemB* _THIS, int BC_idx, SubjectToSt
 		case ST_INACTIVE:
 			#ifndef __XPCTARGET__
 			snprintf( messageString,QPOASES_MAX_STRING_LENGTH,"bound no. %d.", BC_idx );
-			MessageHandling_throwInfo( qpOASES_getGlobalMessageHandler(),RET_REMOVE_FROM_ACTIVESET,messageString,__FUNCTION__,__FILE__,__LINE__,VS_VISIBLE );
+			MessageHandling_throwInfo( qpOASES_getGlobalMessageHandler(),RET_REMOVE_FROM_ACTIVESET,messageString,__FUNC__,__FILE__,__LINE__,VS_VISIBLE );
 			#endif
 
 			if ( QProblemB_removeBound( _THIS,BC_idx,BT_TRUE ) != SUCCESSFUL_RETURN )
@@ -3244,7 +3244,7 @@ returnValue QProblemB_changeActiveSet( QProblemB* _THIS, int BC_idx, SubjectToSt
 				snprintf( messageString,QPOASES_MAX_STRING_LENGTH,"lower bound no. %d.", BC_idx );
 			else
 				snprintf( messageString,QPOASES_MAX_STRING_LENGTH,"upper bound no. %d.", BC_idx );
-				MessageHandling_throwInfo( qpOASES_getGlobalMessageHandler(),RET_ADD_TO_ACTIVESET,messageString,__FUNCTION__,__FILE__,__LINE__,VS_VISIBLE );
+				MessageHandling_throwInfo( qpOASES_getGlobalMessageHandler(),RET_ADD_TO_ACTIVESET,messageString,__FUNC__,__FILE__,__LINE__,VS_VISIBLE );
 			#endif
 
 			if ( QProblemB_addBound( _THIS,BC_idx,BC_status,BT_TRUE ) != SUCCESSFUL_RETURN )

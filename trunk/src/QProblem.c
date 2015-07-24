@@ -2503,7 +2503,7 @@ returnValue QProblem_solveQP(	QProblem* _THIS,
 			snprintf( messageString,QPOASES_MAX_STRING_LENGTH,"%d ...",iter );
 		else
 			snprintf( messageString,QPOASES_MAX_STRING_LENGTH,"%d* ...",iter );
-		MessageHandling_throwInfo( qpOASES_getGlobalMessageHandler(),RET_ITERATION_STARTED,messageString,__FUNCTION__,__FILE__,__LINE__,VS_VISIBLE );
+		MessageHandling_throwInfo( qpOASES_getGlobalMessageHandler(),RET_ITERATION_STARTED,messageString,__FUNC__,__FILE__,__LINE__,VS_VISIBLE );
 		#endif
 
 
@@ -2639,7 +2639,7 @@ returnValue QProblem_solveQP(	QProblem* _THIS,
 	{
 		#ifndef __XPCTARGET__
 		snprintf( messageString,QPOASES_MAX_STRING_LENGTH,"(nWSR = %d)",iter );
-		return MessageHandling_throwWarning( qpOASES_getGlobalMessageHandler(),RET_MAX_NWSR_REACHED,messageString,__FUNCTION__,__FILE__,__LINE__,VS_VISIBLE );
+		return MessageHandling_throwWarning( qpOASES_getGlobalMessageHandler(),RET_MAX_NWSR_REACHED,messageString,__FUNC__,__FILE__,__LINE__,VS_VISIBLE );
 		#else
 		return RET_MAX_NWSR_REACHED;
 		#endif
@@ -4050,7 +4050,7 @@ returnValue QProblem_addConstraint_ensureLI( QProblem* _THIS, int number, Subjec
 		{
 			#ifndef __XPCTARGET__
 			snprintf( messageString,QPOASES_MAX_STRING_LENGTH,"bound no. %d.",y_min_number );
-			MessageHandling_throwInfo( qpOASES_getGlobalMessageHandler(),RET_REMOVE_FROM_ACTIVESET,messageString,__FUNCTION__,__FILE__,__LINE__,VS_VISIBLE );
+			MessageHandling_throwInfo( qpOASES_getGlobalMessageHandler(),RET_REMOVE_FROM_ACTIVESET,messageString,__FUNC__,__FILE__,__LINE__,VS_VISIBLE );
 			#endif
 
 			if ( QProblem_removeBound( _THIS,y_min_number,BT_TRUE,BT_FALSE,BT_FALSE ) != SUCCESSFUL_RETURN )
@@ -4066,7 +4066,7 @@ returnValue QProblem_addConstraint_ensureLI( QProblem* _THIS, int number, Subjec
 		{
 			#ifndef __XPCTARGET__
 			snprintf( messageString,QPOASES_MAX_STRING_LENGTH,"constraint no. %d.",y_min_number );
-			MessageHandling_throwInfo( qpOASES_getGlobalMessageHandler(),RET_REMOVE_FROM_ACTIVESET,messageString,__FUNCTION__,__FILE__,__LINE__,VS_VISIBLE );
+			MessageHandling_throwInfo( qpOASES_getGlobalMessageHandler(),RET_REMOVE_FROM_ACTIVESET,messageString,__FUNC__,__FILE__,__LINE__,VS_VISIBLE );
 			#endif
 
 			if ( QProblem_removeConstraint( _THIS,y_min_number,BT_TRUE,BT_FALSE,BT_FALSE ) != SUCCESSFUL_RETURN )
@@ -4094,7 +4094,7 @@ returnValue QProblem_addConstraint_ensureLI( QProblem* _THIS, int number, Subjec
 	}
 
 farewell:
-	MessageHandling_throwInfo( qpOASES_getGlobalMessageHandler(),RET_LI_RESOLVED,0,__FUNCTION__,__FILE__,__LINE__,VS_VISIBLE );
+	MessageHandling_throwInfo( qpOASES_getGlobalMessageHandler(),RET_LI_RESOLVED,0,__FUNC__,__FILE__,__LINE__,VS_VISIBLE );
 	
 	return ( (returnvalue != SUCCESSFUL_RETURN) && (returnvalue != RET_ENSURELI_FAILED_NOINDEX ) ) ? THROWERROR (returnvalue) : returnvalue;
 }
@@ -4508,7 +4508,7 @@ returnValue QProblem_addBound_ensureLI( QProblem* _THIS, int number, SubjectToSt
 		{
 			#ifndef __XPCTARGET__
 			snprintf( messageString,QPOASES_MAX_STRING_LENGTH,"bound no. %d.",y_min_number );
-			MessageHandling_throwInfo( qpOASES_getGlobalMessageHandler(),RET_REMOVE_FROM_ACTIVESET,messageString,__FUNCTION__,__FILE__,__LINE__,VS_VISIBLE );
+			MessageHandling_throwInfo( qpOASES_getGlobalMessageHandler(),RET_REMOVE_FROM_ACTIVESET,messageString,__FUNC__,__FILE__,__LINE__,VS_VISIBLE );
 			#endif
 
 			if ( QProblem_removeBound( _THIS,y_min_number,BT_TRUE,BT_FALSE,BT_FALSE ) != SUCCESSFUL_RETURN )
@@ -4524,7 +4524,7 @@ returnValue QProblem_addBound_ensureLI( QProblem* _THIS, int number, SubjectToSt
 		{
 			#ifndef __XPCTARGET__
 			snprintf( messageString,QPOASES_MAX_STRING_LENGTH,"constraint no. %d.",y_min_number );
-			MessageHandling_throwInfo( qpOASES_getGlobalMessageHandler(),RET_REMOVE_FROM_ACTIVESET,messageString,__FUNCTION__,__FILE__,__LINE__,VS_VISIBLE );
+			MessageHandling_throwInfo( qpOASES_getGlobalMessageHandler(),RET_REMOVE_FROM_ACTIVESET,messageString,__FUNC__,__FILE__,__LINE__,VS_VISIBLE );
 			#endif
 
 			if ( QProblem_removeConstraint( _THIS,y_min_number,BT_TRUE,BT_FALSE,BT_FALSE ) != SUCCESSFUL_RETURN )
@@ -4552,7 +4552,7 @@ returnValue QProblem_addBound_ensureLI( QProblem* _THIS, int number, SubjectToSt
 	}
 
 farewell:
-	MessageHandling_throwInfo( qpOASES_getGlobalMessageHandler(),RET_LI_RESOLVED,0,__FUNCTION__,__FILE__,__LINE__,VS_VISIBLE );
+	MessageHandling_throwInfo( qpOASES_getGlobalMessageHandler(),RET_LI_RESOLVED,0,__FUNC__,__FILE__,__LINE__,VS_VISIBLE );
 	
 	return ( (returnvalue != SUCCESSFUL_RETURN) && (returnvalue != RET_ENSURELI_FAILED_NOINDEX ) ) ? THROWERROR (returnvalue) : returnvalue;
 }
@@ -5962,7 +5962,7 @@ returnValue QProblem_performStep(	QProblem* _THIS, const real_t* const delta_g,
 	else
 		snprintf( messageString,QPOASES_MAX_STRING_LENGTH,"Stepsize is %.15e! (idx = %d, isBound = %d, status = %d)",_THIS->tau,*BC_idx,*BC_isBound,*BC_status );
 
-	MessageHandling_throwInfo( qpOASES_getGlobalMessageHandler(),RET_STEPSIZE_NONPOSITIVE,messageString,__FUNCTION__,__FILE__,__LINE__,VS_VISIBLE );
+	MessageHandling_throwInfo( qpOASES_getGlobalMessageHandler(),RET_STEPSIZE_NONPOSITIVE,messageString,__FUNC__,__FILE__,__LINE__,VS_VISIBLE );
 	#endif
 
 
@@ -6026,7 +6026,7 @@ returnValue QProblem_performStep(	QProblem* _THIS, const real_t* const delta_g,
 		/* print a stepsize warning if stepsize is zero */
 		#ifndef __XPCTARGET__
 		snprintf( messageString,QPOASES_MAX_STRING_LENGTH,"Stepsize is %.15e",_THIS->tau );
-		MessageHandling_throwWarning( qpOASES_getGlobalMessageHandler(),RET_STEPSIZE,messageString,__FUNCTION__,__FILE__,__LINE__,VS_VISIBLE );
+		MessageHandling_throwWarning( qpOASES_getGlobalMessageHandler(),RET_STEPSIZE,messageString,__FUNC__,__FILE__,__LINE__,VS_VISIBLE );
 		#endif
 	}
 
@@ -6059,7 +6059,7 @@ returnValue QProblem_changeActiveSet(	QProblem* _THIS,
 			{
 				#ifndef __XPCTARGET__
 				snprintf( messageString,QPOASES_MAX_STRING_LENGTH,"bound no. %d.", BC_idx );
-				MessageHandling_throwInfo( qpOASES_getGlobalMessageHandler(),RET_REMOVE_FROM_ACTIVESET,messageString,__FUNCTION__,__FILE__,__LINE__,VS_VISIBLE );
+				MessageHandling_throwInfo( qpOASES_getGlobalMessageHandler(),RET_REMOVE_FROM_ACTIVESET,messageString,__FUNC__,__FILE__,__LINE__,VS_VISIBLE );
 				#endif
 
 				if ( QProblem_removeBound( _THIS,BC_idx,BT_TRUE,BT_TRUE,_THIS->options.enableNZCTests ) != SUCCESSFUL_RETURN )
@@ -6071,7 +6071,7 @@ returnValue QProblem_changeActiveSet(	QProblem* _THIS,
 			{
 				#ifndef __XPCTARGET__
 				snprintf( messageString,QPOASES_MAX_STRING_LENGTH,"constraint no. %d.", BC_idx );
-				MessageHandling_throwInfo( qpOASES_getGlobalMessageHandler(),RET_REMOVE_FROM_ACTIVESET,messageString,__FUNCTION__,__FILE__,__LINE__,VS_VISIBLE );
+				MessageHandling_throwInfo( qpOASES_getGlobalMessageHandler(),RET_REMOVE_FROM_ACTIVESET,messageString,__FUNC__,__FILE__,__LINE__,VS_VISIBLE );
 				#endif
 
 				if ( QProblem_removeConstraint( _THIS,BC_idx,BT_TRUE,BT_TRUE,_THIS->options.enableNZCTests ) != SUCCESSFUL_RETURN )
@@ -6091,7 +6091,7 @@ returnValue QProblem_changeActiveSet(	QProblem* _THIS,
 					snprintf( messageString,QPOASES_MAX_STRING_LENGTH,"lower bound no. %d.", BC_idx );
 				else
 					snprintf( messageString,QPOASES_MAX_STRING_LENGTH,"upper bound no. %d.", BC_idx );
-				MessageHandling_throwInfo( qpOASES_getGlobalMessageHandler(),RET_ADD_TO_ACTIVESET,messageString,__FUNCTION__,__FILE__,__LINE__,VS_VISIBLE );
+				MessageHandling_throwInfo( qpOASES_getGlobalMessageHandler(),RET_ADD_TO_ACTIVESET,messageString,__FUNC__,__FILE__,__LINE__,VS_VISIBLE );
 				#endif
 
 				returnvalue = QProblem_addBound( _THIS,BC_idx,BC_status,BT_TRUE,BT_TRUE );
@@ -6107,7 +6107,7 @@ returnValue QProblem_changeActiveSet(	QProblem* _THIS,
 					snprintf( messageString,QPOASES_MAX_STRING_LENGTH,"lower constraint's bound no. %d.", BC_idx );
 				else
 					snprintf( messageString,QPOASES_MAX_STRING_LENGTH,"upper constraint's bound no. %d.", BC_idx );
-				MessageHandling_throwInfo( qpOASES_getGlobalMessageHandler(),RET_ADD_TO_ACTIVESET,messageString,__FUNCTION__,__FILE__,__LINE__,VS_VISIBLE );
+				MessageHandling_throwInfo( qpOASES_getGlobalMessageHandler(),RET_ADD_TO_ACTIVESET,messageString,__FUNC__,__FILE__,__LINE__,VS_VISIBLE );
 				#endif
 
 				returnvalue = QProblem_addConstraint( _THIS,BC_idx,BC_status,BT_TRUE,BT_TRUE );
