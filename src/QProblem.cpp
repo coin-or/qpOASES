@@ -1280,7 +1280,6 @@ returnValue QProblem::solveInitialQP(	const real_t* const xOpt, const real_t* co
 
 	status = QPS_NOTINITIALISED;
 
-
 	/* I) ANALYSE QP DATA: */
 	/* 1) Check if Hessian happens to be the identity matrix. */
 	if ( determineHessianType( ) != SUCCESSFUL_RETURN )
@@ -1331,7 +1330,7 @@ returnValue QProblem::solveInitialQP(	const real_t* const xOpt, const real_t* co
 
 	/* d) Copy external Cholesky factor if provided */
 	haveCholesky = BT_FALSE;
-
+	
 	if ( _R != 0 )
 	{
 		if ( options.initialStatusBounds != ST_INACTIVE )
@@ -1394,7 +1393,7 @@ returnValue QProblem::solveInitialQP(	const real_t* const xOpt, const real_t* co
 	}
 
 	status = QPS_AUXILIARYQPSOLVED;
-
+	
 
 	if ( options.enableRamping == BT_TRUE )
 		performRamping( );
@@ -1404,7 +1403,7 @@ returnValue QProblem::solveInitialQP(	const real_t* const xOpt, const real_t* co
 	/* Allow only remaining CPU time for usual hotstart. */
 	if ( cputime != 0 )
 		*cputime -= getCPUtime( ) - starttime;
-
+	
 	/* Use hotstart method to find the solution of the original initial QP,... */
 	returnValue returnvalue = hotstart( g_original,lb_original,ub_original,lbA_original,ubA_original, nWSR,cputime );
 
@@ -1502,7 +1501,7 @@ returnValue QProblem::solveQP(	const real_t* const g_new,
 	/* 3) Reset status flags. */
 	infeasible = BT_FALSE;
 	unbounded  = BT_FALSE;
-
+	
 
 	/* II) MAIN HOMOTOPY LOOP */
 	for( iter=nWSRperformed; iter<nWSR; ++iter )
@@ -1525,7 +1524,7 @@ returnValue QProblem::solveQP(	const real_t* const g_new,
 			snprintf( messageString,MAX_STRING_LENGTH,"%d ...",iter );
 		else
 			snprintf( messageString,MAX_STRING_LENGTH,"%d* ...",iter );
-		getGlobalMessageHandler( )->throwInfo( RET_ITERATION_STARTED,messageString,__FUNCTION__,__FILE__,__LINE__,VS_VISIBLE );
+		getGlobalMessageHandler( )->throwInfo( RET_ITERATION_STARTED,messageString,__FUNC__,__FILE__,__LINE__,VS_VISIBLE );
 		#endif
 
 		/* 2) Determination of shift direction of the gradient and the (constraints') bounds. */
@@ -1589,7 +1588,7 @@ returnValue QProblem::solveQP(	const real_t* const g_new,
 		/* 5) Termination criterion. */
 		nV = getNV( );
 		nC = getNC( );
-
+		
 		homotopyLength = getRelativeHomotopyLength( g_new,lb_new,ub_new,lbA_new,ubA_new );
 		if ( homotopyLength <= options.terminationTolerance )
 		{
@@ -1681,7 +1680,7 @@ returnValue QProblem::solveQP(	const real_t* const g_new,
 	{
 		#ifndef __XPCTARGET__
 		snprintf( messageString,MAX_STRING_LENGTH,"(nWSR = %d)",iter );
-		return getGlobalMessageHandler( )->throwWarning( RET_MAX_NWSR_REACHED,messageString,__FUNCTION__,__FILE__,__LINE__,VS_VISIBLE );
+		return getGlobalMessageHandler( )->throwWarning( RET_MAX_NWSR_REACHED,messageString,__FUNC__,__FILE__,__LINE__,VS_VISIBLE );
 		#else
 		return RET_MAX_NWSR_REACHED;
 		#endif
@@ -1864,7 +1863,7 @@ returnValue QProblem::setupSubjectToType(	const real_t* const lb_new, const real
 			if (constraints.getType (i) == ST_DISABLED)
 				continue;
 
-			if ( ( lbA_new[i] <= -INFTY ) && ( ubA_new[i] >= INFTY )
+			if ( ( lbA_new[i] < -INFTY+options.boundTolerance ) && ( ubA_new[i] > INFTY-options.boundTolerance )
 					&& (options.enableFarBounds == BT_FALSE))
 			{
 				constraints.setType( i,ST_UNBOUNDED );
@@ -3104,7 +3103,7 @@ returnValue QProblem::addConstraint_ensureLI( int number, SubjectToStatus C_stat
 		{
 			#ifndef __XPCTARGET__
 			snprintf( messageString,MAX_STRING_LENGTH,"bound no. %d.",y_min_number );
-			getGlobalMessageHandler( )->throwInfo( RET_REMOVE_FROM_ACTIVESET,messageString,__FUNCTION__,__FILE__,__LINE__,VS_VISIBLE );
+			getGlobalMessageHandler( )->throwInfo( RET_REMOVE_FROM_ACTIVESET,messageString,__FUNC__,__FILE__,__LINE__,VS_VISIBLE );
 			#endif
 
 			if ( removeBound( y_min_number,BT_TRUE,BT_FALSE,BT_FALSE ) != SUCCESSFUL_RETURN )
@@ -3120,7 +3119,7 @@ returnValue QProblem::addConstraint_ensureLI( int number, SubjectToStatus C_stat
 		{
 			#ifndef __XPCTARGET__
 			snprintf( messageString,MAX_STRING_LENGTH,"constraint no. %d.",y_min_number );
-			getGlobalMessageHandler( )->throwInfo( RET_REMOVE_FROM_ACTIVESET,messageString,__FUNCTION__,__FILE__,__LINE__,VS_VISIBLE );
+			getGlobalMessageHandler( )->throwInfo( RET_REMOVE_FROM_ACTIVESET,messageString,__FUNC__,__FILE__,__LINE__,VS_VISIBLE );
 			#endif
 
 			if ( removeConstraint( y_min_number,BT_TRUE,BT_FALSE,BT_FALSE ) != SUCCESSFUL_RETURN )
@@ -3154,7 +3153,7 @@ farewell:
 	delete[] xiC_TMP;
 	delete[] xiC;
 
-	getGlobalMessageHandler( )->throwInfo( RET_LI_RESOLVED,0,__FUNCTION__,__FILE__,__LINE__,VS_VISIBLE );
+	getGlobalMessageHandler( )->throwInfo( RET_LI_RESOLVED,0,__FUNC__,__FILE__,__LINE__,VS_VISIBLE );
 
 	return ( (returnvalue != SUCCESSFUL_RETURN) && (returnvalue != RET_ENSURELI_FAILED_NOINDEX ) ) ? THROWERROR (returnvalue) : returnvalue;
 }
@@ -3580,7 +3579,7 @@ returnValue QProblem::addBound_ensureLI( int number, SubjectToStatus B_status )
 		{
 			#ifndef __XPCTARGET__
 			snprintf( messageString,MAX_STRING_LENGTH,"bound no. %d.",y_min_number );
-			getGlobalMessageHandler( )->throwInfo( RET_REMOVE_FROM_ACTIVESET,messageString,__FUNCTION__,__FILE__,__LINE__,VS_VISIBLE );
+			getGlobalMessageHandler( )->throwInfo( RET_REMOVE_FROM_ACTIVESET,messageString,__FUNC__,__FILE__,__LINE__,VS_VISIBLE );
 			#endif
 
 			if ( removeBound( y_min_number,BT_TRUE,BT_FALSE,BT_FALSE ) != SUCCESSFUL_RETURN )
@@ -3596,7 +3595,7 @@ returnValue QProblem::addBound_ensureLI( int number, SubjectToStatus B_status )
 		{
 			#ifndef __XPCTARGET__
 			snprintf( messageString,MAX_STRING_LENGTH,"constraint no. %d.",y_min_number );
-			getGlobalMessageHandler( )->throwInfo( RET_REMOVE_FROM_ACTIVESET,messageString,__FUNCTION__,__FILE__,__LINE__,VS_VISIBLE );
+			getGlobalMessageHandler( )->throwInfo( RET_REMOVE_FROM_ACTIVESET,messageString,__FUNC__,__FILE__,__LINE__,VS_VISIBLE );
 			#endif
 
 			if ( removeConstraint( y_min_number,BT_TRUE,BT_FALSE,BT_FALSE ) != SUCCESSFUL_RETURN )
@@ -3629,7 +3628,7 @@ farewell:
 	delete[] xiC_TMP;
 	delete[] xiC;
 
-	getGlobalMessageHandler( )->throwInfo( RET_LI_RESOLVED,0,__FUNCTION__,__FILE__,__LINE__,VS_VISIBLE );
+	getGlobalMessageHandler( )->throwInfo( RET_LI_RESOLVED,0,__FUNC__,__FILE__,__LINE__,VS_VISIBLE );
 
 	return ( (returnvalue != SUCCESSFUL_RETURN) && (returnvalue != RET_ENSURELI_FAILED_NOINDEX ) ) ? THROWERROR (returnvalue) : returnvalue;
 }
@@ -4439,10 +4438,8 @@ returnValue QProblem::determineDataShift(	const real_t* const g_new, const real_
 	int nC  = getNC( );
 	int nAC = getNAC( );
 
-	int* FX_idx;
 	int* AC_idx;
 
-	bounds.getFixed( )->getNumberArray( &FX_idx );
 	constraints.getActive( )->getNumberArray( &AC_idx );
 
 
@@ -5064,7 +5061,7 @@ returnValue QProblem::performStep(	const real_t* const delta_g,
 	else
 		snprintf( messageString,MAX_STRING_LENGTH,"Stepsize is %.15e! (idx = %d, isBound = %d, status = %d)",tau,BC_idx,BC_isBound,BC_status );
 
-	getGlobalMessageHandler( )->throwInfo( RET_STEPSIZE_NONPOSITIVE,messageString,__FUNCTION__,__FILE__,__LINE__,VS_VISIBLE );
+	getGlobalMessageHandler( )->throwInfo( RET_STEPSIZE_NONPOSITIVE,messageString,__FUNC__,__FILE__,__LINE__,VS_VISIBLE );
 	#endif
 
 
@@ -5128,7 +5125,7 @@ returnValue QProblem::performStep(	const real_t* const delta_g,
 		/* print a stepsize warning if stepsize is zero */
 		#ifndef __XPCTARGET__
 		snprintf( messageString,MAX_STRING_LENGTH,"Stepsize is %.15e",tau );
-		getGlobalMessageHandler( )->throwWarning( RET_STEPSIZE,messageString,__FUNCTION__,__FILE__,__LINE__,VS_VISIBLE );
+		getGlobalMessageHandler( )->throwWarning( RET_STEPSIZE,messageString,__FUNC__,__FILE__,__LINE__,VS_VISIBLE );
 		#endif
 	}
 
@@ -5161,7 +5158,7 @@ returnValue QProblem::changeActiveSet( int BC_idx, SubjectToStatus BC_status, Bo
 			{
 				#ifndef __XPCTARGET__
 				snprintf( messageString,MAX_STRING_LENGTH,"bound no. %d.", BC_idx );
-				getGlobalMessageHandler( )->throwInfo( RET_REMOVE_FROM_ACTIVESET,messageString,__FUNCTION__,__FILE__,__LINE__,VS_VISIBLE );
+				getGlobalMessageHandler( )->throwInfo( RET_REMOVE_FROM_ACTIVESET,messageString,__FUNC__,__FILE__,__LINE__,VS_VISIBLE );
 				#endif
 
 				if ( removeBound( BC_idx,BT_TRUE,BT_TRUE,options.enableNZCTests ) != SUCCESSFUL_RETURN )
@@ -5173,7 +5170,7 @@ returnValue QProblem::changeActiveSet( int BC_idx, SubjectToStatus BC_status, Bo
 			{
 				#ifndef __XPCTARGET__
 				snprintf( messageString,MAX_STRING_LENGTH,"constraint no. %d.", BC_idx );
-				getGlobalMessageHandler( )->throwInfo( RET_REMOVE_FROM_ACTIVESET,messageString,__FUNCTION__,__FILE__,__LINE__,VS_VISIBLE );
+				getGlobalMessageHandler( )->throwInfo( RET_REMOVE_FROM_ACTIVESET,messageString,__FUNC__,__FILE__,__LINE__,VS_VISIBLE );
 				#endif
 
 				if ( removeConstraint( BC_idx,BT_TRUE,BT_TRUE,options.enableNZCTests ) != SUCCESSFUL_RETURN )
@@ -5194,7 +5191,7 @@ returnValue QProblem::changeActiveSet( int BC_idx, SubjectToStatus BC_status, Bo
 					snprintf( messageString,MAX_STRING_LENGTH,"lower bound no. %d.", BC_idx );
 				else
 					snprintf( messageString,MAX_STRING_LENGTH,"upper bound no. %d.", BC_idx );
-				getGlobalMessageHandler( )->throwInfo( RET_ADD_TO_ACTIVESET,messageString,__FUNCTION__,__FILE__,__LINE__,VS_VISIBLE );
+				getGlobalMessageHandler( )->throwInfo( RET_ADD_TO_ACTIVESET,messageString,__FUNC__,__FILE__,__LINE__,VS_VISIBLE );
 				#endif
 
 				returnvalue = addBound( BC_idx,BC_status,BT_TRUE );
@@ -5210,7 +5207,7 @@ returnValue QProblem::changeActiveSet( int BC_idx, SubjectToStatus BC_status, Bo
 					snprintf( messageString,MAX_STRING_LENGTH,"lower constraint's bound no. %d.", BC_idx );
 				else
 					snprintf( messageString,MAX_STRING_LENGTH,"upper constraint's bound no. %d.", BC_idx );
-				getGlobalMessageHandler( )->throwInfo( RET_ADD_TO_ACTIVESET,messageString,__FUNCTION__,__FILE__,__LINE__,VS_VISIBLE );
+				getGlobalMessageHandler( )->throwInfo( RET_ADD_TO_ACTIVESET,messageString,__FUNC__,__FILE__,__LINE__,VS_VISIBLE );
 				#endif
 
 				returnvalue = addConstraint( BC_idx,BC_status,BT_TRUE );
@@ -5230,31 +5227,41 @@ returnValue QProblem::changeActiveSet( int BC_idx, SubjectToStatus BC_status, Bo
  * g e t R e l a t i v e H o m o t o p y L e n g t h
  */
 real_t QProblem::getRelativeHomotopyLength(	const real_t* const g_new, const real_t* const lb_new, const real_t* const ub_new,
-											const real_t* const lbA_new, const real_t* const ubA_new
-											)
+												const real_t* const lbA_new, const real_t* const ubA_new
+												)
 {
 	int i;
 	int nC = getNC( );
 	real_t len = QProblemB::getRelativeHomotopyLength( g_new,lb_new,ub_new );
 	real_t d, s;
+	
+	fprintf( stdFile, "len in homotopyLength = %.3e\n",len );
 
 	/* lower constraint bounds */
-	for (i = 0; i < nC && lbA_new; i++)
+	if ( lbA_new != 0 )
 	{
-		s = getAbs(lbA_new[i]);
-		if (s < 1.0) s = 1.0;
-		d = getAbs(lbA_new[i] - lbA[i]) / s;
-		if (d > len) len = d;
+		for (i = 0; i < nC; i++)
+		{
+			s = getAbs(lbA_new[i]);
+			if (s < 1.0) s = 1.0;
+			d = getAbs(lbA_new[i] - lbA[i]) / s;
+			if (d > len) len = d;
+		}
 	}
+	fprintf( stdFile, "len in homotopyLength = %.3e\n",len );
 
 	/* upper constraint bounds */
-	for (i = 0; i < nC && ubA_new; i++)
+	if ( ubA_new != 0 )
 	{
-		s = getAbs(ubA_new[i]);
-		if (s < 1.0) s = 1.0;
-		d = getAbs(ubA_new[i] - ubA[i]) / s;
-		if (d > len) len = d;
+		for (i = 0; i < nC; i++)
+		{
+			s = getAbs(ubA_new[i]);
+			if (s < 1.0) s = 1.0;
+			d = getAbs(ubA_new[i] - ubA[i]) / s;
+			if (d > len) len = d;
+		}
 	}
+	fprintf( stdFile, "len in homotopyLength = %.3e\n",len );
 
 	return len;
 }
@@ -5299,7 +5306,7 @@ returnValue QProblem::performRamping( )
 				 continue;
 		}
 	}
-
+	
 	/* ramp inactive constraints and active dual constraint variables */
 	for (i = 0; i < nC; i++)
 	{
@@ -5326,7 +5333,7 @@ returnValue QProblem::performRamping( )
 				break;
 
 			case ST_UNBOUNDED:
-			case ST_DISABLED:
+			case ST_DISABLED: 
 			default:
 				continue;
 		}

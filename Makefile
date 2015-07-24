@@ -29,6 +29,7 @@
 ##	Date:      2007-2015
 ##
 
+include make.mk
 
 ##
 ##	targets
@@ -62,7 +63,7 @@ debugging:
 clean:
 	@cd src               && ${MAKE} -s clean
 	@cd examples          && ${MAKE} -s clean
-	@cd bin               && ${RM} -f *.*
+	@cd bin               && ${RM} -f *.* *{EXE}
 	@cd testing/cpp       && ${MAKE} -s clean
 
 #	&& cd src_aw            && ${MAKE} -s clean && cd .. \

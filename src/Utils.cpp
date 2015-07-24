@@ -285,7 +285,7 @@ returnValue readFromFile(	real_t* data, int nrow, int ncol,
 	{
 		char errstr[MAX_STRING_LENGTH];
 		snprintf( errstr,MAX_STRING_LENGTH,"(%s)",datafilename );
-		return getGlobalMessageHandler( )->throwError( RET_UNABLE_TO_OPEN_FILE,errstr,__FUNCTION__,__FILE__,__LINE__,VS_VISIBLE );
+		return getGlobalMessageHandler( )->throwError( RET_UNABLE_TO_OPEN_FILE,errstr,__FUNC__,__FILE__,__LINE__,VS_VISIBLE );
 	}
 
 	/* 2) Read data from file. */
@@ -302,7 +302,7 @@ returnValue readFromFile(	real_t* data, int nrow, int ncol,
 				fclose( datafile );
 				char errstr[MAX_STRING_LENGTH];
 				snprintf( errstr,MAX_STRING_LENGTH,"(%s)",datafilename );
-				return getGlobalMessageHandler( )->throwError( RET_UNABLE_TO_READ_FILE,errstr,__FUNCTION__,__FILE__,__LINE__,VS_VISIBLE );
+				return getGlobalMessageHandler( )->throwError( RET_UNABLE_TO_READ_FILE,errstr,__FUNC__,__FILE__,__LINE__,VS_VISIBLE );
 			}
 			data[i*ncol + j] = ( (real_t) float_data );
 		}
@@ -348,7 +348,7 @@ returnValue readFromFile(	int* data, int n,
 	{
 		char errstr[MAX_STRING_LENGTH];
 		snprintf( errstr,MAX_STRING_LENGTH,"(%s)",datafilename );
-		return getGlobalMessageHandler( )->throwError( RET_UNABLE_TO_OPEN_FILE,errstr,__FUNCTION__,__FILE__,__LINE__,VS_VISIBLE );
+		return getGlobalMessageHandler( )->throwError( RET_UNABLE_TO_OPEN_FILE,errstr,__FUNC__,__FILE__,__LINE__,VS_VISIBLE );
 	}
 
 	/* 2) Read data from file. */
@@ -359,7 +359,7 @@ returnValue readFromFile(	int* data, int n,
 			fclose( datafile );
 			char errstr[MAX_STRING_LENGTH];
 			snprintf( errstr,MAX_STRING_LENGTH,"(%s)",datafilename );
-			return getGlobalMessageHandler( )->throwError( RET_UNABLE_TO_READ_FILE,errstr,__FUNCTION__,__FILE__,__LINE__,VS_VISIBLE );
+			return getGlobalMessageHandler( )->throwError( RET_UNABLE_TO_READ_FILE,errstr,__FUNC__,__FILE__,__LINE__,VS_VISIBLE );
 		}
 	}
 
@@ -394,7 +394,7 @@ returnValue writeIntoFile(	const real_t* const data, int nrow, int ncol,
 		{
 			char errstr[MAX_STRING_LENGTH];
 			snprintf( errstr,MAX_STRING_LENGTH,"(%s)",datafilename );
-			return getGlobalMessageHandler( )->throwError( RET_UNABLE_TO_OPEN_FILE,errstr,__FUNCTION__,__FILE__,__LINE__,VS_VISIBLE );
+			return getGlobalMessageHandler( )->throwError( RET_UNABLE_TO_OPEN_FILE,errstr,__FUNC__,__FILE__,__LINE__,VS_VISIBLE );
 		}
 	}
 	else
@@ -404,7 +404,7 @@ returnValue writeIntoFile(	const real_t* const data, int nrow, int ncol,
 		{
 			char errstr[MAX_STRING_LENGTH];
 			snprintf( errstr,MAX_STRING_LENGTH,"(%s)",datafilename );
-			return getGlobalMessageHandler( )->throwError( RET_UNABLE_TO_OPEN_FILE,errstr,__FUNCTION__,__FILE__,__LINE__,VS_VISIBLE );
+			return getGlobalMessageHandler( )->throwError( RET_UNABLE_TO_OPEN_FILE,errstr,__FUNC__,__FILE__,__LINE__,VS_VISIBLE );
 		}
 	}
 
@@ -460,7 +460,7 @@ returnValue writeIntoFile(	const int* const integer, int n,
 		{
 			char errstr[MAX_STRING_LENGTH];
 			snprintf( errstr,MAX_STRING_LENGTH,"(%s)",datafilename );
-			return getGlobalMessageHandler( )->throwError( RET_UNABLE_TO_OPEN_FILE,errstr,__FUNCTION__,__FILE__,__LINE__,VS_VISIBLE );
+			return getGlobalMessageHandler( )->throwError( RET_UNABLE_TO_OPEN_FILE,errstr,__FUNC__,__FILE__,__LINE__,VS_VISIBLE );
 		}
 	}
 	else
@@ -470,7 +470,7 @@ returnValue writeIntoFile(	const int* const integer, int n,
 		{
 			char errstr[MAX_STRING_LENGTH];
 			snprintf( errstr,MAX_STRING_LENGTH,"(%s)",datafilename );
-			return getGlobalMessageHandler( )->throwError( RET_UNABLE_TO_OPEN_FILE,errstr,__FUNCTION__,__FILE__,__LINE__,VS_VISIBLE );
+			return getGlobalMessageHandler( )->throwError( RET_UNABLE_TO_OPEN_FILE,errstr,__FUNC__,__FILE__,__LINE__,VS_VISIBLE );
 		}
 	}
 

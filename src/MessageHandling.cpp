@@ -346,7 +346,7 @@ returnValue MessageHandling::throwError(
 {
 	/* consistency check */
 	if ( Enumber <= SUCCESSFUL_RETURN )
-		return throwError( RET_ERROR_UNDEFINED,0,__FUNCTION__,__FILE__,__LINE__,VS_VISIBLE );
+		return throwError( RET_ERROR_UNDEFINED,0,__FUNC__,__FILE__,__LINE__,VS_VISIBLE );
 
 	/* Call to common throwMessage function if error shall be displayed. */
 	if ( errorVisibility == VS_VISIBLE )
@@ -370,7 +370,7 @@ returnValue MessageHandling::throwWarning(
 {
 	/* consistency check */
   	if ( Wnumber <= SUCCESSFUL_RETURN )
-		return throwError( RET_WARNING_UNDEFINED,0,__FUNCTION__,__FILE__,__LINE__,VS_VISIBLE );
+		return throwError( RET_WARNING_UNDEFINED,0,__FUNC__,__FILE__,__LINE__,VS_VISIBLE );
 
 	/* Call to common throwMessage function if warning shall be displayed. */
 	if ( warningVisibility == VS_VISIBLE )
@@ -394,7 +394,7 @@ returnValue MessageHandling::throwInfo(
 {
 	/* consistency check */
 	if ( Inumber < SUCCESSFUL_RETURN )
-		return throwError( RET_INFO_UNDEFINED,0,__FUNCTION__,__FILE__,__LINE__,VS_VISIBLE );
+		return throwError( RET_INFO_UNDEFINED,0,__FUNC__,__FILE__,__LINE__,VS_VISIBLE );
 
 	/* Call to common throwMessage function if info shall be displayed. */
 	if ( infoVisibility == VS_VISIBLE )
@@ -494,7 +494,7 @@ returnValue MessageHandling::throwMessage(
 
 	if ( returnValueList[keypos].key == TERMINAL_LIST_ELEMENT )
 	{
-		throwError( RET_EWI_UNDEFINED,0,__FUNCTION__,__FILE__,__LINE__,VS_VISIBLE );
+		throwError( RET_EWI_UNDEFINED,0,__FUNC__,__FILE__,__LINE__,VS_VISIBLE );
 		return RETnumber;
 	}
 
@@ -597,7 +597,9 @@ const char* MessageHandling::getErrorCodeMessage(	const returnValue _returnValue
 
 
 /** Global message handler for all qpOASES modules.*/
+#ifndef __XPCTARGET__
 static MessageHandling globalMessageHandler( stdFile,VS_VISIBLE,VS_VISIBLE,VS_VISIBLE );
+#endif /* __XPCTARGET__ */
 
 
 /*
@@ -605,6 +607,10 @@ static MessageHandling globalMessageHandler( stdFile,VS_VISIBLE,VS_VISIBLE,VS_VI
  */
 MessageHandling* getGlobalMessageHandler( )
 {
+	#ifdef __XPCTARGET__
+	static MessageHandling globalMessageHandler( stdFile,VS_VISIBLE,VS_VISIBLE,VS_VISIBLE );
+	#endif /* __XPCTARGET__ */
+
 	return &globalMessageHandler;
 }
 

@@ -63,6 +63,20 @@ bugs or proposing algorithmic improvements (in alphabetical order):
 
 
 
+SCIENTIFIC MENTORS
+==================
+
+We also would like to thank two persons who had a major share in making 
+qpOASES a success. Not by writing even a single line of code, but by 
+establishing the idea of using a homotopy-based approach for high-speed 
+QP solutions and by excellent scientific guidance during the development 
+process:
+
+    Hans Georg Bock
+    Moritz Diehl 
+
+
+
 All users are invited to further improve qpOASES by providing comments, 
 code enhancements, bug reports, additional documentation or whatever you 
 feel is missing.
