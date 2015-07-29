@@ -2,7 +2,7 @@
  *	This file is part of qpOASES.
  *
  *	qpOASES -- An Implementation of the Online Active Set Strategy.
- *	Copyright (C) 2007-2014 by Hans Joachim Ferreau, Andreas Potschka,
+ *	Copyright (C) 2007-2015 by Hans Joachim Ferreau, Andreas Potschka,
  *	Christian Kirches et al. All rights reserved.
  *
  *	qpOASES is free software; you can redistribute it and/or
@@ -25,8 +25,8 @@
 /**
  *	\file include/qpOASES/UnitTesting.hpp
  *	\author Hans Joachim Ferreau
- *	\version 3.0
- *	\date 2014
+ *	\version 3.1
+ *	\date 2014-2015
  *
  *	Definition of auxiliary functions/macros for unit testing.
  */
@@ -34,6 +34,11 @@
 
 #ifndef QPOASES_UNIT_TESTING_HPP
 #define QPOASES_UNIT_TESTING_HPP
+
+
+#ifndef TEST_TOL_FACTOR
+#define TEST_TOL_FACTOR 1
+#endif
 
 
 /** Return value for tests that passed. */
@@ -52,6 +57,9 @@
 /** Macro verifying that two numerical values are close to each other in order to pass unit test. */
 #define QPOASES_TEST_FOR_NEAR( x,y )  if ( REFER_NAMESPACE_QPOASES getAbs((x)-(y)) / REFER_NAMESPACE_QPOASES getMax( 1.0,REFER_NAMESPACE_QPOASES getAbs(x) ) >= 1e-10 ) { return TEST_FAILED; }
 
+/** Macro verifying that first quantity is lower or equal than second one in order to pass unit test. */
+#define QPOASES_TEST_FOR_TOL( x,tol )  if ( (x) > (tol)*(TEST_TOL_FACTOR) ) { return TEST_FAILED; }
+
 /** Macro verifying that a logical expression holds in order to pass unit test. */
 #define QPOASES_TEST_FOR_TRUE( x )  if ( (x) == false ) { return TEST_FAILED; }
 
@@ -63,7 +71,7 @@ BEGIN_NAMESPACE_QPOASES
 END_NAMESPACE_QPOASES
 
 
-#endif	/* UNIT_TESTING */
+#endif	/* QPOASES_UNIT_TESTING_HPP */
 
 
 /*

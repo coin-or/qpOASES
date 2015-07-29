@@ -24,8 +24,8 @@
 /**
  *	\file testing/cpp/test_gradientShift.cpp
  *	\author Hans Joachim Ferreau
- *	\version 3.0
- *	\date 2007-2014
+ *	\version 3.1
+ *	\date 2007-2015
  *
  *	Simple test case which caused troubles in version 2.0.
  */

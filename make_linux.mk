@@ -2,7 +2,7 @@
 ##	This file is part of qpOASES.
 ##
 ##	qpOASES -- An Implementation of the Online Active Set Strategy.
-##	Copyright (C) 2007-2014 by Hans Joachim Ferreau, Andreas Potschka,
+##	Copyright (C) 2007-2015 by Hans Joachim Ferreau, Andreas Potschka,
 ##	Christian Kirches et al. All rights reserved.
 ##
 ##	qpOASES is free software; you can redistribute it and/or
@@ -25,8 +25,8 @@
 ##
 ##	Filename:  make_linux.mk
 ##	Author:    Hans Joachim Ferreau, Andreas Potschka, Christian Kirches
-##	Version:   3.0
-##	Date:      2007-2014
+##	Version:   3.1
+##	Date:      2007-2015
 ##
 
 ################################################################################
@@ -108,9 +108,11 @@ LINK_LIBRARIES = ${LIB_LAPACK} ${LIB_BLAS} -lm ${LIB_SOLVER}
 
 # how to link against the qpOASES shared library
 QPOASES_LINK = -L${BINDIR} -Wl,-rpath=${BINDIR} -lqpOASES
+QPOASES_LINK_WRAPPER = -L${BINDIR} -Wl,-rpath=${BINDIR} -lqpOASES_wrapper
 
 # link dependencies when creating executables
 LINK_DEPENDS = ${LIB_LAPACK} ${LIB_BLAS} ${BINDIR}/libqpOASES.${LIBEXT} ${BINDIR}/libqpOASES.${DLLEXT}
+LINK_DEPENDS_WRAPPER = ${BINDIR}/libqpOASES_wrapper.${LIBEXT} ${BINDIR}/libqpOASES_wrapper.${DLLEXT}
 
 
 ##

@@ -2,7 +2,7 @@
 ##	This file is part of qpOASES.
 ##
 ##	qpOASES -- An Implementation of the Online Active Set Strategy.
-##	Copyright (C) 2007-2014 by Hans Joachim Ferreau, Andreas Potschka,
+##	Copyright (C) 2007-2015 by Hans Joachim Ferreau, Andreas Potschka,
 ##	Christian Kirches et al. All rights reserved.
 ##
 ##	qpOASES is free software; you can redistribute it and/or
@@ -25,8 +25,8 @@
 ##
 ##	Filename:  make_windows.mk
 ##	Author:    Hans Joachim Ferreau, Andreas Potschka, Christian Kirches
-##	Version:   3.0
-##	Date:      2007-2014
+##	Version:   3.1
+##	Date:      2007-2015
 ##
 
 
@@ -48,7 +48,6 @@ BINDIR = ${TOP}/bin
 MATLAB_IDIR = /usr/local/matlab/extern/include/
 MATLAB_LIBDIR = /usr/local/matlab/bin/glnxa64/
 
-
 # system or replacement BLAS/LAPACK
 REPLACE_LINALG = 1
 
@@ -65,6 +64,7 @@ endif
 # do not touch this
 
 CPP = cl
+CC  = cl
 AR  = ar
 RM  = rm
 F77 = gfortran
@@ -94,19 +94,19 @@ endif
 CPPFLAGS = -nologo -EHsc -DWIN32 -Dsnprintf=_snprintf
 #-g -D__DEBUG__ -D__NO_COPYRIGHT__ -D__SUPPRESSANYOUTPUT__
 
-FFLAGS = -Wall -O3 -fPIC -DWIN32 -Wno-uninitialized
-#        -g
-
 # libraries to link against when building qpOASES .so files
 LINK_LIBRARIES = ${LIB_LAPACK} ${LIB_BLAS}
 LINK_LIBRARIES_AW = ${LIB_LAPACK} ${LIB_BLAS} -lm -lgfortran -lhsl_ma57 -lfakemetis
+LINK_LIBRARIES_WRAPPER = 
 
 # how to link against the qpOASES shared library
 QPOASES_LINK = /I${BINDIR} /WL /link ${BINDIR}/libqpOASES.lib
 QPOASES_AW_LINK = /I${BINDIR} /WL /link ${BINDIR}/libqpOASES_aw.lib
+QPOASES_LINK_WRAPPER = /I${BINDIR} /WL /link ${BINDIR}/libqpOASES_wrapper.lib
 
 # link dependencies when creating executables
 LINK_DEPENDS = ${LIB_LAPACK} ${LIB_BLAS} ${BINDIR}/libqpOASES.${LIBEXT} ${BINDIR}/libqpOASES.${DLLEXT}
+LINK_DEPENDS_WRAPPER = ${BINDIR}/libqpOASES_wrapper.${LIBEXT} ${BINDIR}/libqpOASES_wrapper.${DLLEXT}
 
 
 ##

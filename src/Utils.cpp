@@ -2,7 +2,7 @@
  *	This file is part of qpOASES.
  *
  *	qpOASES -- An Implementation of the Online Active Set Strategy.
- *	Copyright (C) 2007-2014 by Hans Joachim Ferreau, Andreas Potschka,
+ *	Copyright (C) 2007-2015 by Hans Joachim Ferreau, Andreas Potschka,
  *	Christian Kirches et al. All rights reserved.
  *
  *	qpOASES is free software; you can redistribute it and/or
@@ -25,8 +25,8 @@
 /**
  *	\file src/Utils.cpp
  *	\author Hans Joachim Ferreau, Andreas Potschka, Christian Kirches (thanks to Eckhard Arnold)
- *	\version 3.0
- *	\date 2007-2014
+ *	\version 3.1
+ *	\date 2007-2015
  *
  *	Implementation of some utility functions for working with qpOASES.
  */
@@ -39,7 +39,6 @@
 #elif defined(LINUX) || defined(__LINUX__)
   #include <sys/stat.h>
   #include <sys/time.h>
-  #include <sys/resource.h>
 #endif
 
 #ifdef __MATLAB__
@@ -260,7 +259,7 @@ returnValue printCopyrightNotice( )
 		#ifndef __XPCTARGET__
 		#ifndef __DSPACE__
 		#ifndef __NO_COPYRIGHT__
-		myPrintf( "\nqpOASES -- An Implementation of the Online Active Set Strategy.\nCopyright (C) 2007-2014 by Hans Joachim Ferreau, Andreas Potschka,\nChristian Kirches et al. All rights reserved.\n\nqpOASES is distributed under the terms of the \nGNU Lesser General Public License 2.1 in the hope that it will be \nuseful, but WITHOUT ANY WARRANTY; without even the implied warranty \nof MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. \nSee the GNU Lesser General Public License for more details.\n\n" );
+		myPrintf( "\nqpOASES -- An Implementation of the Online Active Set Strategy.\nCopyright (C) 2007-2015 by Hans Joachim Ferreau, Andreas Potschka,\nChristian Kirches et al. All rights reserved.\n\nqpOASES is distributed under the terms of the \nGNU Lesser General Public License 2.1 in the hope that it will be \nuseful, but WITHOUT ANY WARRANTY; without even the implied warranty \nof MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. \nSee the GNU Lesser General Public License for more details.\n\n" );
 		#endif /* __NO_COPYRIGHT__ */
 		#endif /* __DSPACE__ */
 		#endif /* __XPCTARGET__ */
@@ -286,7 +285,7 @@ returnValue readFromFile(	real_t* data, int nrow, int ncol,
 	{
 		char errstr[MAX_STRING_LENGTH];
 		snprintf( errstr,MAX_STRING_LENGTH,"(%s)",datafilename );
-		return getGlobalMessageHandler( )->throwError( RET_UNABLE_TO_OPEN_FILE,errstr,__FUNCTION__,__FILE__,__LINE__,VS_VISIBLE );
+		return getGlobalMessageHandler( )->throwError( RET_UNABLE_TO_OPEN_FILE,errstr,__FUNC__,__FILE__,__LINE__,VS_VISIBLE );
 	}
 
 	/* 2) Read data from file. */
@@ -303,7 +302,7 @@ returnValue readFromFile(	real_t* data, int nrow, int ncol,
 				fclose( datafile );
 				char errstr[MAX_STRING_LENGTH];
 				snprintf( errstr,MAX_STRING_LENGTH,"(%s)",datafilename );
-				return getGlobalMessageHandler( )->throwError( RET_UNABLE_TO_READ_FILE,errstr,__FUNCTION__,__FILE__,__LINE__,VS_VISIBLE );
+				return getGlobalMessageHandler( )->throwError( RET_UNABLE_TO_READ_FILE,errstr,__FUNC__,__FILE__,__LINE__,VS_VISIBLE );
 			}
 			data[i*ncol + j] = ( (real_t) float_data );
 		}
@@ -349,7 +348,7 @@ returnValue readFromFile(	int* data, int n,
 	{
 		char errstr[MAX_STRING_LENGTH];
 		snprintf( errstr,MAX_STRING_LENGTH,"(%s)",datafilename );
-		return getGlobalMessageHandler( )->throwError( RET_UNABLE_TO_OPEN_FILE,errstr,__FUNCTION__,__FILE__,__LINE__,VS_VISIBLE );
+		return getGlobalMessageHandler( )->throwError( RET_UNABLE_TO_OPEN_FILE,errstr,__FUNC__,__FILE__,__LINE__,VS_VISIBLE );
 	}
 
 	/* 2) Read data from file. */
@@ -360,7 +359,7 @@ returnValue readFromFile(	int* data, int n,
 			fclose( datafile );
 			char errstr[MAX_STRING_LENGTH];
 			snprintf( errstr,MAX_STRING_LENGTH,"(%s)",datafilename );
-			return getGlobalMessageHandler( )->throwError( RET_UNABLE_TO_READ_FILE,errstr,__FUNCTION__,__FILE__,__LINE__,VS_VISIBLE );
+			return getGlobalMessageHandler( )->throwError( RET_UNABLE_TO_READ_FILE,errstr,__FUNC__,__FILE__,__LINE__,VS_VISIBLE );
 		}
 	}
 
@@ -395,7 +394,7 @@ returnValue writeIntoFile(	const real_t* const data, int nrow, int ncol,
 		{
 			char errstr[MAX_STRING_LENGTH];
 			snprintf( errstr,MAX_STRING_LENGTH,"(%s)",datafilename );
-			return getGlobalMessageHandler( )->throwError( RET_UNABLE_TO_OPEN_FILE,errstr,__FUNCTION__,__FILE__,__LINE__,VS_VISIBLE );
+			return getGlobalMessageHandler( )->throwError( RET_UNABLE_TO_OPEN_FILE,errstr,__FUNC__,__FILE__,__LINE__,VS_VISIBLE );
 		}
 	}
 	else
@@ -405,7 +404,7 @@ returnValue writeIntoFile(	const real_t* const data, int nrow, int ncol,
 		{
 			char errstr[MAX_STRING_LENGTH];
 			snprintf( errstr,MAX_STRING_LENGTH,"(%s)",datafilename );
-			return getGlobalMessageHandler( )->throwError( RET_UNABLE_TO_OPEN_FILE,errstr,__FUNCTION__,__FILE__,__LINE__,VS_VISIBLE );
+			return getGlobalMessageHandler( )->throwError( RET_UNABLE_TO_OPEN_FILE,errstr,__FUNC__,__FILE__,__LINE__,VS_VISIBLE );
 		}
 	}
 
@@ -461,7 +460,7 @@ returnValue writeIntoFile(	const int* const integer, int n,
 		{
 			char errstr[MAX_STRING_LENGTH];
 			snprintf( errstr,MAX_STRING_LENGTH,"(%s)",datafilename );
-			return getGlobalMessageHandler( )->throwError( RET_UNABLE_TO_OPEN_FILE,errstr,__FUNCTION__,__FILE__,__LINE__,VS_VISIBLE );
+			return getGlobalMessageHandler( )->throwError( RET_UNABLE_TO_OPEN_FILE,errstr,__FUNC__,__FILE__,__LINE__,VS_VISIBLE );
 		}
 	}
 	else
@@ -471,7 +470,7 @@ returnValue writeIntoFile(	const int* const integer, int n,
 		{
 			char errstr[MAX_STRING_LENGTH];
 			snprintf( errstr,MAX_STRING_LENGTH,"(%s)",datafilename );
-			return getGlobalMessageHandler( )->throwError( RET_UNABLE_TO_OPEN_FILE,errstr,__FUNCTION__,__FILE__,__LINE__,VS_VISIBLE );
+			return getGlobalMessageHandler( )->throwError( RET_UNABLE_TO_OPEN_FILE,errstr,__FUNC__,__FILE__,__LINE__,VS_VISIBLE );
 		}
 	}
 
@@ -576,16 +575,9 @@ real_t getCPUtime( )
 	QueryPerformanceCounter(&counter);
 	current_time = ((real_t) counter.QuadPart) / ((real_t) frequency.QuadPart);
 	#elif defined(LINUX) || defined(__LINUX__)
-	struct rusage usage;
-	getrusage(RUSAGE_SELF,&usage);
-	double cpu_temp = (double)usage.ru_utime.tv_sec;
-	cpu_temp += 1.0e-6*((double) usage.ru_utime.tv_usec);
-	current_time = cpu_temp;
-	/*
 	struct timeval theclock;
 	gettimeofday( &theclock,0 );
 	current_time = 1.0*theclock.tv_sec + 1.0e-6*theclock.tv_usec;
-	*/
 	#endif
 
 	return current_time;
@@ -621,15 +613,15 @@ real_t getNorm( const real_t* const v, int n, int type )
 
 
 /*
- *	g e t K K T R e s i d u a l
+ *	g e t K k t V i o l a t i o n
  */
-void getKKTResidual(	int nV, int nC,
-						const real_t* const H, const real_t* const g,
-						const real_t* const A, const real_t* const lb, const real_t* const ub,
-						const real_t* const lbA, const real_t* const ubA,
-						const real_t* const x, const real_t* const y,
-						real_t& stat, real_t& feas, real_t& cmpl
-						)
+returnValue getKktViolation(	int nV, int nC,
+								const real_t* const H, const real_t* const g, const real_t* const A,
+								const real_t* const lb, const real_t* const ub, const real_t* const lbA, const real_t* const ubA,
+								const real_t* const x, const real_t* const y,
+								real_t& stat, real_t& feas, real_t& cmpl,
+								const real_t* const workingSetB, const real_t* const workingSetC, BooleanType hasIdentityHessian
+								)
 {
 	/* Tolerance for dual variables considered zero. */
 	const real_t dualActiveTolerance = 1.0e3 * EPS;
@@ -652,6 +644,11 @@ void getKKTResidual(	int nV, int nC,
 		/* H*x term */
 		if ( H != 0 )
 			for (j = 0; j < nV; j++) sum += H[i*nV+j] * x[j];
+		else
+		{
+			if ( hasIdentityHessian == BT_TRUE )
+				for (j = 0; j < nV; j++) sum += x[j];
+		}
 
 		/* A'*y term */
 		if ( A != 0 )
@@ -661,11 +658,10 @@ void getKKTResidual(	int nV, int nC,
 		if (getAbs(sum) > stat) stat = getAbs(sum);
 	}
 
-	/* check primal feasibility and complementarity */
-	/* variable bounds */
+	/* check primal feasibility and complementarity of bounds */
+	/* feasibility */
 	for (i = 0; i < nV; i++)
 	{
-		/* feasibility */
 		if ( lb != 0 )
 			if (lb[i] - x[i] > feas) 
 				feas = lb[i] - x[i];
@@ -673,21 +669,53 @@ void getKKTResidual(	int nV, int nC,
 		if ( ub != 0 )
 			if (x[i] - ub[i] > feas) 
 				feas = x[i] - ub[i];
-
-		/* complementarity */
-		prod = 0.0;
-
-		if ( lb != 0 )
-			if (y[i] > dualActiveTolerance) /* lower bound */
-				prod = (x[i] - lb[i]) * y[i];
-
-		if ( ub != 0 )
-			if (y[i] < -dualActiveTolerance) /* upper bound */
-				prod = (x[i] - ub[i]) * y[i];
-
-		if (getAbs(prod) > cmpl) cmpl = getAbs(prod);
 	}
-	/* A*x bounds */
+	
+	/* complementarity */
+	if ( workingSetB == 0 )
+	{
+		for (i = 0; i < nV; i++)
+		{
+			prod = 0.0;
+
+			/* lower bound */
+			if ( lb != 0 )
+				if (y[i] > dualActiveTolerance)
+					prod = (x[i] - lb[i]) * y[i];
+
+			/* upper bound */
+			if ( ub != 0 )
+				if (y[i] < -dualActiveTolerance)
+					prod = (x[i] - ub[i]) * y[i];
+
+			if (getAbs(prod) > cmpl) cmpl = getAbs(prod);
+		}
+	}
+	else
+	{
+		for (i = 0; i < nV; i++)
+		{
+			prod = 0.0;
+
+			/* lower bound */
+			if ( lb != 0 )
+			{
+				if ( isEqual(workingSetB[i],-1.0) == BT_TRUE )
+					prod = (x[i] - lb[i]) * y[i];
+			}
+
+			/* upper bound */
+			if ( ub != 0 )
+			{
+				if ( isEqual(workingSetB[i],1.0) == BT_TRUE )
+					prod = (x[i] - ub[i]) * y[i];
+			}
+
+			if (getAbs(prod) > cmpl) cmpl = getAbs(prod);
+		}
+	}
+
+	/* check primal feasibility and complementarity of constraints */
 	for (i = 0; i < nC; i++)
 	{
 		/* compute sum = (A*x)_i */
@@ -708,34 +736,60 @@ void getKKTResidual(	int nV, int nC,
 		/* complementarity */
 		prod = 0.0;
 
+		/* lower bound */
 		if ( lbA != 0 )
-			if (y[nV+i] > dualActiveTolerance) /* lower bound */
-				prod = (sum - lbA[i]) * y[nV+i];
+		{
+			if ( workingSetC == 0 )
+			{
+				if (y[nV+i] > dualActiveTolerance) 
+					prod = (sum - lbA[i]) * y[nV+i];
+			}
+			else
+			{
+				if ( isEqual(workingSetC[i],-1.0) == BT_TRUE )
+					prod = (sum - lbA[i]) * y[nV+i];
+			}
+		}
 		
+		/* upper bound */
 		if ( ubA != 0 )
-			if (y[nV+i] < -dualActiveTolerance) /* upper bound */
-				prod = (sum - ubA[i]) * y[nV+i];
+		{
+			if ( workingSetC == 0 )
+			{
+				if (y[nV+i] < -dualActiveTolerance)
+					prod = (sum - ubA[i]) * y[nV+i];
+			}
+			else
+			{
+				if ( isEqual(workingSetC[i],1.0) == BT_TRUE )
+					prod = (sum - ubA[i]) * y[nV+i];
+			}
+		}
 
 		if (getAbs(prod) > cmpl) cmpl = getAbs(prod);
 	}
+
+	return SUCCESSFUL_RETURN;
 }
 
 
 /*
- *	g e t K K T R e s i d u a l
+ *	g e t K k t V i o l a t i o n
  */
-void getKKTResidual(	int nV,
-						const real_t* const H, const real_t* const g,
-						const real_t* const lb, const real_t* const ub,
-						const real_t* const x, const real_t* const y,
-						real_t& stat, real_t& feas, real_t& cmpl
-						)
+returnValue getKktViolation(	int nV,
+								const real_t* const H, const real_t* const g,
+								const real_t* const lb, const real_t* const ub,
+								const real_t* const x, const real_t* const y,
+								real_t& stat, real_t& feas, real_t& cmpl,
+								const real_t* const workingSetB, BooleanType hasIdentityHessian
+								)
 {
-	getKKTResidual(	nV,0,
-					H,g,0,lb,ub,0,0,
-					x,y,
-					stat,feas,cmpl
-					);
+	return getKktViolation(	nV,0,
+							H,g,0,lb,ub,0,0,
+							x,y,
+							stat,feas,cmpl,
+							workingSetB,0,hasIdentityHessian
+							);
 }
 
 
@@ -972,7 +1026,7 @@ extern "C" void gdb_printmat(const char *fname, real_t *M, int n, int m, int ldi
 
 
 
-#if defined(__DSPACE__) || defined(__XPCTARGET__) 
+#if defined(__DSPACE__) || defined(__XPCTARGET__) || defined(__C_WRAPPER__)
 /*
  *	_ _ c x a _ p u r e _ v i r t u a l
  */

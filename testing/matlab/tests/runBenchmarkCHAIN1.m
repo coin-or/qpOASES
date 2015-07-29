@@ -1,5 +1,9 @@
-function [ successFlag ] = runBenchmarkCHAIN1( nWSR )
+function [ successFlag ] = runBenchmarkCHAIN1( nWSR,doPrint )
 
+	if ( nargin < 2 )
+		doPrint = 0;
+	end
+    
     successFlag = 0;
 	maxViolation = 0;
 
@@ -24,7 +28,7 @@ function [ successFlag ] = runBenchmarkCHAIN1( nWSR )
     objOpt = zeros(1,nP);
     iter = zeros(1,nP);
 
-	options = qpOASES_options( 'fast','maxIter',nWSR );
+	options = qpOASES_options( 'fast','maxIter',nWSR, 'printLevel',2*doPrint );
     %options = qpOASES_options( 'maxIter',nWSR );
 
 	for i=1:nP

@@ -1,4 +1,8 @@
-function [ successFlag ] = runBenchmarkEQUALITY2( nWSR )
+function [ successFlag ] = runBenchmarkEQUALITY2( nWSR,doPrint )
+
+	if ( nargin < 2 )
+		doPrint = 0;
+	end
 
     successFlag = 0;
 	maxViolation = 0;
@@ -27,7 +31,7 @@ function [ successFlag ] = runBenchmarkEQUALITY2( nWSR )
     %lbA(65:320) = lbA(65:320) - 0.000000000;
     %ubA(65:320) = ubA(65:320) + 0.000000000;
 
-	options = qpOASES_options( 'maxIter',nWSR, 'enableEqualities',1, 'printLevel',0 );
+	options = qpOASES_options( 'maxIter',nWSR, 'enableEqualities',1, 'printLevel',2*doPrint );
     %options = qpOASES_options( 'fast','maxIter',nWSR, 'printLevel',-2 );
 
 	for i=1:nP

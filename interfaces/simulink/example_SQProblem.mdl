@@ -6,7 +6,7 @@ Model {
     NumRootInports	    0
     NumRootOutports	    0
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.62"
+    ComputedModelVersion    "1.67"
     NumModelReferences	    0
     NumTestPointedSignals   0
   }
@@ -25,9 +25,9 @@ Model {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "chjofer2"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Thu Feb 20 15:12:07 2014"
-  RTWModifiedTimeStamp	  314809925
-  ModelVersionFormat	  "1.%<AutoIncrement:62>"
+  LastModifiedDate	  "Wed Jan 07 09:31:42 2015"
+  RTWModifiedTimeStamp	  342523898
+  ModelVersionFormat	  "1.%<AutoIncrement:67>"
   ConfigurationManager	  "None"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -593,7 +593,7 @@ Model {
   }
   System {
     Name		    "example_SQProblem"
-    Location		    [2, 74, 1918, 1139]
+    Location		    [122, 122, 1798, 1077]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -607,32 +607,12 @@ Model {
     ShowPageBoundaries	    off
     ZoomFactor		    "125"
     ReportName		    "simulink-default.rpt"
-    SIDHighWatermark	    9
+    SIDHighWatermark	    14
     Block {
       BlockType		      FromWorkspace
-      Name		      "From\nWorkspace1"
-      SID		      1
-      Position		      [85, 53, 150, 77]
-      VariableName	      "H"
-      SampleTime	      "0.1"
-      ZeroCross		      on
-      OutputAfterFinalValue   "Holding final value"
-    }
-    Block {
-      BlockType		      FromWorkspace
-      Name		      "From\nWorkspace2"
-      SID		      2
-      Position		      [85, 113, 150, 137]
-      VariableName	      "g"
-      SampleTime	      "0.1"
-      ZeroCross		      on
-      OutputAfterFinalValue   "Holding final value"
-    }
-    Block {
-      BlockType		      FromWorkspace
-      Name		      "From\nWorkspace3"
+      Name		      "A"
       SID		      3
-      Position		      [85, 173, 150, 197]
+      Position		      [100, 198, 165, 222]
       VariableName	      "A"
       SampleTime	      "0.1"
       ZeroCross		      on
@@ -640,9 +620,29 @@ Model {
     }
     Block {
       BlockType		      FromWorkspace
-      Name		      "From\nWorkspace4"
+      Name		      "H"
+      SID		      1
+      Position		      [100, 98, 165, 122]
+      VariableName	      "H"
+      SampleTime	      "0.1"
+      ZeroCross		      on
+      OutputAfterFinalValue   "Holding final value"
+    }
+    Block {
+      BlockType		      FromWorkspace
+      Name		      "g"
+      SID		      2
+      Position		      [100, 148, 165, 172]
+      VariableName	      "g"
+      SampleTime	      "0.1"
+      ZeroCross		      on
+      OutputAfterFinalValue   "Holding final value"
+    }
+    Block {
+      BlockType		      FromWorkspace
+      Name		      "lb"
       SID		      4
-      Position		      [85, 233, 150, 257]
+      Position		      [100, 248, 165, 272]
       VariableName	      "lb"
       SampleTime	      "0.1"
       ZeroCross		      on
@@ -650,9 +650,29 @@ Model {
     }
     Block {
       BlockType		      FromWorkspace
-      Name		      "From\nWorkspace5"
+      Name		      "lbA"
+      SID		      6
+      Position		      [100, 348, 165, 372]
+      VariableName	      "lbA"
+      SampleTime	      "0.1"
+      ZeroCross		      on
+      OutputAfterFinalValue   "Holding final value"
+    }
+    Block {
+      BlockType		      "S-Function"
+      Name		      "qpOASES"
+      SID		      9
+      Ports		      [7, 4]
+      Position		      [590, 224, 790, 296]
+      BackgroundColor	      "yellow"
+      FunctionName	      "qpOASES_SQProblem"
+      EnableBusSupport	      off
+    }
+    Block {
+      BlockType		      FromWorkspace
+      Name		      "ub"
       SID		      5
-      Position		      [85, 293, 150, 317]
+      Position		      [100, 298, 165, 322]
       VariableName	      "ub"
       SampleTime	      "0.1"
       ZeroCross		      on
@@ -660,19 +680,9 @@ Model {
     }
     Block {
       BlockType		      FromWorkspace
-      Name		      "From\nWorkspace6"
-      SID		      6
-      Position		      [85, 353, 150, 377]
-      VariableName	      "lbA"
-      SampleTime	      "0.1"
-      ZeroCross		      on
-      OutputAfterFinalValue   "Holding final value"
-    }
-    Block {
-      BlockType		      FromWorkspace
-      Name		      "From\nWorkspace7"
+      Name		      "ubA"
       SID		      7
-      Position		      [85, 418, 150, 442]
+      Position		      [100, 398, 165, 422]
       VariableName	      "ubA"
       SampleTime	      "0.1"
       ZeroCross		      on
@@ -680,10 +690,10 @@ Model {
     }
     Block {
       BlockType		      Scope
-      Name		      "fval,\nx,\nexitflag,\niter"
+      Name		      "x,\nfval,\nexitflag,\niter"
       SID		      8
       Ports		      [4]
-      Position		      [935, 229, 965, 261]
+      Position		      [950, 223, 1005, 297]
       Floating		      off
       Location		      [6, 78, 1276, 993]
       Open		      off
@@ -701,97 +711,87 @@ Model {
       DataFormat	      "StructureWithTime"
       SampleTime	      "0"
     }
-    Block {
-      BlockType		      "S-Function"
-      Name		      "qpOASES"
-      SID		      9
-      Ports		      [7, 4]
-      Position		      [600, 226, 795, 264]
-      BackgroundColor	      "yellow"
-      FunctionName	      "qpOASES_SQProblem"
-      EnableBusSupport	      off
-    }
     Line {
-      SrcBlock		      "From\nWorkspace1"
+      SrcBlock		      "H"
       SrcPort		      1
-      Points		      [180, 0; 0, 165]
+      Points		      [155, 0; 0, 120]
       DstBlock		      "qpOASES"
       DstPort		      1
     }
     Line {
-      SrcBlock		      "From\nWorkspace2"
+      SrcBlock		      "g"
       SrcPort		      1
-      Points		      [115, 0; 0, 110]
+      Points		      [115, 0; 0, 80]
       DstBlock		      "qpOASES"
       DstPort		      2
     }
     Line {
       Labels		      [3, 0]
-      SrcBlock		      "From\nWorkspace7"
+      SrcBlock		      "ubA"
       SrcPort		      1
-      Points		      [180, 0; 0, -170]
+      Points		      [160, 0; 0, -120]
       DstBlock		      "qpOASES"
       DstPort		      7
     }
     Line {
-      SrcBlock		      "From\nWorkspace5"
+      SrcBlock		      "ub"
       SrcPort		      1
-      Points		      [55, 0; 0, -55]
+      Points		      [80, 0; 0, -40]
       DstBlock		      "qpOASES"
       DstPort		      5
     }
     Line {
-      SrcBlock		      "From\nWorkspace4"
+      SrcBlock		      "lb"
       SrcPort		      1
       DstBlock		      "qpOASES"
       DstPort		      4
     }
     Line {
-      SrcBlock		      "From\nWorkspace3"
+      SrcBlock		      "A"
       SrcPort		      1
-      Points		      [55, 0; 0, 55]
+      Points		      [80, 0; 0, 40]
       DstBlock		      "qpOASES"
       DstPort		      3
     }
     Line {
       Labels		      [3, 0]
-      SrcBlock		      "From\nWorkspace6"
+      SrcBlock		      "lbA"
       SrcPort		      1
-      Points		      [115, 0; 0, -110]
+      Points		      [115, 0; 0, -80]
       DstBlock		      "qpOASES"
       DstPort		      6
     }
     Line {
       SrcBlock		      "qpOASES"
       SrcPort		      1
-      DstBlock		      "fval,\nx,\nexitflag,\niter"
+      DstBlock		      "x,\nfval,\nexitflag,\niter"
       DstPort		      1
     }
     Line {
       SrcBlock		      "qpOASES"
       SrcPort		      2
-      DstBlock		      "fval,\nx,\nexitflag,\niter"
+      DstBlock		      "x,\nfval,\nexitflag,\niter"
       DstPort		      2
     }
     Line {
       SrcBlock		      "qpOASES"
       SrcPort		      3
-      DstBlock		      "fval,\nx,\nexitflag,\niter"
+      DstBlock		      "x,\nfval,\nexitflag,\niter"
       DstPort		      3
     }
     Line {
       SrcBlock		      "qpOASES"
       SrcPort		      4
-      DstBlock		      "fval,\nx,\nexitflag,\niter"
+      DstBlock		      "x,\nfval,\nexitflag,\niter"
       DstPort		      4
     }
     Annotation {
-      Position		      [335, 96]
+      Position		      [350, 96]
     }
     Annotation {
       Name		      "This file is part of qpOASES.\n\nqpOASES -- An Implementation of the Online Active Set Strategy.\nC"
-      "opyright (C) 2007-2014 by Hans Joachim Ferreau, Andreas Potschka, Christian Kirches et al.\nAll rights reserved."
-      Position		      [698, 138]
+      "opyright (C) 2007-2015 by Hans Joachim Ferreau, Andreas Potschka, Christian Kirches et al.\nAll rights reserved."
+      Position		      [683, 128]
     }
   }
 }

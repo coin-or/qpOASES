@@ -2,7 +2,7 @@
  *	This file is part of qpOASES.
  *
  *	qpOASES -- An Implementation of the Online Active Set Strategy.
- *	Copyright (C) 2007-2014 by Hans Joachim Ferreau, Andreas Potschka,
+ *	Copyright (C) 2007-2015 by Hans Joachim Ferreau, Andreas Potschka,
  *	Christian Kirches et al. All rights reserved.
  *
  *	qpOASES is free software; you can redistribute it and/or
@@ -25,8 +25,8 @@
 /**
  *	\file include/qpOASES/Matrices.hpp
  *	\author Andreas Potschka, Hans Joachim Ferreau, Christian Kirches
- *	\version 3.0
- *	\date 2009-2014
+ *	\version 3.1
+ *	\date 2009-2015
  *
  *  Various matrix classes: Abstract base matrix class, dense and sparse matrices,
  *  including symmetry exploiting specializations.
@@ -118,8 +118,8 @@ typedef int sparse_int_t;
  *  index lists (see \a SubjectTo).
  *
  *	\author Andreas Potschka, Christian Kirches, Hans Joachim Ferreau
- *	\version 3.0
- *	\date 2011-2014
+ *	\version 3.1
+ *	\date 2011-2015
  */
 class Matrix
 {
@@ -345,12 +345,17 @@ class Matrix
  *  bilinear form evaluation.
  *
  *	\author Andreas Potschka, Christian Kirches, Hans Joachim Ferreau
- *	\version 3.0
- *	\date 2011-2014
+ *	\version 3.1
+ *	\date 2011-2015
  */
 class SymmetricMatrix : public virtual Matrix
 {
 	public:
+		/** Default constructor. */
+		SymmetricMatrix( ) { };
+
+		/** Destructor. */
+		virtual ~SymmetricMatrix( ) { };
 
 		/** Returns a deep-copy of the SymmetricMatrix object.
 		 *	\return Deep-copy of SymmetricMatrix object */
@@ -376,14 +381,14 @@ class SymmetricMatrix : public virtual Matrix
  *	Dense matrix class (row major format).
  *
  *	\author Andreas Potschka, Christian Kirches, Hans Joachim Ferreau
- *	\version 3.0
- *	\date 2011-2014
+ *	\version 3.1
+ *	\date 2011-2015
  */
 class DenseMatrix : public virtual Matrix
 {
 	public:
 		/** Default constructor. */
-		DenseMatrix( ) : nRows(0), nCols(0), leaDim(0), val(0) {};
+		DenseMatrix( ) : nRows(0), nCols(0), leaDim(0), val(0) { };
 
 		/** Constructor from vector of values.
 		 *  Caution: Data pointer must be valid throughout lifetime
@@ -396,7 +401,7 @@ class DenseMatrix : public virtual Matrix
 
 
 		/** Destructor. */
-		virtual ~DenseMatrix();
+		virtual ~DenseMatrix( );
 
 		/** Frees all internal memory. */
 		virtual void free( );
@@ -430,12 +435,11 @@ class DenseMatrix : public virtual Matrix
 
         /** Retrieve indexed entries of matrix row multiplied by alpha.
 		 *  \return SUCCESSFUL_RETURN */
-		virtual returnValue getRow(
-				int rNum,						/**< Row number. */
-				const Indexlist* const icols,	/**< Index list specifying columns. */
-				real_t alpha,					/**< Scalar factor. */
-				real_t *row						/**< Output row vector. */
-				) const;
+		virtual returnValue getRow(	int rNum,						/**< Row number. */
+									const Indexlist* const icols,	/**< Index list specifying columns. */
+									real_t alpha,					/**< Scalar factor. */
+									real_t *row						/**< Output row vector. */
+									) const;
 
 		/** Retrieve indexed entries of matrix column multiplied by alpha.
 		 *  \return SUCCESSFUL_RETURN */
@@ -468,29 +472,29 @@ class DenseMatrix : public virtual Matrix
 
 		/** Evaluate Y=alpha*A*X + beta*Y.
 		 *  \return SUCCESSFUL_RETURN. */
-		returnValue times (	int xN,					/**< Number of vectors to multiply. */
-							real_t alpha,			/**< Scalar factor for matrix vector product. */
-							const real_t *x,		/**< Input vector to be multiplied. */
-							int xLD,				/**< Leading dimension of input x. */
-							real_t beta,			/**< Scalar factor for y. */
-							real_t *y,				/**< Output vector of results. */
-							int yLD					/**< Leading dimension of output y. */
-							) const;
+		virtual returnValue times(	int xN,					/**< Number of vectors to multiply. */
+									real_t alpha,			/**< Scalar factor for matrix vector product. */
+									const real_t *x,		/**< Input vector to be multiplied. */
+									int xLD,				/**< Leading dimension of input x. */
+									real_t beta,			/**< Scalar factor for y. */
+									real_t *y,				/**< Output vector of results. */
+									int yLD					/**< Leading dimension of output y. */
+									) const;
 
 		/** Evaluate Y=alpha*A'*X + beta*Y.
 		 *  \return SUCCESSFUL_RETURN. */
-		returnValue transTimes (	int xN,				/**< Number of vectors to multiply. */
-									real_t alpha,		/**< Scalar factor for matrix vector product. */
-									const real_t *x,	/**< Input vector to be multiplied. */
-									int xLD,			/**< Leading dimension of input x. */
-									real_t beta,		/**< Scalar factor for y. */
-									real_t *y,			/**< Output vector of results. */
-									int yLD				/**< Leading dimension of output y. */
-									) const;
+		virtual returnValue transTimes(	int xN,				/**< Number of vectors to multiply. */
+										real_t alpha,		/**< Scalar factor for matrix vector product. */
+										const real_t *x,	/**< Input vector to be multiplied. */
+										int xLD,			/**< Leading dimension of input x. */
+										real_t beta,		/**< Scalar factor for y. */
+										real_t *y,			/**< Output vector of results. */
+										int yLD				/**< Leading dimension of output y. */
+										) const;
 
 		/** Evaluate matrix vector product with submatrix given by Indexlist.
 		 *	\return SUCCESSFUL_RETURN */
-		virtual returnValue times (	const Indexlist* const irows,	/**< Index list specifying rows. */
+		virtual returnValue times(	const Indexlist* const irows,	/**< Index list specifying rows. */
 									const Indexlist* const icols,	/**< Index list specifying columns. */
 									int xN,							/**< Number of vectors to multiply. */
 									real_t alpha,					/**< Scalar factor for matrix vector product. */
@@ -504,16 +508,16 @@ class DenseMatrix : public virtual Matrix
 
 		/** Evaluate matrix transpose vector product.
 		 *	\return SUCCESSFUL_RETURN */
-		virtual returnValue transTimes (	const Indexlist* const irows,	/**< Index list specifying rows. */
-											const Indexlist* const icols,	/**< Index list specifying columns. */
-											int xN,							/**< Number of vectors to multiply. */
-											real_t alpha,					/**< Scalar factor for matrix vector product. */
-											const real_t *x,				/**< Input vector to be multiplied. */
-											int xLD,						/**< Leading dimension of input x. */
-											real_t beta,					/**< Scalar factor for y. */
-											real_t *y,						/**< Output vector of results. */
-											int yLD							/**< Leading dimension of output y. */
-											) const;
+		virtual returnValue transTimes(	const Indexlist* const irows,	/**< Index list specifying rows. */
+										const Indexlist* const icols,	/**< Index list specifying columns. */
+										int xN,							/**< Number of vectors to multiply. */
+										real_t alpha,					/**< Scalar factor for matrix vector product. */
+										const real_t *x,				/**< Input vector to be multiplied. */
+										int xLD,						/**< Leading dimension of input x. */
+										real_t beta,					/**< Scalar factor for y. */
+										real_t *y,						/**< Output vector of results. */
+										int yLD							/**< Leading dimension of output y. */
+										) const;
 
 		/** Adds given offset to diagonal of matrix.
 		 *	\return SUCCESSFUL_RETURN \n
@@ -554,21 +558,24 @@ class DenseMatrix : public virtual Matrix
  *	Symmetric dense matrix class.
  *
  *	\author Andreas Potschka, Christian Kirches, Hans Joachim Ferreau
- *	\version 3.0
- *	\date 2011-2014
+ *	\version 3.1
+ *	\date 2011-2015
  */
 class SymDenseMat : public DenseMatrix, public SymmetricMatrix
 {
 	public:
 		/** Default constructor. */
-		SymDenseMat() : DenseMatrix() {}
+		SymDenseMat() : DenseMatrix() { };
 
 		/** Constructor from vector of values. */
 		SymDenseMat(	int m,			/**< Number of rows. */
 						int n,			/**< Number of columns. */
 						int lD,			/**< Leading dimension. */
 						real_t *v		/**< Values. */
-						) : DenseMatrix(m, n, lD, v) {}
+						) : DenseMatrix(m, n, lD, v) { };
+
+		/** Destructor. */
+		virtual ~SymDenseMat() { };
 
 		/** Returns a deep-copy of the Matrix object.
 		 *	\return Deep-copy of Matrix object */
@@ -597,24 +604,22 @@ class SymDenseMat : public DenseMatrix, public SymmetricMatrix
  *	Sparse matrix class (col compressed format).
  *
  *	\author Andreas Potschka, Christian Kirches, Hans Joachim Ferreau
- *	\version 3.0
- *	\date 2011-2014
+ *	\version 3.1
+ *	\date 2011-2015
  */
 class SparseMatrix : public virtual Matrix
 {
 	public:
 		/** Default constructor. */
-		SparseMatrix();
+		SparseMatrix( );
 
 		/** Constructor with arguments. */
-		SparseMatrix(
-				int nr, 		/**< Number of rows. */
-				int nc, 		/**< Number of columns. */
-				sparse_int_t *r, 		/**< Row indices (length). */
-				sparse_int_t *c, 		/**< Indices to first entry of columns (nCols+1). */
-				real_t *v,		/**< Vector of entries (length). */
-				sparse_int_t *d = 0		/**< Indices to first entry of lower triangle (including diagonal) (nCols). */
-				);
+		SparseMatrix(	int nr, 			/**< Number of rows. */
+						int nc, 			/**< Number of columns. */
+						sparse_int_t *r, 	/**< Row indices (length). */
+						sparse_int_t *c, 	/**< Indices to first entry of columns (nCols+1). */
+						real_t *v			/**< Vector of entries (length). */
+						);
 
 		/** Constructor from dense matrix. */
 		SparseMatrix(	int nr, 				/**< Number of rows. */
@@ -624,7 +629,7 @@ class SparseMatrix : public virtual Matrix
 						);
 
 		/** Destructor. */
-		virtual ~SparseMatrix();
+		virtual ~SparseMatrix( );
 
 		/** Frees all internal memory. */
 		virtual void free( );
@@ -779,24 +784,22 @@ class SparseMatrix : public virtual Matrix
  *	Sparse matrix class (row compressed format).
  *
  *	\author Andreas Potschka, Christian Kirches, Hans Joachim Ferreau
- *	\version 3.0
- *	\date 2011-2014
+ *	\version 3.1
+ *	\date 2011-2015
  */
 class SparseMatrixRow : public virtual Matrix
 {
 	public:
 		/** Default constructor. */
-		SparseMatrixRow();
+		SparseMatrixRow( );
 
 		/** Constructor with arguments. */
-		SparseMatrixRow(
-				int nr, 		/**< Number of rows. */
-				int nc, 		/**< Number of columns. */
-				sparse_int_t *r, 		/**< Indices to first entry of rows (nRows+1). */
-				sparse_int_t *c, 		/**< Column indices (length). */
-				real_t *v,		/**< Vector of entries (length). */
-				sparse_int_t *d = 0		/**< Indices to first entry of upper triangle (including diagonal) (nRows). */
-				);
+		SparseMatrixRow(	int nr, 			/**< Number of rows. */
+							int nc, 			/**< Number of columns. */
+							sparse_int_t *r, 	/**< Indices to first entry of rows (nRows+1). */
+							sparse_int_t *c, 	/**< Column indices (length). */
+							real_t *v			/**< Vector of entries (length). */
+							);
 
 		/** Constructor from dense matrix. */
 		SparseMatrixRow(	int nr, 				/**< Number of rows. */
@@ -806,7 +809,7 @@ class SparseMatrixRow : public virtual Matrix
 							);
 
 		/** Destructor. */
-		virtual ~SparseMatrixRow();
+		virtual ~SparseMatrixRow( );
 
 		/** Frees all internal memory. */
 		virtual void free( );
@@ -840,12 +843,11 @@ class SparseMatrixRow : public virtual Matrix
 									) const;
 
 		/** Retrieve indexed entries of matrix row multiplied by alpha. */
-		virtual returnValue getRow (
-				int rNum,						/**< Row number. */
-				const Indexlist* const icols,	/**< Index list specifying columns. */
-				real_t alpha,					/**< Scalar factor. */
-				real_t *row						/**< Output row vector. */
-				) const;
+		virtual returnValue getRow (	int rNum,						/**< Row number. */
+										const Indexlist* const icols,	/**< Index list specifying columns. */
+										real_t alpha,					/**< Scalar factor. */
+										real_t *row						/**< Output row vector. */
+										) const;
 
 		/** Retrieve indexed entries of matrix column multiplied by alpha. */
 		virtual returnValue getCol (
@@ -875,7 +877,7 @@ class SparseMatrixRow : public virtual Matrix
 				) const;
 
 		/** Evaluate Y=alpha*A*X + beta*Y. */
-		virtual returnValue times (	int xN,					/**< Number of vectors to multiply. */
+		virtual returnValue times(	int xN,					/**< Number of vectors to multiply. */
 									real_t alpha,			/**< Scalar factor for matrix vector product. */
 									const real_t *x,		/**< Input vector to be multiplied. */
 									int xLD,				/**< Leading dimension of input x. */
@@ -885,17 +887,17 @@ class SparseMatrixRow : public virtual Matrix
 									) const;
 
 		/** Evaluate Y=alpha*A'*X + beta*Y. */
-		virtual returnValue transTimes (	int xN,				/**< Number of vectors to multiply. */
-											real_t alpha,		/**< Scalar factor for matrix vector product. */
-											const real_t *x,	/**< Input vector to be multiplied. */
-											int xLD,			/**< Leading dimension of input x. */
-											real_t beta,		/**< Scalar factor for y. */
-											real_t *y,			/**< Output vector of results. */
-											int yLD				/**< Leading dimension of output y. */
-											) const;
+		virtual returnValue transTimes(	int xN,				/**< Number of vectors to multiply. */
+										real_t alpha,		/**< Scalar factor for matrix vector product. */
+										const real_t *x,	/**< Input vector to be multiplied. */
+										int xLD,			/**< Leading dimension of input x. */
+										real_t beta,		/**< Scalar factor for y. */
+										real_t *y,			/**< Output vector of results. */
+										int yLD				/**< Leading dimension of output y. */
+										) const;
 
 		/** Evaluate matrix vector product with submatrix given by Indexlist. */
-		virtual returnValue times (	const Indexlist* const irows,	/**< Index list specifying rows. */
+		virtual returnValue times(	const Indexlist* const irows,	/**< Index list specifying rows. */
 									const Indexlist* const icols,	/**< Index list specifying columns. */
 									int xN,							/**< Number of vectors to multiply. */
 									real_t alpha,					/**< Scalar factor for matrix vector product. */
@@ -908,16 +910,16 @@ class SparseMatrixRow : public virtual Matrix
 									) const;
 
 		/** Evaluate matrix transpose vector product. */
-		virtual returnValue transTimes (	const Indexlist* const irows,	/**< Index list specifying rows. */
-											const Indexlist* const icols,	/**< Index list specifying columns. */
-											int xN,							/**< Number of vectors to multiply. */
-											real_t alpha,					/**< Scalar factor for matrix vector product. */
-											const real_t *x,				/**< Input vector to be multiplied. */
-											int xLD,						/**< Leading dimension of input x. */
-											real_t beta,					/**< Scalar factor for y. */
-											real_t *y,						/**< Output vector of results. */
-											int yLD							/**< Leading dimension of output y. */
-											) const;
+		virtual returnValue transTimes(	const Indexlist* const irows,	/**< Index list specifying rows. */
+										const Indexlist* const icols,	/**< Index list specifying columns. */
+										int xN,							/**< Number of vectors to multiply. */
+										real_t alpha,					/**< Scalar factor for matrix vector product. */
+										const real_t *x,				/**< Input vector to be multiplied. */
+										int xLD,						/**< Leading dimension of input x. */
+										real_t beta,					/**< Scalar factor for y. */
+										real_t *y,						/**< Output vector of results. */
+										int yLD							/**< Leading dimension of output y. */
+										) const;
 
 		/** Adds given offset to diagonal of matrix.
 		 *	\return SUCCESSFUL_RETURN \n
@@ -962,30 +964,32 @@ class SparseMatrixRow : public virtual Matrix
  *	Symmetric sparse matrix class (column compressed format).
  *
  *	\author Andreas Potschka, Christian Kirches, Hans Joachim Ferreau
- *	\version 3.0
- *	\date 2011-2014
+ *	\version 3.1
+ *	\date 2011-2015
  */
 class SymSparseMat : public SymmetricMatrix, public SparseMatrix
 {
 	public:
 		/** Default constructor. */
-		SymSparseMat() : SparseMatrix() {}
+		SymSparseMat( ) : SparseMatrix( ) { };
 
 		/** Constructor with arguments. */
 		SymSparseMat(	int nr, 			/**< Number of rows. */
 						int nc, 			/**< Number of columns. */
 						sparse_int_t *r, 	/**< Row indices (length). */
 						sparse_int_t *c, 	/**< Indices to first entry of columns (nCols+1). */
-						real_t *v,			/**< Vector of entries (length). */
-						sparse_int_t *d = 0	/**< Indices to first entry of lower triangle (including diagonal) (nCols). */
-						) : SparseMatrix(nr, nc, r, c, v, d) {}
+						real_t *v			/**< Vector of entries (length). */
+						) : SparseMatrix(nr, nc, r, c, v) { };
 
 		/** Constructor from dense matrix. */
 		SymSparseMat(	int nr, 				/**< Number of rows. */
 						int nc,			 		/**< Number of columns. */
 						int ld,					/**< Leading dimension. */
 						const real_t * const v	/**< Row major stored matrix elements. */
-						) : SparseMatrix(nr, nc, ld, v) {}
+						) : SparseMatrix(nr, nc, ld, v) { };
+
+		/** Destructor. */
+		virtual ~SymSparseMat( ) { };
 
 		/** Returns a deep-copy of the Matrix object.
 		 *	\return Deep-copy of Matrix object */

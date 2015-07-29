@@ -2,7 +2,7 @@
 ##	This file is part of qpOASES.
 ##
 ##	qpOASES -- An Implementation of the Online Active Set Strategy.
-##	Copyright (C) 2007-2014 by Hans Joachim Ferreau, Andreas Potschka,
+##	Copyright (C) 2007-2015 by Hans Joachim Ferreau, Andreas Potschka,
 ##	Christian Kirches et al. All rights reserved.
 ##
 ##	qpOASES is free software; you can redistribute it and/or
@@ -31,20 +31,20 @@ Download a zipped archive containg the latest stable release and unpack it
 into <install-dir>. Alternatively, you check out the latest stable branch, 
 e.g. by running
 
-svn co https://projects.coin-or.org/svn/qpOASES/stable/3.0 <install-dir>
+svn co https://projects.coin-or.org/svn/qpOASES/stable/3.1 <install-dir>
 
 from your shell. 
 
 
-1. Compilation of the qpOASES library libqpOASES.a and test examples:
+1. Compilation of the qpOASES library libqpOASES.a (or .so) and test examples:
 
 cd <install-dir>
 make
 
-The library  libqpOASES.a  provides the complete functionality of the qpOASES 
-software package. It can be used by, e.g., linking it against a main function 
-from the examples folder. The make also compiles a couple of test examples; 
-executables are stored within the directory <install-dir>/bin.
+The library  libqpOASES.a (or .so)  provides the complete functionality of the 
+qpOASES software package. It can be used by, e.g., linking it against a main 
+function from the examples folder. The make also compiles a couple of test 
+examples; executables are stored within the directory <install-dir>/bin.
 
 
 2. Running a simple test example:

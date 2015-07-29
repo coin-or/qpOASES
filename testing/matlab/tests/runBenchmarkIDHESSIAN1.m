@@ -1,4 +1,8 @@
-function [ successFlag ] = runBenchmarkIDHESSIAN1( nWSR )
+function [ successFlag ] = runBenchmarkIDHESSIAN1( nWSR,doPrint )
+
+	if ( nargin < 2 )
+		doPrint = 0;
+	end
 
     successFlag = 0;
 	maxViolation = 0;
@@ -23,7 +27,7 @@ function [ successFlag ] = runBenchmarkIDHESSIAN1( nWSR )
     yOpt = zeros(nV+nC,nP);
     objOpt = zeros(1,nP);
        
-	options = qpOASES_options( 'maxIter',nWSR, 'printLevel',-2 );
+	options = qpOASES_options( 'maxIter',nWSR, 'printLevel',-2*doPrint );
     %options = qpOASES_options( 'fast','maxIter',nWSR, 'printLevel',2 );
     
 

@@ -1,5 +1,5 @@
 %qpOASES -- An Implementation of the Online Active Set Strategy.
-%Copyright (C) 2007-2014 by Hans Joachim Ferreau, Andreas Potschka,
+%Copyright (C) 2007-2015 by Hans Joachim Ferreau, Andreas Potschka,
 %Christian Kirches et al. All rights reserved.
 %
 %qpOASES is distributed under the terms of the
@@ -24,9 +24,9 @@
 %to obtain a set of default options but with 'option1' set to value1 etc.
 %
 %Call
-%    options = qpOASES_options( oldopts,'option1',value1,... )
-%to obtain a copy of the options struct oldopts but with 'option1' set to 
-%value1 etc.
+%    options = qpOASES_options( oldOptions,'option1',value1,... )
+%to obtain a copy of the options struct oldOptions but with 'option1' set
+%to value1 etc.
 %
 %Call
 %    options = qpOASES_options( 'default', 'option1',value1,... )
@@ -101,7 +101,7 @@
 %  epsNZCTests                -  Tolerance for nonzero curvature tests.
 %
 %
-%See also QPOASES, QPOASES_SEQUENCE
+%See also QPOASES, QPOASES_SEQUENCE, QPOASES_AUXINPUT
 %
 %
 %For additional information see the qpOASES User's Manual or
@@ -160,7 +160,7 @@ function [ options ] = qpOASES_options( varargin )
         end
 			
 		if ( ( ischar(argValue) ) || ( ~isscalar( argValue ) ) )
-			error('ERROR (qpOASES_options): Argmument no. %d has to be a numerical constant!',i+1 );
+			error('ERROR (qpOASES_options): Argmument no. %d has to be a scalar constant!',i+1 );
         end
 
 		if ( ~isfield( options,argName ) )
@@ -210,7 +210,7 @@ function [ options ] = qpOASES_default_options( )
 						'numRefinementSteps',             1, ...
 						'epsIterRef',                     1.0e2*eps, ...
 						'epsLITests',                     1.0e5*eps, ...
-						'epsNZCTests',                    3.0e3*eps );
+						'epsNZCTests',                    3.1e3*eps );
 
 end
 

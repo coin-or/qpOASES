@@ -1,4 +1,8 @@
-function [ successFlag ] = runBenchmarkCHAIN1A( nWSR )
+function [ successFlag ] = runBenchmarkCHAIN1A( nWSR,doPrint )
+
+	if ( nargin < 2 )
+		doPrint = 0;
+	end
 
     successFlag = 0;
 	maxViolation = 0;
@@ -23,7 +27,7 @@ function [ successFlag ] = runBenchmarkCHAIN1A( nWSR )
     yOpt = zeros(nV+nC,nP);
     objOpt = zeros(1,nP);
     
-	options = qpOASES_options( 'fast','maxIter',nWSR );
+	options = qpOASES_options( 'fast','maxIter',nWSR, 'printLevel',2*doPrint );
     %options = qpOASES_options( 'reliable', 'maxIter',500,'printLevel',1 );
 % ,'enableRamping',0,'enableFlippingBounds',0,'enableFullLITests',0,'enableDriftCorrection',0
   

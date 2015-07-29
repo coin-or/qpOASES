@@ -1,5 +1,5 @@
 %qpOASES -- An Implementation of the Online Active Set Strategy.
-%Copyright (C) 2007-2014 by Hans Joachim Ferreau, Andreas Potschka,
+%Copyright (C) 2007-2015 by Hans Joachim Ferreau, Andreas Potschka,
 %Christian Kirches et al. All rights reserved.
 %
 %qpOASES is distributed under the terms of the
@@ -20,10 +20,10 @@
 %I) Call
 %
 %    [QP,x,fval,exitflag,iter,lambda,auxOutput] = ...
-%               qpOASES_sequence( 'i',H,g,A,lb,ub,lbA,ubA{,options{,auxInput} )
+%               qpOASES_sequence( 'i',H,g,A,lb,ub,lbA,ubA{,options{,auxInput}} )
 %or 
 %    [QP,x,fval,exitflag,iter,lambda,auxOutput] = ...
-%               qpOASES_sequence( 'i',H,g,lb,ub{,options{,auxInput} )
+%               qpOASES_sequence( 'i',H,g,lb,ub{,options{,auxInput}} )
 %
 %for initialising and solving the first above-mentioned QP of the sequence
 %starting from an initial guess x0. H must be a symmetric (possibly indefinite) 
@@ -60,7 +60,8 @@
 %
 %IV) Call
 %
-%     [x,lambda,workingSet] = qpOASES_sequence( 'e',QP,g,lb,ub,lbA,ubA{,options} )
+%     [x,lambda,workingSetB,workingSetC] = ...
+%                     qpOASES_sequence( 'e',QP,g,lb,ub,lbA,ubA{,options} )
 %
 %for solving the equality constrained QP with constraints determined by the
 %current active set. All inequalities and bounds which were not active in the
@@ -78,30 +79,28 @@
 %
 %
 %Optional outputs (only x is mandatory):
-%    x          -  Optimal primal solution vector (if exitflag==0).
-%    fval       -  Optimal objective function value (if exitflag==0).
-%    exitflag   -   0: QP solved,
-%                   1: QP could not be solved within given number of iterations,
-%                  -1: QP could not be solved due to an internal error,
-%                  -2: QP is infeasible (and thus could not be solved),
-%                  -3: QP is unbounded (and thus could not be solved).
-%    iter       -  Number of active set iterations actually performed.
-%    lambda     -  Optimal dual solution vector (if status==0).
-%    auxOutput  -  Struct containing auxiliary outputs as described below.
+%    x            -  Optimal primal solution vector (if exitflag==0).
+%    fval         -  Optimal objective function value (if exitflag==0).
+%    exitflag     -   0: QP solved,
+%                     1: QP could not be solved within given number of iterations,
+%                    -1: QP could not be solved due to an internal error,
+%                    -2: QP is infeasible (and thus could not be solved),
+%                    -3: QP is unbounded (and thus could not be solved).
+%    iter         -  Number of active set iterations actually performed.
+%    lambda       -  Optimal dual solution vector (if exitflag==0).
+%    auxOutput    -  Struct containing auxiliary outputs as described below.
 %
 %The auxOutput struct contains the following entries:
-%    workingSet -  The working set at point x. The working set is a subset
-%                  of the active set (which is the set of all indices
-%                  corresponding to bounds/constraints that hold with 
-%                  equality). The working set corresponds to bound/
-%                  constraint row vectors forming a linear independent set.
-%                  The first nV elements correspond to the bounds, the last
-%                  nC elements to the constraints.
-%                  The working set is encoded as follows:
-%                   1: bound/constraint at its upper bound
-%                   0: bound/constraint not at any bound
-%                  -1: bound/constraint at its lower bound
-%    cpuTime    -  Internally measured CPU time for solving QP.
+%    workingSetB  -  Working set of bounds at point x.
+%    workingSetC  -  Working set of constraints at point x.
+%                    The working set is a subset of the active set (indices
+%                    of bounds/constraints that hold with equality) yielding
+%                    a set linearly independent of bounds/constraints.
+%                    The working sets are encoded as follows:
+%                     1: bound/constraint at its upper bound
+%                     0: bound/constraint not at any bound
+%                    -1: bound/constraint at its lower bound
+%    cpuTime      -  Internally measured CPU time for solving QP problem.
 %
 %See also QPOASES_OPTIONS, QPOASES_AUXINPUT, QPOASES
 %

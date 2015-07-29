@@ -2,7 +2,7 @@
 ##	This file is part of qpOASES.
 ##
 ##	qpOASES -- An Implementation of the Online Active Set Strategy.
-##	Copyright (C) 2007-2014 by Hans Joachim Ferreau, Andreas Potschka,
+##	Copyright (C) 2007-2015 by Hans Joachim Ferreau, Andreas Potschka,
 ##	Christian Kirches et al. All rights reserved.
 ##
 ##	qpOASES is free software; you can redistribute it and/or
@@ -25,10 +25,11 @@
 ##
 ##	Filename:  Makefile
 ##	Author:    Hans Joachim Ferreau
-##	Version:   3.0
-##	Date:      2007-2014
+##	Version:   3.1
+##	Date:      2007-2015
 ##
 
+include make.mk
 
 ##
 ##	targets
@@ -51,10 +52,10 @@ doc:
 	@cd $@; ${MAKE} -s 
 
 testing: src
-	@cd $@; ${MAKE} -s
+	@cd testing/cpp; ${MAKE} -s
 
 test: testing
-	@cd testing; ${MAKE} -s runTests
+	@cd testing/cpp; ${MAKE} -s runTests
 
 debugging:
 	@cd $@; ${MAKE} -s 
@@ -62,8 +63,8 @@ debugging:
 clean:
 	@cd src               && ${MAKE} -s clean
 	@cd examples          && ${MAKE} -s clean
-	@cd bin               && ${RM} -f *.*
-	@cd testing           && ${MAKE} -s clean
+	@cd bin               && ${RM} -f *.* *{EXE}
+	@cd testing/cpp       && ${MAKE} -s clean
 
 #	&& cd src_aw            && ${MAKE} -s clean && cd .. \
 #	&& cd debugging         && ${MAKE} -s clean && cd .. \
@@ -81,8 +82,11 @@ python: all
 pythoninstall: all
 	cd ./interfaces/python/ && python setup.py install
 
+c_wrapper:
+	@echo Compiling C interface...
+	@cd ./interfaces/c/; ${MAKE} -s
 
-.PHONY : all src examples doc testing debugging clean clobber scilab python phythoninstall
+.PHONY : all src examples doc testing debugging clean clobber scilab python phythoninstall c_wrapper
 
 
 ##

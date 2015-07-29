@@ -6,7 +6,7 @@ Model {
     NumRootInports	    0
     NumRootOutports	    0
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.64"
+    ComputedModelVersion    "1.67"
     NumModelReferences	    0
     NumTestPointedSignals   0
   }
@@ -25,9 +25,9 @@ Model {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "chjofer2"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Thu Feb 20 15:12:19 2014"
-  RTWModifiedTimeStamp	  314809937
-  ModelVersionFormat	  "1.%<AutoIncrement:64>"
+  LastModifiedDate	  "Tue Jan 06 16:15:23 2015"
+  RTWModifiedTimeStamp	  342461721
+  ModelVersionFormat	  "1.%<AutoIncrement:67>"
   ConfigurationManager	  "None"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -593,7 +593,7 @@ Model {
   }
   System {
     Name		    "example_QProblemB"
-    Location		    [214, 137, 1484, 1054]
+    Location		    [1922, 224, 3598, 1179]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -610,19 +610,9 @@ Model {
     SIDHighWatermark	    6
     Block {
       BlockType		      FromWorkspace
-      Name		      "From\nWorkspace1"
-      SID		      1
-      Position		      [85, 93, 150, 117]
-      VariableName	      "H"
-      SampleTime	      "0.1"
-      ZeroCross		      on
-      OutputAfterFinalValue   "Holding final value"
-    }
-    Block {
-      BlockType		      FromWorkspace
-      Name		      "From\nWorkspace2"
+      Name		      "g"
       SID		      2
-      Position		      [85, 158, 150, 182]
+      Position		      [170, 153, 235, 177]
       VariableName	      "g"
       SampleTime	      "0.1"
       ZeroCross		      on
@@ -630,19 +620,30 @@ Model {
     }
     Block {
       BlockType		      FromWorkspace
-      Name		      "From\nWorkspace3"
+      Name		      "lb"
       SID		      3
-      Position		      [85, 218, 150, 242]
+      Position		      [170, 203, 235, 227]
       VariableName	      "lb"
       SampleTime	      "0.1"
       ZeroCross		      on
       OutputAfterFinalValue   "Holding final value"
     }
     Block {
+      BlockType		      "S-Function"
+      Name		      "qpOASES"
+      SID		      6
+      Ports		      [3, 4]
+      Position		      [505, 180, 700, 245]
+      BackgroundColor	      "yellow"
+      FunctionName	      "qpOASES_QProblemB"
+      Parameters	      "H"
+      EnableBusSupport	      off
+    }
+    Block {
       BlockType		      FromWorkspace
-      Name		      "From\nWorkspace4"
+      Name		      "ub"
       SID		      4
-      Position		      [85, 283, 150, 307]
+      Position		      [170, 253, 235, 277]
       VariableName	      "ub"
       SampleTime	      "0.1"
       ZeroCross		      on
@@ -650,10 +651,10 @@ Model {
     }
     Block {
       BlockType		      Scope
-      Name		      "fval,\nx,\nexitflag,\niter"
+      Name		      "x,\nfval,\nexitflag,\niter"
       SID		      5
       Ports		      [4]
-      Position		      [840, 184, 870, 216]
+      Position		      [855, 185, 905, 240]
       Floating		      off
       Location		      [6, 78, 1276, 993]
       Open		      off
@@ -671,74 +672,56 @@ Model {
       DataFormat	      "StructureWithTime"
       SampleTime	      "0"
     }
-    Block {
-      BlockType		      "S-Function"
-      Name		      "qpOASES"
-      SID		      6
-      Ports		      [4, 4]
-      Position		      [510, 181, 705, 219]
-      BackgroundColor	      "yellow"
-      FunctionName	      "qpOASES_QProblemB"
-      EnableBusSupport	      off
-    }
-    Line {
-      SrcBlock		      "From\nWorkspace1"
-      SrcPort		      1
-      Points		      [130, 0; 0, 80]
-      DstBlock		      "qpOASES"
-      DstPort		      1
-    }
-    Line {
-      SrcBlock		      "From\nWorkspace2"
-      SrcPort		      1
-      Points		      [80, 0; 0, 26; 260, 0]
-      DstBlock		      "qpOASES"
-      DstPort		      2
-    }
     Line {
       SrcBlock		      "qpOASES"
       SrcPort		      1
-      DstBlock		      "fval,\nx,\nexitflag,\niter"
+      DstBlock		      "x,\nfval,\nexitflag,\niter"
       DstPort		      1
     }
     Line {
       SrcBlock		      "qpOASES"
       SrcPort		      2
-      DstBlock		      "fval,\nx,\nexitflag,\niter"
+      DstBlock		      "x,\nfval,\nexitflag,\niter"
       DstPort		      2
     }
     Line {
       SrcBlock		      "qpOASES"
       SrcPort		      3
-      DstBlock		      "fval,\nx,\nexitflag,\niter"
+      DstBlock		      "x,\nfval,\nexitflag,\niter"
       DstPort		      3
     }
     Line {
       SrcBlock		      "qpOASES"
       SrcPort		      4
-      DstBlock		      "fval,\nx,\nexitflag,\niter"
+      DstBlock		      "x,\nfval,\nexitflag,\niter"
       DstPort		      4
     }
     Line {
-      SrcBlock		      "From\nWorkspace3"
+      SrcBlock		      "g"
       SrcPort		      1
-      Points		      [80, 0; 0, -25]
+      Points		      [50, 0; 0, 30]
+      DstBlock		      "qpOASES"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "lb"
+      SrcPort		      1
+      DstBlock		      "qpOASES"
+      DstPort		      2
+    }
+    Line {
+      SrcBlock		      "ub"
+      SrcPort		      1
+      Points		      [50, 0; 0, -30]
       DstBlock		      "qpOASES"
       DstPort		      3
-    }
-    Line {
-      SrcBlock		      "From\nWorkspace4"
-      SrcPort		      1
-      Points		      [130, 0; 0, -79; 210, 0]
-      DstBlock		      "qpOASES"
-      DstPort		      4
     }
     Annotation {
       Position		      [335, 96]
     }
     Annotation {
       Name		      "This file is part of qpOASES.\n\nqpOASES -- An Implementation of the Online Active Set Strategy.\nC"
-      "opyright (C) 2007-2014 by Hans Joachim Ferreau, Andreas Potschka, Christian Kirches et al.\nAll rights reserved."
+      "opyright (C) 2007-2015 by Hans Joachim Ferreau, Andreas Potschka, Christian Kirches et al.\nAll rights reserved."
       Position		      [608, 108]
     }
   }

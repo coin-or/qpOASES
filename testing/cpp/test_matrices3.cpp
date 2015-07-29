@@ -2,7 +2,7 @@
  *	This file is part of qpOASES.
  *
  *	qpOASES -- An Implementation of the Online Active Set Strategy.
- *	Copyright (C) 2007-2014 by Hans Joachim Ferreau, Andreas Potschka,
+ *	Copyright (C) 2007-2015 by Hans Joachim Ferreau, Andreas Potschka,
  *	Christian Kirches et al. All rights reserved.
  *
  *	qpOASES is free software; you can redistribute it and/or
@@ -25,7 +25,7 @@
 /**
  *	\file testing/cpp/test_matrices3.cpp
  *	\author Hans Joachim Ferreau,Andreas Potschka, Christian Kirches
- *	\version 3.0
+ *	\version 3.1
  *	\date 2014
  *
  *	Unit test for Matrix classes.
@@ -79,7 +79,7 @@ int main( )
 	delete Hd;
 	
 	
-	QPOASES_TEST_FOR_TRUE( errH <= 1e-15 )
+	QPOASES_TEST_FOR_TOL( errH,1e-15 )
 	
 	return TEST_PASSED;
 }

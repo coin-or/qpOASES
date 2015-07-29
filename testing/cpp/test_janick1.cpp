@@ -2,7 +2,7 @@
  *	This file is part of qpOASES.
  *
  *	qpOASES -- An Implementation of the Online Active Set Strategy.
- *	Copyright (C) 2007-2014 by Hans Joachim Ferreau, Andreas Potschka,
+ *	Copyright (C) 2007-2015 by Hans Joachim Ferreau, Andreas Potschka,
  *	Christian Kirches et al. All rights reserved.
  *
  *	qpOASES is free software; you can redistribute it and/or
@@ -25,8 +25,8 @@
 /**
  *	\file debugging/cpp/debug_janick1.cpp
  *	\author Hans Joachim Ferreau
- *	\version 3.0
- *	\date 2007-2014
+ *	\version 3.1
+ *	\date 2007-2015
  *
  *	Example that causes troubles when hotstarting.
  */
@@ -110,17 +110,14 @@ int main( )
 
 	/* Compute KKT tolerances */
 	real_t stat, feas, cmpl;
+	SolutionAnalysis analyzer;
 
-	getKKTResidual(	11,3,
-					H,g,D,zLow,zUpp,dLow,dUpp,
-					xOpt,yOpt,
-					stat,feas,cmpl
-					);
+	analyzer.getKktViolation( &example, &stat,&feas,&cmpl );
 	printf( "\nstat = %e\nfeas = %e\ncmpl = %e\n", stat,feas,cmpl );
 
-	QPOASES_TEST_FOR_TRUE( stat <= 1e-9 );
-	QPOASES_TEST_FOR_TRUE( feas <= 1e-7 );
-	QPOASES_TEST_FOR_TRUE( cmpl <= 1e-15 );
+	QPOASES_TEST_FOR_TOL( stat,1e-9 );
+	QPOASES_TEST_FOR_TOL( feas,1e-7 );
+	QPOASES_TEST_FOR_TOL( cmpl,1e-15 );
 
 
 
@@ -176,16 +173,12 @@ int main( )
 	}
 
 	/* Compute KKT tolerances */
-	getKKTResidual(	11,3,
-					H2,g2,D2,zLow2,zUpp2,dLow2,dUpp2,
-					xOpt,yOpt,
-					stat,feas,cmpl
-					);
+	analyzer.getKktViolation( &example, &stat,&feas,&cmpl );
 	printf( "stat = %e\nfeas = %e\ncmpl = %e\n", stat,feas,cmpl );
 
-	QPOASES_TEST_FOR_TRUE( stat <= 1e-9 );
-	QPOASES_TEST_FOR_TRUE( feas <= 1e-7 );
-	QPOASES_TEST_FOR_TRUE( cmpl <= 1e-12 );
+	QPOASES_TEST_FOR_TOL( stat,1e-9 );
+	QPOASES_TEST_FOR_TOL( feas,1e-7 );
+	QPOASES_TEST_FOR_TOL( cmpl,1e-12 );
 
 
 	return TEST_PASSED;

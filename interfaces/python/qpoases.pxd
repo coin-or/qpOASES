@@ -2,7 +2,7 @@
 ##  This file is part of qpOASES.
 ##
 ##  qpOASES -- An Implementation of the Online Active Set Strategy.
-##  Copyright (C) 2007-2014 by Hans Joachim Ferreau, Andreas Potschka,
+##  Copyright (C) 2007-2015 by Hans Joachim Ferreau, Andreas Potschka,
 ##  Christian Kirches et al. All rights reserved.
 ##
 ##  qpOASES is free software; you can redistribute it and/or
@@ -23,8 +23,8 @@
 ##
 ##    Filename:  qpoases.pxd
 ##    Author:    Sebastian F. Walter, Manuel Kudruss
-##    Version:   3.0
-##    Date:      2013-2014
+##    Version:   3.1
+##    Date:      2013-2015
 ##
 
 cdef extern from "qpOASES.hpp" namespace "qpOASES":
@@ -134,6 +134,7 @@ cdef extern from "qpOASES.hpp" namespace "qpOASES":
         RET_OBTAINING_WORKINGSET_FAILED
         RET_SETUP_WORKINGSET_FAILED
         RET_SETUP_AUXILIARYQP_FAILED
+        RET_NO_CHOLESKY_WITH_INITIAL_GUESS
         RET_NO_EXTERN_SOLVER
         RET_QP_UNBOUNDED
         RET_QP_INFEASIBLE
@@ -208,6 +209,7 @@ cdef extern from "qpOASES.hpp" namespace "qpOASES":
         RET_NO_REGSTEP_NWSR
         RET_FEWER_REGSTEPS_NWSR
         RET_CHOLESKY_OF_ZERO_HESSIAN
+        RET_ZERO_HESSIAN_ASSUMED
         RET_CONSTRAINTS_ARE_NOT_SCALED
         RET_INITIAL_BOUNDS_STATUS_NYI
         RET_ERROR_IN_CONSTRAINTPRODUCT
@@ -428,36 +430,37 @@ cdef extern from "qpOASES.hpp" namespace "qpOASES":
         Options getOptions()
         returnValue setOptions(Options&)
 
-
+cdef extern from "qpOASES/extras/SolutionAnalysis.hpp" namespace "qpOASES":
     cdef cppclass SolutionAnalysis:
         SolutionAnalysis()
         SolutionAnalysis(const SolutionAnalysis&)
         # ~SolutionAnalysis()
         # SolutionAnalysis& operator=(const SolutionAnalysis&)
-        returnValue getMaxKKTviolation(QProblem*, real_t& )
-        returnValue getMaxKKTviolation(QProblemB*, real_t&)
-        returnValue getMaxKKTviolation(SQProblem*, real_t&)
+        returnValue getKktViolation(const QProblem*,  const real_t*, const real_t*, const real_t*)
+        returnValue getKktViolation(const QProblemB*, const real_t*, const real_t*, const real_t*)
+        returnValue getKktViolation(const SQProblem*, const real_t*, const real_t*, const real_t*)
         returnValue getVarianceCovariance(QProblem*, real_t*, real_t*)
         returnValue getVarianceCovariance(QProblemB*, real_t*, real_t*)
         returnValue getVarianceCovariance(SQProblem*, real_t*, real_t*)
 
 
 cdef extern from "qpOASES/Utils.hpp" namespace "qpOASES":
-    void getKKTResidual(int nV,                  # Number of variables.
-                        int nC,                  # Number of constraints.
-                        const real_t* const H,   # Hessian matrix.
-                        const real_t* const g,   # Sequence of gradient vectors.
-                        const real_t* const A,   # Constraint matrix.
-                        const real_t* const lb,  # Sequence of lower bound vectors (on variables).
-                        const real_t* const ub,  # Sequence of upper bound vectors (on variables).
-                        const real_t* const lbA, # Sequence of lower constraints' bound vectors.
-                        const real_t* const ubA, # Sequence of upper constraints' bound vectors.
-                        const real_t* const x,   # Sequence of primal trial vectors.
-                        const real_t* const y,   # Sequence of dual trial vectors.
-                        real_t& stat,            # Maximum value of stationarity condition residual.
-                        real_t& feas,            # Maximum value of primal feasibility violation.
-                        real_t& cmpl             # Maximum value of complementarity residual.
-                        )
+    pass
+    #void getKKTResidual(int nV,                  # Number of variables.
+    #                    int nC,                  # Number of constraints.
+    #                    const real_t* const H,   # Hessian matrix.
+    #                    const real_t* const g,   # Sequence of gradient vectors.
+    #                    const real_t* const A,   # Constraint matrix.
+    #                    const real_t* const lb,  # Sequence of lower bound vectors (on variables).
+    #                    const real_t* const ub,  # Sequence of upper bound vectors (on variables).
+    #                    const real_t* const lbA, # Sequence of lower constraints' bound vectors.
+    #                    const real_t* const ubA, # Sequence of upper constraints' bound vectors.
+    #                    const real_t* const x,   # Sequence of primal trial vectors.
+    #                    const real_t* const y,   # Sequence of dual trial vectors.
+    #                    real_t& stat,            # Maximum value of stationarity condition residual.
+    #                    real_t& feas,            # Maximum value of primal feasibility violation.
+    #                    real_t& cmpl             # Maximum value of complementarity residual.
+    #                    )
 
 
 cdef extern from "qpOASES/extras/OQPinterface.hpp" namespace "qpOASES":

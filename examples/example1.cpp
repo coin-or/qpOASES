@@ -2,7 +2,7 @@
  *	This file is part of qpOASES.
  *
  *	qpOASES -- An Implementation of the Online Active Set Strategy.
- *	Copyright (C) 2007-2014 by Hans Joachim Ferreau, Andreas Potschka,
+ *	Copyright (C) 2007-2015 by Hans Joachim Ferreau, Andreas Potschka,
  *	Christian Kirches et al. All rights reserved.
  *
  *	qpOASES is free software; you can redistribute it and/or
@@ -25,8 +25,8 @@
 /**
  *	\file examples/example1.cpp
  *	\author Hans Joachim Ferreau
- *	\version 3.0
- *	\date 2007-2014
+ *	\version 3.1
+ *	\date 2007-2015
  *
  *	Very simple example for testing qpOASES using the QProblem class.
  */
@@ -68,7 +68,7 @@ int main( )
 	int nWSR = 10;
 	example.init( H,g,A,lb,ub,lbA,ubA, nWSR );
 
-	/* Get and print solution of second QP. */
+	/* Get and print solution of first QP. */
 	real_t xOpt[2];
 	real_t yOpt[2+1];
 	example.getPrimalSolution( xOpt );
@@ -87,6 +87,7 @@ int main( )
 			xOpt[0],xOpt[1],yOpt[0],yOpt[1],yOpt[2],example.getObjVal() );
 
 	example.printOptions();
+	/*example.printProperties();*/
 
 	return 0;
 }

@@ -2,7 +2,7 @@
 ##	This file is part of qpOASES.
 ##
 ##	qpOASES -- An Implementation of the Online Active Set Strategy.
-##	Copyright (C) 2007-2014 by Hans Joachim Ferreau, Andreas Potschka,
+##	Copyright (C) 2007-2015 by Hans Joachim Ferreau, Andreas Potschka,
 ##	Christian Kirches et al. All rights reserved.
 ##
 ##	qpOASES is free software; you can redistribute it and/or
@@ -56,12 +56,12 @@ options.printLevel = PrintLevel.NONE
 example.setOptions(options)
 
 # Solve first QP.
-nWSR = 10;
+nWSR = np.array([10])
 example.init(H, g, A, lb, ub, lbA, ubA, nWSR)
 
 
 # Solve second QP.
-nWSR = 10
+nWSR = np.array([10])
 
 for i in range(100000):
     for j in range(1, 100):
@@ -71,6 +71,6 @@ for i in range(100000):
 # Get and print solution of second QP.
 
 xOpt = np.zeros(2)
-example.getPrimalSolution(xOpt);
+example.getPrimalSolution(xOpt)
 print("\nxOpt = [ %e, %e ];  objVal = %e\n\n"%(xOpt[0],xOpt[1],example.getObjVal()))
-example.printOptions();
+example.printOptions()

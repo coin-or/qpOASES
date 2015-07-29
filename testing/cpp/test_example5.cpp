@@ -2,7 +2,7 @@
  *	This file is part of qpOASES.
  *
  *	qpOASES -- An Implementation of the Online Active Set Strategy.
- *	Copyright (C) 2007-2014 by Hans Joachim Ferreau, Andreas Potschka,
+ *	Copyright (C) 2007-2015 by Hans Joachim Ferreau, Andreas Potschka,
  *	Christian Kirches et al. All rights reserved.
  *
  *	qpOASES is free software; you can redistribute it and/or
@@ -25,8 +25,8 @@
 /**
  *	\file testing/cpp/test_example5.cpp
  *	\author Andreas Potschka, Christian Kirches
- *	\version 3.0
- *	\date 2011-2014
+ *	\version 3.1
+ *	\date 2011-2015
  *
  *	Very simple example for testing qpOASES (using the possibility to
  *  compute the local linear feedback law)
@@ -179,7 +179,7 @@ int main( )
 	}
 	printf ("Maximum perturbation over all directions: %e\n", nrm);
 
-	QPOASES_TEST_FOR_TRUE( nrm <= 1e-15 );
+	QPOASES_TEST_FOR_TOL( nrm,1e-15 );
 
 
 	/* // print feedback matrix

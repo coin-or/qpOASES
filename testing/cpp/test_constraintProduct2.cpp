@@ -2,7 +2,7 @@
  *	This file is part of qpOASES.
  *
  *	qpOASES -- An Implementation of the Online Active Set Strategy.
- *	Copyright (C) 2007-2014 by Hans Joachim Ferreau, Andreas Potschka,
+ *	Copyright (C) 2007-2015 by Hans Joachim Ferreau, Andreas Potschka,
  *	Christian Kirches et al. All rights reserved.
  *
  *	qpOASES is free software; you can redistribute it and/or
@@ -25,7 +25,7 @@
 /**
  *	\file testing/cpp/test_constraintProduct2.cpp
  *	\author Hans Joachim Ferreau
- *	\version 3.0
+ *	\version 3.1
  *	\date 2014
  *
  *	Another example for testing qpOASES using the possibility to specify 
@@ -48,8 +48,8 @@ USING_NAMESPACE_QPOASES
  *	Example illustrating the use of the \a ConstraintProduct class.
  *
  *	\author Hans Joachim Ferreau
- *	\version 3.0
- *	\date 2007-2014
+ *	\version 3.1
+ *	\date 2007-2015
  */
 class MpcConstraintProduct : public ConstraintProduct
 {

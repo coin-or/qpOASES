@@ -2,7 +2,7 @@
  *	This file is part of qpOASES.
  *
  *	qpOASES -- An Implementation of the Online Active Set Strategy.
- *	Copyright (C) 2007-2014 by Hans Joachim Ferreau, Andreas Potschka,
+ *	Copyright (C) 2007-2015 by Hans Joachim Ferreau, Andreas Potschka,
  *	Christian Kirches et al. All rights reserved.
  *
  *	qpOASES is free software; you can redistribute it and/or
@@ -25,7 +25,7 @@
 /**
  *	\file testing/cpp/test_guessedWS1.cpp
  *	\author Hans Joachim Ferreau
- *	\version 3.0
+ *	\version 3.1
  *	\date 2014
  *
  *	Very simple example for testing qpOASES (using QProblem class).
@@ -79,17 +79,14 @@ int main( )
 	
 	/* Compute KKT tolerances */
 	real_t stat, feas, cmpl;
+	SolutionAnalysis analyzer;
 
-	getKKTResidual(	4,3,
-					H,g,A,lb,ub,lbA,ubA,
-					xOpt,yOpt,
-					stat,feas,cmpl
-					);
+	analyzer.getKktViolation( &example, &stat,&feas,&cmpl );
 	printf( "stat = %e\nfeas = %e\ncmpl = %e\n", stat,feas,cmpl );
 
-	QPOASES_TEST_FOR_TRUE( stat <= 1e-15 );
-	QPOASES_TEST_FOR_TRUE( feas <= 1e-15 );
-	QPOASES_TEST_FOR_TRUE( cmpl <= 1e-15 );
+	QPOASES_TEST_FOR_TOL( stat,1e-15 );
+	QPOASES_TEST_FOR_TOL( feas,1e-15 );
+	QPOASES_TEST_FOR_TOL( cmpl,1e-15 );
 
 
 	/* Solve first QP again (with optimal guess for working set). */
@@ -110,16 +107,12 @@ int main( )
 	printf( "objVal = %e\n\n", example.getObjVal() );
 	
 	/* Compute KKT tolerances */
-	getKKTResidual(	4,3,
-					H,g,A,lb,ub,lbA,ubA,
-					xOpt,yOpt,
-					stat,feas,cmpl
-					);
+	analyzer.getKktViolation( &example, &stat,&feas,&cmpl );
 	printf( "stat = %e\nfeas = %e\ncmpl = %e\n", stat,feas,cmpl );
 
-	QPOASES_TEST_FOR_TRUE( stat <= 1e-15 );
-	QPOASES_TEST_FOR_TRUE( feas <= 1e-15 );
-	QPOASES_TEST_FOR_TRUE( cmpl <= 1e-15 );
+	QPOASES_TEST_FOR_TOL( stat,1e-15 );
+	QPOASES_TEST_FOR_TOL( feas,1e-15 );
+	QPOASES_TEST_FOR_TOL( cmpl,1e-15 );
 
 
 	/* Solve first QP again (with inaccurate guess for working set). */
@@ -144,16 +137,12 @@ int main( )
 	printf( "objVal = %e\n\n", example.getObjVal() );
 	
 	/* Compute KKT tolerances */
-	getKKTResidual(	4,3,
-					H,g,A,lb,ub,lbA,ubA,
-					xOpt,yOpt,
-					stat,feas,cmpl
-					);
+	analyzer.getKktViolation( &example, &stat,&feas,&cmpl );
 	printf( "stat = %e\nfeas = %e\ncmpl = %e\n", stat,feas,cmpl );
 
-	QPOASES_TEST_FOR_TRUE( stat <= 1e-15 );
-	QPOASES_TEST_FOR_TRUE( feas <= 1e-15 );
-	QPOASES_TEST_FOR_TRUE( cmpl <= 1e-15 );
+	QPOASES_TEST_FOR_TOL( stat,1e-15 );
+	QPOASES_TEST_FOR_TOL( feas,1e-15 );
+	QPOASES_TEST_FOR_TOL( cmpl,1e-15 );
 
 	return TEST_PASSED;
 }

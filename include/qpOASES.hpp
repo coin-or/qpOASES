@@ -2,7 +2,7 @@
  *	This file is part of qpOASES.
  *
  *	qpOASES -- An Implementation of the Online Active Set Strategy.
- *	Copyright (C) 2007-2014 by Hans Joachim Ferreau, Andreas Potschka,
+ *	Copyright (C) 2007-2015 by Hans Joachim Ferreau, Andreas Potschka,
  *	Christian Kirches et al. All rights reserved.
  *
  *	qpOASES is free software; you can redistribute it and/or
@@ -25,20 +25,12 @@
 /**
  *	\file include/qpOASES.hpp
  *	\author Hans Joachim Ferreau, Andreas Potschka, Christian Kirches
- *	\version 3.0
- *	\date 2007-2014
+ *	\version 3.1
+ *	\date 2007-2015
  */
 
-#ifndef __SINGLE_OBJECT__
 
-#include <qpOASES/QProblemB.hpp>
-#include <qpOASES/QProblem.hpp>
-#include <qpOASES/SQProblem.hpp>
-#include <qpOASES/SQProblemSchur.hpp>
-#include <qpOASES/extras/OQPinterface.hpp>
-#include <qpOASES/extras/SolutionAnalysis.hpp>
-
-#else
+#if defined(__SINGLE_OBJECT__) || defined(__C_WRAPPER__)
 
 #include <MessageHandling.cpp>
 #include <Utils.cpp>
@@ -55,7 +47,19 @@
 #include <QProblem.cpp>
 #include <SQProblem.cpp>
 #include <SQProblemSchur.cpp>
+
+#ifndef __C_WRAPPER__
 #include <OQPinterface.cpp>
 #include <SolutionAnalysis.cpp>
+#endif
+
+#else /* default compilation mode */
+
+#include <qpOASES/QProblemB.hpp>
+#include <qpOASES/QProblem.hpp>
+#include <qpOASES/SQProblem.hpp>
+#include <qpOASES/SQProblemSchur.hpp>
+#include <qpOASES/extras/OQPinterface.hpp>
+#include <qpOASES/extras/SolutionAnalysis.hpp>
 
 #endif

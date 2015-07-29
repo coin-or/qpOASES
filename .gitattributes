@@ -64,6 +64,12 @@ interfaces/CUTEst/Makefile -text
 interfaces/CUTEst/makeprob -text
 interfaces/CUTEst/qpoasesCutest.cpp -text
 interfaces/CUTEst/readme.txt -text
+interfaces/c/Makefile -text
+interfaces/c/c_example1.c -text
+interfaces/c/c_example1a.c -text
+interfaces/c/c_example1b.c -text
+interfaces/c/qpOASES_wrapper.cpp -text
+interfaces/c/qpOASES_wrapper.h -text
 interfaces/matlab/Makefile -text
 interfaces/matlab/example1.mat -text
 interfaces/matlab/example1a.mat -text
@@ -121,6 +127,7 @@ interfaces/simulink/make.m -text
 interfaces/simulink/qpOASES_QProblem.cpp -text
 interfaces/simulink/qpOASES_QProblemB.cpp -text
 interfaces/simulink/qpOASES_SQProblem.cpp -text
+interfaces/simulink/qpOASES_simulink_utils.cpp -text
 /make.mk -text
 /make_cygwin.mk -text
 /make_linux.mk -text
@@ -145,8 +152,12 @@ src/SolutionAnalysis.cpp -text
 src/SparseSolver.cpp -text
 src/SubjectTo.cpp -text
 src/Utils.cpp -text
-testing/Makefile -text
+testing/c/Makefile -text
+testing/c/test_c_example1.c -text
+testing/c/test_c_example1a.c -text
+testing/c/test_c_example1b.c -text
 testing/checkForMemoryLeaks -text
+testing/cpp/Makefile -text
 testing/cpp/data/fetch_cpp_data -text
 testing/cpp/test_bench.cpp -text
 testing/cpp/test_constraintProduct1.cpp -text
@@ -160,8 +171,10 @@ testing/cpp/test_example5.cpp -text
 testing/cpp/test_example6.cpp -text
 testing/cpp/test_example7.cpp -text
 testing/cpp/test_exampleLP.cpp -text
+testing/cpp/test_externalChol1.cpp -text
 testing/cpp/test_gradientShift.cpp -text
 testing/cpp/test_guessedWS1.cpp -text
+testing/cpp/test_hs268.cpp -text
 testing/cpp/test_indexlist.cpp -text
 testing/cpp/test_janick1.cpp -text
 testing/cpp/test_janick2.cpp -text
@@ -181,6 +194,7 @@ testing/matlab/auxFiles/setupQpDataStruct.m -text
 testing/matlab/auxFiles/setupQpFeaturesStruct.m -text
 testing/matlab/data/fetch_matlab_data -text
 testing/matlab/runAllTests.m -text
+testing/matlab/setupTestingPaths.m -text
 testing/matlab/tests/runAlexInfeas1.m -text
 testing/matlab/tests/runAlexInfeas2.m -text
 testing/matlab/tests/runAlternativeX0Test.m -text
@@ -196,6 +210,8 @@ testing/matlab/tests/runBenchmarkEXAMPLE1.m -text
 testing/matlab/tests/runBenchmarkEXAMPLE1A.m -text
 testing/matlab/tests/runBenchmarkEXAMPLE1B.m -text
 testing/matlab/tests/runBenchmarkIDHESSIAN1.m -text
+testing/matlab/tests/runEmptyHessianTests.m -text
+testing/matlab/tests/runExternalCholeskyTests.m -text
 testing/matlab/tests/runInterfaceSeqTest.m -text
 testing/matlab/tests/runInterfaceTest.m -text
 testing/matlab/tests/runQAP8.m -text

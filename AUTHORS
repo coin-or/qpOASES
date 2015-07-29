@@ -2,7 +2,7 @@
 ##	This file is part of qpOASES.
 ##
 ##	qpOASES -- An Implementation of the Online Active Set Strategy.
-##	Copyright (C) 2007-2014 by Hans Joachim Ferreau, Andreas Potschka,
+##	Copyright (C) 2007-2015 by Hans Joachim Ferreau, Andreas Potschka,
 ##	Christian Kirches et al. All rights reserved.
 ##
 ##	qpOASES is free software; you can redistribute it and/or
@@ -60,6 +60,20 @@ bugs or proposing algorithmic improvements (in alphabetical order):
     Milan Vukov
     Thomas Wiese
     Leonard Wirsching
+
+
+
+SCIENTIFIC MENTORS
+==================
+
+We also would like to thank two persons who had a major share in making 
+qpOASES a success. Not by writing even a single line of code, but by 
+establishing the idea of using a homotopy-based approach for high-speed 
+QP solutions and by excellent scientific guidance during the development 
+process:
+
+    Hans Georg Bock
+    Moritz Diehl 
 
 
 

@@ -2,7 +2,7 @@
  *	This file is part of qpOASES.
  *
  *	qpOASES -- An Implementation of the Online Active Set Strategy.
- *	Copyright (C) 2007-2014 by Hans Joachim Ferreau, Andreas Potschka,
+ *	Copyright (C) 2007-2015 by Hans Joachim Ferreau, Andreas Potschka,
  *	Christian Kirches et al. All rights reserved.
  *
  *	qpOASES is free software; you can redistribute it and/or
@@ -25,8 +25,8 @@
 /**
  *	\file interfaces/matlab/qpOASES_matlab_utils.cpp
  *	\author Hans Joachim Ferreau, Alexander Buchner
- *	\version 3.0
- *	\date 2007-2014
+ *	\version 3.1
+ *	\date 2007-2015
  *
  *	Collects utility functions for Interface to Matlab(R) that
  *	enables to call qpOASES as a MEX function.
@@ -35,7 +35,8 @@
 
 
 
-QPInstance::QPInstance(	int _nV, int _nC, BooleanType _isSimplyBounded
+QPInstance::QPInstance(	int _nV, int _nC, HessianType _hessianType,
+						BooleanType _isSimplyBounded
 						)
 {
 	handle = s_nexthandle++;
@@ -48,11 +49,11 @@ QPInstance::QPInstance(	int _nV, int _nC, BooleanType _isSimplyBounded
 	if ( isSimplyBounded == BT_TRUE )
 	{
 		sqp = 0;
-		qpb = new QProblemB( _nV );
+		qpb = new QProblemB( _nV,_hessianType );
 	}
 	else
 	{
-		sqp = new SQProblem( _nV,_nC );
+		sqp = new SQProblem( _nV,_nC,_hessianType );
 		qpb = 0;
 	}
 
@@ -93,19 +94,19 @@ returnValue QPInstance::deleteQPMatrices( )
 		H = 0;
 	}
 
-	if (Hv != 0)
+	if ( Hv != 0 )
 	{
 		delete[] Hv;
 		Hv = 0;
 	}
 	
-	if (Hjc != 0)
+	if ( Hjc != 0 )
 	{
 		delete[] Hjc;
 		Hjc = 0;
 	}
 	
-	if (Hir != 0)
+	if ( Hir != 0 )
 	{
 		delete[] Hir;
 		Hir = 0;
@@ -117,19 +118,19 @@ returnValue QPInstance::deleteQPMatrices( )
 		A = 0;
 	}
 
-	if (Av != 0)
+	if ( Av != 0 )
 	{
 		delete[] Av;
 		Av = 0;
 	}
 	
-	if (Ajc != 0)
+	if ( Ajc != 0 )
 	{
 		delete[] Ajc;
 		Ajc = 0;
 	}
 	
-	if (Air != 0)
+	if ( Air != 0 )
 	{
 		delete[] Air;
 		Air = 0;
@@ -160,21 +161,36 @@ int QPInstance::getNC() const
 }
 
 
+
+/*
+ *	m x I s S c a l a r
+ */
+bool mxIsScalar( const mxArray *pm )
+{
+	if ( ( mxGetM(pm) == 1 ) && ( mxGetN(pm) == 1 ) )
+		return true;
+	else
+		return false;
+}
+
+
+
 /*
  *	a l l o c a t e Q P r o b l e m I n s t a n c e
  */
-int allocateQPInstance(	int nV, int nC, BooleanType isSimplyBounded, const Options *options
+int allocateQPInstance(	int nV, int nC, HessianType hessianType,
+						BooleanType isSimplyBounded, const Options* options
 						)
 {
-	QPInstance* inst = new QPInstance( nV,nC,isSimplyBounded );
+	QPInstance* inst = new QPInstance( nV,nC,hessianType, isSimplyBounded );
 
-	if ( inst->sqp != 0 )
-		inst->sqp->setOptions ( *options );
+	if ( ( inst->sqp != 0 ) && ( options != 0 ) )
+		inst->sqp->setOptions( *options );
 	
-	if ( inst->qpb != 0 )
-		inst->qpb->setOptions ( *options );
+	if ( ( inst->qpb != 0 ) && ( options != 0 ) )
+		inst->qpb->setOptions( *options );
 
-	g_instances.push_back (inst);
+	g_instances.push_back(inst);
 	return inst->handle;
 }
 
@@ -287,9 +303,9 @@ returnValue smartDimensionCheck(	real_t** input, unsigned int m, unsigned int n,
 /*
  *	c o n t a i n s N a N
  */
-BooleanType containsNaN( const real_t* const data, int dim )
+BooleanType containsNaN( const real_t* const data, unsigned int dim )
 {
-	int i;
+	unsigned int i;
 
 	if ( data == 0 )
 		return BT_FALSE;
@@ -301,13 +317,13 @@ BooleanType containsNaN( const real_t* const data, int dim )
 	return BT_FALSE;
 }
 
+
 /*
  *	c o n t a i n s I n f
  */
-
-BooleanType containsInf( const real_t* const data, int dim )
+BooleanType containsInf( const real_t* const data, unsigned int dim )
 {
-	int i;
+	unsigned int i;
 
 	if ( data == 0 )
 		return BT_FALSE;
@@ -319,15 +335,25 @@ BooleanType containsInf( const real_t* const data, int dim )
 	return BT_FALSE;
 }
 
-BooleanType containsNaNorInf(const mxArray* prhs[], int dim, int rhs_index,
-		bool mayContainInf) {
 
+/*
+ *	c o n t a i n s N a N o r I n f
+ */
+BooleanType containsNaNorInf(	const mxArray* prhs[], int rhs_index,
+								bool mayContainInf
+								)
+{
+	unsigned int dim;
 	char msg[MAX_STRING_LENGTH];
 
-	// overwrite dim for sparse matrices
-	if (mxIsSparse(prhs[rhs_index]) == 1) {
-		dim = mxGetNzmax(prhs[rhs_index]);
-	}
+	if ( rhs_index < 0 )
+		return BT_FALSE;
+
+	/* overwrite dim for sparse matrices */
+	if (mxIsSparse(prhs[rhs_index]) == 1)
+		dim = (unsigned int)mxGetNzmax(prhs[rhs_index]);
+	else
+		dim = mxGetM(prhs[rhs_index]) * mxGetN(prhs[rhs_index]);
 
 	if (containsNaN((real_t*) mxGetPr(prhs[rhs_index]), dim) == BT_TRUE) {
 		snprintf(msg, MAX_STRING_LENGTH,
@@ -349,16 +375,23 @@ BooleanType containsNaNorInf(const mxArray* prhs[], int dim, int rhs_index,
 	return BT_FALSE;
 }
 
+
 /*
  *	c o n v e r t F o r t r a n T o C
  */
-returnValue convertFortranToC( const real_t* const A_for, int nV, int nC, real_t* const A )
+returnValue convertFortranToC( const real_t* const M_for, int nV, int nC, real_t* const M )
 {
 	int i,j;
 
+	if ( ( M_for == 0 ) || ( M == 0 ) )
+		return RET_INVALID_ARGUMENTS;
+
+	if ( ( nV < 0 ) || ( nC < 0 ) )
+		return RET_INVALID_ARGUMENTS;
+
 	for ( i=0; i<nC; ++i )
 		for ( j=0; j<nV; ++j )
-			A[i*nV + j] = A_for[j*nC + i];
+			M[i*nV + j] = M_for[j*nC + i];
 
 	return SUCCESSFUL_RETURN;
 }
@@ -379,7 +412,7 @@ BooleanType hasOptionsValue( const mxArray* optionsPtr, const char* const option
 		return BT_FALSE;
 	}
 
-	if ( ( mxIsEmpty(optionName) == false ) && ( mxGetM( optionName ) == 1 ) && ( mxGetN( optionName ) == 1 ) )
+	if ( ( mxIsEmpty(optionName) == false ) && ( mxIsScalar( optionName ) == true ) )
 	{
 		*optionValue = mxGetPr( optionName );
 		return BT_TRUE;
@@ -553,11 +586,35 @@ returnValue setupOptions( Options* options, const mxArray* optionsPtr, int& nWSR
  *	s e t u p A u x i l i a r y I n p u t s
  */
 returnValue setupAuxiliaryInputs(	const mxArray* auxInput, unsigned int nV, unsigned int nC,
-									double** x0, double** guessedBoundsAndConstraints, double** guessedBounds, double** guessedConstraints
+									HessianType* hessianType, double** x0, double** guessedBounds, double** guessedConstraints, double** R
 									)
 {
-	unsigned int i;
 	mxArray* curField = 0;
+
+	/* hessianType */
+	curField = mxGetField( auxInput,0,"hessianType" );
+	if ( curField == NULL )
+		mexWarnMsgTxt( "auxInput struct does not contain entry 'hessianType'!\n         Type 'help qpOASES_auxInput' for further information." );
+	else
+	{
+		if ( mxIsEmpty(curField) == true )
+		{
+			*hessianType = HST_UNKNOWN;
+		}
+		else
+		{
+			if ( mxIsScalar(curField) == false )
+				return RET_INVALID_ARGUMENTS;
+
+			double* hessianTypeTmp = mxGetPr(curField);
+			int hessianTypeInt = (int)*hessianTypeTmp;
+			if ( hessianTypeInt < 0 ) 
+				hessianTypeInt = 6; /* == HST_UNKNOWN */
+			if ( hessianTypeInt > 5 ) 
+				hessianTypeInt = 6; /* == HST_UNKNOWN */
+			*hessianType = (REFER_NAMESPACE_QPOASES HessianType)hessianTypeInt;
+		}
+	}
 
 	/* x0 */
 	curField = mxGetField( auxInput,0,"x0" );
@@ -570,51 +627,37 @@ returnValue setupAuxiliaryInputs(	const mxArray* auxInput, unsigned int nV, unsi
 			return RET_INVALID_ARGUMENTS;
 	}
 
-	/* guessedWorkingSet */
-	curField = mxGetField( auxInput,0,"guessedWorkingSet" );
+	/* guessedWorkingSetB */
+	curField = mxGetField( auxInput,0,"guessedWorkingSetB" );
 	if ( curField == NULL )
-		mexWarnMsgTxt( "auxInput struct does not contain entry 'guessedWorkingSet'!\n         Type 'help qpOASES_auxInput' for further information." );
+		mexWarnMsgTxt( "auxInput struct does not contain entry 'guessedWorkingSetB'!\n         Type 'help qpOASES_auxInput' for further information." );
 	else
 	{
-		*guessedBoundsAndConstraints = mxGetPr(curField);
-		if ( smartDimensionCheck( guessedBoundsAndConstraints,nV+nC,1, BT_TRUE,((const mxArray**)&curField),0 ) != SUCCESSFUL_RETURN )
+		*guessedBounds = mxGetPr(curField);
+		if ( smartDimensionCheck( guessedBounds,nV,1, BT_TRUE,((const mxArray**)&curField),0 ) != SUCCESSFUL_RETURN )
 			return RET_INVALID_ARGUMENTS;
-
-		if ( *guessedBoundsAndConstraints != 0 )
-		{
-			*guessedBounds = new double[nV];
-			for (i = 0; i < nV; i++)
-				(*guessedBounds)[i] = (*guessedBoundsAndConstraints)[i];
-
-			if ( nC > 0 )
-			{
-				*guessedConstraints = new double[nC];
-				for (i = 0; i < nC; i++)
-					(*guessedConstraints)[i] = (*guessedBoundsAndConstraints)[i + nV];
-			}
-		}
 	}
 
-	return SUCCESSFUL_RETURN;
-}
-
-
-/*
- *	d e l e t e A u x i l i a r y I n p u t s
- */
-returnValue deleteAuxiliaryInputs(	double** guessedBounds, double** guessedConstraints
-									)
-{
-	if ( ( guessedBounds != 0 ) && ( *guessedBounds != 0 ) )
+	/* guessedWorkingSetC */
+	curField = mxGetField( auxInput,0,"guessedWorkingSetC" );
+	if ( curField == NULL )
+		mexWarnMsgTxt( "auxInput struct does not contain entry 'guessedWorkingSetC'!\n         Type 'help qpOASES_auxInput' for further information." );
+	else
 	{
-		delete[] (*guessedBounds);
-		*guessedBounds = 0;
+		*guessedConstraints = mxGetPr(curField);
+		if ( smartDimensionCheck( guessedConstraints,nC,1, BT_TRUE,((const mxArray**)&curField),0 ) != SUCCESSFUL_RETURN )
+			return RET_INVALID_ARGUMENTS;
 	}
 
-	if ( ( guessedConstraints != 0 ) && ( guessedConstraints != 0 ) )
+	/* R */
+	curField = mxGetField( auxInput,0,"R" );
+	if ( curField == NULL )
+		mexWarnMsgTxt( "auxInput struct does not contain entry 'R'!\n         Type 'help qpOASES_auxInput' for further information." );
+	else
 	{
-		delete[] (*guessedConstraints);
-		*guessedConstraints = 0;
+		*R = mxGetPr(curField);
+		if ( smartDimensionCheck( R,nV,nV, BT_TRUE,((const mxArray**)&curField),0 ) != SUCCESSFUL_RETURN )
+			return RET_INVALID_ARGUMENTS;
 	}
 
 	return SUCCESSFUL_RETURN;
@@ -665,9 +708,13 @@ returnValue allocateOutputs(	int nlhs, mxArray* plhs[], int nV, int nC = 0, int 
 						int curFieldNum;
 						
 						/* working set */
-						curFieldNum = mxAddField( auxOutput,"workingSet" );
+						curFieldNum = mxAddField( auxOutput,"workingSetB" );
 						if ( curFieldNum >= 0 )
-							mxSetFieldByNumber( auxOutput,0,curFieldNum,mxCreateDoubleMatrix( nV+nC, nP, mxREAL ) );
+							mxSetFieldByNumber( auxOutput,0,curFieldNum,mxCreateDoubleMatrix( nV, nP, mxREAL ) );
+
+						curFieldNum = mxAddField( auxOutput,"workingSetC" );
+						if ( curFieldNum >= 0 )
+							mxSetFieldByNumber( auxOutput,0,curFieldNum,mxCreateDoubleMatrix( nC, nP, mxREAL ) );
 
 						curFieldNum = mxAddField( auxOutput,"cpuTime" );
 						if ( curFieldNum >= 0 )
@@ -687,7 +734,7 @@ returnValue allocateOutputs(	int nlhs, mxArray* plhs[], int nV, int nC = 0, int 
 /*
  *	o b t a i n O u t p u t s
  */
-returnValue obtainOutputs(	int k, QProblemB* qp, returnValue returnvalue, int _nWSRout, real_t _cpuTime,
+returnValue obtainOutputs(	int k, QProblemB* qp, returnValue returnvalue, int _nWSRout, double _cpuTime,
 							int nlhs, mxArray* plhs[], int nV, int nC = 0, int handle = -1
 							)
 {
@@ -712,13 +759,13 @@ returnValue obtainOutputs(	int k, QProblemB* qp, returnValue returnvalue, int _n
 		{
 			/* exitflag */
 			double* status = mxGetPr( plhs[curIdx++] );
-			status[k] = (real_t)getSimpleStatus( returnvalue );
+			status[k] = (double)getSimpleStatus( returnvalue );
 
 			if ( nlhs > curIdx )
 			{
 				/* iter */
 				double* nWSRout = mxGetPr( plhs[curIdx++] );
-				nWSRout[k] = (real_t) _nWSRout;
+				nWSRout[k] = (double) _nWSRout;
 
 				if ( nlhs > curIdx )
 				{
@@ -726,30 +773,47 @@ returnValue obtainOutputs(	int k, QProblemB* qp, returnValue returnvalue, int _n
 					double* y = mxGetPr( plhs[curIdx++] );
 					qp->getDualSolution( &(y[k*(nV+nC)]) );
 
+					/* auxOutput */
 					if ( nlhs > curIdx )
 					{
-						
-						mxArray* auxOutput = plhs[curIdx];
-						mxArray* curField = 0;
-
-						/* working set */
-						curField = mxGetField( auxOutput,0,"workingSet" );
-						double* workingSet = mxGetPr(curField);
-
 						QProblem* problemPointer;
 						problemPointer = dynamic_cast<QProblem*>(qp);
 
-						// cast successful?
-						if (problemPointer != NULL) {
-							problemPointer->getWorkingSet( &(workingSet[k*(nV+nC)]) );
-						} else {
-							qp->getWorkingSet( &(workingSet[k*(nV+nC)]) );
+						mxArray* auxOutput = plhs[curIdx];
+						mxArray* curField = 0;
+
+						/* working set bounds */
+						if ( nV > 0 )
+						{
+							curField = mxGetField( auxOutput,0,"workingSetB" );
+							double* workingSetB = mxGetPr(curField);
+
+							/* cast successful? */
+							if (problemPointer != NULL) {
+								problemPointer->getWorkingSetBounds( &(workingSetB[k*nV]) );
+							} else {
+								qp->getWorkingSetBounds( &(workingSetB[k*nV]) );
+							}
+						}
+
+						/* working set constraints */
+						if ( nC > 0 )
+						{
+							curField = mxGetField( auxOutput,0,"workingSetC" );
+							double* workingSetC = mxGetPr(curField);
+
+							/* cast successful? */
+							if (problemPointer != NULL) {
+								problemPointer->getWorkingSetConstraints( &(workingSetC[k*nC]) );
+							} else {
+								qp->getWorkingSetConstraints( &(workingSetC[k*nC]) );
+							}
 						}
 
 						/* cpu time */
 						curField = mxGetField( auxOutput,0,"cpuTime" );
 						double* cpuTime = mxGetPr(curField);
-						cpuTime[0] = (real_t) _cpuTime;
+						cpuTime[0] = (double) _cpuTime;
 					}
 				}
 			}
@@ -768,6 +832,9 @@ returnValue setupHessianMatrix(	const mxArray* prhsH, int nV,
 								SymmetricMatrix** H, sparse_int_t** Hir, sparse_int_t** Hjc, real_t** Hv
 								)
 {
+	if ( prhsH == 0 )
+		return SUCCESSFUL_RETURN;
+
 	if ( mxIsSparse( prhsH ) != 0 )
 	{
 		mwIndex *mat_ir = mxGetIr( prhsH );
@@ -836,6 +903,9 @@ returnValue setupConstraintMatrix(	const mxArray* prhsA, int nV, int nC,
 									Matrix** A, sparse_int_t** Air, sparse_int_t** Ajc, real_t** Av
 									)
 {
+	if ( prhsA == 0 )
+		return SUCCESSFUL_RETURN;
+
 	if ( mxIsSparse( prhsA ) != 0 )
 	{
 		mwIndex i;

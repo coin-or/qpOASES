@@ -2,7 +2,7 @@
 ##	This file is part of qpOASES.
 ##
 ##	qpOASES -- An Implementation of the Online Active Set Strategy.
-##	Copyright (C) 2007-2014 by Hans Joachim Ferreau, Andreas Potschka,
+##	Copyright (C) 2007-2015 by Hans Joachim Ferreau, Andreas Potschka,
 ##	Christian Kirches et al. All rights reserved.
 ##
 ##	qpOASES is free software; you can redistribute it and/or
@@ -51,22 +51,25 @@ example = SQProblem(2, 1)
 analyser = SolutionAnalysis()
 
 #  Solve first QP ...
-nWSR = 10
+nWSR = np.array([10])
 example.init(H, g, A, lb, ub, lbA, ubA, nWSR)
 
 #  ... and analyse it.
-maxKKTviolation = np.zeros(1)
-analyser.getMaxKKTviolation(example, maxKKTviolation)
-print("maxKKTviolation: %e\n"%maxKKTviolation)
+maxStat = np.zeros(1)
+maxFeas = np.zeros(1)
+maxCmpl = np.zeros(1)
+
+analyser.getKktViolation(example, maxStat, maxFeas, maxCmpl)
+print("maxStat: %e, maxFeas:%e, maxCmpl: %e\n"%(maxStat, maxFeas, maxCmpl))
 
 #  Solve second QP ...
-nWSR = 10;
+nWSR = np.array([10])
 example.hotstart(H_new, g_new, A_new, lb_new, ub_new,
                  lbA_new, ubA_new, nWSR)
 
 #  ... and analyse it.
-analyser.getMaxKKTviolation(example, maxKKTviolation)
-print("maxKKTviolation: %e\n"%maxKKTviolation)
+analyser.getKktViolation(example, maxStat, maxFeas, maxCmpl)
+print("maxStat: %e, maxFeas:%e, maxCmpl: %e\n"%(maxStat, maxFeas, maxCmpl))
 
 
 #  ------------ VARIANCE-COVARIANCE EVALUATION --------------------
@@ -86,5 +89,4 @@ Var.reshape((5,5))[1,1] = 1.
 
 analyser.getVarianceCovariance(example, Var, Primal_Dual_Var)
 print('Primal_Dual_Var=\n', Primal_Dual_Var.reshape((5,5)))
-
-print(maxKKTviolation)
+print("maxStat: %e, maxFeas:%e, maxCmpl: %e\n"%(maxStat, maxFeas, maxCmpl))

@@ -2,7 +2,7 @@
  *	This file is part of qpOASES.
  *
  *	qpOASES -- An Implementation of the Online Active Set Strategy.
- *	Copyright (C) 2007-2014 by Hans Joachim Ferreau, Andreas Potschka,
+ *	Copyright (C) 2007-2015 by Hans Joachim Ferreau, Andreas Potschka,
  *	Christian Kirches et al. All rights reserved.
  *
  *	qpOASES is free software; you can redistribute it and/or
@@ -25,8 +25,8 @@
 /**
  *	\file src/OQPinterface.cpp
  *	\author Hans Joachim Ferreau
- *	\version 3.0
- *	\date 2008-2014
+ *	\version 3.1
+ *	\date 2008-2015
  *
  *	Implementation of an interface comprising several utility functions
  *	for solving test problems from the Online QP Benchmark Collection
@@ -37,7 +37,7 @@
 
 
 #include <qpOASES/extras/OQPinterface.hpp>
-#include <qpOASES/SQProblemSchur.hpp>
+#include <qpOASES/QProblem.hpp>
 
 
 BEGIN_NAMESPACE_QPOASES
@@ -324,7 +324,7 @@ returnValue solveOQPbenchmark(	int nQP, int nV, int nC, int nEC,
 	A->doFreeMemory( );
 
 	/* II) SETUP QPROBLEM OBJECT */
-	SQProblemSchur qp( nV,nC );
+	QProblem qp( nV,nC );
 	qp.setOptions( options );
 	//qp.setPrintLevel( PL_LOW );
 
@@ -377,7 +377,7 @@ returnValue solveOQPbenchmark(	int nQP, int nV, int nC, int nEC,
 		//obj = qp.getObjVal( );
 
 		/* 5) Compute KKT residuals */
-		getKKTResidual( nV, nC, _H,gCur,_A,lbCur,ubCur,lbACur,ubACur, x, y, stat, feas, cmpl );
+		getKktViolation( nV,nC, _H,gCur,_A,lbCur,ubCur,lbACur,ubACur, x,y, stat,feas,cmpl );
 		
 		/* 6) Update maximum and average values. */
 		if ( ((double)nWSRcur) > maxNWSR )
@@ -539,7 +539,7 @@ returnValue solveOQPbenchmark(	int nQP, int nV,
 		//obj = qp.getObjVal( );
 
 		/* 5) Compute KKT residuals */
-		getKKTResidual( nV, _H,gCur,lbCur,ubCur, x,y, stat,feas,cmpl );
+		getKktViolation( nV, _H,gCur,lbCur,ubCur, x,y, stat,feas,cmpl );
 
 		/* 6) update maximum values. */
 		if ( nWSRcur > maxNWSR )
@@ -597,7 +597,7 @@ returnValue runOQPbenchmark(	const char* path, BooleanType isSparse, BooleanType
 {
 	int nQP=0, nV=0, nC=0, nEC=0;
 
-	real_t *H, *g, *A, *lb, *ub, *lbA, *ubA;
+	real_t *H=0, *g=0, *A=0, *lb=0, *ub=0, *lbA=0, *ubA=0;
 
 
 	returnValue returnvalue;
@@ -632,8 +632,13 @@ returnValue runOQPbenchmark(	const char* path, BooleanType isSparse, BooleanType
 
 		if ( returnvalue != SUCCESSFUL_RETURN )
 		{
-			delete[] H; delete[] A;
-			delete[] ubA; delete[] lbA; delete[] ub; delete[] lb; delete[] g;
+			if ( H != 0 )   delete[] H;
+			if ( g != 0 )   delete[] g;
+			if ( A != 0 )   delete[] A;
+			if ( lb != 0 )  delete[] lb;
+			if ( ub != 0 )  delete[] ub;
+			if ( lbA != 0 ) delete[] lbA;
+			if ( ubA != 0 ) delete[] ubA;
 			return THROWERROR( returnvalue );
 		}
 	}
@@ -649,14 +654,22 @@ returnValue runOQPbenchmark(	const char* path, BooleanType isSparse, BooleanType
 
 		if ( returnvalue != SUCCESSFUL_RETURN )
 		{
-			delete[] H; delete[] A;
-			delete[] ub; delete[] lb; delete[] g;
+			if ( H != 0 )   delete[] H;
+			if ( g != 0 )   delete[] g;
+			if ( A != 0 )   delete[] A;
+			if ( lb != 0 )  delete[] lb;
+			if ( ub != 0 )  delete[] ub;
 			return THROWERROR( returnvalue );
 		}
 	}
 
-	delete[] H; delete[] A;
-	delete[] ubA; delete[] lbA; delete[] ub; delete[] lb; delete[] g;
+	if ( H != 0 )   delete[] H;
+	if ( g != 0 )   delete[] g;
+	if ( A != 0 )   delete[] A;
+	if ( lb != 0 )  delete[] lb;
+	if ( ub != 0 )  delete[] ub;
+	if ( lbA != 0 ) delete[] lbA;
+	if ( ubA != 0 ) delete[] ubA;
 
 	return SUCCESSFUL_RETURN;
 }

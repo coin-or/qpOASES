@@ -27,10 +27,11 @@ function [ successFlag ] = runQAP8( doPrint )
         successFlag = 1;
     end
     
-    return;    
     % check error and print
-    [stat, feas, cmpl] = qpresidual(S.B, S.b1, S.C, S.cl1, S.cu1, x, -y);
-    fprintf('%d iters in %.3fs to tolerance %.2e\n', nWSRout, t, stat + feas + cmpl)
-    fprintf('Status: %d\n', status)
+    if doPrint
+        [stat, feas, cmpl] = qpresidual(S.B, S.b1, S.C, S.cl1, S.cu1, x, -y);
+        fprintf( '%d iters in %.3fs to tolerance %.2e\n', nWSRout, t, max([stat,feas,cmpl]) );
+        fprintf( 'Status: %d\n', status );
+    end
 
 end

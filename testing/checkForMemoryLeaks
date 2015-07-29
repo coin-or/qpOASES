@@ -4,7 +4,7 @@
 ##	This file is part of qpOASES.
 ##
 ##	qpOASES -- An Implementation of the Online Active Set Strategy.
-##	Copyright (C) 2007-2014 by Hans Joachim Ferreau, Andreas Potschka,
+##	Copyright (C) 2007-2015 by Hans Joachim Ferreau, Andreas Potschka,
 ##	Christian Kirches et al. All rights reserved.
 ##
 ##	qpOASES is free software; you can redistribute it and/or
@@ -27,8 +27,8 @@
 ##
 ##	Filename:  testing/checkForMemoryLeaks
 ##	Author:    Hans Joachim Ferreau
-##	Version:   3.0
-##	Date:      2014
+##	Version:   3.1
+##	Date:      2014-2015
 
 # defining colors for output
 red='\e[0;31m'
@@ -88,6 +88,7 @@ callValgrind $counter ../bin/test_janick2;
 callValgrind $counter ../bin/test_constraintProduct1;
 callValgrind $counter ../bin/test_constraintProduct2;
 callValgrind $counter ../bin/test_guessedWS1;
+callValgrind $counter ../bin/test_externalChol1;
 callValgrind $counter ../bin/test_runAllOqpExamples;
 
 

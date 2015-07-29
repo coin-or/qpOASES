@@ -2,7 +2,7 @@
  *	This file is part of qpOASES.
  *
  *	qpOASES -- An Implementation of the Online Active Set Strategy.
- *	Copyright (C) 2007-2014 by Hans Joachim Ferreau, Andreas Potschka,
+ *	Copyright (C) 2007-2015 by Hans Joachim Ferreau, Andreas Potschka,
  *	Christian Kirches et al. All rights reserved.
  *
  *	qpOASES is free software; you can redistribute it and/or
@@ -25,8 +25,8 @@
 /**
  *	\file examples/example1b.cpp
  *	\author Hans Joachim Ferreau
- *	\version 3.0
- *	\date 2007-2014
+ *	\version 3.1
+ *	\date 2007-2015
  *
  *	Very simple example for testing qpOASES using the QProblemB class.
  */
@@ -62,10 +62,15 @@ int main( )
 	options.enableCholeskyRefactorisation = 1;
 	example.setOptions( options );
 
+
 	/* Solve first QP. */
 	int nWSR = 10;
 	example.init( H,g,lb,ub, nWSR,0 );
-// 	printf( "\nnWSR = %d\n\n", nWSR );
+
+	/* Get and print solution of first QP. */
+	real_t xOpt[2];
+	example.getPrimalSolution( xOpt );
+	printf( "\nxOpt = [ %e, %e ];  objVal = %e\n\n", xOpt[0],xOpt[1],example.getObjVal() );
 	
 	/* Solve second QP. */
 	nWSR = 10;
@@ -73,7 +78,6 @@ int main( )
 // 	printf( "\nnWSR = %d\n\n", nWSR );
 
 	/* Get and print solution of second QP. */
-	real_t xOpt[2];
 	example.getPrimalSolution( xOpt );
 	printf( "\nxOpt = [ %e, %e ];  objVal = %e\n\n", xOpt[0],xOpt[1],example.getObjVal() );
 

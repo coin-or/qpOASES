@@ -2,7 +2,7 @@
  *	This file is part of qpOASES.
  *
  *	qpOASES -- An Implementation of the Online Active Set Strategy.
- *	Copyright (C) 2007-2014 by Hans Joachim Ferreau, Andreas Potschka,
+ *	Copyright (C) 2007-2015 by Hans Joachim Ferreau, Andreas Potschka,
  *	Christian Kirches et al. All rights reserved.
  *
  *	qpOASES is free software; you can redistribute it and/or
@@ -25,8 +25,8 @@
 /**
  *	\file testing/cpp/test_matrices.cpp
  *	\author Andreas Potschka, Christian Kirches, Hans Joachim Ferreau
- *	\version 3.0
- *	\date 2010-2014
+ *	\version 3.1
+ *	\date 2010-2015
  *
  *	Unit test for Matrix classes.
  */
@@ -71,8 +71,8 @@ int sumOfSquares()
 	aT.free ();	// or delete[] aTv;
 	a.free (); // or delete[] av;
 
-	QPOASES_TEST_FOR_TRUE( err  <= 1e-10 )
-	QPOASES_TEST_FOR_TRUE( errT <= 1e-10 )
+	QPOASES_TEST_FOR_TOL( err ,1e-10 )
+	QPOASES_TEST_FOR_TOL( errT,1e-10 )
 	
 	return TEST_PASSED;
 }
@@ -119,7 +119,7 @@ int hilbert()
 	delete[] Cv;
 	A.free ();	// or delete[] Av;
 
-	QPOASES_TEST_FOR_TRUE( err <= 1e-12 )
+	QPOASES_TEST_FOR_TOL( err,1e-12 )
 	
 	return TEST_PASSED;
 }
@@ -161,7 +161,7 @@ int submatrix()
 	
 	Asub.free ();	// or delete[] Asubv;
 
-	QPOASES_TEST_FOR_TRUE( err <= 1e-13 )
+	QPOASES_TEST_FOR_TOL( err,1e-13 )
 
 	return TEST_PASSED;
 }
@@ -254,8 +254,8 @@ int indexDenseSubmatrix()
 	delete[] X;
 	A.free ();	// or delete[] Av;
 
-	QPOASES_TEST_FOR_TRUE( err  <= 1e-13 )
-	QPOASES_TEST_FOR_TRUE( errT <= 1e-14 )
+	QPOASES_TEST_FOR_TOL( err ,1e-13 )
+	QPOASES_TEST_FOR_TOL( errT,1e-14 )
 
 	return TEST_PASSED;
 }
@@ -283,7 +283,7 @@ int spGetCol()
 	ir[0] = 1; ir[1] = 2;
 	ir[2] = 0; ir[3] = 3; ir[4] = 4;
 	ir[5] = 0; ir[6] = 1; ir[7] = 2; ir[8] = 3; ir[9] = 4;
-	for (i = 0; i < 10; i++) val[i] = 1.0+i;
+	for (i = 0; i < 10; i++) val[i] = 1.0 + (double)i;
 
 	SparseMatrix A(5, 3, ir, jc, val);
 
@@ -305,7 +305,7 @@ int spGetCol()
 	for (j = 0; j < 3; j++)
 	{
 		fprintf(stdFile, "Column %ld:\n", j);
-		A.getCol(j, &rows, 1.0, col);
+		A.getCol( (int)j, &rows, 1.0, col );
 		for (i = 0; i < 4; i++)
 			fprintf(stdFile, " %3.0f\n", col[i]);
 	}
@@ -339,7 +339,7 @@ int spGetRow()
 	ir[3] = 0; ir[4] = 2;
 	ir[5] = 0; ir[6] = 1; ir[7] = 2; 
 	ir[8] = 1; ir[9] = 2;
-	for (i = 0; i < 10; i++) val[i] = 1.0+i;
+	for (i = 0; i < 10; i++) val[i] = 1.0 + (double)i;
 
 	SparseMatrix A(3, 4, ir, jc, val);
 
@@ -359,7 +359,7 @@ int spGetRow()
 
 	for (j = 0; j < 3; j++)
 	{
-		A.getRow(j, &cols, 1.0, row);
+		A.getRow( (int)j, &cols, 1.0, row );
 		for (i = 0; i < 4; i++)
 			fprintf(stdFile, " %3.0f", row[i]);
 		fprintf(stdFile, "\n");
@@ -387,7 +387,7 @@ int spTimes()
 	real_t ATy[] = {-63, -69, -222, -423, -359, 272, 126, 663, 1562, 1656};
 	real_t err=0.0, errT=0.0;
 
-	for (i = 0; i < 10; i++) x[i] = -4.0+i;
+	for (i = 0; i < 10; i++) x[i] = -4.0 + (double)i;
 
 	/* Test matrix:
 	 *
@@ -402,7 +402,7 @@ int spTimes()
 	ir[3] = 0; ir[4] = 2;
 	ir[5] = 0; ir[6] = 1; ir[7] = 2; 
 	ir[8] = 1; ir[9] = 2;
-	for (i = 0; i < 10; i++) val[i] = 1.0+i;
+	for (i = 0; i < 10; i++) val[i] = 1.0 + (double)i;
 
 	SparseMatrix A(3, 5, ir, jc, val);	// reference to ir, jc, val
 
@@ -423,8 +423,8 @@ int spTimes()
 	delete[] y;
 	delete[] x;
 
-	QPOASES_TEST_FOR_TRUE( err  <= 1e-15 )
-	QPOASES_TEST_FOR_TRUE( errT <= 1e-15 )
+	QPOASES_TEST_FOR_TOL( err ,1e-15 )
+	QPOASES_TEST_FOR_TOL( errT,1e-15 )
 
 	return TEST_PASSED;
 }
@@ -447,7 +447,7 @@ int spIndTimes()
 	real_t ATy[] = {0.278, 0.000, 0.548, 0.776, 0.000, 1.208};
 	real_t err=0.0, errT=0.0;
 
-	Indexlist rows(4), cols(3), allcols(nCols);
+	Indexlist rows(4), cols(3), allcols( (int)nCols );
 
 	rows.addNumber(2);
 	rows.addNumber(4);
@@ -459,29 +459,29 @@ int spIndTimes()
 	cols.addNumber(0);
 
 	for (i = 0; i < nCols; i++) 
-		allcols.addNumber(i);
+		allcols.addNumber( (int)i );
 
 	// build test matrix
-	for (i = 0; i <= N; i++) jc[i] = 3*i;
+	for (i = 0; i <= N; i++) jc[i] = (sparse_int_t)(3*i);
 	for (j = 0; j < N; j++) 
 		for (i = 0; i < 3; i++)
 		{
-			ir[j*3+i] = 2*j + i;
-			val[j*3+i] = 1.0 - 0.1 * (j*3+i);
+			ir[j*3+i] = (sparse_int_t)(2*j + i);
+			val[j*3+i] = 1.0 - 0.1 * (double)(j*3+i);
 		}
-	SparseMatrix A(nRows, nCols, ir, jc, val);
+	SparseMatrix A( (int)nRows, (int)nCols, ir, jc, val );
 
 	fprintf(stdFile, "Test matrix A =\n");
 	for (j = 0; j < nRows; j++)
 	{
-		A.getRow(j, &allcols, 1.0, xc);
+		A.getRow( (int)j, &allcols, 1.0, xc );
 		for (i = 0; i < nCols; i++)
 			fprintf(stdFile, "%6.2f", xc[i]);
 		fprintf(stdFile, "\n");
 	}
 
 	for (i = 0; i < 6; i++)
-		xc[i] = (1.0 + i) * 0.1;
+		xc[i] = (1.0 + (double)i) * 0.1;
 
 	A.times(&rows, &cols, 2, 1.0, xc, 3, 0.0, yc, 4, BT_TRUE);
 
@@ -501,8 +501,8 @@ int spIndTimes()
 	delete[] yc;
 	A.free ();
 
-	QPOASES_TEST_FOR_TRUE( err  <= 1e-15 )
-	QPOASES_TEST_FOR_TRUE( errT <= 1e-15 )
+	QPOASES_TEST_FOR_TOL( err ,1e-15 )
+	QPOASES_TEST_FOR_TOL( errT,1e-15 )
 
 	return TEST_PASSED;
 }
@@ -530,7 +530,7 @@ int sprGetCol()
 	ir[0] = 1; ir[1] = 2;
 	ir[2] = 0; ir[3] = 3; ir[4] = 4;
 	ir[5] = 0; ir[6] = 1; ir[7] = 2; ir[8] = 3; ir[9] = 4;
-	for (i = 0; i < 10; i++) val[i] = 1.0+i;
+	for (i = 0; i < 10; i++) val[i] = 1.0 + (double)i;
 
 	SparseMatrix Ac(5, 3, ir, jc, val);
 	real_t *Acv = Ac.full(); // row major format
@@ -556,7 +556,7 @@ int sprGetCol()
 	for (j = 0; j < 3; j++)
 	{
 		fprintf(stdFile, "Column %ld:\n", j);
-		A.getCol(j, &rows, 1.0, col);
+		A.getCol( (int)j, &rows, 1.0, col );
 		for (i = 0; i < 4; i++)
 			fprintf(stdFile, " %3.0f\n", col[i]);
 	}
@@ -590,7 +590,7 @@ int sprGetRow()
 	ir[3] = 0; ir[4] = 2;
 	ir[5] = 0; ir[6] = 1; ir[7] = 2; 
 	ir[8] = 1; ir[9] = 2;
-	for (i = 0; i < 10; i++) val[i] = 1.0+i;
+	for (i = 0; i < 10; i++) val[i] = 1.0 + (double)i;
 
 	SparseMatrix Ac(3, 5, ir, jc, val);
 	real_t *Acv = Ac.full(); // row major format
@@ -614,7 +614,7 @@ int sprGetRow()
 
 	for (j = 0; j < 3; j++)
 	{
-		A.getRow(j, &cols, 1.0, row);
+		A.getRow( (int)j, &cols, 1.0, row );
 		for (i = 0; i < 4; i++)
 			fprintf(stdFile, " %3.0f", row[i]);
 		fprintf(stdFile, "\n");
@@ -642,7 +642,7 @@ int sprTimes()
 	real_t ATy[] = {-63, -69, -222, -423, -359, 272, 126, 663, 1562, 1656};
 	real_t err=0.0, errT=0.0;
 
-	for (i = 0; i < 10; i++) x[i] = -4.0+i;
+	for (i = 0; i < 10; i++) x[i] = -4.0 + (double)i;
 
 	/* Test matrix:
 	 *
@@ -657,7 +657,7 @@ int sprTimes()
 	ir[3] = 0; ir[4] = 2;
 	ir[5] = 0; ir[6] = 1; ir[7] = 2; 
 	ir[8] = 1; ir[9] = 2;
-	for (i = 0; i < 10; i++) val[i] = 1.0+i;
+	for (i = 0; i < 10; i++) val[i] = 1.0 + (double)i;
 
 	SparseMatrix Ac(3, 5, ir, jc, val);	// reference to ir, jc, val
 	real_t *Acv = Ac.full(); // row major format
@@ -682,8 +682,8 @@ int sprTimes()
 	delete[] y;
 	delete[] x;
 
-	QPOASES_TEST_FOR_TRUE( err  <= 1e-15 )
-	QPOASES_TEST_FOR_TRUE( errT <= 1e-15 )
+	QPOASES_TEST_FOR_TOL( err ,1e-15 )
+	QPOASES_TEST_FOR_TOL( errT,1e-15 )
 
 	return TEST_PASSED;
 }
@@ -706,7 +706,7 @@ int sprIndTimes()
 	real_t ATy[] = {0.278, 0.000, 0.548, 0.776, 0.000, 1.208};
 	real_t err=0.0, errT=0.0;
 
-	Indexlist rows(4), cols(3), allcols(nCols);
+	Indexlist rows(4), cols(3), allcols( (int)nCols );
 
 	rows.addNumber(2);
 	rows.addNumber(4);
@@ -718,33 +718,33 @@ int sprIndTimes()
 	cols.addNumber(0);
 
 	for (i = 0; i < nCols; i++) 
-		allcols.addNumber(i);
+		allcols.addNumber( (int)i );
 
 	// build test matrix
-	for (i = 0; i <= N; i++) jc[i] = 3*i;
+	for (i = 0; i <= N; i++) jc[i] = (sparse_int_t)(3*i);
 	for (j = 0; j < N; j++) 
 		for (i = 0; i < 3; i++)
 		{
-			ir[j*3+i] = 2*j + i;
-			val[j*3+i] = 1.0 - 0.1 * (j*3+i);
+			ir[j*3+i] = (sparse_int_t)(2*j + i);
+			val[j*3+i] = 1.0 - 0.1 * (double)(j*3+i);
 		}
-	SparseMatrix Ac(nRows, nCols, ir, jc, val);
+	SparseMatrix Ac( (int)nRows, (int)nCols, ir, jc, val);
 	real_t *Acv = Ac.full(); // row major format
-	SparseMatrixRow A(nRows, nCols, nCols, Acv);
+	SparseMatrixRow A( (int)nRows, (int)nCols, (int)nCols, Acv);
 	delete[] Acv;
 	Ac.free ();	// or delete[] val,jc,ir;
 
 	fprintf(stdFile, "Test matrix A =\n");
 	for (j = 0; j < nRows; j++)
 	{
-		A.getRow(j, &allcols, 1.0, xc);
+		A.getRow( (int)j, &allcols, 1.0, xc );
 		for (i = 0; i < nCols; i++)
 			fprintf(stdFile, "%6.2f", xc[i]);
 		fprintf(stdFile, "\n");
 	}
 
 	for (i = 0; i < 6; i++)
-		xc[i] = (1.0 + i) * 0.1;
+		xc[i] = (1.0 + (double)i) * 0.1;
 
 	A.times(&rows, &cols, 2, 1.0, xc, 3, 0.0, yc, 4, BT_TRUE);
 
@@ -775,8 +775,8 @@ int sprIndTimes()
 	delete[] yc;
 	A.free ();
 
-	QPOASES_TEST_FOR_TRUE( err  <= 1e-15 )
-	QPOASES_TEST_FOR_TRUE( errT <= 1e-15 )
+	QPOASES_TEST_FOR_TOL( err ,1e-15 )
+	QPOASES_TEST_FOR_TOL( errT,1e-15 )
 
 	return TEST_PASSED;
 }
@@ -865,8 +865,8 @@ int symmetry()
 	delete[] Z;
 	delete[] Hv;
 
-	QPOASES_TEST_FOR_TRUE( err  <= 1e-15 )
-	QPOASES_TEST_FOR_TRUE( errS <= 1e-15 )
+	QPOASES_TEST_FOR_TOL( err ,1e-15 )
+	QPOASES_TEST_FOR_TOL( errS,1e-15 )
 
 	return TEST_PASSED;
 }

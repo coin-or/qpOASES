@@ -2,7 +2,7 @@
  *	This file is part of qpOASES.
  *
  *	qpOASES -- An Implementation of the Online Active Set Strategy.
- *	Copyright (C) 2007-2014 by Hans Joachim Ferreau, Andreas Potschka,
+ *	Copyright (C) 2007-2015 by Hans Joachim Ferreau, Andreas Potschka,
  *	Christian Kirches et al. All rights reserved.
  *
  *	qpOASES is free software; you can redistribute it and/or
@@ -25,8 +25,8 @@
 /**
  *	\file include/qpOASES/ConstraintProduct.hpp
  *	\author Hans Joachim Ferreau, Andreas Potschka, Christian Kirches
- *	\version 3.0
- *	\date 2009-2014
+ *	\version 3.1
+ *	\date 2009-2015
  *
  *	Declaration of the ConstraintProduct class which allows to specify a
  *	user-defined function for evaluating the constraint product at the 
@@ -51,8 +51,8 @@ BEGIN_NAMESPACE_QPOASES
  *	of a specially structured constraint matrix.
  *
  *	\author Hans Joachim Ferreau
- *	\version 3.0
- *	\date 2009-2014
+ *	\version 3.1
+ *	\date 2009-2015
  */
 class ConstraintProduct
 {

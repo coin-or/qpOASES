@@ -2,7 +2,7 @@
  *	This file is part of qpOASES.
  *
  *	qpOASES -- An Implementation of the Online Active Set Strategy.
- *	Copyright (C) 2007-2014 by Hans Joachim Ferreau, Andreas Potschka,
+ *	Copyright (C) 2007-2015 by Hans Joachim Ferreau, Andreas Potschka,
  *	Christian Kirches et al. All rights reserved.
  *
  *	qpOASES is free software; you can redistribute it and/or
@@ -25,8 +25,8 @@
 /**
  *	\file src/SolutionAnalysis.cpp
  *	\author Hans Joachim Ferreau (thanks to Boris Houska)
- *	\version 3.0
- *	\date 2008-2014
+ *	\version 3.1
+ *	\date 2008-2015
  *
  *	Implementation of the SolutionAnalysis class designed to perform
  *	additional analysis after solving a QP with qpOASES.
@@ -88,220 +88,173 @@ SolutionAnalysis& SolutionAnalysis::operator=( const SolutionAnalysis& rhs )
 
 
 /*
- *	g e t M a x K K T v i o l a t i o n
+ *	g e t K k t V i o l a t i o n
  */
-returnValue SolutionAnalysis::getMaxKKTviolation( QProblemB* qp, real_t& maxKKTviolation ) const
+real_t SolutionAnalysis::getKktViolation(	QProblemB* const qp,
+											real_t* const maxStat, real_t* const maxFeas, real_t* const maxCmpl
+											) const
 {
 	int i;
-	int nV = qp->getNV( );
+	int nV = qp->getNV();
 
-	real_t *tmp = new real_t[nV];
-	maxKKTviolation = 0.0;
+	if ( qp == 0 )
+		return INFTY;
 
+	/* setup Hessian matrix array (or pass NULL pointer) */
+	real_t* H_ptr = 0;
+	BooleanType hasIdentityHessian = BT_FALSE;
 
-	/* 1) Check for Hx + g - y*A' = 0  (here: A = Id). */
-	for( i=0; i<nV; ++i )
-		tmp[i] = qp->g[i];
-
-	switch ( qp->getHessianType( ) )
+	switch( qp->getHessianType() )
 	{
 		case HST_ZERO:
-			/*tmp += qp->eps * qp->x[i]; */
 			break;
 
 		case HST_IDENTITY:
-			for( i=0; i<nV; ++i )
-				tmp[i] += qp->x[i];
+			hasIdentityHessian = BT_TRUE;
 			break;
 
 		default:
-			qp->H->times(1, 1.0, qp->x, nV, 1.0, tmp, nV);
-			break;
+			H_ptr = qp->H->full();
+			if ( qp->usingRegularisation() == BT_TRUE )
+				for( i=0; i<nV; ++i )
+					H_ptr[i*nV+i] -= qp->regVal;
 	}
 
-	for( i=0; i<nV; ++i )
-	{
-		tmp[i] -= qp->y[i];
+	real_t* workingSetB = new real_t[nV];
+	qp->getWorkingSetBounds( workingSetB );
 
-		if ( getAbs( tmp[i] ) > maxKKTviolation )
-			maxKKTviolation = getAbs( tmp[i] );
-	}
-	delete[] tmp;
+	/* determine maximum KKT violation */
+	real_t maxKktViolation=0.0, stat=0.0, feas=0.0, cmpl=0.0;
 
-	/* 2) Check for lb <= x <= ub. */
-	for( i=0; i<nV; ++i )
-	{
-		if ( qp->lb[i] - qp->x[i] > maxKKTviolation )
-			maxKKTviolation = qp->lb[i] - qp->x[i];
+	returnValue returnvalue = REFER_NAMESPACE_QPOASES getKktViolation(	nV,
+																		H_ptr,qp->g,
+																		qp->lb,qp->ub,
+																		qp->x,qp->y,
+																		stat,feas,cmpl,
+																		workingSetB,hasIdentityHessian
+																		);
+	if ( workingSetB != 0 )
+		delete[] workingSetB;
 
-		if ( qp->x[i] - qp->ub[i] > maxKKTviolation )
-			maxKKTviolation = qp->x[i] - qp->ub[i];
-	}
+	if ( H_ptr != 0 )
+		delete[] H_ptr;
 
-	/* 3) Check for correct sign of y and for complementary slackness. */
-	for( i=0; i<nV; ++i )
-	{
-		switch ( qp->bounds.getStatus( i ) )
-		{
-			case ST_LOWER:
-				if ( -qp->y[i] > maxKKTviolation )
-					maxKKTviolation = -qp->y[i];
-				if ( getAbs( ( qp->x[i] - qp->lb[i] ) * qp->y[i] ) > maxKKTviolation )
-					maxKKTviolation = getAbs( ( qp->x[i] - qp->lb[i] ) * qp->y[i] );
-				break;
+	if ( returnvalue != SUCCESSFUL_RETURN )
+		THROWERROR( returnvalue );
 
-			case ST_UPPER:
-				if ( qp->y[i] > maxKKTviolation )
-					maxKKTviolation = qp->y[i];
-				if ( getAbs( ( qp->ub[i] - qp->x[i] ) * qp->y[i] ) > maxKKTviolation )
-					maxKKTviolation = getAbs( ( qp->ub[i] - qp->x[i] ) * qp->y[i] );
-				break;
+	/* assign return values */
+	if ( maxStat != 0 )
+		*maxStat = stat;
 
-			default: /* inactive */
-			if ( getAbs( qp->y[i] ) > maxKKTviolation )
-					maxKKTviolation = getAbs( qp->y[i] );
-				break;
-		}
-	}
+	if ( maxFeas != 0 )
+		*maxFeas = feas;
 
+	if ( maxCmpl != 0 )
+		*maxCmpl = cmpl;
 
-	return SUCCESSFUL_RETURN;
+	maxKktViolation = getMax( maxKktViolation,stat );
+	maxKktViolation = getMax( maxKktViolation,feas );
+	maxKktViolation = getMax( maxKktViolation,cmpl );
+
+	return maxKktViolation;
 }
 
 
 /*
- *	g e t M a x K K T v i o l a t i o n
+ *	g e t K k t V i o l a t i o n
  */
-returnValue SolutionAnalysis::getMaxKKTviolation( QProblem* qp, real_t& maxKKTviolation ) const
+real_t SolutionAnalysis::getKktViolation(	QProblem* const qp,
+											real_t* const maxStat, real_t* const maxFeas, real_t* const maxCmpl
+											) const
 {
 	int i;
-	int nV = qp->getNV( );
-	int nC = qp->getNC( );
+	int nV = qp->getNV();
+	int nC = qp->getNC();
 
-	real_t *tmp = new real_t[nV];
-	maxKKTviolation = 0.0;
+	if ( qp == 0 )
+		return INFTY;
 
+	/* setup Hessian matrix array (or pass NULL pointer) */
+	real_t* H_ptr = 0;
+	BooleanType hasIdentityHessian = BT_FALSE;
 
-	/* 1) check for Hx + g - [yFX yAC]*[Id A]' = 0. */
-	for( i=0; i<nV; ++i )
-		tmp[i] = qp->g[i];
-
-	switch ( qp->getHessianType( ) )
+	switch( qp->getHessianType() )
 	{
 		case HST_ZERO:
-				/*tmp += qp->eps * qp->x[i]; */
 			break;
 
 		case HST_IDENTITY:
-			for( i=0; i<nV; ++i )
-				tmp[i] += qp->x[i];
+			hasIdentityHessian = BT_TRUE;
 			break;
 
 		default:
-			qp->H->times(1, 1.0, qp->x, nV, 1.0, tmp, nV);
-			break;
+			H_ptr = qp->H->full();
+			if ( qp->usingRegularisation() == BT_TRUE )
+				for( i=0; i<nV; ++i )
+					H_ptr[i*nV+i] -= qp->regVal;
 	}
 
-	qp->A->transTimes(1, -1.0, qp->y + nV, nC, 1.0, tmp, nV);
+	/* setup constraint matrix array */
+	real_t* A_ptr = qp->A->full();
 
-	for( i=0; i<nV; ++i )
-	{
-		tmp[i] -= qp->y[i];
+	real_t* workingSetB = new real_t[nV];
+	qp->getWorkingSetBounds( workingSetB );
 
-		if ( getAbs( tmp[i] ) > maxKKTviolation )
-			maxKKTviolation = getAbs( tmp[i] );
-	}
+	real_t* workingSetC = new real_t[nC];
+	qp->getWorkingSetConstraints( workingSetC );
 
-	/* 2) Check for [lb lbA] <= [Id A]*x <= [ub ubA]. */
-	/* lbA <= Ax <= ubA */
-	real_t* Ax = new real_t[nC];
-	qp->A->times(1, 1.0, qp->x, nV, 0.0, Ax, nC);
+	/* determine maximum KKT violation */
+	real_t maxKktViolation=0.0, stat=0.0, feas=0.0, cmpl=0.0;
 
-	for( i=0; i<nC; ++i )
-	{
-		if ( qp->lbA[i] - Ax[i] > maxKKTviolation )
-			maxKKTviolation = qp->lbA[i] - Ax[i];
+	returnValue returnvalue = REFER_NAMESPACE_QPOASES getKktViolation(	nV,nC,
+																		H_ptr,qp->g,A_ptr,
+																		qp->lb,qp->ub,qp->lbA,qp->ubA,
+																		qp->x,qp->y,
+																		stat,feas,cmpl,
+																		workingSetB,workingSetC,hasIdentityHessian
+																		);
 
-		if ( Ax[i] - qp->ubA[i] > maxKKTviolation )
-			maxKKTviolation = Ax[i] - qp->ubA[i];
-	}
+	if ( workingSetC != 0 )
+		delete[] workingSetC;
 
-	/* lb <= x <= ub */
-	for( i=0; i<nV; ++i )
-	{
-		if ( qp->lb[i] - qp->x[i] > maxKKTviolation )
-			maxKKTviolation = qp->lb[i] - qp->x[i];
+	if ( workingSetB != 0 )
+		delete[] workingSetB;
 
-		if ( qp->x[i] - qp->ub[i] > maxKKTviolation )
-			maxKKTviolation = qp->x[i] - qp->ub[i];
-	}
+	if ( A_ptr != 0 )
+		delete[] A_ptr;
+	
+	if ( H_ptr != 0 )
+		delete[] H_ptr;
 
-	/* 3) Check for correct sign of y and for complementary slackness. */
-	/* bounds */
-	for( i=0; i<nV; ++i )
-	{
-		switch ( qp->bounds.getStatus( i ) )
-		{
-			case ST_LOWER:
-				if ( -qp->y[i] > maxKKTviolation )
-					maxKKTviolation = -qp->y[i];
-				if ( getAbs( ( qp->x[i] - qp->lb[i] ) * qp->y[i] ) > maxKKTviolation )
-					maxKKTviolation = getAbs( ( qp->x[i] - qp->lb[i] ) * qp->y[i] );
-				break;
+	if ( returnvalue != SUCCESSFUL_RETURN )
+		THROWERROR( returnvalue );
 
-			case ST_UPPER:
-				if ( qp->y[i] > maxKKTviolation )
-					maxKKTviolation = qp->y[i];
-				if ( getAbs( ( qp->ub[i] - qp->x[i] ) * qp->y[i] ) > maxKKTviolation )
-					maxKKTviolation = getAbs( ( qp->ub[i] - qp->x[i] ) * qp->y[i] );
-				break;
+	/* assign return values */
+	if ( maxStat != 0 )
+		*maxStat = stat;
 
-			default: /* inactive */
-			if ( getAbs( qp->y[i] ) > maxKKTviolation )
-					maxKKTviolation = getAbs( qp->y[i] );
-				break;
-		}
-	}
+	if ( maxFeas != 0 )
+		*maxFeas = feas;
 
-	/* constraints */
-	for( i=0; i<nC; ++i )
-	{
-		switch ( qp->constraints.getStatus( i ) )
-		{
-			case ST_LOWER:
-				if ( -qp->y[nV+i] > maxKKTviolation )
-					maxKKTviolation = -qp->y[nV+i];
-				if ( getAbs( ( Ax[i] - qp->lbA[i] ) * qp->y[nV+i] ) > maxKKTviolation )
-					maxKKTviolation = getAbs( ( Ax[i] - qp->lbA[i] ) * qp->y[nV+i] );
-				break;
+	if ( maxCmpl != 0 )
+		*maxCmpl = cmpl;
 
-			case ST_UPPER:
-				if ( qp->y[nV+i] > maxKKTviolation )
-					maxKKTviolation = qp->y[nV+i];
-				if ( getAbs( ( qp->ubA[i] - Ax[i] ) * qp->y[nV+i] ) > maxKKTviolation )
-					maxKKTviolation = getAbs( ( qp->ubA[i] - Ax[i] ) * qp->y[nV+i] );
-				break;
+	maxKktViolation = getMax( maxKktViolation,stat );
+	maxKktViolation = getMax( maxKktViolation,feas );
+	maxKktViolation = getMax( maxKktViolation,cmpl );
 
-			default: /* inactive */
-			if ( getAbs( qp->y[nV+i] ) > maxKKTviolation )
-					maxKKTviolation = getAbs( qp->y[nV+i] );
-				break;
-		}
-	}
-
-	delete[] tmp;
-	delete[] Ax;
-
-	return SUCCESSFUL_RETURN;
+	return maxKktViolation;
 }
 
 
 /*
- *	g e t M a x K K T v i o l a t i o n
+ *	g e t K k t V i o l a t i o n
  */
-returnValue SolutionAnalysis::getMaxKKTviolation( SQProblem* qp, real_t& maxKKTviolation ) const
+real_t SolutionAnalysis::getKktViolation(	SQProblem* const qp,
+											real_t* const maxStat, real_t* const maxFeas, real_t* const maxCmpl
+											) const
 {
-	return getMaxKKTviolation( (QProblem*)qp,maxKKTviolation );
+	return getKktViolation( (QProblem*)qp, maxStat,maxFeas,maxCmpl );
 }
 
 
@@ -309,7 +262,9 @@ returnValue SolutionAnalysis::getMaxKKTviolation( SQProblem* qp, real_t& maxKKTv
 /*
  *	g e t V a r i a n c e C o v a r i a n c e
  */
-returnValue SolutionAnalysis::getVarianceCovariance( QProblemB* qp, real_t* g_b_bA_VAR, real_t* Primal_Dual_VAR ) const
+returnValue SolutionAnalysis::getVarianceCovariance(	QProblemB* const qp,
+														const real_t* const g_b_bA_VAR, real_t* const Primal_Dual_VAR
+														) const
 {
 	return THROWERROR( RET_NOT_YET_IMPLEMENTED );
 }
@@ -318,7 +273,9 @@ returnValue SolutionAnalysis::getVarianceCovariance( QProblemB* qp, real_t* g_b_
 /*
  *	g e t V a r i a n c e C o v a r i a n c e
  */
-returnValue SolutionAnalysis::getVarianceCovariance( QProblem* qp, real_t* g_b_bA_VAR, real_t* Primal_Dual_VAR ) const
+returnValue SolutionAnalysis::getVarianceCovariance(	QProblem* qp,
+														const real_t* const g_b_bA_VAR, real_t* const Primal_Dual_VAR 
+														) const
 {
 
   /* DEFINITION OF THE DIMENSIONS nV AND nC:
@@ -552,7 +509,9 @@ returnValue SolutionAnalysis::getVarianceCovariance( QProblem* qp, real_t* g_b_b
 /*
  *	g e t V a r i a n c e C o v a r i a n c e
  */
-returnValue SolutionAnalysis::getVarianceCovariance( SQProblem* qp, real_t* g_b_bA_VAR, real_t* Primal_Dual_VAR ) const
+returnValue SolutionAnalysis::getVarianceCovariance(	SQProblem* const qp,
+														const real_t* const g_b_bA_VAR, real_t* const Primal_Dual_VAR
+														) const
 {
 	/* Call QProblem variant. */
 	return getVarianceCovariance( (QProblem*)qp,g_b_bA_VAR,Primal_Dual_VAR );

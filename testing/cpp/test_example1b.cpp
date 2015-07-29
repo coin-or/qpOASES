@@ -2,7 +2,7 @@
  *	This file is part of qpOASES.
  *
  *	qpOASES -- An Implementation of the Online Active Set Strategy.
- *	Copyright (C) 2007-2014 by Hans Joachim Ferreau, Andreas Potschka,
+ *	Copyright (C) 2007-2015 by Hans Joachim Ferreau, Andreas Potschka,
  *	Christian Kirches et al. All rights reserved.
  *
  *	qpOASES is free software; you can redistribute it and/or
@@ -25,8 +25,8 @@
 /**
  *	\file testing/cpp/test_example1b.cpp
  *	\author Hans Joachim Ferreau
- *	\version 3.0
- *	\date 2007-2014
+ *	\version 3.1
+ *	\date 2007-2015
  *
  *	Very simple example for testing qpOASES using the QProblemB class.
  */
@@ -75,17 +75,14 @@ int main( )
 
 	/* Compute KKT tolerances */
 	real_t stat, feas, cmpl;
+	SolutionAnalysis analyzer;
 
-	getKKTResidual(	2,
-					H,g,lb,ub,
-					xOpt,yOpt,
-					stat,feas,cmpl
-					);
+	analyzer.getKktViolation( &example, &stat,&feas,&cmpl );
 	printf( "stat = %e\nfeas = %e\ncmpl = %e\n", stat,feas,cmpl );
 
-	QPOASES_TEST_FOR_TRUE( stat <= 1e-15 );
-	QPOASES_TEST_FOR_TRUE( feas <= 1e-15 );
-	QPOASES_TEST_FOR_TRUE( cmpl <= 1e-15 );
+	QPOASES_TEST_FOR_TOL( stat,1e-15 );
+	QPOASES_TEST_FOR_TOL( feas,1e-15 );
+	QPOASES_TEST_FOR_TOL( cmpl,1e-15 );
 
 	
 	/* Solve second QP. */
@@ -99,16 +96,12 @@ int main( )
 	printf( "\nxOpt = [ %e, %e ];  objVal = %e\n\n", xOpt[0],xOpt[1],example.getObjVal() );
 
 	/* Compute KKT tolerances */
-	getKKTResidual(	2,
-					H,g_new,lb_new,ub_new,
-					xOpt,yOpt,
-					stat,feas,cmpl
-					);
+	analyzer.getKktViolation( &example, &stat,&feas,&cmpl );
 	printf( "stat = %e\nfeas = %e\ncmpl = %e\n", stat,feas,cmpl );
 
-	QPOASES_TEST_FOR_TRUE( stat <= 1e-15 );
-	QPOASES_TEST_FOR_TRUE( feas <= 1e-15 );
-	QPOASES_TEST_FOR_TRUE( cmpl <= 1e-15 );
+	QPOASES_TEST_FOR_TOL( stat,1e-15 );
+	QPOASES_TEST_FOR_TOL( feas,1e-15 );
+	QPOASES_TEST_FOR_TOL( cmpl,1e-15 );
 
 	return TEST_PASSED;
 }

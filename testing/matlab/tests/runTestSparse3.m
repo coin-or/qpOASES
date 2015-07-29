@@ -23,13 +23,13 @@ function [ successFlag ] = runTestSparse3( doPrint )
     options = qpOASES_options( 'default', 'printLevel',2*doPrint );
     
     
-    [QP,~,~,exitflag1] = qpOASES_sequence( 'i', H, g, A, lb, ub, lbA, ubA, options );
+    [QP,dummy1,dummy2,exitflag1] = qpOASES_sequence( 'i', H, g, A, lb, ub, lbA, ubA, options );
 
     L = sprand(n, n, 0.03);
     H = L' * L;
     A = sprand(m, n, 0.05);
 
-    [~,~,exitflag2] = qpOASES_sequence( 'm',QP, H, g*2, A, lb, ub, lbA, ubA );
+    [dummy1,dummy2,exitflag2] = qpOASES_sequence( 'm',QP, H, g*2, A, lb, ub, lbA, ubA );
     qpOASES_sequence( 'c',QP );
     
     if ( ( exitflag1 == 0 ) && ( exitflag2 == 0 ) )

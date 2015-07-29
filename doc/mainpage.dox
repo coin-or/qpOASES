@@ -6,7 +6,7 @@
  *	\section sec_copyright Copyright
  *
  *	qpOASES -- An Implementation of the Online Active Set Strategy. \n
- *	Copyright (C) 2007-2014 by Hans Joachim Ferreau, Andreas Potschka,
+ *	Copyright (C) 2007-2015 by Hans Joachim Ferreau, Andreas Potschka,
  *	Christian Kirches et al. All rights reserved.
  *
  *	qpOASES is free software; you can redistribute it and/or
@@ -56,6 +56,16 @@
  *	<li>Leonard Wirsching
  *	</ul>
  *
+ *	We also would like to thank two persons who had a major share in making 
+ *	qpOASES a success. Not by writing even a single line of code, but by 
+ *	establishing the idea of using a homotopy-based approach for high-speed 
+ *	QP solutions and by excellent scientific guidance during the development 
+ *	process:
+ *	<ul>
+ *	<li>Hans Georg Bock
+ *	<li>Moritz Diehl 
+ *	</ul>
+ *
  *	All users are invited to further improve qpOASES by providing comments, code enhancements, 
  *	bug reports, additional documentation or whatever you feel is missing. The preferred way
  *  of doing so is to <b>create a <a href="https://projects.coin-or.org/qpOASES/newticket">new ticket</a>
@@ -78,8 +88,10 @@
  *	  title = {{qpOASES}: A parametric active-set algorithm for quadratic programming},
  *	  journal = {Mathematical Programming Computation},
  *	  year = {2014},
- *	  keywords = {qpOASES, parametric quadratic programming, active set method, model predictive control},
- *	  note = {(in print)}
+ *	  volume = {6},
+ *	  number = {4},
+ *	  pages = {327--363},
+ *	  keywords = {qpOASES, parametric quadratic programming, active set method, model predictive control}
  *	}
  *	\endcode
  *
@@ -103,7 +115,7 @@
  *	  author = {H.J. Ferreau and A. Potschka and C. Kirches},
  *	  title = {{qpOASES} webpage},
  *	  howpublished = {http://www.qpOASES.org/},
- *	  year = {2007--2014},
+ *	  year = {2007--2015},
  *	  keywords = {qpOASES, model predictive control, parametric quadratic programming, online active set strategy}
  *	}
  *	\endcode

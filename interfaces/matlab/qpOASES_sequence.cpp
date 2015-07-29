@@ -2,7 +2,7 @@
  *	This file is part of qpOASES.
  *
  *	qpOASES -- An Implementation of the Online Active Set Strategy.
- *	Copyright (C) 2007-2014 by Hans Joachim Ferreau, Andreas Potschka,
+ *	Copyright (C) 2007-2015 by Hans Joachim Ferreau, Andreas Potschka,
  *	Christian Kirches et al. All rights reserved.
  *
  *	qpOASES is free software; you can redistribute it and/or
@@ -24,12 +24,12 @@
 
 /**
  *	\file interfaces/matlab/qpOASES_sequence.cpp
- *	\author Hans Joachim Ferreau, Christian Kirches, Alexander Buchner
- *	\version 3.0
- *	\date 2007-2014
+ *	\author Hans Joachim Ferreau, Christian Kirches, Andreas Potschka, Alexander Buchner
+ *	\version 3.1
+ *	\date 2007-2015
  *
  *	Interface for Matlab(R) that enables to call qpOASES as a MEX function
- *  (variant for QPs general constraints).
+ *  (variant for solving QP sequences).
  *
  */
 
@@ -53,16 +53,17 @@ static std::vector<QPInstance *> g_instances;
 
 
 /*
- *	i n i t S B
+ *	Q P r o b l e m B _ i n i t
  */
-int initSB(	int handle, 
-			SymmetricMatrix *H, real_t* g,
-			const real_t* const lb, const real_t* const ub,
-			int nWSRin, real_t maxCpuTimeIn,
-			const real_t* const x0, Options* options,
-			int nOutputs, mxArray* plhs[],
-			double* guessedBounds
-			)
+int QProblemB_init(	int handle, 
+					SymmetricMatrix* H, real_t* g,
+					const real_t* const lb, const real_t* const ub,
+					int nWSRin, real_t maxCpuTimeIn,
+					const double* const x0, Options* options,
+					int nOutputs, mxArray* plhs[],
+					const double* const guessedBounds,
+					const double* const _R
+					)
 {
 	int nWSRout = nWSRin;
 	real_t maxCpuTimeOut = (maxCpuTimeIn >= 0.0) ? maxCpuTimeIn : INFTY;
@@ -102,11 +103,12 @@ int initSB(	int handle,
 		}
 	}
 
-	if (x0 == 0 && guessedBounds == 0)
-		returnvalue = globalQPB->init( H,g,lb,ub, nWSRout,&maxCpuTimeOut );
-	else
-		returnvalue = globalQPB->init( H,g,lb,ub, nWSRout,&maxCpuTimeOut, x0, 0,
-				guessedBounds != 0 ? &bounds : 0);
+	returnvalue = globalQPB->init(	H,g,lb,ub,
+									nWSRout,&maxCpuTimeOut,
+									x0,0,
+									(guessedBounds != 0) ? &bounds : 0,
+									_R
+									);
 
 	/* 3) Assign lhs arguments. */
 	obtainOutputs(	0,globalQPB,returnvalue,nWSRout,maxCpuTimeOut,
@@ -117,16 +119,18 @@ int initSB(	int handle,
 
 
 /*
- *	i n i t
+ *	S Q P r o b l e m _ i n i t
  */
-int init(	int handle, 
-			SymmetricMatrix *H, real_t* g, Matrix *A,
-			const real_t* const lb, const real_t* const ub, const real_t* const lbA, const real_t* const ubA,
-			int nWSRin, real_t maxCpuTimeIn,
-			const real_t* const x0, Options* options,
-			int nOutputs, mxArray* plhs[],
-			double* guessedBounds, double* guessedConstraints
-			)
+int SQProblem_init(	int handle, 
+					SymmetricMatrix* H, real_t* g, Matrix* A,
+					const real_t* const lb, const real_t* const ub,
+					const real_t* const lbA, const real_t* const ubA,
+					int nWSRin, real_t maxCpuTimeIn,
+					const double* const x0, Options* options,
+					int nOutputs, mxArray* plhs[],
+					const double* const guessedBounds, const double* const guessedConstraints,
+					const double* const _R
+					)
 {
 	int nWSRout = nWSRin;
 	real_t maxCpuTimeOut = (maxCpuTimeIn >= 0.0) ? maxCpuTimeIn : INFTY;
@@ -185,13 +189,13 @@ int init(	int handle,
 			}
 		}
 	}
-
-	if (x0 == 0 && guessedBounds == 0 && guessedConstraints == 0)
-		returnvalue = globalSQP->init( H,g,A,lb,ub,lbA,ubA, nWSRout,&maxCpuTimeOut);
-	else
-		returnvalue = globalSQP->init( H,g,A,lb,ub,lbA,ubA, nWSRout,&maxCpuTimeOut, x0, 0,
-				guessedBounds != 0 ? &bounds : 0,
-				guessedConstraints != 0 ? &constraints : 0);
+	
+	returnvalue = globalSQP->init(	H,g,A,lb,ub,lbA,ubA,
+									nWSRout,&maxCpuTimeOut,
+									x0,0,
+									(guessedBounds != 0) ? &bounds : 0, (guessedConstraints != 0) ? &constraints : 0,
+									_R
+									);
 
 	/* 3) Assign lhs arguments. */
 	obtainOutputs(	0,globalSQP,returnvalue,nWSRout,maxCpuTimeOut,
@@ -203,15 +207,15 @@ int init(	int handle,
 
 
 /*
- *	h o t s t a r t S B
+ *	Q P r o b l e m B _ h o t s t a r t
  */
-int hotstartSB(	int handle,
-                const real_t* const g,
-				const real_t* const lb, const real_t* const ub,
-				int nWSRin, real_t maxCpuTimeIn,
-				Options* options,
-				int nOutputs, mxArray* plhs[]
-				)
+int QProblemB_hotstart(	int handle,
+						const real_t* const g,
+						const real_t* const lb, const real_t* const ub,
+						int nWSRin, real_t maxCpuTimeIn,
+						Options* options,
+						int nOutputs, mxArray* plhs[]
+						)
 {
 	int nWSRout = nWSRin;
 	real_t maxCpuTimeOut = (maxCpuTimeIn >= 0.0) ? maxCpuTimeIn : INFTY;
@@ -224,29 +228,31 @@ int hotstartSB(	int handle,
 		return -1;
 	}
 
+	int nV = globalQPB->getNV();
+
 	/* 1) Solve QP with given options. */
 	globalQPB->setOptions( *options );
 	returnValue returnvalue = globalQPB->hotstart( g,lb,ub, nWSRout,&maxCpuTimeOut );
 
 	/* 2) Assign lhs arguments. */
 	obtainOutputs(	0,globalQPB,returnvalue,nWSRout,maxCpuTimeOut,
-					nOutputs,plhs,0,0 );
+					nOutputs,plhs,nV,0 );
 
 	return 0;
 }
 
 
 /*
- *	h o t s t a r t
+ *	Q P r o b l e m _ h o t s t a r t
  */
-int hotstart(	int handle,
-                const real_t* const g,
-				const real_t* const lb, const real_t* const ub,
-				const real_t* const lbA, const real_t* const ubA,
-				int nWSRin, real_t maxCpuTimeIn,
-				Options* options,
-				int nOutputs, mxArray* plhs[]
-				)
+int QProblem_hotstart(	int handle,
+						const real_t* const g,
+						const real_t* const lb, const real_t* const ub,
+						const real_t* const lbA, const real_t* const ubA,
+						int nWSRin, real_t maxCpuTimeIn,
+						Options* options,
+						int nOutputs, mxArray* plhs[]
+						)
 {
 	int nWSRout = nWSRin;
 	real_t maxCpuTimeOut = (maxCpuTimeIn >= 0.0) ? maxCpuTimeIn : INFTY;
@@ -259,28 +265,31 @@ int hotstart(	int handle,
 		return -1;
 	}
 
+	int nV = globalSQP->getNV();
+	int nC = globalSQP->getNC();
+
 	/* 1) Solve QP with given options. */
 	globalSQP->setOptions( *options );
 	returnValue returnvalue = globalSQP->hotstart( g,lb,ub,lbA,ubA, nWSRout,&maxCpuTimeOut );
 
 	/* 2) Assign lhs arguments. */
 	obtainOutputs(	0,globalSQP,returnvalue,nWSRout,maxCpuTimeOut,
-					nOutputs,plhs,0,0 );
+					nOutputs,plhs,nV,nC );
 
 	return 0;
 }
 
 
 /*
- *	h o t s t a r t V M
+ *	S Q P r o b l e m _ h o t s t a r t
  */
-int hotstartVM(	int handle,
-                    SymmetricMatrix *H, real_t* g, Matrix *A,
-					const real_t* const lb, const real_t* const ub, const real_t* const lbA, const real_t* const ubA,
-					int nWSRin, real_t maxCpuTimeIn,
-					Options* options,
-					int nOutputs, mxArray* plhs[]
-					)
+int SQProblem_hotstart(	int handle,
+						SymmetricMatrix* H, real_t* g, Matrix* A,
+						const real_t* const lb, const real_t* const ub, const real_t* const lbA, const real_t* const ubA,
+						int nWSRin, real_t maxCpuTimeIn,
+						Options* options,
+						int nOutputs, mxArray* plhs[]
+						)
 {
 	int nWSRout = nWSRin;
 	real_t maxCpuTimeOut = (maxCpuTimeIn >= 0.0) ? maxCpuTimeIn : INFTY;
@@ -293,6 +302,9 @@ int hotstartVM(	int handle,
 		return -1;
 	}
 
+	int nV = globalSQP->getNV();
+	int nC = globalSQP->getNC();
+
 	/* 1) Solve QP. */
 	globalSQP->setOptions( *options );
 	returnValue returnvalue = globalSQP->hotstart( H,g,A,lb,ub,lbA,ubA, nWSRout,&maxCpuTimeOut );
@@ -303,14 +315,15 @@ int hotstartVM(	int handle,
 		case RET_QP_UNBOUNDED:
 		case RET_QP_INFEASIBLE:
 			break;
-		otherwise:
+
+		default:
 			myMexErrMsgTxt( "ERROR (qpOASES): Hotstart failed." );
 			return -1;
 	}
 
 	/* 2) Assign lhs arguments. */
 	obtainOutputs(	0,globalSQP,returnvalue,nWSRout,maxCpuTimeOut,
-					nOutputs,plhs,0,0 );
+					nOutputs,plhs,nV,nC );
 
 	return 0;
 }
@@ -324,11 +337,14 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 {
 	/* inputs */
 	char typeString[2];
-	real_t *g=0, *lb=0, *ub=0, *lbA=0, *ubA=0, *x0=0;
-	int x0_idx=-1, auxInput_idx=-1;
 
-	double *guessedBoundsAndConstraints = 0;
-	double *guessedBounds = 0, *guessedConstraints = 0;
+	real_t *g=0, *lb=0, *ub=0, *lbA=0, *ubA=0;
+	HessianType hessianType = HST_UNKNOWN;
+	double *x0=0, *R=0, *R_for=0;
+	double *guessedBounds=0, *guessedConstraints=0;
+
+	int H_idx=-1, g_idx=-1, A_idx=-1, lb_idx=-1, ub_idx=-1, lbA_idx=-1, ubA_idx=-1;
+	int x0_idx=-1, auxInput_idx=-1;
 
 	BooleanType isSimplyBoundedQp = BT_FALSE;
 
@@ -396,53 +412,63 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 			return;
 		}
 
+		g_idx = 2;
+
+		if ( mxIsEmpty(prhs[1]) == 1 )
+		{
+			H_idx = -1;
+			nV = (unsigned int)mxGetM( prhs[ g_idx ] ); /* row number of Hessian matrix */
+		}
+		else
+		{
+			H_idx = 1;
+			nV = (unsigned int)mxGetM( prhs[ H_idx ] ); /* row number of Hessian matrix */
+		}
+
+
 		/* ensure that data is given in double precision */
-		if ((mxIsDouble(prhs[1]) == 0) || (mxIsDouble(prhs[2]) == 0)) {
-			myMexErrMsgTxt(
-					"ERROR (qpOASES): All data has to be provided in double precision!");
+		if ( ( ( H_idx >= 0 ) && ( mxIsDouble( prhs[ H_idx ] ) == 0 ) ) ||
+		     ( mxIsDouble( prhs[ g_idx ] ) == 0 ) )
+		{
+			myMexErrMsgTxt( "ERROR (qpOASES): All data has to be provided in double precision!" );
 			return;
 		}
 
-        nV = (unsigned int)mxGetM( prhs[1] ); /* row number of Hessian matrix */
-
-		// Check for 'Inf' and 'Nan' in Hessian
-		int H_idx = 1;
-		int g_idx = 2;
-		if (containsNaNorInf(prhs, nV * nV, H_idx, 0) == BT_TRUE) {
+		if ( ( H_idx >= 0 ) && ( ( mxGetN( prhs[ H_idx ] ) != nV ) || ( mxGetM( prhs[ H_idx ] ) != nV ) ) )
+		{
+			myMexErrMsgTxt( "ERROR (qpOASES): Hessian matrix dimension mismatch!" );
 			return;
 		}
 
-		// Check for 'Inf' and 'Nan' in gradient
-		if (containsNaNorInf(prhs, nV, g_idx, 0) == BT_TRUE) {
+
+		/* Check for 'Inf' and 'Nan' in Hessian */
+		if (containsNaNorInf( prhs,H_idx, 0 ) == BT_TRUE)
 			return;
-		}
+
+		/* Check for 'Inf' and 'Nan' in gradient */
+		if (containsNaNorInf(prhs,g_idx, 0 ) == BT_TRUE)
+			return;
 
 		/* determine whether is it a simply bounded QP */
-		if (nrhs <= 7)
+		if ( nrhs <= 7 )
 			isSimplyBoundedQp = BT_TRUE;
 		else
 			isSimplyBoundedQp = BT_FALSE;
 
 		if ( isSimplyBoundedQp == BT_TRUE )
 		{
-			int lb_idx = 3;
-			int ub_idx = 4;
+			lb_idx = 3;
+			ub_idx = 4;
 
-			if (containsNaNorInf(prhs, nV, lb_idx, 1) == BT_TRUE) {
+			if (containsNaNorInf( prhs,lb_idx, 1 ) == BT_TRUE)
 				return;
-			}
-			if (containsNaNorInf(prhs, nV, ub_idx, 1) == BT_TRUE) {
+
+			if (containsNaNorInf( prhs,ub_idx, 1 ) == BT_TRUE)
 				return;
-			}
 
 			/* Check inputs dimensions and assign pointers to inputs. */
 			nC = 0; /* row number of constraint matrix */
 
-			if ( mxGetN( prhs[1] ) != nV )
-			{
-				myMexErrMsgTxt( "ERROR (qpOASES): Input dimension mismatch!" );
-				return;
-			}
 
 			if ( smartDimensionCheck( &g,nV,1, BT_FALSE,prhs,2 ) != SUCCESSFUL_RETURN )
 				return;
@@ -485,61 +511,57 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 		}
 		else
 		{
+			A_idx = 3;
+
 			/* ensure that data is given in double precision */
-			if ( ( mxIsDouble( prhs[1] ) == 0 ) ||
-				 ( mxIsDouble( prhs[2] ) == 0 ) ||
-				 ( mxIsDouble( prhs[3] ) == 0 ) )
+			if ( mxIsDouble( prhs[ A_idx ] ) == 0 )
 			{
 				myMexErrMsgTxt( "ERROR (qpOASES): All data has to be provided in double precision!" );
 				return;
 			}
 		
 			/* Check inputs dimensions and assign pointers to inputs. */
-			nC = (unsigned int)mxGetM( prhs[3] ); /* row number of constraint matrix */
+			nC = (unsigned int)mxGetM( prhs[ A_idx ] ); /* row number of constraint matrix */
 
-			int A_idx = 3;
-			int lb_idx = 4;
-			int ub_idx = 5;
-			int lbA_idx = 6;
-			int ubA_idx = 7;
+			lb_idx = 4;
+			ub_idx = 5;
+			lbA_idx = 6;
+			ubA_idx = 7;
 
-			if (containsNaNorInf(prhs, nV * nC, A_idx, 0) == BT_TRUE) {
+			if (containsNaNorInf( prhs,A_idx, 0 ) == BT_TRUE)
 				return;
-			}
-			if (containsNaNorInf(prhs, nV, lb_idx, 1) == BT_TRUE) {
-				return;
-			}
-			if (containsNaNorInf(prhs, nV, ub_idx, 1) == BT_TRUE) {
-				return;
-			}
-			if (containsNaNorInf(prhs, nC, lbA_idx, 1) == BT_TRUE) {
-				return;
-			}
-			if (containsNaNorInf(prhs, nC, ubA_idx, 1) == BT_TRUE) {
-				return;
-			}
 
+			if (containsNaNorInf( prhs,lb_idx, 1 ) == BT_TRUE)
+				return;
 
+			if (containsNaNorInf( prhs,ub_idx, 1 ) == BT_TRUE)
+				return;
 
-			if ( ( mxGetN( prhs[1] ) != nV ) || ( ( mxGetN( prhs[3] ) != 0 ) && ( mxGetN( prhs[3] ) != nV ) ) )
+			if (containsNaNorInf( prhs,lbA_idx, 1 ) == BT_TRUE)
+				return;
+
+			if (containsNaNorInf( prhs,ubA_idx, 1 ) == BT_TRUE)
+				return;
+
+			if ( ( mxGetN( prhs[ A_idx ] ) != 0 ) && ( mxGetN( prhs[ A_idx ] ) != nV ) )
 			{
-				myMexErrMsgTxt( "ERROR (qpOASES): Input dimension mismatch!" );
+				myMexErrMsgTxt( "ERROR (qpOASES): Constraint matrix dimension mismatch!" );
 				return;
 			}
 		
-			if ( smartDimensionCheck( &g,nV,1, BT_FALSE,prhs,2 ) != SUCCESSFUL_RETURN )
+			if ( smartDimensionCheck( &g,nV,1, BT_FALSE,prhs,g_idx ) != SUCCESSFUL_RETURN )
 				return;
 
-			if ( smartDimensionCheck( &lb,nV,1, BT_TRUE,prhs,4 ) != SUCCESSFUL_RETURN )
+			if ( smartDimensionCheck( &lb,nV,1, BT_TRUE,prhs,lb_idx ) != SUCCESSFUL_RETURN )
 				return;
 
-			if ( smartDimensionCheck( &ub,nV,1, BT_TRUE,prhs,5 ) != SUCCESSFUL_RETURN )
+			if ( smartDimensionCheck( &ub,nV,1, BT_TRUE,prhs,ub_idx ) != SUCCESSFUL_RETURN )
 				return;
 
-			if ( smartDimensionCheck( &lbA,nC,1, BT_TRUE,prhs,6 ) != SUCCESSFUL_RETURN )
+			if ( smartDimensionCheck( &lbA,nC,1, BT_TRUE,prhs,lbA_idx ) != SUCCESSFUL_RETURN )
 				return;
 			
-			if ( smartDimensionCheck( &ubA,nC,1, BT_TRUE,prhs,7 ) != SUCCESSFUL_RETURN )
+			if ( smartDimensionCheck( &ubA,nC,1, BT_TRUE,prhs,ubA_idx ) != SUCCESSFUL_RETURN )
 				return;
 
 			/* default value for nWSR */
@@ -579,19 +601,26 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 			return;
 
 		if ( auxInput_idx >= 0 )
-			setupAuxiliaryInputs( prhs[auxInput_idx],nV,nC, &x0,&guessedBoundsAndConstraints,&guessedBounds,&guessedConstraints );
+			setupAuxiliaryInputs( prhs[auxInput_idx],nV,nC, &hessianType,&x0,&guessedBounds,&guessedConstraints,&R_for );
 
-
+		/* convert Cholesky factor to C storage format */
+		if ( R_for != 0 )
+		{
+			R = new real_t[nV*nV];
+			convertFortranToC( R_for, nV,nV, R );
+		}
+		
 		/* allocate instance */
-		handle = allocateQPInstance( nV,nC,isSimplyBoundedQp, &options );	
+		handle = allocateQPInstance( nV,nC,hessianType, isSimplyBoundedQp,&options );	
 		globalQP = getQPInstance( handle );
 
 		/* make a deep-copy of the user-specified Hessian matrix (possibly sparse) */
-		setupHessianMatrix(	prhs[1],nV, &(globalQP->H),&(globalQP->Hir),&(globalQP->Hjc),&(globalQP->Hv) );
-
+		if ( H_idx >= 0 )
+			setupHessianMatrix(	prhs[H_idx],nV, &(globalQP->H),&(globalQP->Hir),&(globalQP->Hjc),&(globalQP->Hv) );
+		
 		/* make a deep-copy of the user-specified constraint matrix (possibly sparse) */
-		if ( nC > 0 )
-			setupConstraintMatrix( prhs[3],nV,nC, &(globalQP->A),&(globalQP->Air),&(globalQP->Ajc),&(globalQP->Av) );
+		if ( ( nC > 0 ) && ( A_idx >= 0 ) )
+			setupConstraintMatrix( prhs[A_idx],nV,nC, &(globalQP->A),&(globalQP->Air),&(globalQP->Ajc),&(globalQP->Av) );
 
 		/* Create output vectors and assign pointers to them. */
 		allocateOutputs( nlhs,plhs, nV,nC,1,handle );
@@ -599,31 +628,28 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 		/* Call qpOASES. */
 		if ( isSimplyBoundedQp == BT_TRUE )
 		{
-			initSB(	handle,
-					globalQP->H,g,
-					lb,ub,
-					nWSRin,maxCpuTimeIn,
-					x0,&options,
-					nlhs,plhs,
-					guessedBounds
-					);
-
-			deleteAuxiliaryInputs( &guessedBounds,0 );
+			QProblemB_init(	handle,
+							globalQP->H,g,
+							lb,ub,
+							nWSRin,maxCpuTimeIn,
+							x0,&options,
+							nlhs,plhs,
+							guessedBounds,R
+							);
 		}
 		else
 		{
-			init(	handle,
-					globalQP->H,g,globalQP->A,
-					lb,ub,lbA,ubA,
-					nWSRin,maxCpuTimeIn,
-					x0,&options,
-					nlhs,plhs,
-					guessedBounds, guessedConstraints
-					);
-
-			deleteAuxiliaryInputs( &guessedBounds,&guessedConstraints );
+			SQProblem_init(	handle,
+							globalQP->H,g,globalQP->A,
+							lb,ub,lbA,ubA,
+							nWSRin,maxCpuTimeIn,
+							x0,&options,
+							nlhs,plhs,
+							guessedBounds,guessedConstraints,R
+							);
 		}
 
+		if (R != 0) delete R;
 		return;
 	}
 
@@ -650,7 +676,7 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 			isSimplyBoundedQp = BT_FALSE;
 
 
-		if ( ( mxIsDouble( prhs[1] ) == false ) || ( mxGetM( prhs[1] ) != 1 ) || ( mxGetN( prhs[1] ) != 1 ) )
+		if ( ( mxIsDouble( prhs[1] ) == false ) || ( mxIsScalar( prhs[1] ) == false ) )
 		{
 			myMexErrMsgTxt( "ERROR (qpOASES): Expecting a handle to QP object as second argument!\nType 'help qpOASES_sequence' for further information." );
 			return;
@@ -658,7 +684,7 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 
 		/* get QP instance */
 		handle = (unsigned int)mxGetScalar( prhs[1] );
-		globalQP = getQPInstance ( handle );
+		globalQP = getQPInstance( handle );
 		if ( globalQP == 0 )
 		{
 			myMexErrMsgTxt( "ERROR (qpOASES): Invalid handle to QP instance!" );
@@ -667,20 +693,18 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 
 		nV = globalQP->getNV();
 
-		int g_idx = 2;
-		int lb_idx = 3;
-		int ub_idx = 4;
+		g_idx = 2;
+		lb_idx = 3;
+		ub_idx = 4;
 
-		if (containsNaNorInf(prhs, nV, g_idx, 0) == BT_TRUE) {
+		if (containsNaNorInf( prhs,g_idx, 0 ) == BT_TRUE)
 			return;
-		}
 
-		if (containsNaNorInf(prhs, nV, lb_idx, 1) == BT_TRUE) {
+		if (containsNaNorInf( prhs,lb_idx, 1 ) == BT_TRUE)
 			return;
-		}
-		if (containsNaNorInf(prhs, nV, ub_idx, 1) == BT_TRUE) {
+
+		if (containsNaNorInf( prhs,ub_idx, 1 ) == BT_TRUE)
 			return;
-		}
 
 
 		/* Check inputs dimensions and assign pointers to inputs. */
@@ -688,13 +712,13 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 		{
 			nC = 0;
 
-			if ( smartDimensionCheck( &g,nV,1, BT_FALSE,prhs,2 ) != SUCCESSFUL_RETURN )
+			if ( smartDimensionCheck( &g,nV,1, BT_FALSE,prhs,g_idx ) != SUCCESSFUL_RETURN )
 				return;
 
-			if ( smartDimensionCheck( &lb,nV,1, BT_TRUE,prhs,3 ) != SUCCESSFUL_RETURN )
+			if ( smartDimensionCheck( &lb,nV,1, BT_TRUE,prhs,lb_idx ) != SUCCESSFUL_RETURN )
 				return;
 
-			if ( smartDimensionCheck( &ub,nV,1, BT_TRUE,prhs,4 ) != SUCCESSFUL_RETURN )
+			if ( smartDimensionCheck( &ub,nV,1, BT_TRUE,prhs,ub_idx ) != SUCCESSFUL_RETURN )
 				return;
 
 			/* default value for nWSR */
@@ -709,30 +733,28 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 		{
 			nC = globalQP->getNC( );
 
-			int lbA_idx = 5;
-			int ubA_idx = 6;
+			lbA_idx = 5;
+			ubA_idx = 6;
 
-			if (containsNaNorInf(prhs, nC, lbA_idx, 1) == BT_TRUE) {
-				return;
-			}
-			if (containsNaNorInf(prhs, nC, ubA_idx, 1) == BT_TRUE) {
-				return;
-			}
-
-
-			if ( smartDimensionCheck( &g,nV,1, BT_FALSE,prhs,2 ) != SUCCESSFUL_RETURN )
+			if (containsNaNorInf( prhs,lbA_idx, 1 ) == BT_TRUE)
 				return;
 
-			if ( smartDimensionCheck( &lb,nV,1, BT_TRUE,prhs,3 ) != SUCCESSFUL_RETURN )
+			if (containsNaNorInf( prhs,ubA_idx, 1 ) == BT_TRUE)
 				return;
 
-			if ( smartDimensionCheck( &ub,nV,1, BT_TRUE,prhs,4 ) != SUCCESSFUL_RETURN )
+			if ( smartDimensionCheck( &g,nV,1, BT_FALSE,prhs,g_idx ) != SUCCESSFUL_RETURN )
 				return;
 
-			if ( smartDimensionCheck( &lbA,nC,1, BT_TRUE,prhs,5 ) != SUCCESSFUL_RETURN )
+			if ( smartDimensionCheck( &lb,nV,1, BT_TRUE,prhs,lb_idx ) != SUCCESSFUL_RETURN )
 				return;
 
-			if ( smartDimensionCheck( &ubA,nC,1, BT_TRUE,prhs,6 ) != SUCCESSFUL_RETURN )
+			if ( smartDimensionCheck( &ub,nV,1, BT_TRUE,prhs,ub_idx ) != SUCCESSFUL_RETURN )
+				return;
+
+			if ( smartDimensionCheck( &lbA,nC,1, BT_TRUE,prhs,lbA_idx ) != SUCCESSFUL_RETURN )
+				return;
+
+			if ( smartDimensionCheck( &ubA,nC,1, BT_TRUE,prhs,ubA_idx ) != SUCCESSFUL_RETURN )
 				return;
 
 			/* default value for nWSR */
@@ -750,21 +772,21 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 		/* call qpOASES */
 		if ( isSimplyBoundedQp == BT_TRUE )
 		{
-			hotstartSB(	handle, g,
-						lb,ub,
-						nWSRin,maxCpuTimeIn,
-						&options,
-						nlhs,plhs
-						);
+			QProblemB_hotstart(	handle, g,
+								lb,ub,
+								nWSRin,maxCpuTimeIn,
+								&options,
+								nlhs,plhs
+								);
 		}
 		else
 		{
-			hotstart(	handle, g,
-						lb,ub,lbA,ubA,
-						nWSRin,maxCpuTimeIn,
-						&options,
-						nlhs,plhs
-						);
+			QProblem_hotstart(	handle, g,
+								lb,ub,lbA,ubA,
+								nWSRin,maxCpuTimeIn,
+								&options,
+								nlhs,plhs
+								);
 		}
 
 		return;
@@ -786,24 +808,16 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 			return;
 		}
 
-		if ( ( mxIsDouble( prhs[1] ) == false ) || ( mxGetM( prhs[1] ) != 1 ) || ( mxGetN( prhs[1] ) != 1 ) )
+		if ( ( mxIsDouble( prhs[1] ) == false ) || ( mxIsScalar( prhs[1] ) == false ) )
 		{
 			myMexErrMsgTxt( "ERROR (qpOASES): Expecting a handle to QP object as second argument!\nType 'help qpOASES_sequence' for further information." );
 			return;
 		}
 
-		/* ensure that data is given in double precision */
-		if ( ( mxIsDouble( prhs[2] ) == 0 ) ||
-			 ( mxIsDouble( prhs[3] ) == 0 ) ||
-			 ( mxIsDouble( prhs[4] ) == 0 ) )
-		{
-			myMexErrMsgTxt( "ERROR (qpOASES): All data has to be provided in real_t precision!" );
-			return;
-		}
 
 		/* get QP instance */
-		handle = (unsigned int)mxGetScalar( prhs[1]);
-		globalQP = getQPInstance ( handle );
+		handle = (unsigned int)mxGetScalar( prhs[1] );
+		globalQP = getQPInstance( handle );
 		if ( globalQP == 0 )
 		{
 			myMexErrMsgTxt( "ERROR (qpOASES): Invalid handle to QP instance!" );
@@ -811,46 +825,58 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 		}
 
 		/* Check inputs dimensions and assign pointers to inputs. */
-		nV = (unsigned int)mxGetM( prhs[2] ); /* row number of Hessian matrix */
-		nC = (unsigned int)mxGetM( prhs[4] ); /* row number of constraint matrix */
+		g_idx = 3;
 		
-		int H_idx = 2;
-		int g_idx = 3;
-		int A_idx = 4;
-		int lb_idx = 5;
-		int ub_idx = 6;
-		int lbA_idx = 7;
-		int ubA_idx = 8;
-
-		// check if supplied data contains 'NaN' or 'Inf'
-		// H
-		if (containsNaNorInf(prhs, nV * nV, H_idx, 0) == BT_TRUE) {
-			return;
+		if ( mxIsEmpty(prhs[2]) == 1 )
+		{
+			H_idx = -1;
+			nV = (unsigned int)mxGetM( prhs[ g_idx ] ); /* if Hessian is empty, row number of gradient vector */
 		}
-
-		// g
-		if (containsNaNorInf(prhs, nV, g_idx, 0) == BT_TRUE) {
-			return;
+		else
+		{
+			H_idx = 2;
+			nV = (unsigned int)mxGetM( prhs[ H_idx ] ); /* row number of Hessian matrix */
 		}
+		
+		A_idx = 4;
+		nC = (unsigned int)mxGetM( prhs[ A_idx ] ); /* row number of constraint matrix */
+				
+		lb_idx = 5;
+		ub_idx = 6;
+		lbA_idx = 7;
+		ubA_idx = 8;
 
-		// A
-		if (containsNaNorInf(prhs, nV * nC, A_idx, 0) == BT_TRUE) {
-			return;
-		}
 
-		if (containsNaNorInf(prhs, nV, lb_idx, 1) == BT_TRUE) {
-			return;
-		}
-		if (containsNaNorInf(prhs, nV, ub_idx, 1) == BT_TRUE) {
+		/* ensure that data is given in double precision */
+		if ( ( ( H_idx >= 0 ) && ( mxIsDouble( prhs[H_idx] ) == 0 ) ) ||
+			 ( mxIsDouble( prhs[g_idx] ) == 0 ) ||
+			 ( mxIsDouble( prhs[A_idx] ) == 0 ) )
+		{
+			myMexErrMsgTxt( "ERROR (qpOASES): All data has to be provided in real_t precision!" );
 			return;
 		}
 
-		if (containsNaNorInf(prhs, nC, lbA_idx, 1) == BT_TRUE) {
+		/* check if supplied data contains 'NaN' or 'Inf' */
+		if (containsNaNorInf(prhs,H_idx, 0) == BT_TRUE)
 			return;
-		}
-		if (containsNaNorInf(prhs, nC, ubA_idx, 1) == BT_TRUE) {
+
+		if (containsNaNorInf( prhs,g_idx, 0 ) == BT_TRUE)
 			return;
-		}
+
+		if (containsNaNorInf( prhs,A_idx, 0 ) == BT_TRUE)
+			return;
+
+		if (containsNaNorInf( prhs,lb_idx, 1 ) == BT_TRUE)
+			return;
+
+		if (containsNaNorInf( prhs,ub_idx, 1 ) == BT_TRUE)
+			return;
+
+		if (containsNaNorInf( prhs,lbA_idx, 1 ) == BT_TRUE)
+			return;
+
+		if (containsNaNorInf( prhs,ubA_idx, 1 ) == BT_TRUE)
+			return;
 
 		/* Check that dimensions are consistent with existing QP instance */
 		if (nV != (unsigned int) globalQP->getNV () || nC != (unsigned int) globalQP->getNC ())
@@ -859,25 +885,31 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 			return;
 		}
 
-		if ( ( mxGetN( prhs[2] ) != nV ) || ( ( mxGetN( prhs[4] ) != 0 ) && ( mxGetN( prhs[4] ) != nV ) ) )
+		if ( ( H_idx >= 0 ) && ( ( mxGetN( prhs[ H_idx ] ) != nV ) || ( mxGetM( prhs[ H_idx ] ) != nV ) ) )
 		{
-			myMexErrMsgTxt( "ERROR (qpOASES): Input dimension mismatch!" );
+			myMexErrMsgTxt( "ERROR (qpOASES): Hessian matrix dimension mismatch!" );
 			return;
 		}
 
-		if ( smartDimensionCheck( &g,nV,1, BT_FALSE,prhs,3 ) != SUCCESSFUL_RETURN )
+		if ( ( mxGetN( prhs[ A_idx ] ) != 0 ) && ( mxGetN( prhs[ A_idx ] ) != nV ) )
+		{
+			myMexErrMsgTxt( "ERROR (qpOASES): Constraint matrix dimension mismatch!" );
+			return;
+		}
+
+		if ( smartDimensionCheck( &g,nV,1, BT_FALSE,prhs,g_idx ) != SUCCESSFUL_RETURN )
 			return;
 
-		if ( smartDimensionCheck( &lb,nV,1, BT_TRUE,prhs,5 ) != SUCCESSFUL_RETURN )
+		if ( smartDimensionCheck( &lb,nV,1, BT_TRUE,prhs,lb_idx ) != SUCCESSFUL_RETURN )
 			return;
 
-		if ( smartDimensionCheck( &ub,nV,1, BT_TRUE,prhs,6 ) != SUCCESSFUL_RETURN )
+		if ( smartDimensionCheck( &ub,nV,1, BT_TRUE,prhs,ub_idx ) != SUCCESSFUL_RETURN )
 			return;
 
-		if ( smartDimensionCheck( &lbA,nC,1, BT_TRUE,prhs,7 ) != SUCCESSFUL_RETURN )
+		if ( smartDimensionCheck( &lbA,nC,1, BT_TRUE,prhs,lbA_idx ) != SUCCESSFUL_RETURN )
 			return;
 
-		if ( smartDimensionCheck( &ubA,nC,1, BT_TRUE,prhs,8 ) != SUCCESSFUL_RETURN )
+		if ( smartDimensionCheck( &ubA,nC,1, BT_TRUE,prhs,ubA_idx ) != SUCCESSFUL_RETURN )
 			return;
 
 		/* default value for nWSR */
@@ -891,22 +923,23 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 		globalQP->deleteQPMatrices( );
 
 		/* make a deep-copy of the user-specified Hessian matrix (possibly sparse) */
-		setupHessianMatrix(	prhs[2],nV, &(globalQP->H),&(globalQP->Hir),&(globalQP->Hjc),&(globalQP->Hv) );
+		if ( H_idx >= 0 )
+			setupHessianMatrix(	prhs[H_idx],nV, &(globalQP->H),&(globalQP->Hir),&(globalQP->Hjc),&(globalQP->Hv) );
 
 		/* make a deep-copy of the user-specified constraint matrix (possibly sparse) */
-		if ( nC > 0 )
-			setupConstraintMatrix( prhs[4],nV,nC, &(globalQP->A),&(globalQP->Air),&(globalQP->Ajc),&(globalQP->Av) );
+		if ( ( nC > 0 ) && ( A_idx >= 0 ) )
+			setupConstraintMatrix( prhs[A_idx],nV,nC, &(globalQP->A),&(globalQP->Air),&(globalQP->Ajc),&(globalQP->Av) );
 
 		/* Create output vectors and assign pointers to them. */
 		allocateOutputs( nlhs,plhs, nV,nC );
 
 		/* Call qpOASES */
-		hotstartVM(	handle, globalQP->H,g,globalQP->A,
-					lb,ub,lbA,ubA,
-					nWSRin,maxCpuTimeIn,
-					&options,
-					nlhs,plhs
-					);
+		SQProblem_hotstart(	handle, globalQP->H,g,globalQP->A,
+							lb,ub,lbA,ubA,
+							nWSRin,maxCpuTimeIn,
+							&options,
+							nlhs,plhs
+							);
 
 		return;
 	}
@@ -915,7 +948,7 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 	if ( ( strcmp( typeString,"e" ) == 0 ) || ( strcmp( typeString,"E" ) == 0 ) )
 	{
 		/* consistency checks */
-		if ( ( nlhs < 1 ) || ( nlhs > 3 ) )
+		if ( ( nlhs < 1 ) || ( nlhs > 4 ) )
 		{
 			myMexErrMsgTxt( "ERROR (qpOASES): Invalid number of output arguments!\nType 'help qpOASES_sequence' for further information." );
 			return;
@@ -927,7 +960,7 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 			return;
 		}
 
-		if ( ( mxIsDouble( prhs[1] ) == false ) || ( mxGetM( prhs[1] ) != 1 ) || ( mxGetN( prhs[1] ) != 1 ) )
+		if ( ( mxIsDouble( prhs[1] ) == false ) || ( mxIsScalar( prhs[1] ) == false ) )
 		{
 			myMexErrMsgTxt( "ERROR (qpOASES): Expecting a handle to QP object as second argument!\nType 'help qpOASES_sequence' for further information." );
 			return;
@@ -935,7 +968,7 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 
 		/* get QP instance */
 		handle = (unsigned int)mxGetScalar( prhs[1] );
-		globalQP = getQPInstance ( handle );
+		globalQP = getQPInstance( handle );
 		if ( globalQP == 0 )
 		{
 			myMexErrMsgTxt( "ERROR (qpOASES): Invalid handle to QP instance!" );
@@ -948,44 +981,41 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 		nC = globalQP->getNC( );
 		real_t *x_out, *y_out;
 
-		int g_idx = 2;
-		int lb_idx = 3;
-		int ub_idx = 4;
-		int lbA_idx = 5;
-		int ubA_idx = 6;
+		g_idx = 2;
+		lb_idx = 3;
+		ub_idx = 4;
+		lbA_idx = 5;
+		ubA_idx = 6;
 
-		// check if supplied data contains 'NaN' or 'Inf'
-		// g
-		if (containsNaNorInf(prhs, nV, g_idx, 0) == BT_TRUE) {
-			return;
-		}
-		if (containsNaNorInf(prhs, nV, lb_idx, 1) == BT_TRUE) {
-			return;
-		}
-		if (containsNaNorInf(prhs, nV, ub_idx, 1) == BT_TRUE) {
-			return;
-		}
-
-		if (containsNaNorInf(prhs, nC, lbA_idx, 1) == BT_TRUE) {
-			return;
-		}
-		if (containsNaNorInf(prhs, nC, ubA_idx, 1) == BT_TRUE) {
-			return;
-		}
-
-		if ( smartDimensionCheck( &g,nV,nRHS, BT_FALSE,prhs,2 ) != SUCCESSFUL_RETURN )
+		/* check if supplied data contains 'NaN' or 'Inf' */
+		if (containsNaNorInf(prhs,g_idx, 0) == BT_TRUE)
 			return;
 
-		if ( smartDimensionCheck( &lb,nV,nRHS, BT_TRUE,prhs,3 ) != SUCCESSFUL_RETURN )
+		if (containsNaNorInf( prhs,lb_idx, 1 ) == BT_TRUE)
 			return;
 
-		if ( smartDimensionCheck( &ub,nV,nRHS, BT_TRUE,prhs,4 ) != SUCCESSFUL_RETURN )
+		if (containsNaNorInf( prhs,ub_idx, 1 ) == BT_TRUE)
 			return;
 
-		if ( smartDimensionCheck( &lbA,nC,nRHS, BT_TRUE,prhs,5 ) != SUCCESSFUL_RETURN )
+		if (containsNaNorInf( prhs,lbA_idx, 1 ) == BT_TRUE)
 			return;
 
-		if ( smartDimensionCheck( &ubA,nC,nRHS, BT_TRUE,prhs,6 ) != SUCCESSFUL_RETURN )
+		if (containsNaNorInf( prhs,ubA_idx, 1 ) == BT_TRUE)
+			return;
+
+		if ( smartDimensionCheck( &g,nV,nRHS, BT_FALSE,prhs,g_idx ) != SUCCESSFUL_RETURN )
+			return;
+
+		if ( smartDimensionCheck( &lb,nV,nRHS, BT_TRUE,prhs,lb_idx ) != SUCCESSFUL_RETURN )
+			return;
+
+		if ( smartDimensionCheck( &ub,nV,nRHS, BT_TRUE,prhs,ub_idx ) != SUCCESSFUL_RETURN )
+			return;
+
+		if ( smartDimensionCheck( &lbA,nC,nRHS, BT_TRUE,prhs,lbA_idx ) != SUCCESSFUL_RETURN )
+			return;
+
+		if ( smartDimensionCheck( &ubA,nC,nRHS, BT_TRUE,prhs,ubA_idx ) != SUCCESSFUL_RETURN )
 			return;
 
 		/* Check whether options are specified .*/
@@ -1004,11 +1034,18 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 			plhs[1] = mxCreateDoubleMatrix( nV+nC, nRHS, mxREAL );
 			y_out = mxGetPr(plhs[1]);
 
-			if (nlhs >= 3) {
-				plhs[2] = mxCreateDoubleMatrix( nV+nC, nRHS, mxREAL );
-				double* workingSet = mxGetPr(plhs[2]);
+			if (nlhs >= 3)
+			{
+				plhs[2] = mxCreateDoubleMatrix( nV, nRHS, mxREAL );
+				real_t* workingSetB = mxGetPr(plhs[2]);
+				globalQP->sqp->getWorkingSetBounds(workingSetB);
 
-				globalQP->sqp->getWorkingSet(workingSet);
+				if ( nlhs >= 4 )
+				{
+					plhs[3] = mxCreateDoubleMatrix( nC, nRHS, mxREAL );
+					real_t* workingSetC = mxGetPr(plhs[3]);
+					globalQP->sqp->getWorkingSetConstraints(workingSetC);
+				}
 			}
 		}
 		else
@@ -1047,15 +1084,15 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 			return;
 		}
 
-		if ( ( mxIsDouble( prhs[1] ) == false ) || ( mxGetM( prhs[1] ) != 1 ) || ( mxGetN( prhs[1] ) != 1 ) )
+		if ( ( mxIsDouble( prhs[1] ) == false ) || ( mxIsScalar( prhs[1] ) == false ) )
 		{
 			myMexErrMsgTxt( "ERROR (qpOASES): Expecting a handle to QP object as second argument!\nType 'help qpOASES_sequence' for further information." );
 			return;
 		}
 
 		/* Cleanup SQProblem instance. */
-		handle =(unsigned int)mxGetScalar( prhs[1] );
-		deleteQPInstance ( handle );
+		handle = (unsigned int)mxGetScalar( prhs[1] );
+		deleteQPInstance( handle );
 		
 		return;
 	}

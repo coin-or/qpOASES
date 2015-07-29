@@ -2,7 +2,7 @@
  *	This file is part of qpOASES.
  *
  *	qpOASES -- An Implementation of the Online Active Set Strategy.
- *	Copyright (C) 2007-2014 by Hans Joachim Ferreau, Andreas Potschka,
+ *	Copyright (C) 2007-2015 by Hans Joachim Ferreau, Andreas Potschka,
  *	Christian Kirches et al. All rights reserved.
  *
  *	qpOASES is free software; you can redistribute it and/or
@@ -25,8 +25,8 @@
 /**
  *	\file include/qpOASES/QProblemB.ipp
  *	\author Hans Joachim Ferreau, Andreas Potschka, Christian Kirches
- *	\version 3.0
- *	\date 2007-2014
+ *	\version 3.1
+ *	\date 2007-2015
  *
  *	Implementation of inlined member functions of the QProblemB class which
  *	is able to use the newly developed online active set strategy for
@@ -210,6 +210,25 @@ inline PrintLevel QProblemB::getPrintLevel( ) const
 
 
 
+/*
+ *	g e t C o u n t
+ */
+inline unsigned int QProblemB::getCount( ) const
+{
+	return count;
+}
+
+
+/*
+ *	r e s e t C o u n t e r
+ */
+inline returnValue QProblemB::resetCounter( )
+{
+	count = 0;
+	return SUCCESSFUL_RETURN;
+}
+
+
 /*****************************************************************************
  *  P R O T E C T E D                                                        *
  *****************************************************************************/
@@ -273,7 +292,7 @@ inline returnValue QProblemB::setH( const real_t* const H_new )
  */
 inline returnValue QProblemB::setG( const real_t* const g_new )
 {
-	unsigned int nV = getNV( );
+	unsigned int nV = (unsigned int)getNV( );
 
 	if ( nV == 0 )
 		return THROWERROR( RET_QPOBJECT_NOT_SETUP );
@@ -293,7 +312,7 @@ inline returnValue QProblemB::setG( const real_t* const g_new )
 inline returnValue QProblemB::setLB( const real_t* const lb_new )
 {
 	unsigned int i;
-	unsigned int nV = getNV( );
+	unsigned int nV = (unsigned int)getNV( );
 
 	if ( nV == 0 )
 		return THROWERROR( RET_QPOBJECT_NOT_SETUP );
@@ -341,7 +360,7 @@ inline returnValue QProblemB::setLB( int number, real_t value )
 inline returnValue QProblemB::setUB( const real_t* const ub_new )
 {
 	unsigned int i;
-	unsigned int nV = getNV( );
+	unsigned int nV = (unsigned int)getNV( );
 
 	if ( nV == 0 )
 		return THROWERROR( RET_QPOBJECT_NOT_SETUP );

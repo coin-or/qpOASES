@@ -2,7 +2,7 @@
 ##	This file is part of qpOASES.
 ##
 ##	qpOASES -- An Implementation of the Online Active Set Strategy.
-##	Copyright (C) 2007-2014 by Hans Joachim Ferreau, Andreas Potschka,
+##	Copyright (C) 2007-2015 by Hans Joachim Ferreau, Andreas Potschka,
 ##	Christian Kirches et al. All rights reserved.
 ##
 ##	qpOASES is free software; you can redistribute it and/or
@@ -25,8 +25,8 @@
 ##
 ##	Filename:  src/Makefile
 ##	Author:    Hans Joachim Ferreau, Andreas Potschka, Christian Kirches
-##	Version:   3.0
-##	Date:      2007-2014
+##	Version:   3.1
+##	Date:      2007-2015
 ##
 
 include ../make.mk
@@ -34,9 +34,6 @@ include ../make.mk
 ##
 ##	flags
 ##
-
-EXTRAS_DIR  =  extras
-IDIR = ../include
 
 IFLAGS      =  -I. \
                -I${IDIR}
@@ -63,6 +60,7 @@ QPOASES_EXTRAS_OBJECTS = \
 	OQPinterface.${OBJEXT}
 
 QPOASES_DEPENDS = \
+	${IDIR}/qpOASES.hpp \
 	${IDIR}/qpOASES/SQProblem.hpp \
 	${IDIR}/qpOASES/QProblem.hpp \
 	${IDIR}/qpOASES/Flipper.hpp \
@@ -76,25 +74,24 @@ QPOASES_DEPENDS = \
 	${IDIR}/qpOASES/Types.hpp \
 	${IDIR}/qpOASES/Options.hpp \
 	${IDIR}/qpOASES/Matrices.hpp \
-	${IDIR}/qpOASES/MessageHandling.hpp
+	${IDIR}/qpOASES/MessageHandling.hpp \
+	${IDIR}/qpOASES/UnitTesting.hpp
 
 
 ##
 ##	targets
 ##
 
+all: ${LINK_DEPENDS}
 
-all: ${LIB_LAPACK} ${LIB_BLAS} ${BINDIR}/libqpOASES.${LIBEXT} ${BINDIR}/libqpOASES.${DLLEXT}
-
-withextras: libqpOASESextras.${LIBEXT}
 
 ${BINDIR}/libqpOASES.${LIBEXT}: ${QPOASES_OBJECTS} ${QPOASES_EXTRAS_OBJECTS}
-	@${ECHO} "Creating" $@
-	@${AR} rc $@ $?
+	@${ECHO} "Creating static lib" $@
+	@${AR} r $@ $^
 
 ${BINDIR}/libqpOASES.${DLLEXT}: ${QPOASES_OBJECTS} ${QPOASES_EXTRAS_OBJECTS}
-	@${ECHO} "Creating" $@
-	@${CPP} -shared -o $@ $^ ${LINK_LIBRARIES}
+	@${ECHO} "Creating shared lib" $@
+	@${CPP} ${DEF_TARGET} ${SHARED} $^ ${LINK_LIBRARIES}
 
 clean:
 	@${ECHO} "Cleaning up (src)"
@@ -102,9 +99,11 @@ clean:
 
 clobber: clean
 
+
 %.${OBJEXT}: %.cpp ${QPOASES_DEPENDS}
 	@${ECHO} "Creating" $@
 	@${CPP} ${DEF_TARGET} -c ${IFLAGS} ${CPPFLAGS} $<
+
 
 ##
 ##	end of file

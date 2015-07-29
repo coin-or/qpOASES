@@ -2,7 +2,7 @@
 This file is part of qpOASES.
 
 qpOASES -- An Implementation of the Online Active Set Strategy.
-Copyright (C) 2007-2009 by Hans Joachim Ferreau et al. All rights reserved.
+Copyright (C) 2007-2015 by Hans Joachim Ferreau et al. All rights reserved.
 
 qpOASES is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -19,8 +19,8 @@ License along with qpOASES; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 author Manuel Kudruss
-version 3.0
-date 2013-2014
+version 3.1
+date 2013-2015
 """
 
 import os

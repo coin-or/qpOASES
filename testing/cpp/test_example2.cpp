@@ -2,7 +2,7 @@
  *	This file is part of qpOASES.
  *
  *	qpOASES -- An Implementation of the Online Active Set Strategy.
- *	Copyright (C) 2007-2014 by Hans Joachim Ferreau, Andreas Potschka,
+ *	Copyright (C) 2007-2015 by Hans Joachim Ferreau, Andreas Potschka,
  *	Christian Kirches et al. All rights reserved.
  *
  *	qpOASES is free software; you can redistribute it and/or
@@ -25,8 +25,8 @@
 /**
  *	\file testing/cpp/test_example2.cpp
  *	\author Hans Joachim Ferreau (thanks to Boris Houska)
- *	\version 3.0
- *	\date 2008-2014
+ *	\version 3.1
+ *	\date 2008-2015
  *
  *	Very simple example for testing qpOASES in combination
  *  with the SolutionAnalysis class.
@@ -71,11 +71,10 @@ int main( )
 	example.init( H,g,A,lb,ub,lbA,ubA, nWSR,0 );
 
 	/* ... and analyse it. */
-	real_t maxKKTviolation;
-    analyser.getMaxKKTviolation( &example, maxKKTviolation );
-    printf( "maxKKTviolation: %e\n", maxKKTviolation );
+	real_t maxKktViolation = analyser.getKktViolation( &example );
+    printf( "maxKktViolation: %e\n", maxKktViolation );
 
-	QPOASES_TEST_FOR_TRUE( maxKKTviolation <= 1e-15 );
+	QPOASES_TEST_FOR_TOL( maxKktViolation,1e-15 );
 
 
 	/* Solve second QP ... */
@@ -83,10 +82,10 @@ int main( )
 	example.hotstart( H_new,g_new,A_new,lb_new,ub_new,lbA_new,ubA_new, nWSR,0 );
 
 	/* ... and analyse it. */
-	analyser.getMaxKKTviolation( &example, maxKKTviolation );
-    printf( "maxKKTviolation: %e\n", maxKKTviolation );
+	maxKktViolation = analyser.getKktViolation( &example );
+    printf( "maxKktViolation: %e\n", maxKktViolation );
 
-	QPOASES_TEST_FOR_TRUE( maxKKTviolation <= 1e-15 );
+	QPOASES_TEST_FOR_TOL( maxKktViolation,1e-15 );
 
 
 //  ------------ VARIANCE-COVARIANCE EVALUATION --------------------

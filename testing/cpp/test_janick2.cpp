@@ -128,17 +128,14 @@ int main( )
 
 	/* Compute KKT tolerances */
 	real_t stat, feas, cmpl;
+	SolutionAnalysis analyzer;
 
-	getKKTResidual( 11,3,
-			H,g,D,zLow,zUpp,dLow,dUpp,
-			xOpt,yOpt,
-			stat,feas,cmpl
-	);
+	analyzer.getKktViolation( &example, &stat,&feas,&cmpl );
 	printf( "\nstat = %e\nfeas = %e\ncmpl = %e\n", stat,feas,cmpl );
 
-	QPOASES_TEST_FOR_TRUE( stat <= 1e-9 );
-	QPOASES_TEST_FOR_TRUE( feas <= 1e-7 );
-	QPOASES_TEST_FOR_TRUE( cmpl <= 1e-15 );
+	QPOASES_TEST_FOR_TOL( stat,1e-9 );
+	QPOASES_TEST_FOR_TOL( feas,1e-7 );
+	QPOASES_TEST_FOR_TOL( cmpl,1e-15 );
 
 	nWSR = 100;
 
@@ -229,17 +226,12 @@ int main( )
 	printf( "\nQP objective value: %.3e\n", example.getObjVal() );
 
 	/* Compute KKT tolerances */
-
-	getKKTResidual( 11,3,
-			H2,g2,D2,zLow2,zUpp2,dLow2,dUpp2,
-			xOpt,yOpt,
-			stat,feas,cmpl
-	);
+	analyzer.getKktViolation( &example, &stat,&feas,&cmpl );
 	printf( "\nstat = %e\nfeas = %e\ncmpl = %e\n", stat,feas,cmpl );
 
-	QPOASES_TEST_FOR_TRUE( stat <= 1e-9 );
-	QPOASES_TEST_FOR_TRUE( feas <= 1e-7 );
-	QPOASES_TEST_FOR_TRUE( cmpl <= 1e-15 );
+	QPOASES_TEST_FOR_TOL( stat,1e-9 );
+	QPOASES_TEST_FOR_TOL( feas,1e-7 );
+	QPOASES_TEST_FOR_TOL( cmpl,1e-15 );
 
 
 	return TEST_PASSED;
