@@ -236,7 +236,7 @@ returnValue DenseMatrix::getSparseSubmatrix (int irowsLength, const int* const i
 			{
 				irA = irowsNumber[j] * leaDim;
 				for (i = 0; i<icolsLength; i++)
-					if (val[irA+icolsNumber[i]] != 0.0)
+					if (isZero( val[irA+icolsNumber[i]] ) == BT_FALSE)
 						numNonzeros++;
 			}
 		}
@@ -248,7 +248,7 @@ returnValue DenseMatrix::getSparseSubmatrix (int irowsLength, const int* const i
 				for (i = 0; i<icolsLength; i++)
 				{
 					v = val[irA+icolsNumber[i]];
-					if (v != 0.0)
+					if (isZero( v ) == BT_FALSE)
 					{
 						irn[numNonzeros] = j+rowoffset;
 						jcn[numNonzeros] = i+coloffset;
@@ -269,7 +269,7 @@ returnValue DenseMatrix::getSparseSubmatrix (int irowsLength, const int* const i
 			{
 				irA = irowsNumber[j] * leaDim;
 				for (i = 0; i<=j; i++)
-					if (val[irA+irowsNumber[i]] != 0.0)
+					if (isZero( val[irA+irowsNumber[i]] ) == BT_FALSE)
 						numNonzeros++;
 			}
 		}
@@ -281,7 +281,7 @@ returnValue DenseMatrix::getSparseSubmatrix (int irowsLength, const int* const i
 				for (i = 0; i<=j; i++)
 				{
 					v = val[irA+irowsNumber[i]];
-					if (v != 0.0)
+					if (isZero( v ) == BT_FALSE)
 					{
 						irn[numNonzeros] = j+rowoffset;
 						jcn[numNonzeros] = i+coloffset;
@@ -1106,15 +1106,15 @@ returnValue SparseMatrix::times(const Indexlist* const irows, const Indexlist* c
 		}
 		else
 		{
-			if (beta == 0.0)
+			if (isZero( beta ) == BT_TRUE)
 				for (k = 0; k < xN; k++)
 					for (j = 0; j < irows->length; j++)
 						y[irows->number[j]+k*yLD] = 0.0;
-			else if (beta == -1.0)
+			else if (isEqual( beta, -1.0 ) == BT_TRUE)
 				for (k = 0; k < xN; k++)
 					for (j = 0; j < irows->length; j++)
 						y[irows->number[j]+k*yLD] = -y[irows->number[j]+k*yLD];
-			else if (beta != 1.0)
+			else if (isEqual( beta, 1.0 ) == BT_FALSE)
 				for (k = 0; k < xN; k++)
 					for (j = 0; j < irows->length; j++)
 						y[irows->number[j]+k*yLD] *= beta;
@@ -1136,7 +1136,7 @@ returnValue SparseMatrix::times(const Indexlist* const irows, const Indexlist* c
 			{
 				col = icols->iSort[l];
 				xcol = x[col];
-				if (xcol!=0.0)
+				if (isZero( xcol ) == BT_FALSE)
 				{
 					j = icols->number[col];
 					for (i = jc[j]; i < jc[j+1]; i++)
@@ -1157,7 +1157,7 @@ returnValue SparseMatrix::times(const Indexlist* const irows, const Indexlist* c
 					xcols[k] = x[k*xLD+col];
 					xmax = getMax(xmax,getAbs(xcols[k]));
 				}
-				if (xmax!=0.0)
+				if (isZero( xmax ) == BT_FALSE)
 				{
 					j = icols->number[col];
 					for (i = jc[j]; i < jc[j+1]; i++)
@@ -1176,7 +1176,7 @@ returnValue SparseMatrix::times(const Indexlist* const irows, const Indexlist* c
 			for (col = 0; col < nCols; col++)
 			{
 				xcol = x[col];
-				if (xcol!=0.0)
+				if (isZero( xcol ) == BT_FALSE)
 					for (i = jc[col]; i < jc[col+1]; i++)
 						ytmp[ir[i]] += val[i] * xcol;
 			}
@@ -1193,7 +1193,7 @@ returnValue SparseMatrix::times(const Indexlist* const irows, const Indexlist* c
 					xcols[k] = x[k*xLD+col];
 					xmax = getMax(xmax,getAbs(xcols[k]));
 				}
-				if (xmax!=0.0)
+				if (isZero( xmax ) == BT_FALSE)
 					for (i = jc[col]; i < jc[col+1]; i++)
 						for (k=0; k<xN; k++)
 							ytmp[k*yfullLength+ir[i]] += val[i] * xcols[k];
@@ -1208,34 +1208,34 @@ returnValue SparseMatrix::times(const Indexlist* const irows, const Indexlist* c
 			for (k = 0; k < xN; k++)
 				for (j = 0; j < irows->length; j++)
 					y[j+k*yLD] = alpha*ytmp[irows->number[j]+k*yfullLength];
-		else if (beta == 1.0)
+		else if (isEqual( beta, 1.0 ) == BT_TRUE)
 			for (k = 0; k < xN; k++)
 				for (j = 0; j < irows->length; j++)
 					y[j+k*yLD] += alpha*ytmp[irows->number[j]+k*yfullLength];
-		else if (beta == -1.0)
+		else if (isEqual( beta, -1.0 ) == BT_TRUE)
 			for (k = 0; k < xN; k++)
 				for (j = 0; j < irows->length; j++)
 					y[j+k*yLD] = alpha*ytmp[irows->number[j]+k*yfullLength]-y[j+k*yLD];
-		else if (beta != 1.0)
+		else if (isEqual( beta, 1.0 ) == BT_FALSE)
 			for (k = 0; k < xN; k++)
 				for (j = 0; j < irows->length; j++)
 					y[j+k*yLD] = alpha*ytmp[irows->number[j]+k*yfullLength]+beta*y[j+k*yLD];
 	}
 	else
 	{
-		if (beta == 0.0)
+		if (isZero( beta ) == BT_TRUE)
 			for (k = 0; k < xN; k++)
 				for (j = 0; j < irows->length; j++)
 					y[irows->number[j]+k*yLD] = alpha*ytmp[irows->number[j]+k*yfullLength];
-		else if (beta == 1.0)
+		else if (isEqual( beta, 1.0 ) == BT_TRUE)
 			for (k = 0; k < xN; k++)
 				for (j = 0; j < irows->length; j++)
 					y[irows->number[j]+k*yLD] = alpha*ytmp[irows->number[j]+k*yfullLength]+y[j+k*yLD];
-		else if (beta == -1.0)
+		else if (isEqual( beta, -1.0 ) == BT_TRUE)
 			for (k = 0; k < xN; k++)
 				for (j = 0; j < irows->length; j++)
 					y[irows->number[j]+k*yLD] = alpha*ytmp[irows->number[j]+k*yfullLength]-y[j+k*yLD];
-		else if (beta != 1.0)
+		else if (isEqual( beta, 1.0 ) == BT_FALSE)
 			for (k = 0; k < xN; k++)
 				for (j = 0; j < irows->length; j++)
 					y[irows->number[j]+k*yLD] = alpha*ytmp[irows->number[j]+k*yfullLength]+beta*y[j+k*yLD];

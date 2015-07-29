@@ -3289,7 +3289,7 @@ returnValue SQProblemSchur::resetSchurComplement( BooleanType allowInertiaCorrec
 
 returnValue SQProblemSchur::computeMTimes( real_t alpha, const real_t* const x_, real_t beta, real_t* const y_ )
 {
-	if ( alpha != -1.0 || beta != 1.0 )
+	if ( isEqual( alpha, -1.0 ) == BT_FALSE || isEqual( beta, 1.0 ) == BT_FALSE )
 		return THROWERROR(RET_NOT_YET_IMPLEMENTED);
 
 	int i, j;
@@ -3306,12 +3306,12 @@ returnValue SQProblemSchur::computeMTimes( real_t alpha, const real_t* const x_,
 
 returnValue SQProblemSchur::computeMTransTimes( real_t alpha, const real_t* const x_, real_t beta, real_t* const y_ )
 {
-	if ( alpha != 1.0 || ( beta != 0.0 && beta != -1.0 ) )
+	if ( isEqual( alpha, 1.0 ) == BT_FALSE || ( isZero( beta ) == BT_FALSE && isEqual( beta, -1.0 ) == BT_FALSE ) )
 		return THROWERROR(RET_NOT_YET_IMPLEMENTED);
 
 	int i, j;
 
-	if ( beta == 0.0 )
+	if ( isZero( beta ) == BT_TRUE )
 	{
 		for ( j=0; j<nS; j++ )
 		{
