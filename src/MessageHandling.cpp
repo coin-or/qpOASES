@@ -212,6 +212,7 @@ MessageHandling::ReturnValueList returnValueList[] =
 { RET_KKT_MATRIX_SINGULAR, "KKT matrix is singular", VS_VISIBLE },
 { RET_QR_FACTORISATION_FAILED, "QR factorization of Schur complement failed", VS_VISIBLE },
 { RET_INERTIA_CORRECTION_FAILED, "Inertia correction of KKT matrix failed", VS_VISIBLE },
+{ RET_NO_SPARSE_SOLVER, "No Sparse Solver installed", VS_VISIBLE },
 /* IMPORTANT: Terminal list element! */
 { TERMINAL_LIST_ELEMENT, "", VS_HIDDEN }
 };
@@ -566,7 +567,7 @@ const char* MessageHandling::getErrorCodeMessage(	const returnValue _returnValue
 {
 	#ifndef __XPCTARGET__
 	int keypos = 0;
-	
+
 	/* 2) Find error/warning/info in list. */
 	while ( returnValueList[keypos].key != TERMINAL_LIST_ELEMENT )
 	{

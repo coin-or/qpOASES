@@ -349,10 +349,48 @@ class Ma57SparseSolver: public SparseSolver
 
 #endif // SOLVER_MA57
 
+
+#ifdef SOLVER_NONE
+
+/**
+ *	\brief Implementation of a dummy sparse solver. An error is thrown if a factorization is attempted.
+ *
+ *	\author Dennis Janka
+ *	\version 3.1
+ *	\date 2015
+ */
+class DummySparseSolver: public SparseSolver
+{
+	/*
+	 *	PUBLIC MEMBER FUNCTIONS
+	 */
+	public:
+		/** Set new matrix data.  The matrix is to be provided
+		    in the Harwell-Boeing format.  Only the lower
+		    triangular part should be set. */
+		virtual returnValue setMatrixData( int dim, /**< Dimension of the linear system. */
+						   int numNonzeros, /**< Number of nonzeros in the matrix. */
+						   const int* const airn, /**< Row indices for each matrix entry. */
+						   const int* const acjn, /**< Column indices for each matrix entry. */
+						   const real_t* const avals /**< Values for each matrix entry. */
+						   );
+
+		/** Compute factorization of current matrix.  This method must be called before solve.*/
+		virtual returnValue factorize( );
+
+		/** Solve linear system with most recently set matrix data. */
+		virtual returnValue solve( int dim, /**< Dimension of the linear system. */
+					   const real_t* const rhs, /**< Values for the right hand side. */
+					   real_t* const sol /**< Solution of the linear system. */
+					   );
+};
+
+#endif // SOLVER_NONE
+
+
 END_NAMESPACE_QPOASES
 
 #endif	/* QPOASES_SPARSESOLVER_HPP */
-
 
 /*
  *	end of file

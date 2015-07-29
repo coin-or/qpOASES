@@ -72,6 +72,8 @@ SQProblemSchur::SQProblemSchur( ) : SQProblem( )
 	sparseSolver = new Ma57SparseSolver();
 #elif defined SOLVER_MA27
 	sparseSolver = new Ma27SparseSolver();
+#elif defined SOLVER_NONE
+	sparseSolver = new DummySparseSolver();
 #endif
 
 	nSmax = 0;
@@ -104,11 +106,13 @@ SQProblemSchur::SQProblemSchur( int _nV, int _nC, HessianType _hessianType, int 
 	delete [] T; T = 0;
 
 	/* The interface to the sparse linear solver.  In the long run,
-	   different linear solvers might be optinally chosen. */
+	   different linear solvers might be optionally chosen. */
 #ifdef SOLVER_MA57
 	sparseSolver = new Ma57SparseSolver();
 #elif defined SOLVER_MA27
 	sparseSolver = new Ma27SparseSolver();
+#elif defined SOLVER_NONE
+	sparseSolver = new DummySparseSolver();
 #endif
 
 	nSmax = maxSchurUpdates;
@@ -154,6 +158,8 @@ SQProblemSchur::SQProblemSchur( const SQProblemSchur& rhs ) : SQProblem( rhs )
 	sparseSolver = new Ma57SparseSolver();
 #elif defined SOLVER_MA27
 	sparseSolver = new Ma27SparseSolver();
+#elif defined SOLVER_NONE
+	sparseSolver = new DummySparseSolver();
 #endif
 	copy( rhs );
 }
@@ -2156,30 +2162,6 @@ returnValue SQProblemSchur::removeBound(	int number,
 	return SUCCESSFUL_RETURN;
 }
 
-// TODO: For now dense LAPACK:
-extern "C" {
-  //void dsysvx_(const char *FACT, const char *UPLO, const unsigned long *N, const unsigned long *NRHS, double *A, const unsigned long *LDA, double *AF, const unsigned long *LDAF, long *IPIV, double *B, const unsigned long *LDB, double *X, const unsigned long *LDX, double *RCOND, double *FERR, double *BERR, double* WORK, const unsigned long *LWORK, long* IWORK, int *INFO );
-  //void dsysv_(const char *, const unsigned long *, const unsigned long *, double *, const unsigned long *, long *, double *, const unsigned long *, double *, const unsigned long *, int * );
-
-  //void dposv_(const char *UPLO, const unsigned long *N, const unsigned long *NRHS, double *A, const unsigned long *LDA, double* B, const unsigned long *LDB, int *INFO );
-
-	//void dgels_(	const char *TRANS, const unsigned long *M, const unsigned long *N, const unsigned long *NRHS, double *A,
-					//const unsigned long *LDA, double* B, const unsigned long *LDB, double* WORK, const unsigned long *LWORK, int *INFO );
-
-	void dgeqrf_(	const unsigned long *M, const unsigned long *N, double *A, const unsigned long *LDA,
-					double *TAU, double *WORK, const unsigned long *LWORK, int *INFO );
-
-	void dormqr_(	const char *SIDE, const char *TRANS, const unsigned long *M, const unsigned long *N, const unsigned long *K,
-					double *A, const unsigned long *LDA, double *TAU, double *C, const unsigned long *LDC,
-					double *WORK, const unsigned long *LWORK, int *INFO );
-
-	void dtrtrs_(	const char *UPLO, const char *TRANS, const char *DIAG, const unsigned long *N, const unsigned long *NRHS,
-					double *A, const unsigned long *LDA, double *B, const unsigned long *LDB, int *INFO );
-
-	void dtrcon_(	const char *NORM, const char *UPLO, const char *DIAG, const unsigned long *N, double *A, const unsigned long *LDA,
-					double *RCOND, double *WORK, const unsigned long *IWORK, int *INFO );
-}
-
 /*
  *	s e t u p T Q f a c t o r i s a t i o n
  */
@@ -2411,10 +2393,10 @@ returnValue SQProblemSchur::updateSchurQR( int idxDel )
 	int INFO;
 	IWORK = new unsigned long[N];
 	WORK = new double[3*N];
-	dtrcon_( "1", "U", "N", &N, R_, &LDA, &rcondS, WORK, IWORK, &INFO );
+	TRCON( "1", "U", "N", &N, R_, &LDA, &rcondS, WORK, IWORK, &INFO );
 	if ( INFO != 0 )
 	{
-		MyPrintf( "dtrcon_ returns INFO = %d\n", INFO );
+		MyPrintf( "TRCON returns INFO = %d\n", INFO );
 	}
 
 	if ( options.printLevel == PL_HIGH )
@@ -2453,10 +2435,10 @@ returnValue SQProblemSchur::backsolveSchurQR( int dimS, const real_t* const rhs,
 			sol[i] += Q_[j+i*nSmax] * rhs[j];
 
 	/* Solve Rx = sol */
-	dtrtrs_( "U", "N", "N", &M, &NRHS, R_, &LDA, sol, &LDC, &INFO );
+	TRTRS( "U", "N", "N", &M, &NRHS, R_, &LDA, sol, &LDC, &INFO );
 	if ( INFO != 0 )
 	{
-		MyPrintf("dtrtrs_ returns INFO = %d\n", INFO);
+		MyPrintf("TRTRS returns INFO = %d\n", INFO);
 		return RET_QR_FACTORISATION_FAILED;
 	}
 
@@ -2485,12 +2467,12 @@ real_t SQProblemSchur::calcDetSchur( int idxDel )
 	for( i=0; i<nSmax; i++ )
 		tempQ[i] = 0.0;
 
-	dgeqrf_( &M, &N, tempR, &LDA, tempQ, WORK, &LWORK, &INFO );
+	GEQRF( &M, &N, tempR, &LDA, tempQ, WORK, &LWORK, &INFO );
 	delete[] WORK;
 
 	if ( INFO != 0 )
 	{
-		MyPrintf("dgeqrf_ returns INFO = %d\n", INFO);
+		MyPrintf("GEQRF returns INFO = %d\n", INFO);
 		return RET_QR_FACTORISATION_FAILED;
 	}
 
@@ -2530,12 +2512,12 @@ returnValue SQProblemSchur::updateSchurQR( int idxDel )
 	for( i=0; i<nSmax; i++ )
 		Q_[i] = 0.0;
 
-	dgeqrf_( &M, &N, R_, &LDA, Q_, WORK, &LWORK, &INFO );
+	GEQRF( &M, &N, R_, &LDA, Q_, WORK, &LWORK, &INFO );
 	delete[] WORK;
 
 	if ( INFO != 0 )
 	{
-		MyPrintf("dgeqrf_ returns INFO = %d\n", INFO);
+		MyPrintf("GEQRF returns INFO = %d\n", INFO);
 		return RET_QR_FACTORISATION_FAILED;
 	}
 
@@ -2584,19 +2566,19 @@ returnValue SQProblemSchur::backsolveSchurQR( int dimS, const real_t* const rhs,
 		sol[i] = rhs[i];
 
 	/* Compute sol = Q**T * rhs */
-	dormqr_( "L", "T", &M, &NRHS, &K, R_, &LDA, Q_, sol, &LDC, WORK, &LWORK, &INFO );
+	ORMQR( "L", "T", &M, &NRHS, &K, R_, &LDA, Q_, sol, &LDC, WORK, &LWORK, &INFO );
 	delete[] WORK;
 	if ( INFO != 0 )
 	{
-		MyPrintf("dormqr_ returns INFO = %d\n", INFO);
+		MyPrintf("ORMQR returns INFO = %d\n", INFO);
 		return RET_QR_FACTORISATION_FAILED;
 	}
 
 	/* Solve Rx = sol */
-	dtrtrs_( "U", "N", "N", &M, &NRHS, R_, &LDA, sol, &LDC, &INFO );
+	TRTRS( "U", "N", "N", &M, &NRHS, R_, &LDA, sol, &LDC, &INFO );
 	if ( INFO != 0 )
 	{
-		MyPrintf("dtrtrs_ returns INFO = %d\n", INFO);
+		MyPrintf("TRTRS returns INFO = %d\n", INFO);
 		return RET_QR_FACTORISATION_FAILED;
 	}
 
@@ -3265,7 +3247,7 @@ returnValue SQProblemSchur::resetSchurComplement( BooleanType allowInertiaCorrec
 	returnValue retval = sparseSolver->setMatrixData(dim, numNonzeros, irn, jcn, avals);
 	if (retval != SUCCESSFUL_RETURN)
 	{
-	  return THROWERROR(RET_MATRIX_FACTORISATION_FAILED); // TODO: other error
+	  return THROWERROR(RET_NO_SPARSE_SOLVER);
 	}
 	delete [] jcn;
 	delete [] irn;

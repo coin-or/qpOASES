@@ -94,7 +94,7 @@ ${BINDIR}/libqpOASES.${LIBEXT}: ${QPOASES_OBJECTS} ${QPOASES_EXTRAS_OBJECTS}
 
 ${BINDIR}/libqpOASES.${DLLEXT}: ${QPOASES_OBJECTS} ${QPOASES_EXTRAS_OBJECTS}
 	@${ECHO} "Creating" $@
-	@${CPP} -shared -o $@ $? ${LINK_LIBRARIES}
+	@${CPP} -shared -o $@ $^ ${LINK_LIBRARIES}
 
 clean:
 	@${ECHO} "Cleaning up (src)"

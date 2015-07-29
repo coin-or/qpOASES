@@ -55,7 +55,7 @@ static FILE* stdFile = stdout;
 
 /**
  *	\brief Defines all symbols for global return values.
- *	
+ *
  *  The enumeration returnValueType defines all symbols for global return values.
  *	Important: All return values are assumed to be nonnegative!
  *
@@ -224,7 +224,8 @@ RET_SIMPLE_STATUS_M3,							/**< QP problem is unbounded (and thus could not be 
 /* Schur complement computations */
 RET_KKT_MATRIX_SINGULAR,						/**< KKT matrix is singular. */
 RET_QR_FACTORISATION_FAILED,					/**< QR factorization of Schur complement failed. */
-RET_INERTIA_CORRECTION_FAILED					/**< Inertia correction failed after KKT matrix had too many negative eigenvalues. */
+RET_INERTIA_CORRECTION_FAILED,					/**< Inertia correction failed after KKT matrix had too many negative eigenvalues. */
+RET_NO_SPARSE_SOLVER							/**< No factorization routine for the KKT matrix installed. */
 };
 
 
@@ -246,7 +247,7 @@ class MessageHandling
 	public:
 		/**
 		*	\brief Data structure for entries in global message list.
-		*	
+		*
 		*	Data structure for entries in global message list.
 		*
 		*	\author Hans Joachim Ferreau
@@ -296,7 +297,7 @@ class MessageHandling
 
 
 		/** Prints an error message(a simplified macro THROWERROR is also provided). \n
-		 *  Errors are definied as abnormal events which cause an immediate termination of the current (sub) function.
+		 *  Errors are defined as abnormal events which cause an immediate termination of the current (sub) function.
 		 *  Errors of a sub function should be commented by the calling function by means of a warning message
 		 *  (if this error does not cause an error of the calling function, either)!
 		 *  \return Error number returned by sub function call

@@ -42,7 +42,6 @@ BINDIR = ${TOP}/bin
 MATLAB_IDIR   = /usr/local/matlab/extern/include/
 MATLAB_LIBDIR = /usr/local/matlab/bin/glnxa64/
 
-
 # system or replacement BLAS/LAPACK
 REPLACE_LINALG = 0
 
@@ -54,10 +53,25 @@ else
 	LIB_LAPACK = /usr/lib/liblapack.so
 endif
 
+# choice of sparse solver
+USE_SOLVER = MA57
+
+ifeq ($(USE_SOLVER), MA57)
+	LIB_SOLVER = /usr/local/lib/libhsl_ma57.a /usr/local/lib/libfakemetis.a
+	DEF_SOLVER = SOLVER_MA57
+else ifeq ($(USE_SOLVER), MA27)
+	LIB_SOLVER = /usr/local/lib/libhsl_ma27.a
+	DEF_SOLVER = SOLVER_MA27
+else
+	LIB_SOLVER =
+	DEF_SOLVER = SOLVER_NONE
+endif
+
 ################################################################################
 # do not touch this
 
 CPP = g++
+CC  = gcc
 AR  = ar
 RM  = rm
 F77 = gfortran
@@ -84,15 +98,7 @@ else
 	MEXEXT = mexa64
 endif
 
-# choice of sparse solver
-USE_SOLVER = MA57
-ifeq ($(USE_SOLVER), MA57)
-	LIB_SOLVER = /usr/local/lib/libhsl_ma57.a /usr/local/lib/libfakemetis.a
-	DEF_SOLVER = SOLVER_MA57
-else ifeq ($(USE_SOLVER), MA27)
-	LIB_SOLVER = /usr/local/lib/libhsl_ma27.a
-	DEF_SOLVER = SOLVER_MA27
-endif
+
 
 CPPFLAGS = -Wall -pedantic -Wshadow -Wfloat-equal -O3 -finline-functions -fPIC -DLINUX -D${DEF_SOLVER} -D__NO_COPYRIGHT__
 #          -g -D__DEBUG__ -D__NO_COPYRIGHT__ -D__SUPPRESSANYOUTPUT__ -D__USE_SINGLE_PRECISION__

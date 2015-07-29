@@ -1066,6 +1066,34 @@ returnValue Ma57SparseSolver::copy(	const Ma57SparseSolver& rhs
 
 #endif // SOLVER_MA57
 
+
+#ifdef SOLVER_NONE
+
+returnValue DummySparseSolver::setMatrixData( int dim, /**< Dimension of the linear system. */
+								   int numNonzeros, /**< Number of nonzeros in the matrix. */
+								   const int* const airn, /**< Row indices for each matrix entry. */
+								   const int* const acjn, /**< Column indices for each matrix entry. */
+								   const real_t* const avals /**< Values for each matrix entry. */
+								   )
+{
+	return THROWERROR(RET_NO_SPARSE_SOLVER);
+}
+
+returnValue DummySparseSolver::factorize( )
+{
+	return THROWERROR(RET_NO_SPARSE_SOLVER);
+}
+
+returnValue DummySparseSolver::solve( int dim, /**< Dimension of the linear system. */
+				   const real_t* const rhs, /**< Values for the right hand side. */
+				   real_t* const sol /**< Solution of the linear system. */
+				   )
+{
+	return THROWERROR(RET_NO_SPARSE_SOLVER);
+}
+
+#endif // SOLVER_NONE
+
 END_NAMESPACE_QPOASES
 
 
