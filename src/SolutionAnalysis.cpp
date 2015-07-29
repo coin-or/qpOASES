@@ -222,7 +222,7 @@ real_t SolutionAnalysis::getKktViolation(	QProblem* const qp,
 
 	if ( A_ptr != 0 )
 		delete[] A_ptr;
-	
+
 	if ( H_ptr != 0 )
 		delete[] H_ptr;
 
@@ -274,7 +274,7 @@ returnValue SolutionAnalysis::getVarianceCovariance(	QProblemB* const qp,
  *	g e t V a r i a n c e C o v a r i a n c e
  */
 returnValue SolutionAnalysis::getVarianceCovariance(	QProblem* qp,
-														const real_t* const g_b_bA_VAR, real_t* const Primal_Dual_VAR 
+														const real_t* const g_b_bA_VAR, real_t* const Primal_Dual_VAR
 														) const
 {
 
@@ -537,7 +537,7 @@ returnValue SolutionAnalysis::checkCurvatureOnStronglyActiveConstraints( SQProbl
   returnValue ret;
   Bounds saveBounds;
   QProblemStatus saveStatus;
-  int k, fail, neig, nAC, nFX, *FX_idx;
+  int k, neig, nAC, nFX, *FX_idx;
 
   nFX = qp->getNFX( );
   nAC = qp->getNAC( );

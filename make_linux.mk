@@ -43,7 +43,7 @@ MATLAB_IDIR   = /usr/local/matlab/extern/include/
 MATLAB_LIBDIR = /usr/local/matlab/bin/glnxa64/
 
 # system or replacement BLAS/LAPACK
-REPLACE_LINALG = 0
+REPLACE_LINALG = 1
 
 ifeq ($(REPLACE_LINALG), 1)
 	LIB_BLAS =   ${SRCDIR}/BLASReplacement.o
@@ -54,7 +54,7 @@ else
 endif
 
 # choice of sparse solver
-USE_SOLVER = MA57
+USE_SOLVER = NONE
 
 ifeq ($(USE_SOLVER), MA57)
 	LIB_SOLVER = /usr/local/lib/libhsl_ma57.a /usr/local/lib/libfakemetis.a
