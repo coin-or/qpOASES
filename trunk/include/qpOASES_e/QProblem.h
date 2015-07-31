@@ -119,7 +119,7 @@ typedef struct
 	real_t Ax_u[NCMAX];				/**< Stores the current distance to lower constraints' bounds ubA-A*x \n
 									 *	 (for increased efficiency only). */
 
-	ConstraintProduct* constraintProduct;	/**< Pointer to user-defined constraint product function. */
+	ConstraintProduct constraintProduct;	/**< Pointer to user-defined constraint product function. */
 
 	real_t tempA[NVMAX];			/**< Temporary for determineStepDirection. */
 	real_t tempB[NCMAX];			/**< Temporary for determineStepDirection. */
@@ -610,7 +610,7 @@ returnValue QProblem_getDualSolution(	QProblem* _THIS,
 /** Defines user-defined routine for calculating the constraint product A*x
  *	\return  SUCCESSFUL_RETURN \n */
 returnValue QProblem_setConstraintProduct(	QProblem* _THIS,
-											ConstraintProduct* const _constraintProduct
+											ConstraintProduct _constraintProduct
 											);
 
 

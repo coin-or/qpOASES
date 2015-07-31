@@ -225,7 +225,11 @@ returnValue Options_setToMPC(	Options* _THIS
 	_THIS->enableRegularisation          =  BT_TRUE;
 	_THIS->enableNZCTests                =  BT_FALSE;
 	_THIS->enableDriftCorrection         =  0;
+	#ifdef __USE_SINGLE_PRECISION__
+	_THIS->enableEqualities              =  BT_FALSE;
+	#else
 	_THIS->enableEqualities              =  BT_TRUE;
+	#endif
 
 	#ifdef __USE_SINGLE_PRECISION__
 	_THIS->terminationTolerance          =  1.0e3 * QPOASES_EPS;
@@ -236,7 +240,7 @@ returnValue Options_setToMPC(	Options* _THIS
 	_THIS->initialStatusBounds           =  ST_INACTIVE;
 	_THIS->numRegularisationSteps        =  1;
 	#ifdef __USE_SINGLE_PRECISION__
-	_THIS->numRefinementSteps            =  2;
+	_THIS->numRefinementSteps            =  1;
 	#else
 	_THIS->numRefinementSteps            =  0;
 	#endif

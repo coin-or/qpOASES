@@ -236,7 +236,7 @@ typedef enum
  *	when using the (S)QProblem(B) objects.
  *
  *	\author Hans Joachim Ferreau
- *	\version 3.0beta
+ *	\version 3.1embedded
  *	\date 2013
  */
 typedef struct 
@@ -262,7 +262,7 @@ typedef struct
  *  "Matlab(R) MAT-file Format, R2013b" by MathWorks
  *
  *	\author Hans Joachim Ferreau
- *	\version 3.0beta
+ *	\version 3.1embedded
  *	\date 2013
  */ 
 typedef struct

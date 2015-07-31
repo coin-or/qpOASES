@@ -230,12 +230,14 @@ RET_SIMPLE_STATUS_M3 							/**< QP problem is unbounded (and thus could not be 
 
 
 /**
-*	\brief Data structure for entries in global message list.
-*	
-*	Data structure for entries in global message list.
-*
-*	\author Hans Joachim Ferreau
-*/
+ *	\brief Data structure for entries in global message list.
+ *	
+ *	Data structure for entries in global message list.
+ *
+ *	\author Hans Joachim Ferreau
+ *	\version 3.1embedded
+ *	\date 2007-2015
+ */
 typedef struct
 {
 	returnValue key;							/**< Global return value. */

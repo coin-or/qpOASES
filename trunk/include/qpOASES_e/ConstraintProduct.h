@@ -24,11 +24,11 @@
 
 /**
  *	\file include/qpOASES_e/ConstraintProduct.h
- *	\author Hans Joachim Ferreau, Andreas Potschka, Christian Kirches
+ *	\author Hans Joachim Ferreau, Andreas Potschka, Christian Kirches (thanks to Kwame Minde Kufoalor)
  *	\version 3.1embedded
  *	\date 2009-2015
  *
- *	Declaration of the ConstraintProduct class which allows to specify a
+ *	Declaration of the ConstraintProduct interface which allows to specify a
  *	user-defined function for evaluating the constraint product at the 
  *	current iterate to speed-up QP solution in case of a specially structured
  *	constraint matrix.
@@ -46,18 +46,15 @@ BEGIN_NAMESPACE_QPOASES
 /** 
  *	\brief Interface for specifying user-defined evaluations of constraint products.
  *
- *	A class which allows to specify a user-defined function for evaluating the 
+ *	An interface which allows to specify a user-defined function for evaluating the 
  *	constraint product at the current iterate to speed-up QP solution in case 
  *	of a specially structured constraint matrix.
  *
- *	\author Hans Joachim Ferreau
+ *	\author Hans Joachim Ferreau (thanks to Kwame Minde Kufoalor)
  *	\version 3.1embedded
  *	\date 2009-2015
  */
-typedef struct 
-{
-	int empty;
-} ConstraintProduct;
+typedef int(*ConstraintProduct)( int, const real_t* const, real_t* const );
 
 
 END_NAMESPACE_QPOASES

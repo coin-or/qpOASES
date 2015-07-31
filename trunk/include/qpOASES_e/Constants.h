@@ -53,7 +53,7 @@ BEGIN_NAMESPACE_QPOASES
   /*#define QPOASES_NVMAX  287
   #define QPOASES_NCMAX  800*/
 
-#endif /* __CODE_GENERATION__ */
+#endif /* __EXTERNAL_DIMENSIONS__ */
 
 
 /** Maximum number of variables within a QP formulation.

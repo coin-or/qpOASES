@@ -47,7 +47,7 @@
   #include <QProblem.c>
 /*#endif*/
 
-  //#include <OQPinterface.c>
+  /*#include <OQPinterface.c>*/
 
 #else
 

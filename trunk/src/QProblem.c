@@ -24,7 +24,7 @@
 
 /**
  *	\file src/QProblem.c
- *	\author Hans Joachim Ferreau, Andreas Potschka, Christian Kirches
+ *	\author Hans Joachim Ferreau, Andreas Potschka, Christian Kirches (thanks to Kwame Minde Kufoalor)
  *	\version 3.1embedded
  *	\date 2007-2015
  *
@@ -1081,7 +1081,7 @@ returnValue QProblem_getDualSolution( QProblem* _THIS, real_t* const yOpt )
 /*
  *	s e t C o n s t r a i n t P r o d u c t
  */
-returnValue QProblem_setConstraintProduct( QProblem* _THIS, ConstraintProduct* const _constraintProduct )
+returnValue QProblem_setConstraintProduct( QProblem* _THIS, ConstraintProduct _constraintProduct )
 {
 	_THIS->constraintProduct = _constraintProduct;
 
@@ -2235,10 +2235,6 @@ returnValue QProblem_solveInitialQP(	QProblem* _THIS,
 										)
 {
 	int i,j;
-	#ifdef __MANY_CONSTRAINTS__
-	int j;
-	real_t l1;
-	#endif
 
 	/* some definitions */
 	int nV = QProblem_getNV( _THIS );
@@ -5848,7 +5844,7 @@ returnValue QProblem_performStep(	QProblem* _THIS, const real_t* const delta_g,
 	{
 		DenseMatrix_subTimes(_THIS->A,Constraints_getInactive(&(_THIS->constraints)), 0, 1, 1.0, delta_x, nV, 0.0, delta_Ax, nC, BT_FALSE);
 	}
-/*	else
+	else
 	{
 		for( i=0; i<nIAC; ++i )
 		{
@@ -5860,7 +5856,7 @@ returnValue QProblem_performStep(	QProblem* _THIS, const real_t* const delta_g,
 					return THROWERROR( RET_ERROR_IN_CONSTRAINTPRODUCT );
 			}
 		}
-	}*/
+	}
 
 	if ( Constraints_hasNoLower( &(_THIS->constraints) ) == BT_FALSE )
 	{
@@ -6003,7 +5999,22 @@ returnValue QProblem_performStep(	QProblem* _THIS, const real_t* const delta_g,
 			_THIS->ubA[i] += _THIS->tau * delta_ubA[i];
 		}
 
-		DenseMatrix_subTimes(_THIS->A,Constraints_getActive( &(_THIS->constraints)),0, 1, 1.0, _THIS->x, nV, 0.0, _THIS->Ax, nC, BT_FALSE );
+		/* 3) Recompute Ax. */
+		if ( _THIS->constraintProduct == 0 )
+		{
+			DenseMatrix_subTimes(_THIS->A,Constraints_getActive( &(_THIS->constraints)),0, 1, 1.0, _THIS->x, nV, 0.0, _THIS->Ax, nC, BT_FALSE );
+		}
+		else
+		{
+			for( i=0; i<nAC; ++i )
+			{
+				ii = AC_idx[i];
+				
+				if ( (*(_THIS->constraintProduct))( ii,_THIS->x, &(_THIS->Ax[ii]) ) != 0 )
+					return THROWERROR( RET_ERROR_IN_CONSTRAINTPRODUCT );
+			}
+		}
+
 		for( i=0; i<nAC; ++i )
 		{
 			ii = AC_idx[i];
