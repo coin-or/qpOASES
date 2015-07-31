@@ -2815,7 +2815,9 @@ returnValue QProblem_setupSubjectToTypeNew(	QProblem* _THIS,
 			}
 			else
 			{
-				if ( _THIS->options.enableEqualities && lb_new[i] > ub_new[i] - _THIS->options.boundTolerance )
+				if ( _THIS->options.enableEqualities 
+					&& _THIS->lb[i] > _THIS->ub[i] - _THIS->options.boundTolerance
+					&& lb_new[i] > ub_new[i] - _THIS->options.boundTolerance )
 					Bounds_setType( &(_THIS->bounds),i,ST_EQUALITY );
 				else
 					Bounds_setType( &(_THIS->bounds),i,ST_BOUNDED );
@@ -2874,7 +2876,7 @@ returnValue QProblem_setupSubjectToTypeNew(	QProblem* _THIS,
 			if (Constraints_getType(&(_THIS->constraints),i) == ST_DISABLED)
 				continue;
 			
-			if ( ( lbA_new[i] <= -QPOASES_INFTY ) && ( ubA_new[i] >= QPOASES_INFTY )
+			if ( ( lbA_new[i] < -QPOASES_INFTY+_THIS->options.boundTolerance  ) && ( ubA_new[i] > QPOASES_INFTY-_THIS->options.boundTolerance )
 					&& (_THIS->options.enableFarBounds == BT_FALSE))
 			{
 				Constraints_setType( &(_THIS->constraints),i,ST_UNBOUNDED );
@@ -2882,7 +2884,7 @@ returnValue QProblem_setupSubjectToTypeNew(	QProblem* _THIS,
 			else
 			{
 				if ( _THIS->options.enableEqualities && _THIS->lbA[i] > _THIS->ubA[i] - _THIS->options.boundTolerance 
-				                              && lbA_new[i] > ubA_new[i] - _THIS->options.boundTolerance)
+													 &&    lbA_new[i] >    ubA_new[i] - _THIS->options.boundTolerance)
 					Constraints_setType( &(_THIS->constraints),i,ST_EQUALITY );
 				else
 					Constraints_setType( &(_THIS->constraints),i,ST_BOUNDED );
@@ -5337,10 +5339,8 @@ returnValue QProblem_determineDataShift(	QProblem* _THIS, const real_t* const g_
 	int nC  = QProblem_getNC( _THIS );
 	int nAC = QProblem_getNAC( _THIS );
 	
-	int* FX_idx;
 	int* AC_idx;
 
-	Indexlist_getNumberArray( Bounds_getFixed( &(_THIS->bounds) ),&FX_idx );
 	Indexlist_getNumberArray( Constraints_getActive( &(_THIS->constraints) ),&AC_idx );
 
 
@@ -6002,7 +6002,7 @@ returnValue QProblem_performStep(	QProblem* _THIS, const real_t* const delta_g,
 		/* 3) Recompute Ax. */
 		if ( _THIS->constraintProduct == 0 )
 		{
-			DenseMatrix_subTimes(_THIS->A,Constraints_getActive( &(_THIS->constraints)),0, 1, 1.0, _THIS->x, nV, 0.0, _THIS->Ax, nC, BT_FALSE );
+			DenseMatrix_subTimes( _THIS->A,Constraints_getActive( &(_THIS->constraints)),0, 1, 1.0, _THIS->x, nV, 0.0, _THIS->Ax, nC, BT_FALSE );
 		}
 		else
 		{
@@ -6160,7 +6160,6 @@ real_t QProblem_getRelativeHomotopyLength(	QProblem* _THIS,
 			if (d > len) len = d;
 		}
 	}
-	/* fprintf( stdFile, "len in homotopyLength = %.3e\n",len ); */
 
 	/* upper constraint bounds */
 	if ( ubA_new != 0 )
@@ -6173,7 +6172,6 @@ real_t QProblem_getRelativeHomotopyLength(	QProblem* _THIS,
 			if (d > len) len = d;
 		}
 	}
-	/* fprintf( stdFile, "len in homotopyLength = %.3e\n",len ); */
 
 	return len;
 }

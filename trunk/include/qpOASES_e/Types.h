@@ -237,7 +237,7 @@ typedef enum
  *
  *	\author Hans Joachim Ferreau
  *	\version 3.1embedded
- *	\date 2013
+ *	\date 2013-2015
  */
 typedef struct 
 {
@@ -263,7 +263,7 @@ typedef struct
  *
  *	\author Hans Joachim Ferreau
  *	\version 3.1embedded
- *	\date 2013
+ *	\date 2013-2015
  */ 
 typedef struct
 {

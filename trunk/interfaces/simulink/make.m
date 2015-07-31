@@ -1,5 +1,5 @@
 function [] = make( varargin )
-%MAKE Compiles the Simulink interface of qpOASES.
+%MAKE Compiles the Simulink interface of qpOASES_e.
 %
 %Type  make            to compile all interfaces that 
 %                      have been modified,

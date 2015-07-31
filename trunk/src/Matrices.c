@@ -645,7 +645,6 @@ void dpotrf_(	const char *uplo, const unsigned long *_n, double *a,
 				)
 {
 	double sum;
-	double inv;
 	long i, j, k;
 	long n = (long)(*_n);
 	long lda = (long)(*_lda);
@@ -659,10 +658,7 @@ void dpotrf_(	const char *uplo, const unsigned long *_n, double *a,
 			sum -= a[k+lda*i] * a[k+lda*i];
 
 		if ( sum > 0.0 )
-		{
-			a[i+lda*i] = REFER_NAMESPACE_QPOASES qpOASES_getSqrt( sum );
-			inv = 1.0 / a[i+lda*i];
-		}
+			a[i+lda*i] = qpOASES_getSqrt( sum );
 		else
 		{
 			a[0] = sum; /* tunnel negative diagonal element to caller */
@@ -678,7 +674,7 @@ void dpotrf_(	const char *uplo, const unsigned long *_n, double *a,
 			for( k=(i-1); k>=0; --k )
 				sum -= a[k+lda*i] * a[k+lda*j];
 
-			a[i+lda*j] = sum * inv;
+			a[i+lda*j] = sum / a[i+lda*i];
 		}
 	}
 	if (info != 0)
@@ -691,7 +687,6 @@ void spotrf_(	const char *uplo, const unsigned long *_n, float *a,
 				)
 {
 	float sum;
-	float inv;
 	long i, j, k;
 	long n = (long)(*_n);
 	long lda = (long)(*_lda);
@@ -705,10 +700,7 @@ void spotrf_(	const char *uplo, const unsigned long *_n, float *a,
 			sum -= a[k+lda*i] * a[k+lda*i];
 
 		if ( sum > 0.0 )
-		{
 			a[i+lda*i] = (float)(REFER_NAMESPACE_QPOASES qpOASES_getSqrt( sum ));
-			inv = 1.0f / a[i+lda*i];
-		}
 		else
 		{
 			a[0] = sum; /* tunnel negative diagonal element to caller */
@@ -724,7 +716,7 @@ void spotrf_(	const char *uplo, const unsigned long *_n, float *a,
 			for( k=(i-1); k>=0; --k )
 				sum -= a[k+lda*i] * a[k+lda*j];
 
-			a[i+lda*j] = sum * inv;
+			a[i+lda*j] = sum / a[i+lda*i];
 		}
 	}
 	if (info != 0)

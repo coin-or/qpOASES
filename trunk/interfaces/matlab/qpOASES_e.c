@@ -437,16 +437,16 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 	}
 
 	/* check if supplied data contains 'NaN' or 'Inf' */
-	if (containsNaNorInf( prhs,H_idx, 0 ) == BT_TRUE)
+	if (containsNaNorInf( prhs,H_idx,BT_FALSE ) == BT_TRUE)
 		return;
 
-	if (containsNaNorInf( prhs,g_idx, 0 ) == BT_TRUE)
+	if (containsNaNorInf( prhs,g_idx,BT_FALSE ) == BT_TRUE)
 		return;
 
-	if (containsNaNorInf( prhs,lb_idx, 1 ) == BT_TRUE)
+	if (containsNaNorInf( prhs,lb_idx,BT_TRUE ) == BT_TRUE)
 		return;
 
-	if (containsNaNorInf( prhs,ub_idx, 1 ) == BT_TRUE)
+	if (containsNaNorInf( prhs,ub_idx,BT_TRUE ) == BT_TRUE)
 		return;
 
 	/* Check inputs dimensions and assign pointers to inputs. */
@@ -476,13 +476,13 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 			return;
 		}
 
-		if (containsNaNorInf(prhs,A_idx, 0 ) == BT_TRUE)
+		if (containsNaNorInf( prhs,A_idx,BT_FALSE ) == BT_TRUE)
 			return;
 
-		if (containsNaNorInf(prhs,lbA_idx, 1 ) == BT_TRUE)
+		if (containsNaNorInf( prhs,lbA_idx,BT_TRUE ) == BT_TRUE)
 			return;
 
-		if (containsNaNorInf(prhs,ubA_idx, 1 ) == BT_TRUE)
+		if (containsNaNorInf( prhs,ubA_idx,BT_TRUE ) == BT_TRUE)
 			return;
 	}
 

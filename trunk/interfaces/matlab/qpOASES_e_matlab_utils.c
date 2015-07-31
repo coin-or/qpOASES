@@ -249,7 +249,7 @@ BooleanType containsInf( const real_t* const data, unsigned int dim )
  *	c o n t a i n s N a N o r I n f
  */
 BooleanType containsNaNorInf(	const mxArray* prhs[], int rhs_index,
-								bool mayContainInf
+								BooleanType mayContainInf
 								)
 {
 	unsigned int dim;
@@ -271,7 +271,7 @@ BooleanType containsNaNorInf(	const mxArray* prhs[], int rhs_index,
 		return BT_TRUE;
 	}
 
-	if (mayContainInf == 0) {
+	if ( mayContainInf == BT_FALSE ) {
 		if (containsInf((real_t*) mxGetPr(prhs[rhs_index]), dim) == BT_TRUE) {
 			snprintf(msg, QPOASES_MAX_STRING_LENGTH,
 					"ERROR (qpOASES_e): Argument %d contains 'Inf' !",

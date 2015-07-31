@@ -1,5 +1,5 @@
 function [] = make( varargin )
-%MAKE Compiles the Matlab interface of qpOASES.
+%MAKE Compiles the Matlab interface of qpOASES_e.
 %
 %Type  make            to compile all interfaces that 
 %                      have been modified,

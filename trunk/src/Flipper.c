@@ -25,7 +25,7 @@
 /**
  *	\file src/Flipper.c
  *	\author Hans Joachim Ferreau, Andreas Potschka, Christian Kirches
- *	\version 3.1
+ *	\version 3.1embedded
  *	\date 2007-2015
  *
  *	Implementation of the Flipper class designed to manage working sets of
@@ -101,16 +101,13 @@ returnValue Flipper_get(	Flipper* _THIS,
 		ConstraintsCPY( &(_THIS->constraints),_constraints );
 
 	if ( _R != 0 )
-		memcpy( _R,_THIS->R, NVMAX*NVMAX*sizeof(real_t) );
-		/*memcpy( _R,_THIS->R, (_THIS->nV * _THIS->nV)*sizeof(real_t) );*/
+		memcpy( _R,_THIS->R, (NVMAX*NVMAX)*sizeof(real_t) );
 
 	if ( _Q != 0 )
-		memcpy( _Q,_THIS->Q, NVMAX*NVMAX*sizeof(real_t) );
-		/*memcpy( _Q,_THIS->Q, (_THIS->nV * _THIS->nV)*sizeof(real_t) );*/
+		memcpy( _Q,_THIS->Q, (NVMAX*NVMAX)*sizeof(real_t) );
 
 	if ( _T != 0 )
-		memcpy( _T,_THIS->T, NVCMIN*NVCMIN*sizeof(real_t) );
-		/*memcpy( _T,_THIS->T, Flipper_getDimT(_THIS)*sizeof(real_t) );*/
+		memcpy( _T,_THIS->T, (NVCMIN*NVCMIN)*sizeof(real_t) );
 
 	return SUCCESSFUL_RETURN;
 }
@@ -134,16 +131,13 @@ returnValue Flipper_set(	Flipper* _THIS,
 		ConstraintsCPY( (Constraints*)_constraints,&(_THIS->constraints) );
 
 	if ( _R != 0 )
-		memcpy( _THIS->R,_R, NVMAX*NVMAX*sizeof(real_t) );
-		/*memcpy( _THIS->R,_R, (_THIS->nV * _THIS->nV)*sizeof(real_t) );*/
+		memcpy( _THIS->R,_R, (NVMAX*NVMAX)*sizeof(real_t) );
 
 	if ( _Q != 0 )
-		memcpy( _THIS->Q,_Q, NVMAX*NVMAX*sizeof(real_t) );
-		/*memcpy( _THIS->Q,_Q, (_THIS->nV * _THIS->nV)*sizeof(real_t) );*/
+		memcpy( _THIS->Q,_Q, (NVMAX*NVMAX)*sizeof(real_t) );
 
 	if ( _T != 0 )
-		memcpy( _THIS->T,_T, NVCMIN*NVCMIN*sizeof(real_t) );
-		/*memcpy( _THIS->T,_T, Flipper_getDimT(_THIS)*sizeof(real_t) );*/
+		memcpy( _THIS->T,_T, (NVCMIN*NVCMIN)*sizeof(real_t) );
 
 	return SUCCESSFUL_RETURN;
 }

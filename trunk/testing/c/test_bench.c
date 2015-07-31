@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
 	/* 1) Define benchmark arguments. */
 	BooleanType isSparse = BT_FALSE;
 	BooleanType useHotstarts = BT_FALSE;
-	Options options;
+	static Options options;
 
 	int maxAllowedNWSR;
 	real_t maxNWSR, avgNWSR, maxCPUtime, avgCPUtime;

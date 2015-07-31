@@ -414,11 +414,11 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 
 
 		/* Check for 'Inf' and 'Nan' in Hessian */
-		if (containsNaNorInf( prhs,H_idx, 0 ) == BT_TRUE)
+		if (containsNaNorInf( prhs,H_idx,BT_FALSE ) == BT_TRUE)
 			return;
 
 		/* Check for 'Inf' and 'Nan' in gradient */
-		if (containsNaNorInf( prhs,g_idx, 0 ) == BT_TRUE)
+		if (containsNaNorInf( prhs,g_idx,BT_FALSE ) == BT_TRUE)
 			return;
 
 		/* determine whether is it a simply bounded QP */
@@ -432,10 +432,10 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 			lb_idx = 3;
 			ub_idx = 4;
 
-			if (containsNaNorInf( prhs,lb_idx, 1 ) == BT_TRUE)
+			if (containsNaNorInf( prhs,lb_idx,BT_TRUE ) == BT_TRUE)
 				return;
 
-			if (containsNaNorInf( prhs,ub_idx, 1 ) == BT_TRUE)
+			if (containsNaNorInf( prhs,ub_idx,BT_TRUE ) == BT_TRUE)
 				return;
 
 			/* Check inputs dimensions and assign pointers to inputs. */
@@ -500,19 +500,19 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 			lbA_idx = 6;
 			ubA_idx = 7;
 
-			if (containsNaNorInf( prhs,A_idx, 0 ) == BT_TRUE)
+			if (containsNaNorInf( prhs,A_idx,BT_FALSE ) == BT_TRUE)
 				return;
 
-			if (containsNaNorInf( prhs,lb_idx, 1 ) == BT_TRUE)
+			if (containsNaNorInf( prhs,lb_idx,BT_TRUE ) == BT_TRUE)
 				return;
 
-			if (containsNaNorInf( prhs,ub_idx, 1 ) == BT_TRUE)
+			if (containsNaNorInf( prhs,ub_idx,BT_TRUE ) == BT_TRUE)
 				return;
 
-			if (containsNaNorInf( prhs,lbA_idx, 1 ) == BT_TRUE)
+			if (containsNaNorInf( prhs,lbA_idx,BT_TRUE ) == BT_TRUE)
 				return;
 
-			if (containsNaNorInf( prhs,ubA_idx, 1 ) == BT_TRUE)
+			if (containsNaNorInf( prhs,ubA_idx,BT_TRUE ) == BT_TRUE)
 				return;
 
 			if ( ( mxGetN( prhs[ A_idx ] ) != 0 ) && ( mxGetN( prhs[ A_idx ] ) != nV ) )
@@ -668,13 +668,13 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 		lb_idx = 3;
 		ub_idx = 4;
 
-		if (containsNaNorInf( prhs,g_idx, 0 ) == BT_TRUE)
+		if (containsNaNorInf( prhs,g_idx,BT_FALSE ) == BT_TRUE)
 			return;
 
-		if (containsNaNorInf( prhs,lb_idx, 1 ) == BT_TRUE)
+		if (containsNaNorInf( prhs,lb_idx,BT_TRUE ) == BT_TRUE)
 			return;
 
-		if (containsNaNorInf( prhs,ub_idx, 1 ) == BT_TRUE)
+		if (containsNaNorInf( prhs,ub_idx,BT_TRUE ) == BT_TRUE)
 			return;
 
 
@@ -707,10 +707,10 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 			lbA_idx = 5;
 			ubA_idx = 6;
 
-			if (containsNaNorInf( prhs,lbA_idx, 1 ) == BT_TRUE)
+			if (containsNaNorInf( prhs,lbA_idx,BT_TRUE ) == BT_TRUE)
 				return;
 
-			if (containsNaNorInf( prhs,ubA_idx, 1 ) == BT_TRUE)
+			if (containsNaNorInf( prhs,ubA_idx,BT_TRUE ) == BT_TRUE)
 				return;
 
 			if ( smartDimensionCheck( &g,nV,1, BT_FALSE,prhs,g_idx ) != SUCCESSFUL_RETURN )
@@ -828,25 +828,25 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 		}
 
 		/* check if supplied data contains 'NaN' or 'Inf' */
-		if (containsNaNorInf(prhs,H_idx, 0) == BT_TRUE)
+		if (containsNaNorInf( prhs,H_idx,BT_FALSE ) == BT_TRUE)
 			return;
 
-		if (containsNaNorInf( prhs,g_idx, 0 ) == BT_TRUE)
+		if (containsNaNorInf( prhs,g_idx,BT_FALSE ) == BT_TRUE)
 			return;
 
-		if (containsNaNorInf( prhs,A_idx, 0 ) == BT_TRUE)
+		if (containsNaNorInf( prhs,A_idx,BT_FALSE ) == BT_TRUE)
 			return;
 
-		if (containsNaNorInf( prhs,lb_idx, 1 ) == BT_TRUE)
+		if (containsNaNorInf( prhs,lb_idx,BT_TRUE ) == BT_TRUE)
 			return;
 
-		if (containsNaNorInf( prhs,ub_idx, 1 ) == BT_TRUE)
+		if (containsNaNorInf( prhs,ub_idx,BT_TRUE ) == BT_TRUE)
 			return;
 
-		if (containsNaNorInf( prhs,lbA_idx, 1 ) == BT_TRUE)
+		if (containsNaNorInf( prhs,lbA_idx,BT_TRUE ) == BT_TRUE)
 			return;
 
-		if (containsNaNorInf( prhs,ubA_idx, 1 ) == BT_TRUE)
+		if (containsNaNorInf( prhs,ubA_idx,BT_TRUE ) == BT_TRUE)
 			return;
 
 		/* Check that dimensions are consistent with existing QP instance */
@@ -957,19 +957,19 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 		ubA_idx = 6;
 
 		/* check if supplied data contains 'NaN' or 'Inf' */
-		if (containsNaNorInf(prhs,g_idx, 0) == BT_TRUE)
+		if (containsNaNorInf( prhs,g_idx,BT_FALSE ) == BT_TRUE)
 			return;
 
-		if (containsNaNorInf( prhs,lb_idx, 1 ) == BT_TRUE)
+		if (containsNaNorInf( prhs,lb_idx,BT_TRUE ) == BT_TRUE)
 			return;
 
-		if (containsNaNorInf( prhs,ub_idx, 1 ) == BT_TRUE)
+		if (containsNaNorInf( prhs,ub_idx,BT_TRUE ) == BT_TRUE)
 			return;
 
-		if (containsNaNorInf( prhs,lbA_idx, 1 ) == BT_TRUE)
+		if (containsNaNorInf( prhs,lbA_idx,BT_TRUE ) == BT_TRUE)
 			return;
 
-		if (containsNaNorInf( prhs,ubA_idx, 1 ) == BT_TRUE)
+		if (containsNaNorInf( prhs,ubA_idx,BT_TRUE ) == BT_TRUE)
 			return;
 
 		if ( smartDimensionCheck( &g,nV,nRHS, BT_FALSE,prhs,g_idx ) != SUCCESSFUL_RETURN )
