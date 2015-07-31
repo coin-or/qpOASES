@@ -46,9 +46,10 @@ int main( )
 
 	/* 1) Define benchmark arguments. */
 	BooleanType isSparse = BT_FALSE;
-
-	int nWSR = 600;
-	real_t maxCPUtime = 10.0; /* seconds */
+	BooleanType useHotstarts = BT_TRUE;
+	
+	int maxAllowedNWSR = 600;
+	real_t maxNWSR, avgNWSR, maxCPUtime, avgCPUtime;
 	real_t maxStationarity, maxFeasibility, maxComplementarity;
 
 	static Options options;
@@ -57,13 +58,10 @@ int main( )
 
 	/* 2) Run benchmark. */
 	if ( runOQPbenchmark(	"./chain80w/",
-							isSparse,
-							&options,
-							&nWSR,
-							&maxCPUtime,
-							&maxStationarity,
-							&maxFeasibility,
-							&maxComplementarity 
+							isSparse,useHotstarts,
+							&options,maxAllowedNWSR,
+							&maxNWSR,&avgNWSR,&maxCPUtime,&avgCPUtime,
+							&maxStationarity,&maxFeasibility,&maxComplementarity
 							) != SUCCESSFUL_RETURN )
 	{
 		qpOASES_myPrintf( "In order to run this example, you need to download example no. 02\nfrom the Online QP Benchmark Collection website first!\n" );

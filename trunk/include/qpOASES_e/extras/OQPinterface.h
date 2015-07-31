@@ -46,9 +46,6 @@
 BEGIN_NAMESPACE_QPOASES
 
 
-#define NQPMAX 101
-
-
 /** Reads dimensions of an Online QP Benchmark problem from file.
  * \return SUCCESSFUL_RETURN \n
 		   RET_UNABLE_TO_READ_FILE \n
@@ -105,10 +102,13 @@ returnValue solveOQPbenchmark(	int nQP,					/**< Number of QPs. */
 								const real_t* const lbA,	/**< Sequence of lower constraints' bound vectors. */
 								const real_t* const ubA,	/**< Sequence of upper constraints' bound vectors. */
 								BooleanType isSparse,		/**< Shall convert matrices to sparse format before solution? */
+								BooleanType useHotstarts,	/**< Shall QP solution be hotstarted? */
 								const Options* options,		/**< QP solver options to be used while solving benchmark problems. */
-								int* nWSR, 					/**< Input: Maximum number of working set recalculations; \n
-																 Output: Maximum number of performed working set recalculations. */
+								int maxAllowedNWSR, 		/**< Maximum number of working set recalculations to be performed. */
+								real_t* maxNWSR,			/**< Output: Maximum number of performed working set recalculations. */
+								real_t* avgNWSR,			/**< Output: Average number of performed working set recalculations. */
 								real_t* maxCPUtime,			/**< Output: Maximum CPU time required for solving each QP. */
+								real_t* avgCPUtime,			/**< Output: Average CPU time required for solving each QP. */
 								real_t* maxStationarity,	/**< Output: Maximum residual of stationarity condition. */
 								real_t* maxFeasibility,		/**< Output: Maximum residual of primal feasibility condition. */
 								real_t* maxComplementarity	/**< Output: Maximum residual of complementarity condition. */
@@ -126,10 +126,13 @@ returnValue solveOQPbenchmarkB(	int nQP,					/**< Number of QPs. */
 								const real_t* const lb,		/**< Sequence of lower bound vectors (on variables). */
 								const real_t* const ub,		/**< Sequence of upper bound vectors (on variables). */
 								BooleanType isSparse,		/**< Shall convert matrices to sparse format before solution? */
+								BooleanType useHotstarts,	/**< Shall QP solution be hotstarted? */
 								const Options* options,		/**< QP solver options to be used while solving benchmark problems. */
-								int* nWSR, 					/**< Input: Maximum number of working set recalculations; \n
-																 Output: Maximum number of performed working set recalculations. */
+								int maxAllowedNWSR, 		/**< Maximum number of working set recalculations to be performed. */
+								real_t* maxNWSR,			/**< Output: Maximum number of performed working set recalculations. */
+								real_t* avgNWSR,			/**< Output: Average number of performed working set recalculations. */
 								real_t* maxCPUtime,			/**< Output: Maximum CPU time required for solving each QP. */
+								real_t* avgCPUtime,			/**< Output: Average CPU time required for solving each QP. */
 								real_t* maxStationarity,	/**< Output: Maximum residual of stationarity condition. */
 								real_t* maxFeasibility,		/**< Output: Maximum residual of primal feasibility condition. */
 								real_t* maxComplementarity	/**< Output: Maximum residual of complementarity condition. */
@@ -137,17 +140,22 @@ returnValue solveOQPbenchmarkB(	int nQP,					/**< Number of QPs. */
 
 
 /** Runs an Online QP Benchmark problem and determines the maximum
- *  deviations from the given optimal solution as well as the
- *  maximum CPU time to solve each QP.
+ *  violation of the KKT optimality conditions as well as the 
+ *  maximum and average number of iterations and CPU time to solve 
+ *	each QP.
+ *
  * \return SUCCESSFUL_RETURN \n
 		   RET_UNABLE_TO_READ_BENCHMARK \n
  		   RET_BENCHMARK_ABORTED */
 returnValue runOQPbenchmark(	const char* path,			/**< Full path of the benchmark files (without trailing slash!). */
 								BooleanType isSparse,		/**< Shall convert matrices to sparse format before solution? */
+								BooleanType useHotstarts,	/**< Shall QP solution be hotstarted? */
 								const Options* options,		/**< QP solver options to be used while solving benchmark problems. */
-								int* nWSR, 					/**< Input: Maximum number of working set recalculations; \n
-																 Output: Maximum number of performed working set recalculations. */
+								int maxAllowedNWSR, 		/**< Maximum number of working set recalculations to be performed. */
+								real_t* maxNWSR,			/**< Output: Maximum number of performed working set recalculations. */
+								real_t* avgNWSR,			/**< Output: Average number of performed working set recalculations. */
 								real_t* maxCPUtime,			/**< Output: Maximum CPU time required for solving each QP. */
+								real_t* avgCPUtime,			/**< Output: Average CPU time required for solving each QP. */
 								real_t* maxStationarity,	/**< Output: Maximum residual of stationarity condition. */
 								real_t* maxFeasibility,		/**< Output: Maximum residual of primal feasibility condition. */
 								real_t* maxComplementarity	/**< Output: Maximum residual of complementarity condition. */

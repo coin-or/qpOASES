@@ -61,7 +61,7 @@
 #define QPOASES_TEST_FOR_TOL( x,tol )  if ( (x) > (tol)*(TEST_TOL_FACTOR) ) { return TEST_FAILED; }
 
 /** Macro verifying that a logical expression holds in order to pass unit test. */
-#define QPOASES_TEST_FOR_TRUE( x )  if ( (x) == false ) { return TEST_FAILED; }
+#define QPOASES_TEST_FOR_TRUE( x )  if ( (x) == 0 ) { return TEST_FAILED; }
 
 
 

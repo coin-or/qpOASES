@@ -38,11 +38,12 @@ int main(int argc, char *argv[])
 
 	/* 1) Define benchmark arguments. */
 	BooleanType isSparse = BT_FALSE;
+	BooleanType useHotstarts = BT_FALSE;
 	Options options;
 
-	int nWSR;
-	real_t maxCPUtime; /* seconds */
-	real_t maxStationarity = 0.0, maxFeasibility = 0.0, maxComplementarity = 0.0;
+	int maxAllowedNWSR;
+	real_t maxNWSR, avgNWSR, maxCPUtime, avgCPUtime;
+	real_t maxStationarity, maxFeasibility, maxComplementarity;
 
 	int scannedDir = 0;
 	int nfail = 0, npass = 0;
@@ -104,9 +105,12 @@ int main(int argc, char *argv[])
 
 		snprintf(OQPproblem, 199, "../testing/c/data/problems/%s/", problem);
 		maxCPUtime = 300.0;
-		nWSR = 3500;
-		returnvalue = runOQPbenchmark(	OQPproblem, isSparse, &options,
-										&nWSR, &maxCPUtime, &maxStationarity, &maxFeasibility, &maxComplementarity 
+		maxAllowedNWSR = 3500;
+		returnvalue = runOQPbenchmark(	OQPproblem,
+										isSparse,useHotstarts,
+										&options,maxAllowedNWSR,
+										&maxNWSR,&avgNWSR,&maxCPUtime,&avgCPUtime,
+										&maxStationarity,&maxFeasibility,&maxComplementarity
 										);
 		if (returnvalue	== SUCCESSFUL_RETURN
 				&& maxStationarity < TOL
@@ -122,7 +126,7 @@ int main(int argc, char *argv[])
 			snprintf (resstr, 199, "fail (%d)", returnvalue);
 		}
 		fprintf(stdout, "%9.2e %9.2e %9.2e %6d  %-12s\n", maxStationarity,
-				maxFeasibility, maxComplementarity, nWSR, resstr);
+				maxFeasibility, maxComplementarity, (int)maxNWSR, resstr);
 
 		if (scannedDir) free(namelist[i]);
 	}

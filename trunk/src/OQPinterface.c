@@ -179,8 +179,9 @@ returnValue solveOQPbenchmark(	int nQP, int nV, int nC, int nEC,
 								real_t* _H, const real_t* const g, real_t* _A,
 								const real_t* const lb, const real_t* const ub,
 								const real_t* const lbA, const real_t* const ubA,
-								BooleanType isSparse, 
-								const Options* options, int* nWSR, real_t* maxCPUtime,
+								BooleanType isSparse, BooleanType useHotstarts, 
+								const Options* options, int maxAllowedNWSR,
+								real_t* maxNWSR, real_t* avgNWSR, real_t* maxCPUtime, real_t* avgCPUtime,
 								real_t* maxStationarity, real_t* maxFeasibility, real_t* maxComplementarity
 								)
 {
@@ -193,11 +194,9 @@ returnValue solveOQPbenchmark(	int nQP, int nV, int nC, int nEC,
 	/* 1) Keep nWSR and store current and maximum number of
 	 *    working set recalculations in temporary variables */
 	int nWSRcur;
-	int maxNWSR = 0;
 
 	real_t CPUtimeLimit = *maxCPUtime;
 	real_t CPUtimeCur = CPUtimeLimit;
-
 	real_t stat, feas, cmpl;
 	
 	/* 2) Pointers to data of current QP ... */
@@ -215,17 +214,20 @@ returnValue solveOQPbenchmark(	int nQP, int nV, int nC, int nEC,
 	DenseMatrix *H, *A;
 	myStatic DenseMatrix HH, AA;
 
-	*maxCPUtime = 0.0;
-	*maxStationarity = 0.0;
-	*maxFeasibility = 0.0;
-	*maxComplementarity = 0.0;
-
 
 	DenseMatrixCON( &HH, nV, nV, nV, _H );
 	DenseMatrixCON( &AA, nC, nV, nV, _A );
 	
 	H = &HH;
 	A = &AA;
+	
+	*maxNWSR = 0;
+	*avgNWSR = 0;
+	*maxCPUtime = 0.0;
+	*avgCPUtime = 0.0;
+	*maxStationarity = 0.0;
+	*maxFeasibility = 0.0;
+	*maxComplementarity = 0.0;
 	
 	/*DenseMatrix_print( H );*/
 
@@ -248,11 +250,11 @@ returnValue solveOQPbenchmark(	int nQP, int nV, int nC, int nEC,
 		ubACur = &( ubA[k*nC] );
 
 		/* 2) Set nWSR and maximum CPU time. */
-		nWSRcur = *nWSR;
+		nWSRcur = maxAllowedNWSR;
 		CPUtimeCur = CPUtimeLimit;
 
 		/* 3) Solve current QP. */
-		if ( k == 0 )
+		if ( ( k == 0 ) || ( useHotstarts == BT_FALSE ) )
 		{
 			/* initialise */
 			returnvalue = QProblem_initM( &qp, H,gCur,A,lbCur,ubCur,lbACur,ubACur, &nWSRcur,&CPUtimeCur );
@@ -275,16 +277,20 @@ returnValue solveOQPbenchmark(	int nQP, int nV, int nC, int nEC,
 		qpOASES_getKktViolation( nV,nC, _H,gCur,_A,lbCur,ubCur,lbACur,ubACur, x,y, &stat,&feas,&cmpl );
 		
 		/* 6) Update maximum values. */
-		if ( nWSRcur > maxNWSR )
-			maxNWSR = nWSRcur;
+		if ( nWSRcur > *maxNWSR )
+			*maxNWSR = nWSRcur;
 		if (stat > *maxStationarity) *maxStationarity = stat;
 		if (feas > *maxFeasibility) *maxFeasibility = feas;
 		if (cmpl > *maxComplementarity) *maxComplementarity = cmpl;
 
 		if ( CPUtimeCur > *maxCPUtime )
 			*maxCPUtime = CPUtimeCur;
+	
+		*avgNWSR += nWSRcur;
+		*avgCPUtime += CPUtimeCur;
 	}
-	*nWSR = maxNWSR;
+	*avgNWSR /= nQP;
+	*avgCPUtime /= ((double)nQP);
 
 	return SUCCESSFUL_RETURN;
 }
@@ -296,8 +302,9 @@ returnValue solveOQPbenchmark(	int nQP, int nV, int nC, int nEC,
 returnValue solveOQPbenchmarkB(	int nQP, int nV,
 								real_t* _H, const real_t* const g,
 								const real_t* const lb, const real_t* const ub,
-								BooleanType isSparse, 
-								const Options* options, int* nWSR, real_t* maxCPUtime,
+								BooleanType isSparse, BooleanType useHotstarts, 
+								const Options* options, int maxAllowedNWSR,
+								real_t* maxNWSR, real_t* avgNWSR, real_t* maxCPUtime, real_t* avgCPUtime,
 								real_t* maxStationarity, real_t* maxFeasibility, real_t* maxComplementarity
 								)
 {
@@ -310,7 +317,6 @@ returnValue solveOQPbenchmarkB(	int nQP, int nV,
 	/* 1) Keep nWSR and store current and maximum number of
 	 *    working set recalculations in temporary variables */
 	int nWSRcur;
-	int maxNWSR = 0;
 
 	real_t CPUtimeLimit = *maxCPUtime;
 	real_t CPUtimeCur = CPUtimeLimit;
@@ -329,13 +335,16 @@ returnValue solveOQPbenchmarkB(	int nQP, int nV,
 	DenseMatrix *H;
 	myStatic DenseMatrix HH;
 	
+	DenseMatrixCON( &HH, nV, nV, nV, _H );
+	H = &HH;
+	
+	*maxNWSR = 0;
+	*avgNWSR = 0;
 	*maxCPUtime = 0.0;
+	*avgCPUtime = 0.0;
 	*maxStationarity = 0.0;
 	*maxFeasibility = 0.0;
 	*maxComplementarity = 0.0;
-
-	DenseMatrixCON( &HH, nV, nV, nV, _H );
-	H = &HH;
 
 	/* II) SETUP QPROBLEM OBJECT */
 	QProblemBCON( &qp,nV,HST_UNKNOWN );
@@ -352,11 +361,11 @@ returnValue solveOQPbenchmarkB(	int nQP, int nV,
 		ubCur  = &( ub[k*nV] );
 
 		/* 2) Set nWSR and maximum CPU time. */
-		nWSRcur = *nWSR;
+		nWSRcur = maxAllowedNWSR;
 		CPUtimeCur = CPUtimeLimit;
 
 		/* 3) Solve current QP. */
-		if ( k == 0 )
+		if ( ( k == 0 ) || ( useHotstarts == BT_FALSE ) )
 		{
 			/* initialise */
 			returnvalue = QProblemB_initM( &qp,H,gCur,lbCur,ubCur, &nWSRcur,&CPUtimeCur );
@@ -379,16 +388,20 @@ returnValue solveOQPbenchmarkB(	int nQP, int nV,
 		qpOASES_getKktViolationSB( nV, _H,gCur,lbCur,ubCur, x,y, &stat,&feas,&cmpl );
 
 		/* 6) update maximum values. */
-		if ( nWSRcur > maxNWSR )
-			maxNWSR = nWSRcur;
+		if ( nWSRcur > *maxNWSR )
+			*maxNWSR = nWSRcur;
 		if (stat > *maxStationarity) *maxStationarity = stat;
 		if (feas > *maxFeasibility) *maxFeasibility = feas;
 		if (cmpl > *maxComplementarity) *maxComplementarity = cmpl;
 
 		if ( CPUtimeCur > *maxCPUtime )
 			*maxCPUtime = CPUtimeCur;
+		
+		*avgNWSR += nWSRcur;
+		*avgCPUtime += CPUtimeCur;
 	}
-	*nWSR = maxNWSR;
+	*avgNWSR /= nQP;
+	*avgCPUtime /= ((double)nQP);
 
 	return SUCCESSFUL_RETURN;
 }
@@ -397,8 +410,9 @@ returnValue solveOQPbenchmarkB(	int nQP, int nV,
 /*
  *	r u n O Q P b e n c h m a r k
  */
-returnValue runOQPbenchmark(	const char* path, BooleanType isSparse, const Options* options,
-								int* nWSR, real_t* maxCPUtime,
+returnValue runOQPbenchmark(	const char* path, BooleanType isSparse, BooleanType useHotstarts, 
+								const Options* options, int maxAllowedNWSR,
+								real_t* maxNWSR, real_t* avgNWSR, real_t* maxCPUtime, real_t* avgCPUtime,
 								real_t* maxStationarity, real_t* maxFeasibility, real_t* maxComplementarity
 								)
 {
@@ -434,8 +448,9 @@ returnValue runOQPbenchmark(	const char* path, BooleanType isSparse, const Optio
 	{
 		returnvalue = solveOQPbenchmark(	nQP,nV,nC,nEC,
 											H,g,A,lb,ub,lbA,ubA,
-											isSparse,options,
-											nWSR,maxCPUtime,
+											isSparse,useHotstarts,
+											options,maxAllowedNWSR,
+											maxNWSR,avgNWSR,maxCPUtime,avgCPUtime,
 											maxStationarity,maxFeasibility,maxComplementarity
 											);
 
@@ -446,8 +461,9 @@ returnValue runOQPbenchmark(	const char* path, BooleanType isSparse, const Optio
 	{
 		returnvalue = solveOQPbenchmarkB(	nQP,nV,
 											H,g,lb,ub,
-											isSparse,options,
-											nWSR,maxCPUtime,
+											isSparse,useHotstarts,
+											options,maxAllowedNWSR,
+											maxNWSR,avgNWSR,maxCPUtime,avgCPUtime,
 											maxStationarity,maxFeasibility,maxComplementarity
 											);
 

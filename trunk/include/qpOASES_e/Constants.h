@@ -77,6 +77,11 @@ BEGIN_NAMESPACE_QPOASES
 #endif
 
 
+/** Maximum number of QPs in a sequence solved by means of the OQP interface.
+ *	Note: this value has to be positive! */
+#define NQPMAX 1000
+
+
 /** Numerical value of machine precision (min eps, s.t. 1+eps > 1).
  *	Note: this value has to be positive! */
 #ifndef __CODE_GENERATION__

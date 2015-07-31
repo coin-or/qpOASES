@@ -40,7 +40,8 @@ IFLAGS      =  -I. \
                -I${IDIR}
 
 QPOASES_TEST_EXES = \
-	${BINDIR}/test_bench${EXE}
+	${BINDIR}/test_bench${EXE} \
+	${BINDIR}/test_runAllOqpExamples${EXE}
 
 QPOASES_DEPENDS = \
 	${IDIR}/qpOASES_e.h \
