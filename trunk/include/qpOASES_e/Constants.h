@@ -39,7 +39,16 @@
 #include <qpOASES_e/Types.h>
 
 #ifdef __CODE_GENERATION__
-  #include "../solver.h"
+
+  #define CONVERTTOSTRINGAUX(x) #x
+  #define CONVERTTOSTRING(x) CONVERTTOSTRINGAUX(x)
+
+  #ifndef QPOASES_CUSTOM_INTERFACE
+  #include "acado_qpoases3_interface.h"
+  #else
+  #include CONVERTTOSTRING(QPOASES_CUSTOM_INTERFACE)
+  #endif
+
 #endif
 
 

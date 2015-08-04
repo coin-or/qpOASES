@@ -24,7 +24,7 @@
 
 /**
  *	\file src/QProblem.c
- *	\author Hans Joachim Ferreau, Andreas Potschka, Christian Kirches (thanks to Kwame Minde Kufoalor)
+ *	\author Hans Joachim Ferreau, Andreas Potschka, Christian Kirches (thanks to D. Kwame Minde Kufoalor)
  *	\version 3.1embedded
  *	\date 2007-2015
  *
