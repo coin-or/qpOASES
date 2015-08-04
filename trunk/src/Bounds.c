@@ -403,8 +403,8 @@ returnValue Bounds_rotate( Bounds* _THIS, int offset )
  */
 returnValue Bounds_print( Bounds* _THIS )
 {
-	#ifndef __XPCTARGET__
-	#ifndef __DSPACE__
+	#ifndef __SUPPRESSANYOUTPUT__
+
 	myStatic char myPrintfString[QPOASES_MAX_STRING_LENGTH];
 
 	int nFR = Bounds_getNFR( _THIS );
@@ -424,8 +424,7 @@ returnValue Bounds_print( Bounds* _THIS )
 	REFER_NAMESPACE_QPOASES qpOASES_printNI( FR_idx,nFR,"free " );
 	REFER_NAMESPACE_QPOASES qpOASES_printNI( FX_idx,nFX,"fixed" );
 
-	#endif
-	#endif
+	#endif /* __SUPPRESSANYOUTPUT__ */
 
 	return SUCCESSFUL_RETURN;
 }

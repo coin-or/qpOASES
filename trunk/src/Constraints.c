@@ -396,8 +396,8 @@ returnValue Constraints_rotate( Constraints* _THIS, int offset )
  */
 returnValue Constraints_print( Constraints* _THIS )
 {
-	#ifndef __XPCTARGET__
-	#ifndef __DSPACE__
+	#ifndef __SUPPRESSANYOUTPUT__
+
 	myStatic char myPrintfString[QPOASES_MAX_STRING_LENGTH];
 
 	int nIAC = Constraints_getNIAC( _THIS );
@@ -417,8 +417,7 @@ returnValue Constraints_print( Constraints* _THIS )
 	REFER_NAMESPACE_QPOASES qpOASES_printNI( IAC_idx,nIAC,"inactive" );
 	REFER_NAMESPACE_QPOASES qpOASES_printNI( AC_idx, nAC, "active  " );
 
-	#endif
-	#endif
+	#endif /* __SUPPRESSANYOUTPUT__ */
 
 	return SUCCESSFUL_RETURN;
 }

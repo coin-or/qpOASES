@@ -48,7 +48,7 @@
 
 
 #ifdef __NO_SNPRINTF__
-#if (!defined(_MSC_VER)) || defined(__DSPACE__)
+#if (!defined(_MSC_VER)) || defined(__DSPACE__) || defined(__XPCTARGET__) 
 /* If snprintf is not available, provide an empty implementation. */
 int snprintf( char* s, size_t n, const char* format, ... )
 {
@@ -72,7 +72,7 @@ returnValue qpOASES_printV(	const real_t* const v,
 							)
 {
 	#ifndef __SUPPRESSANYOUTPUT__
-	#ifndef __XPCTARGET__
+
 	int i;
 	char myPrintfString[QPOASES_MAX_STRING_LENGTH];
 
@@ -83,7 +83,7 @@ returnValue qpOASES_printV(	const real_t* const v,
 		qpOASES_myPrintf( myPrintfString );
 	}
 	qpOASES_myPrintf( "\n" );
-	#endif /* __XPCTARGET__ */
+
 	#endif /* __SUPPRESSANYOUTPUT__ */
 
 	return SUCCESSFUL_RETURN;
@@ -98,7 +98,7 @@ returnValue qpOASES_printPV(	const real_t* const v, int n,
 								)
 {
 	#ifndef __SUPPRESSANYOUTPUT__
-	#ifndef __XPCTARGET__
+
 	int i;
 	char myPrintfString[QPOASES_MAX_STRING_LENGTH];
 
@@ -110,7 +110,7 @@ returnValue qpOASES_printPV(	const real_t* const v, int n,
 		qpOASES_myPrintf( myPrintfString );
 	}
 	qpOASES_myPrintf( "\n" );
-	#endif /* __XPCTARGET__ */
+
 	#endif /* __SUPPRESSANYOUTPUT__ */
 
 	return SUCCESSFUL_RETURN;
@@ -125,7 +125,7 @@ returnValue qpOASES_printNV(	const real_t* const v, int n,
 								)
 {
 	#ifndef __SUPPRESSANYOUTPUT__
-	#ifndef __XPCTARGET__
+
 	char myPrintfString[QPOASES_MAX_STRING_LENGTH];
 
 	/* Print vector name ... */
@@ -134,7 +134,7 @@ returnValue qpOASES_printNV(	const real_t* const v, int n,
 		snprintf( myPrintfString,QPOASES_MAX_STRING_LENGTH,"%s = ", name );
 		qpOASES_myPrintf( myPrintfString );
 	}
-	#endif /* __XPCTARGET__ */
+
 	#endif /* __SUPPRESSANYOUTPUT__ */
 
 	/* ... and the vector itself. */
@@ -150,14 +150,14 @@ returnValue qpOASES_printM(	const real_t* const M,
 							)
 {
 	#ifndef __SUPPRESSANYOUTPUT__
-	#ifndef __XPCTARGET__
+
 	int i;
 
 	/* Print a matrix as a collection of row vectors. */
 	for( i=0; i<nrow; ++i )
 		qpOASES_printV( &(M[i*ncol]), ncol );
 	qpOASES_myPrintf( "\n" );
-	#endif /* __XPCTARGET__ */
+
 	#endif /* __SUPPRESSANYOUTPUT__ */
 
 	return SUCCESSFUL_RETURN;
@@ -172,14 +172,14 @@ returnValue qpOASES_printPM(	const real_t* const M, int nrow, int ncol,
 								)
 {
 	#ifndef __SUPPRESSANYOUTPUT__
-	#ifndef __XPCTARGET__
+
 	int i;
 
 	/* Print a permuted matrix as a collection of permuted row vectors. */
 	for( i=0; i<nrow; ++i )
 		qpOASES_printPV( &( M[ ROW_idx[i]*ncol ] ), ncol, COL_idx );
 	qpOASES_myPrintf( "\n" );
-	#endif /* __XPCTARGET__ */
+
 	#endif /* __SUPPRESSANYOUTPUT__ */
 
 	return SUCCESSFUL_RETURN;
@@ -194,7 +194,7 @@ returnValue qpOASES_printNM(	const real_t* const M, int nrow, int ncol,
 								)
 {
 	#ifndef __SUPPRESSANYOUTPUT__
-	#ifndef __XPCTARGET__
+
 	char myPrintfString[QPOASES_MAX_STRING_LENGTH];
 
 	/* Print matrix name ... */
@@ -203,7 +203,7 @@ returnValue qpOASES_printNM(	const real_t* const M, int nrow, int ncol,
 		snprintf( myPrintfString,QPOASES_MAX_STRING_LENGTH,"%s = ", name );
 		qpOASES_myPrintf( myPrintfString );
 	}
-	#endif /* __XPCTARGET__ */
+
 	#endif /* __SUPPRESSANYOUTPUT__ */
 
 	/* ... and the matrix itself. */
@@ -219,7 +219,7 @@ returnValue qpOASES_printI(	const int* const _index,
 							)
 {
 	#ifndef __SUPPRESSANYOUTPUT__
-	#ifndef __XPCTARGET__
+
 	int i;
 	char myPrintfString[QPOASES_MAX_STRING_LENGTH];
 
@@ -231,7 +231,7 @@ returnValue qpOASES_printI(	const int* const _index,
 		qpOASES_myPrintf( myPrintfString );
 	}
 	qpOASES_myPrintf( "\n" );
-	#endif /* __XPCTARGET__ */
+
 	#endif /* __SUPPRESSANYOUTPUT__ */
 
 	return SUCCESSFUL_RETURN;
@@ -246,7 +246,7 @@ returnValue qpOASES_printNI(	const int* const _index, int n,
 								)
 {
 	#ifndef __SUPPRESSANYOUTPUT__
-	#ifndef __XPCTARGET__
+
 	char myPrintfString[QPOASES_MAX_STRING_LENGTH];
 
 	/* Print indexlist name ... */
@@ -255,7 +255,7 @@ returnValue qpOASES_printNI(	const int* const _index, int n,
 		snprintf( myPrintfString,QPOASES_MAX_STRING_LENGTH,"%s = ", name );
 		qpOASES_myPrintf( myPrintfString );
 	}
-	#endif /* __XPCTARGET__ */
+
 	#endif /* __SUPPRESSANYOUTPUT__ */
 
 	/* ... and the indexlist itself. */
@@ -269,7 +269,6 @@ returnValue qpOASES_printNI(	const int* const _index, int n,
 returnValue qpOASES_myPrintf( const char* s )
 {
 	#ifndef __SUPPRESSANYOUTPUT__
-	#ifndef __XPCTARGET__
 
 	  #ifdef __MATLAB__
 	  if ( s == 0 )
@@ -285,7 +284,6 @@ returnValue qpOASES_myPrintf( const char* s )
 	  fprintf( outputfile, "%s", s );
 	  #endif /* __MATLAB__ */
 
-	#endif /* __XPCTARGET__ */
 	#endif /* __SUPPRESSANYOUTPUT__ */
 
 	return SUCCESSFUL_RETURN;
@@ -317,7 +315,8 @@ returnValue qpOASES_readFromFileM(	real_t* data, int nrow, int ncol,
 									const char* datafilename
 									)
 {
-	#ifndef __XPCTARGET__
+	#ifndef __SUPPRESSANYOUTPUT__
+
 	int i, j;
 	real_t float_data;
 	FILE* datafile;
@@ -353,11 +352,12 @@ returnValue qpOASES_readFromFileM(	real_t* data, int nrow, int ncol,
 	fclose( datafile );
 
 	return SUCCESSFUL_RETURN;
+    
 	#else
 
 	return RET_NOT_YET_IMPLEMENTED;
 
-	#endif
+	#endif /* __SUPPRESSANYOUTPUT__ */
 }
 
 
@@ -380,7 +380,8 @@ returnValue qpOASES_readFromFileI(	int* data, int n,
 									const char* datafilename
 									)
 {
-	#ifndef __XPCTARGET__
+	#ifndef __SUPPRESSANYOUTPUT__
+
 	int i;
 	FILE* datafile;
 	char errstr[QPOASES_MAX_STRING_LENGTH];
@@ -407,11 +408,12 @@ returnValue qpOASES_readFromFileI(	int* data, int n,
 	fclose( datafile );
 
 	return SUCCESSFUL_RETURN;
-	#else
+	
+    #else
 
 	return RET_NOT_YET_IMPLEMENTED;
 
-	#endif
+	#endif /* __SUPPRESSANYOUTPUT__ */
 }
 
 
@@ -422,7 +424,8 @@ returnValue qpOASES_writeIntoFileM(	const real_t* const data, int nrow, int ncol
 									const char* datafilename, BooleanType append
 									)
 {
-	#ifndef __XPCTARGET__
+	#ifndef __SUPPRESSANYOUTPUT__
+
 	int i, j;
 	FILE* datafile;
 	char errstr[QPOASES_MAX_STRING_LENGTH];
@@ -460,7 +463,8 @@ returnValue qpOASES_writeIntoFileM(	const real_t* const data, int nrow, int ncol
 	fclose( datafile );
 
 	return SUCCESSFUL_RETURN;
-	#else
+    
+	#else /* __SUPPRESSANYOUTPUT__ */
 
 	return RET_NOT_YET_IMPLEMENTED;
 
@@ -486,7 +490,8 @@ returnValue qpOASES_writeIntoFileI(	const int* const integer, int n,
 									const char* datafilename, BooleanType append
 									)
 {
-	#ifndef __XPCTARGET__
+	#ifndef __SUPPRESSANYOUTPUT__
+
 	int i;
 
 	FILE* datafile;
@@ -520,7 +525,8 @@ returnValue qpOASES_writeIntoFileI(	const int* const integer, int n,
 	fclose( datafile );
 
 	return SUCCESSFUL_RETURN;
-	#else
+	
+    #else /* __SUPPRESSANYOUTPUT__ */
 
 	return RET_NOT_YET_IMPLEMENTED;
 
@@ -538,7 +544,8 @@ returnValue qpOASES_writeIntoMatFile(	FILE* const matFile,
 	/*  Note, this code snippet has been inspired from the document
 	 *  "Matlab(R) MAT-file Format, R2013b" by MathWorks */
 
-	#ifndef __XPCTARGET__
+	#ifndef __SUPPRESSANYOUTPUT__
+
 	int ii, jj;
 	MatMatrixHeader var;
 	
@@ -565,7 +572,8 @@ returnValue qpOASES_writeIntoMatFile(	FILE* const matFile,
 				return RET_UNABLE_TO_WRITE_FILE;
 
 	return SUCCESSFUL_RETURN;
-	#else
+
+    #else /* __SUPPRESSANYOUTPUT__ */
 
 	return RET_NOT_YET_IMPLEMENTED;
 
@@ -773,12 +781,12 @@ returnValue qpOASES_getKktViolationSB(	int nV,
  */
 returnValue qpOASES_convertBooleanTypeToString( BooleanType value, char* const string )
 {
-	#ifndef __XPCTARGET__
+	#ifndef __SUPPRESSANYOUTPUT__
 	if ( value == BT_FALSE )
 		snprintf( string,20,"BT_FALSE" );
 	else
 		snprintf( string,20,"BT_TRUE" );
-	#endif /* __XPCTARGET__ */
+	#endif /* __SUPPRESSANYOUTPUT__ */
 
 	return SUCCESSFUL_RETURN;
 }
@@ -789,7 +797,7 @@ returnValue qpOASES_convertBooleanTypeToString( BooleanType value, char* const s
  */
 returnValue qpOASES_convertSubjectToStatusToString( SubjectToStatus value, char* const string )
 {
-	#ifndef __XPCTARGET__
+	#ifndef __SUPPRESSANYOUTPUT__
 	switch( value )
 	{
 		case ST_INACTIVE:
@@ -820,7 +828,7 @@ returnValue qpOASES_convertSubjectToStatusToString( SubjectToStatus value, char*
 			snprintf( string,20,"<invalid value>" );
 			break;
 	}
-	#endif /* __XPCTARGET__ */
+	#endif /* __SUPPRESSANYOUTPUT__ */
 
 	return SUCCESSFUL_RETURN;
 }
@@ -831,7 +839,7 @@ returnValue qpOASES_convertSubjectToStatusToString( SubjectToStatus value, char*
  */
 returnValue qpOASES_convertPrintLevelToString( PrintLevel value, char* const string )
 {
-	#ifndef __XPCTARGET__
+	#ifndef __SUPPRESSANYOUTPUT__
 	switch( value )
 	{
 		case PL_NONE:
@@ -862,7 +870,7 @@ returnValue qpOASES_convertPrintLevelToString( PrintLevel value, char* const str
 			snprintf( string,20,"<invalid value>" );
 			break;
 	}
-	#endif /* __XPCTARGET__ */
+	#endif /* __SUPPRESSANYOUTPUT__ */
 
 	return SUCCESSFUL_RETURN;
 }
@@ -978,7 +986,8 @@ returnValue normaliseConstraints(	int nV, int nC,
  */
 void gdb_printmat( const char *fname, real_t *M, int n, int m, int ldim )
 {
-	#ifdef __XPCTARGET__
+	#ifdef __SUPPRESSANYOUTPUT__
+
 	int i, j;
 	FILE *fid;
 
@@ -996,7 +1005,8 @@ void gdb_printmat( const char *fname, real_t *M, int n, int m, int ldim )
 		fprintf(fid, "\n");
 	}
 	fclose(fid);
-	#endif /* __XPCTARGET__ */
+
+	#endif /* __SUPPRESSANYOUTPUT__ */
 }
 #endif /* __DEBUG__ */
 

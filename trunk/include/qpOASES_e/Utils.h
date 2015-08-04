@@ -38,17 +38,6 @@
 #include <qpOASES_e/MessageHandling.h>
 
 
-#ifdef __NO_SNPRINTF__
-  #if (!defined(_MSC_VER)) || defined(__DSPACE__)
-    /* If snprintf is not available, provide an empty implementation... */
-    int snprintf( char* s, size_t n, const char* format, ... );
-  #else
-	/* ... or substitute snprintf by _snprintf for Microsoft compilers. */
-    #define snprintf _snprintf    
-  #endif
-#endif /* __NO_SNPRINTF__ */
-
-
 BEGIN_NAMESPACE_QPOASES
 
 

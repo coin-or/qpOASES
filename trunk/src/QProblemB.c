@@ -929,7 +929,7 @@ returnValue QProblemB_getDualSolution( QProblemB* _THIS, real_t* const yOpt )
  */
 returnValue QProblemB_setPrintLevel( QProblemB* _THIS, PrintLevel _printLevel )
 {
-	#ifndef __XPCTARGET__
+	#ifndef __SUPPRESSANYOUTPUT__
 		#ifndef __MATLAB__
 		if ( ( _THIS->options.printLevel == PL_HIGH ) && ( _THIS->options.printLevel != _printLevel ) )
 			THROWINFO( RET_PRINTLEVEL_CHANGED );
@@ -937,7 +937,7 @@ returnValue QProblemB_setPrintLevel( QProblemB* _THIS, PrintLevel _printLevel )
 		_THIS->options.printLevel = _printLevel;
 	#else
 	_THIS->options.printLevel = PL_NONE;
-	#endif /* __XPCTARGET__ */
+	#endif /* __SUPPRESSANYOUTPUT__ */
 
 
 	/* update message handler preferences */
@@ -980,8 +980,8 @@ returnValue QProblemB_setPrintLevel( QProblemB* _THIS, PrintLevel _printLevel )
  */
 returnValue QProblemB_printProperties( QProblemB* _THIS )
 {
-	#ifndef __XPCTARGET__
-	#ifndef __DSPACE__
+	#ifndef __SUPPRESSANYOUTPUT__
+
 	myStatic char myPrintfString[QPOASES_MAX_STRING_LENGTH];
 
 	/* Do not print properties if print level is set to none! */
@@ -1108,8 +1108,8 @@ returnValue QProblemB_printProperties( QProblemB* _THIS )
 	}
 
 	qpOASES_myPrintf( "\n" );
-	#endif
-	#endif
+
+	#endif /* __SUPPRESSANYOUTPUT__ */
 
 	return SUCCESSFUL_RETURN;
 }
@@ -2313,7 +2313,7 @@ returnValue QProblemB_solveQP(	QProblemB* _THIS, const real_t* const g_new,
 
 	real_t homotopyLength;
 
-	#ifndef __XPCTARGET__
+	#ifndef __SUPPRESSANYOUTPUT__
 	myStatic char messageString[QPOASES_MAX_STRING_LENGTH];
 	#endif
 
@@ -2358,7 +2358,7 @@ returnValue QProblemB_solveQP(	QProblemB* _THIS, const real_t* const g_new,
 
 		_THIS->status = QPS_PERFORMINGHOMOTOPY;
 
-		#ifndef __XPCTARGET__
+		#ifndef __SUPPRESSANYOUTPUT__
 		if ( isFirstCall == BT_TRUE )
 			snprintf( messageString,QPOASES_MAX_STRING_LENGTH,"%d ...",iter );
 		else
@@ -2495,7 +2495,7 @@ returnValue QProblemB_solveQP(	QProblemB* _THIS, const real_t* const g_new,
 	 * within the given maximum numbers of working set changes */
 	if ( _THIS->options.printLevel == PL_HIGH )
 	{
-		#ifndef __XPCTARGET__
+		#ifndef __SUPPRESSANYOUTPUT__
 		snprintf( messageString,QPOASES_MAX_STRING_LENGTH,"(nWSR = %d)",iter );
 		return MessageHandling_throwWarning( qpOASES_getGlobalMessageHandler(),RET_MAX_NWSR_REACHED,messageString,__FUNC__,__FILE__,__LINE__,VS_VISIBLE );
 		#else
@@ -3157,7 +3157,7 @@ returnValue QProblemB_performStep(	QProblemB* _THIS,
 	}
 
 
-	#ifndef __XPCTARGET__
+	#ifndef __SUPPRESSANYOUTPUT__
 	if ( *BC_status == ST_UNDEFINED )
 		snprintf( messageString,QPOASES_MAX_STRING_LENGTH,"Stepsize is %.15e!",_THIS->tau );
 	else
@@ -3195,7 +3195,7 @@ returnValue QProblemB_performStep(	QProblemB* _THIS,
 	else
 	{
 		/* print a warning if stepsize is zero */
-		#ifndef __XPCTARGET__
+		#ifndef __SUPPRESSANYOUTPUT__
 		snprintf( messageString,QPOASES_MAX_STRING_LENGTH,"Stepsize is %.15e",_THIS->tau );
 		MessageHandling_throwWarning( qpOASES_getGlobalMessageHandler(),RET_STEPSIZE,messageString,__FUNC__,__FILE__,__LINE__,VS_VISIBLE );
 		#endif
@@ -3211,7 +3211,7 @@ returnValue QProblemB_performStep(	QProblemB* _THIS,
  */
 returnValue QProblemB_changeActiveSet( QProblemB* _THIS, int BC_idx, SubjectToStatus BC_status )
 {
-	#ifndef __XPCTARGET__
+	#ifndef __SUPPRESSANYOUTPUT__
 	myStatic char messageString[QPOASES_MAX_STRING_LENGTH];
 	#endif
 
@@ -3225,7 +3225,7 @@ returnValue QProblemB_changeActiveSet( QProblemB* _THIS, int BC_idx, SubjectToSt
 
 		/* Remove one variable from active set. */
 		case ST_INACTIVE:
-			#ifndef __XPCTARGET__
+			#ifndef __SUPPRESSANYOUTPUT__
 			snprintf( messageString,QPOASES_MAX_STRING_LENGTH,"bound no. %d.", BC_idx );
 			MessageHandling_throwInfo( qpOASES_getGlobalMessageHandler(),RET_REMOVE_FROM_ACTIVESET,messageString,__FUNC__,__FILE__,__LINE__,VS_VISIBLE );
 			#endif
@@ -3239,7 +3239,7 @@ returnValue QProblemB_changeActiveSet( QProblemB* _THIS, int BC_idx, SubjectToSt
 
 		/* Add one variable to active set. */
 		default:
-			#ifndef __XPCTARGET__
+			#ifndef __SUPPRESSANYOUTPUT__
 			if ( BC_status == ST_LOWER )
 				snprintf( messageString,QPOASES_MAX_STRING_LENGTH,"lower bound no. %d.", BC_idx );
 			else
@@ -3548,7 +3548,8 @@ returnValue QProblemB_printIteration( 	QProblemB* _THIS,
 										BooleanType isFirstCall
 		  								)
 {
-	#ifndef __XPCTARGET__
+	#ifndef __SUPPRESSANYOUTPUT__
+
 	myStatic char myPrintfString[QPOASES_MAX_STRING_LENGTH];
 	myStatic char info[QPOASES_MAX_STRING_LENGTH];
 
@@ -3596,7 +3597,8 @@ returnValue QProblemB_printIteration( 	QProblemB* _THIS,
 		snprintf( myPrintfString,QPOASES_MAX_STRING_LENGTH,"   %5.1d   |   %1.6e   |   %s %4.1d   |  %4.1d   \n", iter,_THIS->tau,info,BC_idx,QProblemB_getNFX( _THIS ) );
 		qpOASES_myPrintf( myPrintfString );
 	}
-	#endif
+    
+    #endif /* __SUPPRESSANYOUTPUT__ */
 
 	return SUCCESSFUL_RETURN;
 }

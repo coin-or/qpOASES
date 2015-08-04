@@ -162,10 +162,8 @@ static void mdlStart(SimStruct *S)
 	{
 		if ( ( HESSIANTYPE != HST_ZERO ) && ( HESSIANTYPE != HST_IDENTITY ) )
 		{
-			#ifndef __DSPACE__
-			#ifndef __XPCTARGET__
+			#ifndef __SUPPRESSANYOUTPUT__
 			mexErrMsgTxt( "ERROR (qpOASES): Hessian can only be empty if type is set to HST_ZERO or HST_IDENTITY!" );
-			#endif
 			#endif
 			return;
 		}
@@ -191,70 +189,56 @@ static void mdlStart(SimStruct *S)
 
 	if ( MAXITER < 0 )
 	{
-		#ifndef __DSPACE__
-		#ifndef __XPCTARGET__
+		#ifndef __SUPPRESSANYOUTPUT__
 		mexErrMsgTxt( "ERROR (qpOASES): Maximum number of iterations must not be negative!" );
-		#endif
 		#endif
 		return;
 	}
 
 	if ( nV <= 0 )
 	{
-		#ifndef __DSPACE__
-		#ifndef __XPCTARGET__
+		#ifndef __SUPPRESSANYOUTPUT__
 		mexErrMsgTxt( "ERROR (qpOASES): Dimension mismatch!" );
-		#endif
 		#endif
 		return;
 	}
 
 	if ( ( size_H != nV*nV ) && ( size_H != 0 ) )
 	{
-		#ifndef __DSPACE__
-		#ifndef __XPCTARGET__
+		#ifndef __SUPPRESSANYOUTPUT__
 		mexErrMsgTxt( "ERROR (qpOASES): Dimension mismatch in H!" );
-		#endif
 		#endif
 		return;
 	}
 
 	if ( nRows_H != nCols_H )
 	{
-		#ifndef __DSPACE__
-		#ifndef __XPCTARGET__
+		#ifndef __SUPPRESSANYOUTPUT__
 		mexErrMsgTxt( "ERROR (qpOASES): Hessian matrix must be square matrix!" );
-		#endif
 		#endif
 		return;
 	}
 
 	if ( ( nU < 1 ) || ( nU > nV ) )
 	{
-		#ifndef __DSPACE__
-		#ifndef __XPCTARGET__
+		#ifndef __SUPPRESSANYOUTPUT__
 		mexErrMsgTxt( "ERROR (qpOASES): Invalid number of control inputs!" );
-		#endif
 		#endif
 		return;
 	}
 
 	if ( ( size_lb != nV ) && ( size_lb != 0 ) )
 	{
-		#ifndef __DSPACE__
-		#ifndef __XPCTARGET__
+		#ifndef __SUPPRESSANYOUTPUT__
 		mexErrMsgTxt( "ERROR (qpOASES): Dimension mismatch in lb!" );
-		#endif
 		#endif
 		return;
 	}
 
 	if ( ( size_ub != nV ) && ( size_ub != 0 ) )
 	{
-		#ifndef __DSPACE__
-		#ifndef __XPCTARGET__
+		#ifndef __SUPPRESSANYOUTPUT__
 		mexErrMsgTxt( "ERROR (qpOASES): Dimension mismatch in ub!" );
-		#endif
 		#endif
 		return;
 	}
@@ -269,9 +253,6 @@ static void mdlStart(SimStruct *S)
 	QProblemB_setPrintLevel( &problem,PL_LOW );
 	#endif
 	#ifdef __SUPPRESSANYOUTPUT__
-	QProblemB_setPrintLevel( &problem,PL_NONE );
-	#endif
-	#ifdef __DSPACE__
 	QProblemB_setPrintLevel( &problem,PL_NONE );
 	#endif
 

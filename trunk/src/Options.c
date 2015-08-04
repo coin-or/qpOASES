@@ -116,9 +116,6 @@ returnValue Options_setToDefault(	Options* _THIS
 	#ifdef __DEBUG__
 	_THIS->printLevel = PL_HIGH;
 	#endif
-	#ifdef __XPCTARGET__
-	_THIS->printLevel = PL_NONE;
-	#endif
 	#ifdef __SUPPRESSANYOUTPUT__
 	_THIS->printLevel = PL_NONE;
 	#endif
@@ -409,8 +406,8 @@ returnValue Options_ensureConsistency(	Options* _THIS
 returnValue Options_print(	Options* _THIS
 							)
 {
-	#ifndef __XPCTARGET__
-	#ifndef __DSPACE__
+	#ifndef __SUPPRESSANYOUTPUT__
+
 	myStatic char myPrintfString[QPOASES_MAX_STRING_LENGTH];
 	myStatic char info[QPOASES_MAX_STRING_LENGTH];
 
@@ -520,8 +517,8 @@ returnValue Options_print(	Options* _THIS
 	qpOASES_myPrintf( myPrintfString );
 
 	qpOASES_myPrintf( "\n\n" );
-	#endif
-	#endif
+
+	#endif /* __SUPPRESSANYOUTPUT__ */
 
 	return SUCCESSFUL_RETURN;
 }

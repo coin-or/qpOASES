@@ -69,6 +69,9 @@
 /* Uncomment the following line to activate the use of single precision arithmetic. */
 /* #define __USE_SINGLE_PRECISION__ */
 
+/* The inline keyword is skipped by default as it is not part of the C90 standard. 
+ * However, by uncommenting the following line, use of the inline keyword can be enforced. */
+/* #define __USE_INLINE__ */
 
 
 /* Work-around for Borland BCC 5.5 compiler. */
@@ -101,11 +104,28 @@
 #endif /* __NO_STATIC__ */
 
 
-#ifdef __DSPACE__
+/* Skip inline keyword if not specified otherwise. */
+#ifndef __USE_INLINE__
+  #define inline 
+#endif
+
+
+/* Avoid any printing on embedded platforms. */
+#if defined(__DSPACE__) || defined(__XPCTARGET__) 
+  #define __SUPPRESSANYOUTPUT__
   #define __NO_SNPRINTF__
 #endif
 
-int snprintf( char* s, size_t n, const char* format, ... );
+
+#ifdef __NO_SNPRINTF__
+  #if (!defined(_MSC_VER)) || defined(__DSPACE__) || defined(__XPCTARGET__) 
+    /* If snprintf is not available, provide an empty implementation... */
+    int snprintf( char* s, size_t n, const char* format, ... );
+  #else
+	/* ... or substitute snprintf by _snprintf for Microsoft compilers. */
+    #define snprintf _snprintf    
+  #endif
+#endif /* __NO_SNPRINTF__ */
 
 
 /** Macro for switching on/off the beginning of the qpOASES namespace definition. */

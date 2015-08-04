@@ -46,7 +46,8 @@
 BEGIN_NAMESPACE_QPOASES
 
 
-#ifndef __XPCTARGET__
+#ifndef __SUPPRESSANYOUTPUT__
+
 /** Defines pairs of global return values and messages. */
 ReturnValueList returnValueList[] =
 {
@@ -212,9 +213,12 @@ ReturnValueList returnValueList[] =
 /* IMPORTANT: Terminal list element! */
 { TERMINAL_LIST_ELEMENT, "", VS_HIDDEN }
 };
-#else
+
+#else /* __SUPPRESSANYOUTPUT__ */
+
 ReturnValueList returnValueList[1]; /* Do not use messages for embedded platforms! */
-#endif
+
+#endif /* __SUPPRESSANYOUTPUT__ */
 
 
 
@@ -352,7 +356,7 @@ returnValue MessageHandling_reset( MessageHandling* _THIS )
  */
 returnValue MessageHandling_listAllMessages( MessageHandling* _THIS )
 {
-	#ifndef __XPCTARGET__
+	#ifndef __SUPPRESSANYOUTPUT__
 	int keypos = 0;
 	myStatic char myPrintfString[QPOASES_MAX_STRING_LENGTH];
 
@@ -390,7 +394,7 @@ returnValue MessageHandling_throwMessage(	MessageHandling* _THIS,
 											)
 {
 	#ifndef __SUPPRESSANYOUTPUT__
-	#ifndef __XPCTARGET__
+
 	int keypos = 0;
 	myStatic char myPrintfString[QPOASES_MAX_STRING_LENGTH];
 
@@ -479,7 +483,7 @@ returnValue MessageHandling_throwMessage(	MessageHandling* _THIS,
 			_THIS->errorCount = 0;
 		}
 	}
-	#endif /* __XPCTARGET__ */
+
 	#endif /* __SUPPRESSANYOUTPUT__ */
 
 	return RETnumber;
@@ -494,7 +498,7 @@ const char* MessageHandling_getErrorCodeMessage(	MessageHandling* _THIS,
 													const returnValue _returnValue
 													)
 {
-	#ifndef __XPCTARGET__
+	#ifndef __SUPPRESSANYOUTPUT__
 	int keypos = 0;
 	
 	/* 2) Find error/warning/info in list. */
@@ -512,11 +516,12 @@ const char* MessageHandling_getErrorCodeMessage(	MessageHandling* _THIS,
 	}
 
 	return (returnValueList[keypos].data != 0) ? returnValueList[keypos].data : "No message for this error code";
-	#else /* __XPCTARGET__ */
+
+	#else /* __SUPPRESSANYOUTPUT__ */
 
 	return "No message for this error code";
 
-	#endif /* __XPCTARGET__ */
+	#endif /* __SUPPRESSANYOUTPUT__ */
 }
 
 
@@ -526,9 +531,9 @@ const char* MessageHandling_getErrorCodeMessage(	MessageHandling* _THIS,
  *****************************************************************************/
 
 /** Global message handler for all qpOASES modules.*/
-#ifndef __XPCTARGET__
+#if defined(__DSPACE__) || defined(__XPCTARGET__)
 static MessageHandling qpOASES_globalMessageHandler;
-#endif /* __XPCTARGET__ */
+#endif
 /*MessageHandlingCON( 0,0,VS_VISIBLE,VS_VISIBLE,VS_VISIBLE );
 MessageHandlingCON( qpOASES_getGlobalMessageHandler(),stdFile,VS_VISIBLE,VS_VISIBLE,VS_VISIBLE );
 qpOASES_globalMessageHandler.outputFile = stdFile;*/
@@ -539,8 +544,10 @@ qpOASES_globalMessageHandler.outputFile = stdFile;*/
  */
 MessageHandling* qpOASES_getGlobalMessageHandler( )
 {
-	#ifdef __XPCTARGET__
+	#ifndef __DSPACE__
+	#ifndef __XPCTARGET__
 	static MessageHandling qpOASES_globalMessageHandler;
+	#endif /* __DSPACE__ */
 	#endif /* __XPCTARGET__ */
 
 	return &qpOASES_globalMessageHandler;
