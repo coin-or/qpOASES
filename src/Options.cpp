@@ -94,9 +94,6 @@ returnValue Options::setToDefault( )
 	#ifdef __DEBUG__
 	printLevel = PL_HIGH;
 	#endif
-	#ifdef __XPCTARGET__
-	printLevel = PL_NONE;
-	#endif
 	#ifdef __SUPPRESSANYOUTPUT__
 	printLevel = PL_NONE;
 	#endif
@@ -374,8 +371,8 @@ returnValue Options::ensureConsistency( )
  */
 returnValue Options::print( ) const
 {
-	#ifndef __XPCTARGET__
-	#ifndef __DSPACE__
+	#ifndef __SUPPRESSANYOUTPUT__
+
 	char myPrintfString[MAX_STRING_LENGTH];
 	char info[MAX_STRING_LENGTH];
 
@@ -485,8 +482,8 @@ returnValue Options::print( ) const
 	myPrintf( myPrintfString );
 
 	myPrintf( "\n\n" );
-	#endif
-	#endif
+
+	#endif /* __SUPPRESSANYOUTPUT__ */
 
 	return SUCCESSFUL_RETURN;
 }

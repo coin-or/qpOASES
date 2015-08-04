@@ -386,8 +386,8 @@ returnValue Constraints::print( )
 	if ( n == 0 )
 		return SUCCESSFUL_RETURN;
 
-	#ifndef __XPCTARGET__
-	#ifndef __DSPACE__
+	#ifndef __SUPPRESSANYOUTPUT__
+
 	char myPrintfString[MAX_STRING_LENGTH];
 
 	int nIAC = getNIAC( );
@@ -405,8 +405,7 @@ returnValue Constraints::print( )
 	REFER_NAMESPACE_QPOASES print( IAC_idx,nIAC,"inactive" );
 	REFER_NAMESPACE_QPOASES print( AC_idx, nAC, "active  " );
 
-	#endif
-	#endif
+	#endif /* __SUPPRESSANYOUTPUT__ */
 
 	return SUCCESSFUL_RETURN;
 }

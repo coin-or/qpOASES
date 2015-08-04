@@ -64,9 +64,6 @@ int qpOASES_Options_init(	qpOASES_Options* const options,
 	#ifdef __DEBUG__
 	options->printLevel = PL_HIGH;
 	#endif
-	#ifdef __XPCTARGET__
-	options->printLevel = PL_NONE;
-	#endif
 	#ifdef __SUPPRESSANYOUTPUT__
 	options->printLevel = PL_NONE;
 	#endif

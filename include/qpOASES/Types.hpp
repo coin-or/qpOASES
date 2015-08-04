@@ -89,8 +89,6 @@
 
 #ifdef __DSPACE__
 
-	#define __NO_SNPRINTF__
-
 	/** Macro for switching on/off the beginning of the qpOASES namespace definition. */
 	#define BEGIN_NAMESPACE_QPOASES
     
@@ -118,6 +116,25 @@
 	#define REFER_NAMESPACE_QPOASES  qpOASES::
 
 #endif
+
+
+/* Avoid any printing on embedded platforms. */
+#if defined(__DSPACE__) || defined(__XPCTARGET__) 
+  #define __SUPPRESSANYOUTPUT__
+  #define __NO_SNPRINTF__
+#endif
+
+
+#ifdef __NO_SNPRINTF__
+  #if (!defined(_MSC_VER)) || defined(__DSPACE__) || defined(__XPCTARGET__) 
+    /* If snprintf is not available, provide an empty implementation... */
+    int snprintf( char* s, size_t n, const char* format, ... );
+  #else
+	/* ... or substitute snprintf by _snprintf for Microsoft compilers. */
+    #define snprintf _snprintf    
+  #endif
+#endif /* __NO_SNPRINTF__ */
+
 
 
 /** Macro for accessing the Cholesky factor R. */
