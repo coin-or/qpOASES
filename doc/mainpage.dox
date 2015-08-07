@@ -28,29 +28,29 @@
  *	\section sec_developers Authors and Contributors
  *
  *	qpOASES's core functionality and software design have been developed by 
- *  the following main developers (in alphabetical order):
- *  <ul>
-  *	<li>Hans Joachim Ferreau
- *  <li>Christian Kirches
- *  <li>Andreas Potschka
+ *	the following main developers (in alphabetical order):
+ *	<ul>
+ *	<li>Hans Joachim Ferreau
+ *	<li>Christian Kirches
+ *	<li>Andreas Potschka
  *	</ul>
  *
  *	Moreover, the following developers have contributed code to qpOASES's 
  *	third-party interfaces (in alphabetical order):
- *  <ul>
+ *	<ul>
  *	<li>Alexander Buchner
  *	<li>Holger Diedam
  *	<li>Manuel Kudruss
- *  <li>Sebastian F. Walter
+ *	<li>Sebastian F. Walter
  *	</ul>
  *
  *	Finally, the following people have not contributed to the source code, 
- *  but have helped making qpOASES even more useful by testing, reporting 
- *  bugs or proposing algorithmic improvements (in alphabetical order): 
- *  <ul>
+ *	but have helped making qpOASES even more useful by testing, reporting 
+ *	bugs or proposing algorithmic improvements (in alphabetical order): 
+ *	<ul>
  *	<li>Eckhard Arnold
  *	<li>Boris Houska
- *  <li>D. Kwame Minde Kufoalor
+ *	<li>D. Kwame Minde Kufoalor
  *	<li>Aude Perrin
  *	<li>Milan Vukov
  *	<li>Thomas Wiese
@@ -69,9 +69,9 @@
  *
  *	All users are invited to further improve qpOASES by providing comments, code enhancements, 
  *	bug reports, additional documentation or whatever you feel is missing. The preferred way
- *  of doing so is to <b>create a <a href="https://projects.coin-or.org/qpOASES/newticket">new ticket</a>
- *  at the qpOASES webpage</b>. In case you do not want to disclose your feedback to the public, 
- *  you may send an e-mail to <a href="mailto:support@qpOASES.org">support@qpOASES.org</a> 
+ *	of doing so is to <b>create a <a href="https://projects.coin-or.org/qpOASES/newticket">new ticket</a>
+ *	at the qpOASES webpage</b>. In case you do not want to disclose your feedback to the public, 
+ *	you may send an e-mail to <a href="mailto:support@qpOASES.org">support@qpOASES.org</a> 
  *	or contact one of the main developers directly.
  *	<p>&nbsp;</p>
  *
@@ -81,7 +81,7 @@
  *	If you use qpOASES within your scientific work, we strongly encourage you to cite at least 
  *	one of the following publications:
  *
- *  <ul>
+ *	<ul>
  *	<li>Reference to the <b>software</b>:
  *	\code
  *	 @ARTICLE{Ferreau2014,
@@ -127,5 +127,5 @@
  *
  *	More information can be found on <a href="http://www.qpOASES.org/">http://www.qpOASES.org/</a> 
  *	and in the <a href="../manual.pdf">qpOASES User's Manual</a>.
-*	<p>&nbsp;</p>
+ *	<p>&nbsp;</p>
  */

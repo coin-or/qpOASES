@@ -62,7 +62,7 @@ int main( )
 	benchmarkPath[1] = "../testing/cpp/data/oqp/chain80w/";
 	benchmarkPath[2] = "../testing/cpp/data/oqp/diesel/";
 	benchmarkPath[3] = "../testing/cpp/data/oqp/crane/";
-	//benchmarkPath[4] = "./cpp/data/oqp/CDU/";
+	//benchmarkPath[4] = "../testing/cpp/data/oqp/CDU/";
 
 
 	/* 2) Run all benchmarks in a loop */
@@ -89,7 +89,7 @@ int main( )
 								maxStationarity,maxFeasibility,maxComplementarity
 								) != SUCCESSFUL_RETURN )
 		{
-			myPrintf( "In order to run this example, you need to download example no. 02\nfrom the Online QP Benchmark Collection website first!\n" );
+			myPrintf( "Something went wrong when running benchmark!\n" );
 			return TEST_DATA_NOT_FOUND;
 		}
 
@@ -100,10 +100,10 @@ int main( )
 		else
 			printf( "OQP Benchmark Results for %s (hot-starts):\n", benchmarkPath[ii/2] );
 
-		printf( "=======================================================\n\n" );
-		//printf( "maximum CPU time:             %.2f milliseconds\n",1000.0*maxCPUtime );
-		//printf( "average CPU time:             %.2f milliseconds\n",1000.0*avgCPUtime );
-		//printf( "\n" );
+		printf( "===========================================================================\n\n" );
+		printf( "maximum CPU time:             %.2f milliseconds\n",1000.0*maxCPUtime );
+		printf( "average CPU time:             %.2f milliseconds\n",1000.0*avgCPUtime );
+		printf( "\n" );
 		printf( "maximum iterations:    %.1f\n",maxNWSR );
 		printf( "average iterations:    %.1f\n",avgNWSR );
 		printf( "\n" );
