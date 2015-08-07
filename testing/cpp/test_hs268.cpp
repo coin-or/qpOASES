@@ -23,7 +23,7 @@
 
 
 /**
- *	\file testing/cpp/test_bench.cpp
+ *	\file testing/cpp/test_hs268.cpp
  *	\author Andreas Potschka, Christian Kirches, Hans Joachim Ferreau
  *	\version 3.1
  *	\date 2010-2015
