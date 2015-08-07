@@ -66,7 +66,7 @@ function [] = make( varargin )
 
     IFLAGS = [ '-I. -I',QPOASESPATH,'include',' -I',QPOASESPATH,'src',' ' ];
     CFLAGS = [ IFLAGS, DEBUGFLAGS, '-largeArrayDims -D__MATLAB__ -D__SINGLE_OBJECT__ -Dinline="" -Dsnprintf="_snprintf"',' ' ];
-    defaultFlags = '-O -D__NO_COPYRIGHT__ -D__SIMULINK_DEBUG__ '; %% -D__NO_COPYRIGHT__ -D__SUPPRESSANYOUTPUT__ -D__MANY_CONSTRAINTS__ 
+    defaultFlags = '-O -D__NO_COPYRIGHT__ '; %% -D__NO_COPYRIGHT__ -D__SUPPRESSANYOUTPUT__ -D__MANY_CONSTRAINTS__ 
 
     if ( ispc == 0 )
         CFLAGS  = [ CFLAGS, '-DLINUX ',' ' ]; 
