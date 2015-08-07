@@ -26,7 +26,7 @@
  *	\file testing/cpp/test_constraintProduct1.cpp
  *	\author Hans Joachim Ferreau
  *	\version 3.1
- *	\date 2014
+ *	\date 2014-2015
  *
  *	Another example for testing qpOASES using the possibility to specify 
  *	user-defined constraint product function.
