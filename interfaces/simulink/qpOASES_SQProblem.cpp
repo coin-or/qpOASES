@@ -76,10 +76,8 @@ static void mdlInitializeSizes (SimStruct *S)   /* Init sizes array */
 	/* Specify the number of intput ports */
 	if ( !ssSetNumInputPorts(S, 7) )
 	{
-		#ifndef __DSPACE__
-		#ifndef __XPCTARGET__
+		#ifndef __SUPPRESSANYOUTPUT__
 		mexErrMsgTxt( "ERROR (qpOASES): Invalid number of input ports!" );
-		#endif
 		#endif
 		return;
 	}
@@ -87,10 +85,8 @@ static void mdlInitializeSizes (SimStruct *S)   /* Init sizes array */
 	/* Specify the number of output ports */
 	if ( !ssSetNumOutputPorts(S, 4) )
 	{
-		#ifndef __DSPACE__
-		#ifndef __XPCTARGET__
+		#ifndef __SUPPRESSANYOUTPUT__
 		mexErrMsgTxt( "ERROR (qpOASES): Invalid number of output ports!" );
-		#endif
 		#endif
 		return;
 	}
@@ -192,80 +188,64 @@ static void mdlStart(SimStruct *S)
 
 	if ( MAXITER < 0 )
 	{
-		#ifndef __DSPACE__
-		#ifndef __XPCTARGET__
+		#ifndef __SUPPRESSANYOUTPUT__
 		mexErrMsgTxt( "ERROR (qpOASES): Maximum number of iterations must not be negative!" );
-		#endif
 		#endif
 		return;
 	}
 
 	if ( nV <= 0 )
 	{
-		#ifndef __DSPACE__
-		#ifndef __XPCTARGET__
+		#ifndef __SUPPRESSANYOUTPUT__
 		mexErrMsgTxt( "ERROR (qpOASES): Dimension mismatch!" );
-		#endif
 		#endif
 		return;
 	}
 
 	if ( ( size_H != nV*nV ) && ( size_H != 0 ) )
 	{
-		#ifndef __DSPACE__
-		#ifndef __XPCTARGET__
+		#ifndef __SUPPRESSANYOUTPUT__
 		mexErrMsgTxt( "ERROR (qpOASES): Dimension mismatch in H!" );
-		#endif
 		#endif
 		return;
 	}
 
 	if ( ( nU < 1 ) || ( nU > nV ) )
 	{
-		#ifndef __DSPACE__
-		#ifndef __XPCTARGET__
+		#ifndef __SUPPRESSANYOUTPUT__
 		mexErrMsgTxt( "ERROR (qpOASES): Invalid number of control inputs!" );
-		#endif
 		#endif
 		return;
 	}
 
 	if ( ( size_lb != nV ) && ( size_lb != 0 ) )
 	{
-		#ifndef __DSPACE__
-		#ifndef __XPCTARGET__
+		#ifndef __SUPPRESSANYOUTPUT__
 		mexErrMsgTxt( "ERROR (qpOASES): Dimension mismatch in lb!" );
-		#endif
 		#endif
 		return;
 	}
 
 	if ( ( size_ub != nV ) && ( size_ub != 0 ) )
 	{
-		#ifndef __DSPACE__
-		#ifndef __XPCTARGET__
+		#ifndef __SUPPRESSANYOUTPUT__
 		mexErrMsgTxt( "ERROR (qpOASES): Dimension mismatch in ub!" );
-		#endif
 		#endif
 		return;
 	}
 
 	if ( ( size_lbA != nC ) && ( size_lbA != 0 ) )
 	{
-		#ifndef __DSPACE__
-		#ifndef __XPCTARGET__
+		#ifndef __SUPPRESSANYOUTPUT__
 		mexErrMsgTxt( "ERROR (qpOASES): Dimension mismatch in lbA!" );
-		#endif
 		#endif
 		return;
 	}
 
 	if ( ( size_ubA != nC ) && ( size_ubA != 0 ) )
 	{
-		#ifndef __DSPACE__
-		#ifndef __XPCTARGET__
+		#ifndef __SUPPRESSANYOUTPUT__
 		mexErrMsgTxt( "ERROR (qpOASES): Dimension mismatch in ubA!" );
-		#endif
 		#endif
 		return;
 	}
@@ -275,10 +255,8 @@ static void mdlStart(SimStruct *S)
 	problem = new SQProblem( nV,nC,HESSIANTYPE );
 	if ( problem == 0 )
 	{
-		#ifndef __DSPACE__
-		#ifndef __XPCTARGET__
+		#ifndef __SUPPRESSANYOUTPUT__
 		mexErrMsgTxt( "ERROR (qpOASES): Unable to create SQProblem object!" );
-		#endif
 		#endif
 		return;
 	}
@@ -291,9 +269,6 @@ static void mdlStart(SimStruct *S)
 	problem->setPrintLevel( PL_LOW );
 	#endif
 	#ifdef __SUPPRESSANYOUTPUT__
-	problem->setPrintLevel( PL_NONE );
-	#endif
-	#ifdef __DSPACE__
 	problem->setPrintLevel( PL_NONE );
 	#endif
 

@@ -597,7 +597,7 @@ returnValue runOQPbenchmark(	const char* path, BooleanType isSparse, BooleanType
 {
 	int nQP=0, nV=0, nC=0, nEC=0;
 
-	real_t *H, *g, *A, *lb, *ub, *lbA, *ubA;
+	real_t *H=0, *g=0, *A=0, *lb=0, *ub=0, *lbA=0, *ubA=0;
 
 
 	returnValue returnvalue;
@@ -632,8 +632,13 @@ returnValue runOQPbenchmark(	const char* path, BooleanType isSparse, BooleanType
 
 		if ( returnvalue != SUCCESSFUL_RETURN )
 		{
-			delete[] H; delete[] A;
-			delete[] ubA; delete[] lbA; delete[] ub; delete[] lb; delete[] g;
+			if ( H != 0 )   delete[] H;
+			if ( g != 0 )   delete[] g;
+			if ( A != 0 )   delete[] A;
+			if ( lb != 0 )  delete[] lb;
+			if ( ub != 0 )  delete[] ub;
+			if ( lbA != 0 ) delete[] lbA;
+			if ( ubA != 0 ) delete[] ubA;
 			return THROWERROR( returnvalue );
 		}
 	}
@@ -649,14 +654,22 @@ returnValue runOQPbenchmark(	const char* path, BooleanType isSparse, BooleanType
 
 		if ( returnvalue != SUCCESSFUL_RETURN )
 		{
-			delete[] H; delete[] A;
-			delete[] ub; delete[] lb; delete[] g;
+			if ( H != 0 )   delete[] H;
+			if ( g != 0 )   delete[] g;
+			if ( A != 0 )   delete[] A;
+			if ( lb != 0 )  delete[] lb;
+			if ( ub != 0 )  delete[] ub;
 			return THROWERROR( returnvalue );
 		}
 	}
 
-	delete[] H; delete[] A;
-	delete[] ubA; delete[] lbA; delete[] ub; delete[] lb; delete[] g;
+	if ( H != 0 )   delete[] H;
+	if ( g != 0 )   delete[] g;
+	if ( A != 0 )   delete[] A;
+	if ( lb != 0 )  delete[] lb;
+	if ( ub != 0 )  delete[] ub;
+	if ( lbA != 0 ) delete[] lbA;
+	if ( ubA != 0 ) delete[] ubA;
 
 	return SUCCESSFUL_RETURN;
 }

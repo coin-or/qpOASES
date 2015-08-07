@@ -33,8 +33,8 @@ cmake_minimum_required(VERSION 2.6)
 
 PROJECT(qpOASES CXX)
 SET(PACKAGE_NAME "qpOASES")
-SET(PACKAGE_VERSION "3.0.1")
-SET(PACKAGE_SO_VERSION "3.0")
+SET(PACKAGE_VERSION "3.1.0")
+SET(PACKAGE_SO_VERSION "3.1")
 SET(PACKAGE_DESCRIPTION "QP solver using the online active set strategy")
 SET(PACKAGE_AUTHOR "Hans Joachim Ferreau, Andreas Potschka, Christian Kirches et al.")
 SET(PACKAGE_MAINTAINER "Hans Joachim Ferreau, Andreas Potschka, Christian Kirches et al.")
@@ -119,6 +119,7 @@ INSTALL(FILES include/qpOASES.hpp
 INSTALL(DIRECTORY include/qpOASES
   DESTINATION include
   FILES_MATCHING PATTERN "*.hpp"
+  PATTERN "*.ipp"
   PATTERN ".svn" EXCLUDE)
 
 ############################################################

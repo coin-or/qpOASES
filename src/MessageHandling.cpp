@@ -50,7 +50,8 @@ FILE* stdFile = stdout;
 
 
 
-#ifndef __XPCTARGET__
+#ifndef __SUPPRESSANYOUTPUT__
+
 /** Defines pairs of global return values and messages. */
 MessageHandling::ReturnValueList returnValueList[] =
 {
@@ -216,9 +217,12 @@ MessageHandling::ReturnValueList returnValueList[] =
 /* IMPORTANT: Terminal list element! */
 { TERMINAL_LIST_ELEMENT, "", VS_HIDDEN }
 };
-#else
+
+#else /* __SUPPRESSANYOUTPUT__ */
+
 MessageHandling::ReturnValueList returnValueList[1]; /* Do not use messages for embedded platforms! */
-#endif
+
+#endif /* __SUPPRESSANYOUTPUT__ */
 
 
 
@@ -306,10 +310,10 @@ MessageHandling::MessageHandling( const MessageHandling& rhs )
  */
 MessageHandling::~MessageHandling( )
 {
-	#ifndef __XPCTARGET__
+	#ifndef __SUPPRESSANYOUTPUT__
 	if ( ( outputFile != 0 ) && ( outputFile != stdout ) && ( outputFile != stderr ) )
 		fclose( outputFile );
-	#endif /* __XPCTARGET__ */
+ 	#endif /* __SUPPRESSANYOUTPUT__ */
 }
 
 
@@ -346,7 +350,7 @@ returnValue MessageHandling::throwError(
 {
 	/* consistency check */
 	if ( Enumber <= SUCCESSFUL_RETURN )
-		return throwError( RET_ERROR_UNDEFINED,0,__FUNCTION__,__FILE__,__LINE__,VS_VISIBLE );
+		return throwError( RET_ERROR_UNDEFINED,0,__FUNC__,__FILE__,__LINE__,VS_VISIBLE );
 
 	/* Call to common throwMessage function if error shall be displayed. */
 	if ( errorVisibility == VS_VISIBLE )
@@ -370,7 +374,7 @@ returnValue MessageHandling::throwWarning(
 {
 	/* consistency check */
   	if ( Wnumber <= SUCCESSFUL_RETURN )
-		return throwError( RET_WARNING_UNDEFINED,0,__FUNCTION__,__FILE__,__LINE__,VS_VISIBLE );
+		return throwError( RET_WARNING_UNDEFINED,0,__FUNC__,__FILE__,__LINE__,VS_VISIBLE );
 
 	/* Call to common throwMessage function if warning shall be displayed. */
 	if ( warningVisibility == VS_VISIBLE )
@@ -394,7 +398,7 @@ returnValue MessageHandling::throwInfo(
 {
 	/* consistency check */
 	if ( Inumber < SUCCESSFUL_RETURN )
-		return throwError( RET_INFO_UNDEFINED,0,__FUNCTION__,__FILE__,__LINE__,VS_VISIBLE );
+		return throwError( RET_INFO_UNDEFINED,0,__FUNC__,__FILE__,__LINE__,VS_VISIBLE );
 
 	/* Call to common throwMessage function if info shall be displayed. */
 	if ( infoVisibility == VS_VISIBLE )
@@ -425,7 +429,7 @@ returnValue MessageHandling::reset( )
  */
 returnValue MessageHandling::listAllMessages( )
 {
-	#ifndef __XPCTARGET__
+	#ifndef __SUPPRESSANYOUTPUT__
 	int keypos = 0;
 	char myPrintfString[MAX_STRING_LENGTH];
 
@@ -437,7 +441,7 @@ returnValue MessageHandling::listAllMessages( )
 
 		++keypos;
 	}
-	#endif
+	#endif /* __SUPPRESSANYOUTPUT__ */
 
 	return SUCCESSFUL_RETURN;
 }
@@ -463,7 +467,7 @@ returnValue MessageHandling::throwMessage(
  	)
 {
 	#ifndef __SUPPRESSANYOUTPUT__
-	#ifndef __XPCTARGET__
+
 	int keypos = 0;
 	char myPrintfString[MAX_STRING_LENGTH];
 
@@ -494,7 +498,7 @@ returnValue MessageHandling::throwMessage(
 
 	if ( returnValueList[keypos].key == TERMINAL_LIST_ELEMENT )
 	{
-		throwError( RET_EWI_UNDEFINED,0,__FUNCTION__,__FILE__,__LINE__,VS_VISIBLE );
+		throwError( RET_EWI_UNDEFINED,0,__FUNC__,__FILE__,__LINE__,VS_VISIBLE );
 		return RETnumber;
 	}
 
@@ -552,7 +556,7 @@ returnValue MessageHandling::throwMessage(
 			errorCount = 0;
 		}
 	}
-	#endif /* __XPCTARGET__ */
+
 	#endif /* __SUPPRESSANYOUTPUT__ */
 
 	return RETnumber;
@@ -565,7 +569,8 @@ returnValue MessageHandling::throwMessage(
 const char* MessageHandling::getErrorCodeMessage(	const returnValue _returnValue
 													)
 {
-	#ifndef __XPCTARGET__
+	#ifndef __SUPPRESSANYOUTPUT__
+
 	int keypos = 0;
 	
 	/* 2) Find error/warning/info in list. */
@@ -583,11 +588,12 @@ const char* MessageHandling::getErrorCodeMessage(	const returnValue _returnValue
 	}
 
 	return (returnValueList[keypos].data != 0) ? returnValueList[keypos].data : "No message for this error code";
-	#else /* __XPCTARGET__ */
+    
+	#else /* __SUPPRESSANYOUTPUT__ */
 
 	return "No message for this error code";
 
-	#endif /* __XPCTARGET__ */
+	#endif /* __SUPPRESSANYOUTPUT__ */
 }
 
 
@@ -597,7 +603,9 @@ const char* MessageHandling::getErrorCodeMessage(	const returnValue _returnValue
 
 
 /** Global message handler for all qpOASES modules.*/
+#if defined(__DSPACE__) || defined(__XPCTARGET__)
 static MessageHandling globalMessageHandler( stdFile,VS_VISIBLE,VS_VISIBLE,VS_VISIBLE );
+#endif
 
 
 /*
@@ -605,6 +613,12 @@ static MessageHandling globalMessageHandler( stdFile,VS_VISIBLE,VS_VISIBLE,VS_VI
  */
 MessageHandling* getGlobalMessageHandler( )
 {
+	#ifndef __DSPACE__
+    #ifndef __XPCTARGET__
+	static MessageHandling globalMessageHandler( stdFile,VS_VISIBLE,VS_VISIBLE,VS_VISIBLE );
+	#endif /* __DSPACE__ */
+    #endif /* __XPCTARGET__ */
+
 	return &globalMessageHandler;
 }
 

@@ -402,8 +402,8 @@ returnValue Bounds::print( )
 	if ( n == 0 )
 		return SUCCESSFUL_RETURN;
 
-	#ifndef __XPCTARGET__
-	#ifndef __DSPACE__
+	#ifndef __SUPPRESSANYOUTPUT__
+
 	char myPrintfString[MAX_STRING_LENGTH];
 
 	int nFR = getNFR( );
@@ -421,8 +421,7 @@ returnValue Bounds::print( )
 	REFER_NAMESPACE_QPOASES print( FR_idx,nFR,"free " );
 	REFER_NAMESPACE_QPOASES print( FX_idx,nFX,"fixed" );
 
-	#endif
-	#endif
+	#endif /* __SUPPRESSANYOUTPUT__ */
 
 	return SUCCESSFUL_RETURN;
 }

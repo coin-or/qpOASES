@@ -56,10 +56,25 @@ bugs or proposing algorithmic improvements (in alphabetical order):
 
     Eckhard Arnold
     Boris Houska
+	D. Kwame Minde Kufoalor
     Aude Perrin
     Milan Vukov
     Thomas Wiese
     Leonard Wirsching
+
+
+
+SCIENTIFIC MENTORS
+==================
+
+We also would like to thank two persons who had a major share in making 
+qpOASES a success. Not by writing even a single line of code, but by 
+establishing the idea of using a homotopy-based approach for high-speed 
+QP solutions and by excellent scientific guidance during the development 
+process:
+
+    Hans Georg Bock
+    Moritz Diehl 
 
 
 

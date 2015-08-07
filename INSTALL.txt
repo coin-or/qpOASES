@@ -36,15 +36,15 @@ svn co https://projects.coin-or.org/svn/qpOASES/stable/3.1 <install-dir>
 from your shell. 
 
 
-1. Compilation of the qpOASES library libqpOASES.a and test examples:
+1. Compilation of the qpOASES library libqpOASES.a (or .so) and test examples:
 
 cd <install-dir>
 make
 
-The library  libqpOASES.a  provides the complete functionality of the qpOASES 
-software package. It can be used by, e.g., linking it against a main function 
-from the examples folder. The make also compiles a couple of test examples; 
-executables are stored within the directory <install-dir>/bin.
+The library  libqpOASES.a (or .so)  provides the complete functionality of the 
+qpOASES software package. It can be used by, e.g., linking it against a main 
+function from the examples folder. The make also compiles a couple of test 
+examples; executables are stored within the directory <install-dir>/bin.
 
 
 2. Running a simple test example:
