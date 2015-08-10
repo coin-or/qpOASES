@@ -739,7 +739,7 @@ returnValue Ma57SparseSolver::setMatrixData( int dim_,
 
 		numNonzeros=0;
 		for (int i=0; i<numNonzeros_; ++i)
-			if ( avals[i] != 0 )
+			if ( isZero(avals[i]) == BT_FALSE )
 			{
 				a_ma57[numNonzeros] = avals[i];
 				irn_ma57[numNonzeros] = irn[i];

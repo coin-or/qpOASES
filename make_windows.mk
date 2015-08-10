@@ -12,7 +12,7 @@
 ##
 ##	qpOASES is distributed in the hope that it will be useful,
 ##	but WITHOUT ANY WARRANTY; without even the implied warranty of
-##	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+##	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 ##	See the GNU Lesser General Public License for more details.
 ##
 ##	You should have received a copy of the GNU Lesser General Public
@@ -59,6 +59,20 @@ else
 	LIB_LAPACK = /usr/lib/liblapack.so
 endif
 
+# choice of sparse solver: NONE, MA27, or MA57
+# If choice is not 'NONE', BLAS and LAPACK replacements must not be used
+USE_SOLVER = NONE
+
+ifeq ($(USE_SOLVER), MA57)
+	LIB_SOLVER = /usr/local/lib/libhsl_ma57.a /usr/local/lib/libfakemetis.a
+	DEF_SOLVER = SOLVER_MA57
+else ifeq ($(USE_SOLVER), MA27)
+	LIB_SOLVER = /usr/local/lib/libhsl_ma27.a
+	DEF_SOLVER = SOLVER_MA27
+else
+	LIB_SOLVER =
+	DEF_SOLVER = SOLVER_NONE
+endif
 
 ################################################################################
 # do not touch this
@@ -78,7 +92,7 @@ LIBEXT = lib
 DLLEXT = so
 EXE = .exe
 MEXOCTEXT = mex
-DEF_TARGET = 
+DEF_TARGET =
 SHARED = /LD
 
 # 32 or 64 depending on target platform
@@ -95,13 +109,11 @@ CPPFLAGS = -nologo -EHsc -DWIN32 -Dsnprintf=_snprintf
 #-g -D__DEBUG__ -D__NO_COPYRIGHT__ -D__SUPPRESSANYOUTPUT__
 
 # libraries to link against when building qpOASES .so files
-LINK_LIBRARIES = ${LIB_LAPACK} ${LIB_BLAS}
-LINK_LIBRARIES_AW = ${LIB_LAPACK} ${LIB_BLAS} -lm -lgfortran -lhsl_ma57 -lfakemetis
-LINK_LIBRARIES_WRAPPER = 
+LINK_LIBRARIES = ${LIB_LAPACK} ${LIB_BLAS} -lm ${LIB_SOLVER}
+LINK_LIBRARIES_WRAPPER =
 
 # how to link against the qpOASES shared library
 QPOASES_LINK = /I${BINDIR} /WL /link ${BINDIR}/libqpOASES.lib
-QPOASES_AW_LINK = /I${BINDIR} /WL /link ${BINDIR}/libqpOASES_aw.lib
 QPOASES_LINK_WRAPPER = /I${BINDIR} /WL /link ${BINDIR}/libqpOASES_wrapper.lib
 
 # link dependencies when creating executables

@@ -37,12 +37,6 @@
 
 BEGIN_NAMESPACE_QPOASES
 
-/** String for calling LAPACK/BLAS routines with transposed matrices. */
-const char * const TRANS = "TRANS";
-
-/** String for calling LAPACK/BLAS routines without transposing the matrix. */
-const char * const NOTRANS = "NOTRANS";
-
 
 
 /*****************************************************************************
@@ -1123,7 +1117,7 @@ returnValue SparseMatrix::times(const Indexlist* const irows, const Indexlist* c
 	}
 
 	// First, work with full, unordered copy of y and store matrix times x in there
-	const int yfullLength = irows->physicallength;
+	const int yfullLength = nRows;
 	real_t* ytmp = new real_t[xN*yfullLength];
 	for (k = 0; k < xN*yfullLength; k++)
 		ytmp[k] = 0.0;
@@ -1268,7 +1262,7 @@ returnValue SparseMatrix::transTimes(const Indexlist* const irows, const Indexli
 		return SUCCESSFUL_RETURN;
 
 	// work with full, unordered copy of x
-	const int xfullLength = irows->physicallength;
+	const int xfullLength = nRows;
 	real_t* xtmp = new real_t[xfullLength];
 	for (k = 0; k < xN; k++)
 	{

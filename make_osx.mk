@@ -43,10 +43,10 @@ SDK = -isysroot ${SYSROOT} -stdlib=libc++
 
 # Matlab include directory (ADAPT TO YOUR LOCAL SETTINGS!)
 MATLAB_IDIR   = /Applications/MATLAB_R2013a.app/extern/include/
-MATLAB_LIBDIR = 
+MATLAB_LIBDIR =
 
 # system or replacement BLAS/LAPACK
-REPLACE_LINALG = 0
+REPLACE_LINALG = 1
 
 ifeq ($(REPLACE_LINALG), 1)
 	LIB_BLAS =   ${SRCDIR}/BLASReplacement.o
@@ -58,6 +58,20 @@ else
 	LA_DEPENDS =
 endif
 
+# choice of sparse solver: NONE, MA27, or MA57
+# If choice is not 'NONE', BLAS and LAPACK replacements must not be used
+USE_SOLVER = NONE
+
+ifeq ($(USE_SOLVER), MA57)
+	LIB_SOLVER = /usr/local/lib/libhsl_ma57.a /usr/local/lib/libfakemetis.a
+	DEF_SOLVER = SOLVER_MA57
+else ifeq ($(USE_SOLVER), MA27)
+	LIB_SOLVER = /usr/local/lib/libhsl_ma27.a
+	DEF_SOLVER = SOLVER_MA27
+else
+	LIB_SOLVER =
+	DEF_SOLVER = SOLVER_NONE
+endif
 
 ################################################################################
 # do not touch this
@@ -74,7 +88,7 @@ CD = cd
 OBJEXT = o
 LIBEXT = a
 DLLEXT = dylib
-EXE = 
+EXE =
 MEXOCTEXT = mex
 DEF_TARGET = -o $@
 SHARED = -dynamiclib ${SDK} -lgcc_s.10.5 -ldylib1.o
@@ -93,13 +107,11 @@ CPPFLAGS = ${SDK} -Wall -pedantic -Wshadow -Wfloat-equal -Wconversion -Wsign-con
 #          -g -D__DEBUG__ -D__NO_COPYRIGHT__ -D__SUPPRESSANYOUTPUT__ -D__USE_SINGLE_PRECISION__
 
 # libraries to link against when building qpOASES .so files
-LINK_LIBRARIES = ${LIB_LAPACK} ${LIB_BLAS}
-LINK_LIBRARIES_AW = ${LIB_LAPACK} ${LIB_BLAS} -lgfortran -lhsl_ma57 -lfakemetis
+LINK_LIBRARIES = ${LIB_LAPACK} ${LIB_BLAS} -lm ${LIB_SOLVER}
 LINK_LIBRARIES_WRAPPER =
 
 # how to link against the qpOASES shared library
 QPOASES_LINK = -L${BINDIR}  -lqpOASES -L${SYSROOT}/usr/lib/System -lgcc_s.10.5 -lcrt1.o
-QPOASES_AW_LINK = -L${BINDIR}  -lqpOASES_aw
 QPOASES_LINK_WRAPPER = -L${BINDIR} -lqpOASES_wrapper
 
 # link dependencies when creating executables

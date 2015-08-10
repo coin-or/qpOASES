@@ -2386,13 +2386,13 @@ returnValue SQProblemSchur::updateSchurQR( int idxDel )
 		if( R_[i+i*nSmax] < 0.0 ) detS = -detS;
 
 	/* Estimate condition number of R (= condition number of S)*/
-	double *WORK;
+	real_t *WORK;
 	unsigned long N = nS;
 	unsigned long LDA = nSmax;
 	unsigned long *IWORK;
 	int INFO;
 	IWORK = new unsigned long[N];
-	WORK = new double[3*N];
+	WORK = new real_t[3*N];
 	TRCON( "1", "U", "N", &N, R_, &LDA, &rcondS, WORK, IWORK, &INFO );
 	if ( INFO != 0 )
 	{

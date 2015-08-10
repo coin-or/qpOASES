@@ -43,7 +43,7 @@ MATLAB_IDIR   = /usr/local/matlab/extern/include/
 MATLAB_LIBDIR = /usr/local/matlab/bin/glnxa64/
 
 # system or replacement BLAS/LAPACK
-REPLACE_LINALG = 0
+REPLACE_LINALG = 1
 
 ifeq ($(REPLACE_LINALG), 1)
 	LIB_BLAS =   ${SRCDIR}/BLASReplacement.o
@@ -53,8 +53,9 @@ else
 	LIB_LAPACK = /usr/lib/liblapack.so
 endif
 
-# choice of sparse solver
-USE_SOLVER = MA57
+# choice of sparse solver: NONE, MA27, or MA57
+# If choice is not 'NONE', BLAS and LAPACK replacements must not be used
+USE_SOLVER = NONE
 
 ifeq ($(USE_SOLVER), MA57)
 	LIB_SOLVER = /usr/local/lib/libhsl_ma57.a /usr/local/lib/libfakemetis.a
@@ -100,8 +101,8 @@ endif
 
 
 
-CPPFLAGS = -Wall -pedantic -Wshadow -Wfloat-equal -O3 -finline-functions -fPIC -DLINUX -D${DEF_SOLVER} -D__NO_COPYRIGHT__
-#          -g -D__DEBUG__ -D__NO_COPYRIGHT__ -D__SUPPRESSANYOUTPUT__ -D__USE_SINGLE_PRECISION__
+CPPFLAGS = -Wall -pedantic -Wshadow -Wfloat-equal -O0 -finline-functions -fPIC -DLINUX -D${DEF_SOLVER} -D__NO_COPYRIGHT__ -g
+			#-g -D__DEBUG__ -D__NO_COPYRIGHT__ -D__SUPPRESSANYOUTPUT__ -D__USE_SINGLE_PRECISION__
 
 # libraries to link against when building qpOASES .so files
 LINK_LIBRARIES = ${LIB_LAPACK} ${LIB_BLAS} -lm ${LIB_SOLVER}
