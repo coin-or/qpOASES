@@ -55,7 +55,7 @@ extern FILE* stdFile;
 
 /**
  *	\brief Defines all symbols for global return values.
- *	
+ *
  *  The enumeration returnValueType defines all symbols for global return values.
  *	Important: All return values are assumed to be nonnegative!
  *
@@ -120,7 +120,7 @@ RET_QP_NOT_SOLVED,								/**< Problems occurred while solving QP with standard 
 RET_QP_SOLVED,									/**< QP successfully solved. */
 RET_UNABLE_TO_SOLVE_QP,							/**< Problems occurred while solving QP. (50) */
 RET_INITIALISATION_STARTED,						/**< Starting problem initialisation... */
-RET_HOTSTART_FAILED,							/**< Unable to perform homotopy due to internal error. */
+RET_HOTSTART_FAILED,							/**< Unable to perform homotopy due to internal error.*/
 RET_HOTSTART_FAILED_TO_INIT,					/**< Unable to initialise problem. */
 RET_HOTSTART_FAILED_AS_QP_NOT_INITIALISED,		/**< Unable to perform homotopy as previous QP is not solved. */
 RET_ITERATION_STARTED,							/**< Iteration... */
@@ -222,11 +222,16 @@ RET_SIMPLE_STATUS_P1,							/**< QP problem could not be solved within given num
 RET_SIMPLE_STATUS_P0,							/**< QP problem solved. */
 RET_SIMPLE_STATUS_M1,							/**< QP problem could not be solved due to an internal error. */
 RET_SIMPLE_STATUS_M2,							/**< QP problem is infeasible (and thus could not be solved). */
-RET_SIMPLE_STATUS_M3 							/**< QP problem is unbounded (and thus could not be solved). (146) */
+RET_SIMPLE_STATUS_M3,							/**< QP problem is unbounded (and thus could not be solved). */
+/* Schur complement computations */
+RET_KKT_MATRIX_SINGULAR,						/**< KKT matrix is singular. */
+RET_QR_FACTORISATION_FAILED,					/**< QR factorization of Schur complement failed. */
+RET_INERTIA_CORRECTION_FAILED,					/**< Inertia correction failed after KKT matrix had too many negative eigenvalues. */
+RET_NO_SPARSE_SOLVER							/**< No factorization routine for the KKT matrix installed. (150) */
 };
 
 
-/** 
+/**
  *	\brief Handles all kind of error messages, warnings and other information.
  *
  *	This class handles all kinds of messages (errors, warnings, infos) initiated
@@ -244,7 +249,7 @@ class MessageHandling
 	public:
 		/**
 		*	\brief Data structure for entries in global message list.
-		*	
+		*
 		*	Data structure for entries in global message list.
 		*
 		*	\author Hans Joachim Ferreau
@@ -294,7 +299,7 @@ class MessageHandling
 
 
 		/** Prints an error message(a simplified macro THROWERROR is also provided). \n
-		 *  Errors are definied as abnormal events which cause an immediate termination of the current (sub) function.
+		 *  Errors are defined as abnormal events which cause an immediate termination of the current (sub) function.
 		 *  Errors of a sub function should be commented by the calling function by means of a warning message
 		 *  (if this error does not cause an error of the calling function, either)!
 		 *  \return Error number returned by sub function call

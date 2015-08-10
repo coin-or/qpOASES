@@ -42,6 +42,7 @@ QPOASES_OBJECTS = \
 	SQProblem.${OBJEXT} \
 	QProblem.${OBJEXT} \
 	QProblemB.${OBJEXT} \
+	SQProblemSchur.${OBJEXT} \
 	Bounds.${OBJEXT} \
 	Constraints.${OBJEXT} \
 	SubjectTo.${OBJEXT} \
@@ -50,7 +51,9 @@ QPOASES_OBJECTS = \
 	Utils.${OBJEXT} \
 	Options.${OBJEXT} \
 	Matrices.${OBJEXT} \
-	MessageHandling.${OBJEXT}
+	MessageHandling.${OBJEXT} \
+	SparseSolver.${OBJEXT}
+
 
 QPOASES_EXTRAS_OBJECTS = \
 	SolutionAnalysis.${OBJEXT} \

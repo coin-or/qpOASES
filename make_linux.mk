@@ -53,6 +53,20 @@ else
 	LIB_LAPACK = /usr/lib/liblapack.so
 endif
 
+# choice of sparse solver: NONE, MA27, or MA57
+# If choice is not 'NONE', BLAS and LAPACK replacements must not be used
+USE_SOLVER = NONE
+
+ifeq ($(USE_SOLVER), MA57)
+	LIB_SOLVER = /usr/local/lib/libhsl_ma57.a /usr/local/lib/libfakemetis.a
+	DEF_SOLVER = SOLVER_MA57
+else ifeq ($(USE_SOLVER), MA27)
+	LIB_SOLVER = /usr/local/lib/libhsl_ma27.a
+	DEF_SOLVER = SOLVER_MA27
+else
+	LIB_SOLVER =
+	DEF_SOLVER = SOLVER_NONE
+endif
 
 ################################################################################
 # do not touch this
@@ -70,7 +84,7 @@ CP = cp
 OBJEXT = o
 LIBEXT = a
 DLLEXT = so
-EXE = 
+EXE =
 MEXOCTEXT = mex
 DEF_TARGET = -o $@
 SHARED = -shared
@@ -85,17 +99,16 @@ else
 	MEXEXT = mexa64
 endif
 
-CPPFLAGS = -Wall -pedantic -Wshadow -Wfloat-equal -O3 -finline-functions -fPIC -DLINUX -D__NO_COPYRIGHT__
-#          -g -D__DEBUG__ -D__NO_COPYRIGHT__ -D__SUPPRESSANYOUTPUT__ -D__USE_SINGLE_PRECISION__ 
+
+
+CPPFLAGS = -Wall -pedantic -Wshadow -Wfloat-equal -O0 -finline-functions -fPIC -DLINUX -D${DEF_SOLVER} -D__NO_COPYRIGHT__ -g
+			#-g -D__DEBUG__ -D__NO_COPYRIGHT__ -D__SUPPRESSANYOUTPUT__ -D__USE_SINGLE_PRECISION__
 
 # libraries to link against when building qpOASES .so files
-LINK_LIBRARIES = ${LIB_LAPACK} ${LIB_BLAS} -lm
-LINK_LIBRARIES_AW = ${LIB_LAPACK} ${LIB_BLAS} -lm -lgfortran -lhsl_ma57 -lfakemetis
-LINK_LIBRARIES_WRAPPER = -lm -lstdc++
+LINK_LIBRARIES = ${LIB_LAPACK} ${LIB_BLAS} -lm ${LIB_SOLVER}
 
 # how to link against the qpOASES shared library
 QPOASES_LINK = -L${BINDIR} -Wl,-rpath=${BINDIR} -lqpOASES
-QPOASES_AW_LINK = -L${BINDIR} -Wl,-rpath=${BINDIR} -lqpOASES_aw
 QPOASES_LINK_WRAPPER = -L${BINDIR} -Wl,-rpath=${BINDIR} -lqpOASES_wrapper
 
 # link dependencies when creating executables

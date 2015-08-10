@@ -12,7 +12,7 @@
 ##
 ##	qpOASES is distributed in the hope that it will be useful,
 ##	but WITHOUT ANY WARRANTY; without even the implied warranty of
-##	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+##	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 ##	See the GNU Lesser General Public License for more details.
 ##
 ##	You should have received a copy of the GNU Lesser General Public
@@ -25,7 +25,7 @@
 MAIN AUTHORS
 ============
 
-qpOASES's core functionality and software design have been developed by the 
+qpOASES's core functionality and software design have been developed by the
 following main developers (in alphabetical order):
 
     Hans Joachim Ferreau
@@ -37,12 +37,14 @@ following main developers (in alphabetical order):
 FURTHER AUTHORS
 ===============
 
-Moreover, the following developers have contributed code to qpOASES's 
+Moreover, the following developers have contributed code to qpOASES's
 third-party interfaces (in alphabetical order):
 
     Alexander Buchner
     Holger Diedam
+    Dennis Janka
     Manuel Kudruss
+    Andreas Waechter
     Sebastian F. Walter
 
 
@@ -51,7 +53,7 @@ CONTRIBUTORS
 ============
 
 Finally, the following people have not contributed to the source code,
-but have helped making qpOASES even more useful by testing, reporting 
+but have helped making qpOASES even more useful by testing, reporting
 bugs or proposing algorithmic improvements (in alphabetical order):
 
     Eckhard Arnold
@@ -67,19 +69,19 @@ bugs or proposing algorithmic improvements (in alphabetical order):
 SCIENTIFIC MENTORS
 ==================
 
-We also would like to thank two persons who had a major share in making 
-qpOASES a success. Not by writing even a single line of code, but by 
-establishing the idea of using a homotopy-based approach for high-speed 
-QP solutions and by excellent scientific guidance during the development 
+We also would like to thank two persons who had a major share in making
+qpOASES a success. Not by writing even a single line of code, but by
+establishing the idea of using a homotopy-based approach for high-speed
+QP solutions and by excellent scientific guidance during the development
 process:
 
     Hans Georg Bock
-    Moritz Diehl 
+    Moritz Diehl
 
 
 
-All users are invited to further improve qpOASES by providing comments, 
-code enhancements, bug reports, additional documentation or whatever you 
+All users are invited to further improve qpOASES by providing comments,
+code enhancements, bug reports, additional documentation or whatever you
 feel is missing.
 
 

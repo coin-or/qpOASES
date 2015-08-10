@@ -48,7 +48,8 @@ QPOASES_EXES = \
 	${BINDIR}/example4${EXE} \
 	${BINDIR}/example5${EXE} \
 	${BINDIR}/exampleLP${EXE} \
-	${BINDIR}/qrecipe${EXE}
+	${BINDIR}/qrecipe${EXE} \
+	${BINDIR}/qrecipeSchur${EXE}
 
 
 ##

@@ -214,6 +214,11 @@ MessageHandling::ReturnValueList returnValueList[] =
 { RET_SIMPLE_STATUS_M1, "QP problem could not be solved due to an internal error", VS_VISIBLE },
 { RET_SIMPLE_STATUS_M2, "QP problem is infeasible (and thus could not be solved)", VS_VISIBLE },
 { RET_SIMPLE_STATUS_M3, "QP problem is unbounded (and thus could not be solved)", VS_VISIBLE },
+/* Schur complement computations */
+{ RET_KKT_MATRIX_SINGULAR, "KKT matrix is singular", VS_VISIBLE },
+{ RET_QR_FACTORISATION_FAILED, "QR factorization of Schur complement failed", VS_VISIBLE },
+{ RET_INERTIA_CORRECTION_FAILED, "Inertia correction of KKT matrix failed", VS_VISIBLE },
+{ RET_NO_SPARSE_SOLVER, "No Sparse Solver installed", VS_VISIBLE },
 /* IMPORTANT: Terminal list element! */
 { TERMINAL_LIST_ELEMENT, "", VS_HIDDEN }
 };

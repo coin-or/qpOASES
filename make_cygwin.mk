@@ -47,11 +47,25 @@ REPLACE_LINALG = 1
 ifeq ($(REPLACE_LINALG), 1)
 	LIB_BLAS =   ${SRCDIR}/BLASReplacement.o
 	LIB_LAPACK = ${SRCDIR}/LAPACKReplacement.o
-else	
+else
 	LIB_BLAS =   /usr/lib/lapack/cygblas-0.dll
 	LIB_LAPACK = /usr/lib/lapack/cyglapack-0.dll
-endif	
+endif
 
+# choice of sparse solver: NONE, MA27, or MA57
+# If choice is not 'NONE', BLAS and LAPACK replacements must not be used
+USE_SOLVER = NONE
+
+ifeq ($(USE_SOLVER), MA57)
+	LIB_SOLVER = /usr/local/lib/libhsl_ma57.a /usr/local/lib/libfakemetis.a
+	DEF_SOLVER = SOLVER_MA57
+else ifeq ($(USE_SOLVER), MA27)
+	LIB_SOLVER = /usr/local/lib/libhsl_ma27.a
+	DEF_SOLVER = SOLVER_MA27
+else
+	LIB_SOLVER =
+	DEF_SOLVER = SOLVER_NONE
+endif
 
 ################################################################################
 # do not touch this
@@ -84,17 +98,15 @@ else
 	MEXEXT = mexw64
 endif
 
-CPPFLAGS = -Wall -pedantic -Wshadow -Wfloat-equal -Wconversion -Wsign-conversion -O3 -finline-functions -DWIN32 
-#          -g -D__DEBUG__ -D__NO_COPYRIGHT__ -D__SUPPRESSANYOUTPUT__ -D__USE_SINGLE_PRECISION__ 
+CPPFLAGS = -Wall -pedantic -Wshadow -Wfloat-equal -Wconversion -Wsign-conversion -O3 -finline-functions -DWIN32
+#          -g -D__DEBUG__ -D__NO_COPYRIGHT__ -D__SUPPRESSANYOUTPUT__ -D__USE_SINGLE_PRECISION__
 
 # libraries to link against when building qpOASES .so files
-LINK_LIBRARIES = ${LIB_LAPACK} ${LIB_BLAS} -lm 
-LINK_LIBRARIES_AW = ${LIB_LAPACK} ${LIB_BLAS} -lm -lgfortran 
+LINK_LIBRARIES = ${LIB_LAPACK} ${LIB_BLAS} -lm ${LIB_SOLVER}
 LINK_LIBRARIES_WRAPPER = -lm -lstdc++
 
 # how to link against the qpOASES shared library
-QPOASES_LINK = -L${BINDIR} -Wl,-rpath=${BINDIR} -lqpOASES 
-QPOASES_AW_LINK = -L${BINDIR} -Wl,-rpath=${BINDIR} -lqpOASES_aw
+QPOASES_LINK = -L${BINDIR} -Wl,-rpath=${BINDIR} -lqpOASES
 QPOASES_LINK_WRAPPER = -L${BINDIR} -Wl,-rpath=${BINDIR} -lqpOASES_wrapper
 
 # link dependencies when creating executables

@@ -41,6 +41,7 @@
 #include <qpOASES/QProblemB.hpp>
 #include <qpOASES/Constraints.hpp>
 #include <qpOASES/ConstraintProduct.hpp>
+#include <qpOASES/Matrices.hpp>
 
 
 BEGIN_NAMESPACE_QPOASES
@@ -409,6 +410,10 @@ class QProblem : public QProblemB
 		 *	\return  SUCCESSFUL_RETURN \n */
 		virtual returnValue printProperties( );
 
+		/** Set the incoming array to true for each variable entry that is
+			in the set of free variables */
+		returnValue getFreeVariablesFlags( BooleanType* varIsFree );
+
 
 	/*
 	 *	PROTECTED MEMBER FUNCTIONS
@@ -511,6 +516,17 @@ class QProblem : public QProblemB
 										);
 
 
+		/** Update activities in a hot start if some of the bounds have
+			become infinity or if variables have become fixed.  */
+		/*	\return SUCCESSFUL_RETURN \n
+					RET_HOTSTART_FAILED */
+		virtual returnValue updateActivitiesForHotstart( const real_t* const lb_new,	/**< New lower bounds. */
+														 const real_t* const ub_new,	/**< New upper bounds. */
+														 const real_t* const lbA_new,	/**< New lower constraints' bounds. */
+														 const real_t* const ubA_new	/**< New upper constraints' bounds. */
+														 );
+
+
 		/** Determines type of existing constraints and bounds (i.e. implicitly fixed, unbounded etc.).
 		 *	\return SUCCESSFUL_RETURN \n
 					RET_SETUPSUBJECTTOTYPE_FAILED */
@@ -532,7 +548,7 @@ class QProblem : public QProblemB
 		 *	\return SUCCESSFUL_RETURN \n
 		 *			RET_HESSIAN_NOT_SPD \n
 		 *			RET_INDEXLIST_CORRUPTED */
-		returnValue computeProjectedCholesky( );
+		virtual returnValue computeProjectedCholesky( );
 
 		/** Computes initial Cholesky decomposition of the projected Hessian making
 		 *  use of the function computeCholesky() or computeProjectedCholesky().
@@ -544,7 +560,7 @@ class QProblem : public QProblemB
 		/** Initialises TQ factorisation of A (i.e. A*Q = [0 T]) if NO constraint is active.
 		 *	\return SUCCESSFUL_RETURN \n
 		 			RET_INDEXLIST_CORRUPTED */
-		returnValue setupTQfactorisation( );
+		virtual returnValue setupTQfactorisation( );
 
 
 		/** Obtains the desired working set for the auxiliary initial QP in
@@ -573,7 +589,7 @@ class QProblem : public QProblemB
 					RET_SETUP_WORKINGSET_FAILED \n
 					RET_INVALID_ARGUMENTS \n
 					RET_UNKNOWN_BUG */
-		returnValue setupAuxiliaryWorkingSet(	const Bounds* const auxiliaryBounds,			/**< Working set of bounds for auxiliary QP. */
+		virtual returnValue setupAuxiliaryWorkingSet(	const Bounds* const auxiliaryBounds,			/**< Working set of bounds for auxiliary QP. */
 												const Constraints* const auxiliaryConstraints,	/**< Working set of constraints for auxiliary QP. */
 												BooleanType setupAfresh							/**< Flag indicating if given working set shall be
 																								 *    setup afresh or by updating the current one. */
@@ -609,7 +625,7 @@ class QProblem : public QProblemB
 		 			RET_ADDCONSTRAINT_FAILED \n
 					RET_ADDCONSTRAINT_FAILED_INFEASIBILITY \n
 					RET_ENSURELI_FAILED */
-		returnValue addConstraint(	int number,					/**< Number of constraint to be added to active set. */
+		virtual returnValue addConstraint(	int number,					/**< Number of constraint to be added to active set. */
 									SubjectToStatus C_status,	/**< Status of new active constraint. */
 									BooleanType updateCholesky,	/**< Flag indicating if Cholesky decomposition shall be updated. */
 									BooleanType ensureLI = BT_TRUE	/**< Ensure linear independence by exchange rules by default. */
@@ -620,7 +636,7 @@ class QProblem : public QProblemB
 		 *	\return	 RET_LINEARLY_DEPENDENT \n
 		 			 RET_LINEARLY_INDEPENDENT \n
 					 RET_INDEXLIST_CORRUPTED */
-		returnValue addConstraint_checkLI(	int number			/**< Number of constraint to be added to active set. */
+		virtual returnValue addConstraint_checkLI(	int number			/**< Number of constraint to be added to active set. */
 											);
 
 		/** Ensures linear independence of constraint matrix when a new constraint is added.
@@ -631,7 +647,7 @@ class QProblem : public QProblemB
 					 RET_ENSURELI_FAILED_TQ \n
 					 RET_ENSURELI_FAILED_NOINDEX \n
 					 RET_REMOVE_FROM_ACTIVESET */
-		returnValue addConstraint_ensureLI(	int number,					/**< Number of constraint to be added to active set. */
+		virtual returnValue addConstraint_ensureLI(	int number,					/**< Number of constraint to be added to active set. */
 											SubjectToStatus C_status	/**< Status of new active bound. */
 											);
 
@@ -640,7 +656,7 @@ class QProblem : public QProblemB
 		 			RET_ADDBOUND_FAILED \n
 					RET_ADDBOUND_FAILED_INFEASIBILITY \n
 					RET_ENSURELI_FAILED */
-		returnValue addBound(	int number,					/**< Number of bound to be added to active set. */
+		virtual returnValue addBound(	int number,					/**< Number of bound to be added to active set. */
 								SubjectToStatus B_status,	/**< Status of new active bound. */
 								BooleanType updateCholesky,	/**< Flag indicating if Cholesky decomposition shall be updated. */
 								BooleanType ensureLI = BT_TRUE	/**< Ensure linear independence by exchange rules by default. */
@@ -650,7 +666,7 @@ class QProblem : public QProblemB
 		 *	from row of the active constraints matrix.
 		 *	\return	 RET_LINEARLY_DEPENDENT \n
 		 			 RET_LINEARLY_INDEPENDENT */
-		returnValue addBound_checkLI(	int number			/**< Number of bound to be added to active set. */
+		virtual returnValue addBound_checkLI(	int number			/**< Number of bound to be added to active set. */
 										);
 
 		/** Ensures linear independence of constraint matrix when a new bound is added.
@@ -661,7 +677,7 @@ class QProblem : public QProblemB
 					 RET_ENSURELI_FAILED_TQ \n
 					 RET_ENSURELI_FAILED_NOINDEX \n
 					 RET_REMOVE_FROM_ACTIVESET */
-		returnValue addBound_ensureLI(	int number,					/**< Number of bound to be added to active set. */
+		virtual returnValue addBound_ensureLI(	int number,					/**< Number of bound to be added to active set. */
 										SubjectToStatus B_status	/**< Status of new active bound. */
 										);
 
@@ -670,7 +686,7 @@ class QProblem : public QProblemB
 		 			RET_CONSTRAINT_NOT_ACTIVE \n
 					RET_REMOVECONSTRAINT_FAILED \n
 					RET_HESSIAN_NOT_SPD */
-		returnValue removeConstraint(	int number,								/**< Number of constraint to be removed from active set. */
+		virtual returnValue removeConstraint(	int number,								/**< Number of constraint to be removed from active set. */
 										BooleanType updateCholesky,				/**< Flag indicating if Cholesky decomposition shall be updated. */
 										BooleanType allowFlipping = BT_FALSE,	/**< Flag indicating if flipping bounds are allowed. */
 										BooleanType ensureNZC = BT_FALSE		/**< Flag indicating if non-zero curvature is ensured by exchange rules. */
@@ -681,7 +697,7 @@ class QProblem : public QProblemB
 		 			RET_BOUND_NOT_ACTIVE \n
 					RET_HESSIAN_NOT_SPD \n
 					RET_REMOVEBOUND_FAILED */
-		returnValue removeBound(	int number,								/**< Number of bound to be removed from active set. */
+		virtual returnValue removeBound(	int number,								/**< Number of bound to be removed from active set. */
 									BooleanType updateCholesky,				/**< Flag indicating if Cholesky decomposition shall be updated. */
 									BooleanType allowFlipping = BT_FALSE,	/**< Flag indicating if flipping bounds are allowed. */
 									BooleanType ensureNZC = BT_FALSE		/**< Flag indicating if non-zero curvature is ensured by exchange rules. */
@@ -718,7 +734,7 @@ class QProblem : public QProblemB
 		/** Solves the system Ta = b or T^Ta = b where T is a reverse upper triangular matrix.
 		 *	\return SUCCESSFUL_RETURN \n
 		 			RET_DIV_BY_ZERO */
-		returnValue backsolveT(	const real_t* const b,	/**< Right hand side vector. */
+		virtual returnValue backsolveT(	const real_t* const b,	/**< Right hand side vector. */
 								BooleanType transposed,	/**< Indicates if the transposed system shall be solved. */
 								real_t* const a 		/**< Output: Solution vector */
 								) const;
@@ -744,7 +760,7 @@ class QProblem : public QProblemB
 		 *	\return SUCCESSFUL_RETURN \n
 		 			RET_STEPDIRECTION_FAILED_TQ \n
 					RET_STEPDIRECTION_FAILED_CHOLESKY */
-		returnValue determineStepDirection(	const real_t* const delta_g,	/**< Step direction of gradient vector. */
+		virtual returnValue determineStepDirection(	const real_t* const delta_g,	/**< Step direction of gradient vector. */
 											const real_t* const delta_lbA,	/**< Step direction of lower constraints' bounds. */
 											const real_t* const delta_ubA,	/**< Step direction of upper constraints' bounds. */
 											const real_t* const delta_lb,	/**< Step direction of lower bounds. */

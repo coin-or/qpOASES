@@ -157,7 +157,13 @@ returnValue Options::setToDefault( )
     dropBoundPriority             =  1;
     dropEqConPriority             =  1;
     dropIneqConPriority           =  1;
-    
+
+    // For now: options only for Schur complement version
+    enableInertiaCorrection       =  BT_TRUE;
+    rcondSMin                     =  1.0e-14;
+
+    printResiduals                =  BT_FALSE;
+
 	return SUCCESSFUL_RETURN;
 }
 
@@ -237,13 +243,13 @@ returnValue Options::ensureConsistency( )
 	if( enableFlippingBounds == BT_TRUE )
 		enableFarBounds = BT_TRUE;
     */
-	
+
 	if( enableDriftCorrection < 0 )
 	{
 		enableDriftCorrection = 0;
 		needToAdjust = BT_TRUE;
 	}
-	
+
 	if( enableCholeskyRefactorisation < 0 )
 	{
 		enableCholeskyRefactorisation = 0;
@@ -279,7 +285,7 @@ returnValue Options::ensureConsistency( )
 		boundRelaxation = EPS;
 		needToAdjust = BT_TRUE;
 	}
-	
+
 	if ( maxPrimalJump <= 0.0 )
 	{
 		maxPrimalJump = EPS;
@@ -310,7 +316,7 @@ returnValue Options::ensureConsistency( )
 		initialFarBounds = boundRelaxation+EPS;
 		needToAdjust = BT_TRUE;
 	}
-	
+
 	if ( growFarBounds < 1.1 )
 	{
 		growFarBounds = 1.1;
@@ -419,6 +425,13 @@ returnValue Options::print( ) const
 	snprintf( myPrintfString,MAX_STRING_LENGTH,"enableEqualities               =  %s\n",info );
 	myPrintf( myPrintfString );
 
+	convertBooleanTypeToString( enableInertiaCorrection,info );
+	snprintf( myPrintfString,MAX_STRING_LENGTH,"enableInertiaCorrection        =  %s\n",info );
+	myPrintf( myPrintfString );
+
+	snprintf( myPrintfString,MAX_STRING_LENGTH,"rcondSMin                      =  %e\n",rcondSMin );
+	myPrintf( myPrintfString );
+
 	myPrintf( "\n" );
 
 	snprintf( myPrintfString,MAX_STRING_LENGTH,"terminationTolerance           =  %e\n",terminationTolerance );
@@ -481,6 +494,9 @@ returnValue Options::print( ) const
 	snprintf( myPrintfString,MAX_STRING_LENGTH,"epsNZCTests                    =  %e\n",epsNZCTests );
 	myPrintf( myPrintfString );
 
+	snprintf( myPrintfString,MAX_STRING_LENGTH,"printResiduals                 =  %d\n", printResiduals);
+	myPrintf( myPrintfString );
+
 	myPrintf( "\n\n" );
 
 	#endif /* __SUPPRESSANYOUTPUT__ */
@@ -501,6 +517,7 @@ returnValue Options::copy(	const Options& rhs
 							)
 {
 	printLevel             = rhs.printLevel;
+	printResiduals         = rhs.printResiduals;
 
 	enableRamping                 =  rhs.enableRamping;
 	enableFarBounds               =  rhs.enableFarBounds;
@@ -532,6 +549,9 @@ returnValue Options::copy(	const Options& rhs
 	epsIterRef                    =  rhs.epsIterRef;
 	epsLITests                    =  rhs.epsLITests;
 	epsNZCTests                   =  rhs.epsNZCTests;
+
+	enableInertiaCorrection       =  rhs.enableInertiaCorrection;
+	rcondSMin                     =  rhs.rcondSMin;
 
 	enableDropInfeasibles         =  rhs.enableDropInfeasibles;
     dropBoundPriority             =  rhs.dropBoundPriority;

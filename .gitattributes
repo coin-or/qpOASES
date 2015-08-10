@@ -28,6 +28,7 @@ examples/example4CP.cpp -text
 examples/example5.cpp -text
 examples/exampleLP.cpp -text
 examples/qrecipe.cpp -text
+examples/qrecipeSchur.cpp -text
 include/qpOASES.hpp -text
 include/qpOASES/Bounds.hpp -text
 include/qpOASES/Bounds.ipp -text
@@ -48,6 +49,9 @@ include/qpOASES/QProblemB.hpp -text
 include/qpOASES/QProblemB.ipp -text
 include/qpOASES/SQProblem.hpp -text
 include/qpOASES/SQProblem.ipp -text
+include/qpOASES/SQProblemSchur.hpp -text
+include/qpOASES/SQProblemSchur.ipp -text
+include/qpOASES/SparseSolver.hpp -text
 include/qpOASES/SubjectTo.hpp -text
 include/qpOASES/SubjectTo.ipp -text
 include/qpOASES/Types.hpp -text
@@ -57,6 +61,10 @@ include/qpOASES/Utils.ipp -text
 include/qpOASES/extras/OQPinterface.hpp -text
 include/qpOASES/extras/SolutionAnalysis.hpp -text
 include/qpOASES/extras/SolutionAnalysis.ipp -text
+interfaces/CUTEst/Makefile -text
+interfaces/CUTEst/makeprob -text
+interfaces/CUTEst/qpoasesCutest.cpp -text
+interfaces/CUTEst/readme.txt -text
 interfaces/c/Makefile -text
 interfaces/c/c_example1.c -text
 interfaces/c/c_example1a.c -text
@@ -140,7 +148,9 @@ src/Options.cpp -text
 src/QProblem.cpp -text
 src/QProblemB.cpp -text
 src/SQProblem.cpp -text
+src/SQProblemSchur.cpp -text
 src/SolutionAnalysis.cpp -text
+src/SparseSolver.cpp -text
 src/SubjectTo.cpp -text
 src/Utils.cpp -text
 testing/c/Makefile -text

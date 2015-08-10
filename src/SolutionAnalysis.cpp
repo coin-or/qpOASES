@@ -222,7 +222,7 @@ real_t SolutionAnalysis::getKktViolation(	QProblem* const qp,
 
 	if ( A_ptr != 0 )
 		delete[] A_ptr;
-	
+
 	if ( H_ptr != 0 )
 		delete[] H_ptr;
 
@@ -274,7 +274,7 @@ returnValue SolutionAnalysis::getVarianceCovariance(	QProblemB* const qp,
  *	g e t V a r i a n c e C o v a r i a n c e
  */
 returnValue SolutionAnalysis::getVarianceCovariance(	QProblem* qp,
-														const real_t* const g_b_bA_VAR, real_t* const Primal_Dual_VAR 
+														const real_t* const g_b_bA_VAR, real_t* const Primal_Dual_VAR
 														) const
 {
 
@@ -516,6 +516,161 @@ returnValue SolutionAnalysis::getVarianceCovariance(	SQProblem* const qp,
 	/* Call QProblem variant. */
 	return getVarianceCovariance( (QProblem*)qp,g_b_bA_VAR,Primal_Dual_VAR );
 }
+
+
+/*
+ *	c h e c k C u r v a t u r e O n S e t S
+ */
+returnValue SolutionAnalysis::checkCurvatureOnStronglyActiveConstraints( SQProblem* qp )
+{
+  printf("checkCurvatureOnStronglyActiveConstraints( SQProblem* qp ) not yet implemented for standard qpOASES!\n");
+  return RET_INERTIA_CORRECTION_FAILED;
+}
+
+
+/*
+ *	c h e c k C u r v a t u r e O n S t r o n g l y A c t i v e C o n s t r a i n t s
+ */
+returnValue SolutionAnalysis::checkCurvatureOnStronglyActiveConstraints( SQProblemSchur* qp )
+{
+  real_t eps = 1.0e-16;
+  returnValue ret;
+  Bounds saveBounds;
+  QProblemStatus saveStatus;
+  int k, neig, nAC, nFX, *FX_idx;
+
+  nFX = qp->getNFX( );
+  nAC = qp->getNAC( );
+
+  // If no bounds are active reduced Hessian is positive definite (otherwise qpOASES wouldnt have finished)
+  if( nFX == 0 )
+    return SUCCESSFUL_RETURN;
+
+  // Get active bounds (deep copy)
+  qp->getBounds( saveBounds );
+  saveBounds.getFixed( )->getNumberArray( &FX_idx );
+
+  // We have to change the status to modify the active set
+  saveStatus = qp->getStatus();
+  qp->status = QPS_PERFORMINGHOMOTOPY;
+
+  // If a variable is active now but has not been in the previous major iteration remove it
+  for( k=0; k<nFX; k++ )
+    if( getAbs(qp->x[FX_idx[k]]) > eps )
+      if ( qp->bounds.moveFixedToFree( FX_idx[k] ) != SUCCESSFUL_RETURN )
+	return THROWERROR( RET_REMOVEBOUND_FAILED );
+
+  // Do a new factorization and check the inertia
+  ret = qp->resetSchurComplement( BT_FALSE );
+  neig = qp->sparseSolver->getNegativeEigenvalues( );
+  if( ret == SUCCESSFUL_RETURN && neig != nAC )
+    ret = RET_INERTIA_CORRECTION_FAILED;
+
+  // Add all bounds that have been removed
+  for( k=0; k<nFX; k++ )
+    if( qp->bounds.getStatus( FX_idx[k] ) == ST_INACTIVE )
+      qp->bounds.moveFreeToFixed( FX_idx[k], saveBounds.getStatus( FX_idx[k] ) );
+
+  qp->status = saveStatus;
+  return ret;
+}
+
+
+//int SolutionAnalysis::checkCurvatureOnStronglyActiveConstraints( SQProblemSchur* qp )
+//{
+  //real_t eps = 1.0e-16;
+  //real_t oldDet, newDet;
+  //int oldNS;
+  //returnValue ret;
+  //Bounds saveBounds;
+  //QProblemStatus saveStatus;
+  //int nFX, *FX_idx;
+  //int k, fail, neig, rmCnt, nAC;
+
+  //// Get active bounds (deep copy)
+  //nFX = qp->getNFX( );
+  //nAC = qp->getNAC( );
+  //qp->getBounds( saveBounds );
+  //saveBounds.getFixed( )->getNumberArray( &FX_idx );
+
+  //// If no bounds are active reduced Hessian is positive definite (otherwise qpOASES wouldnt have finished)
+  //if( nFX == 0 )
+    //return 0;
+
+  //// We have to modify the status to call removeBound()
+  //saveStatus = qp->getStatus();
+  //qp->status = QPS_PERFORMINGHOMOTOPY;
+
+  //// If a variable is active but was not active in the previous major iteration
+  //// remove it to see if a negative eigenvalue appears
+  //rmCnt = 0;
+  //fail = 0;
+  //for( k=0; k<nFX; k++ )
+    //if( getAbs(qp->x[FX_idx[k]]) > eps )
+    //{
+      //oldDet = qp->detS;
+      //oldNS = qp->nS;
+
+      //ret = qp->removeBound( FX_idx[k], BT_TRUE, BT_FALSE, BT_FALSE );
+      //if( ret != SUCCESSFUL_RETURN )
+      //{
+	//fail = 1;
+	//break;
+      //}
+
+      //newDet = qp->detS;
+      //rmCnt++;
+
+      //// Case 1: S has grown by 1 row and column
+      //if( qp->nS == oldNS + 1 )
+      //{
+	//// If the determinant does not change sign, then S has gained a positive eigenvalue.
+	//// That means there is a negative eigenvalue in the (extended) reduced Hessian!
+	//if ( ( oldDet <= 0.0 && newDet <= 0.0 ) || ( oldDet >= 0.0 && newDet >= 0.0 ) )
+	//{
+	  //fail = 1;
+	  //break;
+	//}
+      //}
+      //// Case 2: S has shrunk by 1 row and column
+      //else if( qp->nS == oldNS - 1 )
+      //{
+	//// If the determinant changes sign, then S has lost a negative eigenvalue.
+	//// That means there is a negative eigenvalue in the (extended) reduced Hessian!
+	//if ( ( oldDet <= 0.0 && newDet > 0.0 ) || ( oldDet >= 0.0 && newDet < 0.0 ) )
+	//{
+	  //fail = 1;
+	  //break;
+	//}
+      //}
+      //// Case 3: S was reset
+      //else if( qp->nS == 0 )
+      //{
+	//// Check inertia of KKT matrix
+	//neig = qp->sparseSolver->getNegativeEigenvalues( );
+	//if( neig > nAC )
+	//{
+	  //fail = 1;
+	  //break;
+	//}
+      //}
+      //else
+	//printf("ERROR!\n");
+    //}
+
+  //// If test is successful, add all bounds that have been removed
+  //// If not, don't bother with that because we will discard this QP object anyway
+  //if( fail == 0 )
+    //for( k=0; k<nFX; k++ )
+    //{
+      //ret = qp->addBound( FX_idx[k], saveBounds.getStatus( FX_idx[k] ), BT_TRUE, BT_FALSE );
+      //if( ret != SUCCESSFUL_RETURN && ret != RET_BOUND_ALREADY_ACTIVE )
+	//printf( "addBound() in checkCurvatureOnStronglyActiveConstraints(): %s\n", getGlobalMessageHandler()->getErrorCodeMessage( ret ) );
+    //}
+
+  //qp->status = saveStatus;
+  //return fail;
+//}
 
 
 END_NAMESPACE_QPOASES

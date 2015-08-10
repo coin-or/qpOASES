@@ -38,6 +38,7 @@
 
 
 #include <qpOASES/SQProblem.hpp>
+#include <qpOASES/SQProblemSchur.hpp>
 
 
 BEGIN_NAMESPACE_QPOASES
@@ -102,7 +103,7 @@ class SolutionAnalysis
 								) const;
 
 
-		/** Computes the variance-covariance matrix of the QP output for uncertain 
+		/** Computes the variance-covariance matrix of the QP output for uncertain
 			inputs.
 		 *	\return SUCCESSFUL_RETURN \n
 					RET_HOTSTART_FAILED \n
@@ -115,7 +116,7 @@ class SolutionAnalysis
 																			 *			 and dual variables. Dimension: 2nV x 2nV */
 											) const;
 
-		/** Computes the variance-covariance matrix of the QP output for uncertain 
+		/** Computes the variance-covariance matrix of the QP output for uncertain
 			inputs.
 		 *	\return SUCCESSFUL_RETURN \n
 					RET_HOTSTART_FAILED \n
@@ -128,7 +129,7 @@ class SolutionAnalysis
 																			 *			 and dual variables. Dimension:  (2nV+nC) x (2nV+nC) */
 											) const;
 
-		/** Computes the variance-covariance matrix of the QP output for uncertain 
+		/** Computes the variance-covariance matrix of the QP output for uncertain
 			inputs.
 		 *	\return SUCCESSFUL_RETURN \n
 					RET_HOTSTART_FAILED \n
@@ -142,7 +143,8 @@ class SolutionAnalysis
 											) const;
 
 		/** Checks if a direction of negative curvature shows up if we remove all bounds that just recently became active */
-
+		returnValue checkCurvatureOnStronglyActiveConstraints(	SQProblemSchur* qp );
+		returnValue checkCurvatureOnStronglyActiveConstraints(	SQProblem* qp );
 
 	/*
 	 *	PROTECTED MEMBER VARIABLES

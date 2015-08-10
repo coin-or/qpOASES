@@ -213,8 +213,10 @@ returnValue QProblemB::reset( )
 	bounds.init( nV );
 
 	/* 2) Reset Cholesky decomposition. */
-	for( i=0; i<nV*nV; ++i )
-		R[i] = 0.0;
+	if ( R!=0 )
+		for( i=0; i<nV*nV; ++i )
+			R[i] = 0.0;
+
 	haveCholesky = BT_FALSE;
 
 	/* 3) Reset steplength and status flags. */
@@ -237,7 +239,6 @@ returnValue QProblemB::reset( )
 
 	return SUCCESSFUL_RETURN;
 }
-
 
 
 /*
@@ -437,7 +438,7 @@ returnValue QProblemB::hotstart(	const real_t* const g_new,
 			*cputime -= auxTime;
 		}
 	}
-	
+
 
 	returnValue returnvalue = SUCCESSFUL_RETURN;
 
@@ -629,7 +630,6 @@ returnValue QProblemB::hotstart(	const char* const g_file,
 
 	return returnvalue;
 }
-
 
 
 /*
@@ -1080,7 +1080,7 @@ returnValue QProblemB::copy(	const QProblemB& rhs
 	bounds = rhs.bounds;
 
 	freeHessian = rhs.freeHessian;
-	
+
 	if ( freeHessian == BT_TRUE )
 		H = (SymmetricMatrix *)(rhs.H->duplicateSym());
 	else
@@ -1117,7 +1117,7 @@ returnValue QProblemB::copy(	const QProblemB& rhs
 	}
 	else
 		R = 0;
-	
+
 	haveCholesky = rhs.haveCholesky;
 
 	if ( rhs.x != 0 )
@@ -1150,6 +1150,8 @@ returnValue QProblemB::copy(	const QProblemB& rhs
 
 	ramp0 = rhs.ramp0;
 	ramp1 = rhs.ramp1;
+	// AW: Following line seemed to be missing
+	rampOffset = rhs.rampOffset;
 
 	delta_xFR_TMP = new real_t[_nV];	/* nFR */
 
@@ -1182,7 +1184,7 @@ returnValue QProblemB::determineHessianType( )
 				options.numRegularisationSteps = 1;
 			}
 			return SUCCESSFUL_RETURN;
-		
+
 		case HST_IDENTITY:
 			return SUCCESSFUL_RETURN;
 
@@ -1231,7 +1233,7 @@ returnValue QProblemB::determineHessianType( )
         curDiag = H->diag(i);
         if ( curDiag >= INFTY )
             return RET_DIAGONAL_NOT_INITIALISED;
-        
+
 		if ( curDiag < -ZERO )
 		{
 			hessianType = HST_INDEF;
@@ -1360,7 +1362,7 @@ returnValue QProblemB::computeCholesky( )
 	int i, j;
 	int nV  = getNV( );
 	int nFR = getNFR( );
-	
+
 	/* 1) Initialises R with all zeros. */
 	for( i=0; i<nV*nV; ++i )
 		R[i] = 0.0;
@@ -1369,7 +1371,7 @@ returnValue QProblemB::computeCholesky( )
 	switch ( hessianType )
 	{
 		case HST_ZERO:
-		
+
 			/* if Hessian is zero matrix and it has been regularised,
 			 * its Cholesky factor is the identity matrix scaled by sqrt(eps). */
 			if ( usingRegularisation( ) == BT_TRUE )
@@ -1382,10 +1384,10 @@ returnValue QProblemB::computeCholesky( )
 				return THROWERROR( RET_CHOLESKY_OF_ZERO_HESSIAN );
 			}
 			break;
-		
+
 
 		case HST_IDENTITY:
-		
+
 			/* if Hessian is identity, so is its Cholesky factor. */
 			for( i=0; i<nV; ++i )
 				RR(i,i) = 1.0;
@@ -1393,7 +1395,7 @@ returnValue QProblemB::computeCholesky( )
 
 
 		default:
-	
+
 			if ( nFR > 0 )
 			{
 				int* FR_idx;
@@ -1414,7 +1416,7 @@ returnValue QProblemB::computeCholesky( )
 					if ( R[0] < 0.0 )
 					{
 						/* Cholesky decomposition has tunneled a negative
-						 * diagonal element. */ 
+						 * diagonal element. */
 						options.epsRegularisation = getMin( -R[0]+options.epsRegularisation,getSqrt(getAbs(options.epsRegularisation)) );
 					}
 
@@ -1440,12 +1442,12 @@ returnValue QProblemB::setupInitialCholesky( )
 {
 	returnValue returnvalueCholesky;
 
-	/* If regularisation shall be used, always regularise at beginning 
+	/* If regularisation shall be used, always regularise at beginning
 	 * if initial working set is not empty. */
 	if ( ( getNV() != getNFR()-getNFV() ) && ( options.enableRegularisation == BT_TRUE ) )
 		if ( regulariseHessian( ) != SUCCESSFUL_RETURN )
 			return RET_INIT_FAILED_REGULARISATION;
-	
+
 	returnvalueCholesky = computeCholesky( );
 
 	/* If Hessian is not positive definite, regularise and try again. */
@@ -2955,7 +2957,7 @@ returnValue QProblemB::setupAuxiliaryQPbounds( BooleanType useRelaxation )
 
             case ST_DISABLED:
                 break;
-                
+
 			default:
 				return THROWERROR( RET_UNKNOWN_BUG );
 		}
@@ -3040,7 +3042,7 @@ returnValue QProblemB::determineStepDirection(	const real_t* const delta_g, cons
 	int r;
 	int nFR = getNFR( );
 	int nFX = getNFX( );
-	
+
 	int* FR_idx;
 	int* FX_idx;
 
@@ -3147,7 +3149,7 @@ returnValue QProblemB::determineStepDirection(	const real_t* const delta_g, cons
 
 					break;
 			}
-			
+
 			/* early termination of residual norm small enough */
 			if ( rnrm < options.epsIterRef )
 				break;
@@ -3695,7 +3697,7 @@ returnValue QProblemB::printIteration( 	int iter,
 	int nV = getNV();
 	real_t stat, bfeas, bcmpl;
 	real_t *grad = 0;
-		
+
 	char myPrintfString[MAX_STRING_LENGTH];
 	char info[MAX_STRING_LENGTH];
 	const char excStr[] = " ef";
@@ -3728,7 +3730,7 @@ returnValue QProblemB::printIteration( 	int iter,
 
 			snprintf( myPrintfString,MAX_STRING_LENGTH, "%5d ", iter);
 			myPrintf( myPrintfString );
-		
+
 			if (tabularOutput.idxAddB >= 0)
 			{
 				snprintf( myPrintfString,MAX_STRING_LENGTH, "%4d ", tabularOutput.idxAddB);
@@ -3744,7 +3746,7 @@ returnValue QProblemB::printIteration( 	int iter,
 				snprintf( myPrintfString,MAX_STRING_LENGTH, "%4d ", tabularOutput.idxRemB);
 				myPrintf( myPrintfString );
 			}
-			else 
+			else
 			{
 				myPrintf( "     " );
 			}
@@ -3782,11 +3784,11 @@ returnValue QProblemB::printIteration( 	int iter,
 				snprintf( myPrintfString,MAX_STRING_LENGTH, "%5d%c ", tabularOutput.idxRemB, excStr[tabularOutput.excRemB]);
 				myPrintf( myPrintfString );
 			}
-			else 
+			else
 			{
 				myPrintf( "       " );
 			}
-					
+
 			snprintf( myPrintfString,MAX_STRING_LENGTH, "%9.2e %9.2e\n", homotopyLength, tau);
 			myPrintf( myPrintfString );
 			break;
