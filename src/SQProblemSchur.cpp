@@ -24,9 +24,9 @@
 
 /**
  *	\file src/SQProblemSchur.cpp
- *	\author Andreas Waechter, based on QProblem.cpp by Hans Joachim Ferreau, Andreas Potschka, Christian Kirches
- *	\version 3.0
- *	\date 2012
+ *	\author Andreas Waechter and Dennis Janka, based on QProblem.cpp by Hans Joachim Ferreau, Andreas Potschka, Christian Kirches
+ *	\version 3.1
+ *	\date 2012-2015
  *
  *	Implementation of the SQProblemSchur class which is able to use the newly
  *	developed online active set strategy for parametric quadratic programming.

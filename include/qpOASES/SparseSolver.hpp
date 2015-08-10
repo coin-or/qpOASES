@@ -24,9 +24,9 @@
 
 /**
  *	\file include/qpOASES/SparseSolver.hpp
- *	\author Andreas Waechter
- *	\version 3.0
- *	\date 2012
+ *	\author Andreas Waechter, Dennis Janka
+ *	\version 3.1
+ *	\date 2012-2015
  *
  *	Interfaces to sparse linear solvers that are used in a Schur-complement
  *	implementation in qpOASES.
@@ -47,9 +47,9 @@ BEGIN_NAMESPACE_QPOASES
  *	\brief Base class for linear solvers that are used in a Schur-complement
  *	implementation in qpOASES.
  *
- *	\author Andreas Waechter
- *	\version 3.0
- *	\date 2012
+ *	\author Andreas Waechter, Dennis Janka
+ *	\version 3.1
+ *	\date 2012-2015
  */
 class SparseSolver
 {
@@ -127,9 +127,9 @@ class SparseSolver
 /**
  *	\brief Implementation of the linear solver interface using Harwell's MA27.
  *
- *	\author Andreas Waechter
- *	\version 3.0
- *	\date 2012
+ *	\author Andreas Waechter, Dennis Janka
+ *	\version 3.1
+ *	\date 2012-2015
  */
 class Ma27SparseSolver: public SparseSolver
 {
@@ -241,9 +241,9 @@ class Ma27SparseSolver: public SparseSolver
 /**
  *	\brief Implementation of the linear solver interface using Harwell's MA57.
  *
- *	\author Dennis Janka
- *	\version 3.0
- *	\date 2012
+ *	\author Andreas Waechter, Dennis Janka
+ *	\version 3.1
+ *	\date 2013-2015
  */
 class Ma57SparseSolver: public SparseSolver
 {

@@ -24,16 +24,15 @@
 
 /**
  *	\file include/qpOASES/SQProblemSchur.hpp
- *	\author Andreas Waechter, based on QProblem.hpp by Hans Joachim Ferreau, Andreas Potschka, Christian Kirches
- *	\version 3.0
- *	\date 2012
+ *	\author Andreas Waechter and Dennis Janka, based on QProblem.hpp by Hans Joachim Ferreau, Andreas Potschka, Christian Kirches
+ *	\version 3.1
+ *	\date 2012-2015
  *
- *	Implementation of the SQProblemSchur class which is able to use the newly
- *	developed online active set strategy for parametric quadratic programming.
- *	This implementation uses a Schur complement approach to solve the linear
- *	systems.
+ *	Declaration of the SQProblemSchur class which is able to use the newly
+ *	developed online active set strategy for parametric quadratic programming
+ *	with varying matrices and uses a Schur Complement approach to solve
+ *	the linear systems.
  */
-
 
 
 #ifndef QPOASES_SQPROBLEMSCHUR_HPP
@@ -103,15 +102,15 @@ BEGIN_NAMESPACE_QPOASES
 
 
 /**
- *	\brief Implements the online active set strategy for QPs with general constraints.
+ *	\brief Implements the online active set strategy for QPs with varying, sparse matrices.
  *
- *	A class for setting up and solving quadratic programs. The main feature is
- *	the possibily to use the newly developed online active set strategy for
- * 	parametric quadratic programming.
+ *	A class for setting up and solving quadratic programs with varying,
+ *	sparse QP matrices. Here, sparsity is exploited by means of a
+ *	Schur complement approach to solve the linear systems.
  *
- *	\author Hans Joachim Ferreau, Andreas Potschka, Christian Kirches
- *	\version 3.0
- *	\date 2007-2014
+ *	\author Andreas Waechter, Dennis Janka
+ *	\version 3.1
+ *	\date 2012-2015
  */
 class SQProblemSchur : public SQProblem
 {

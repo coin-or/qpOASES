@@ -24,9 +24,9 @@
 
 /**
  *	\file include/qpOASES/SQProblemSchur.ipp
- *	\author Andreas Waechter
- *	\version 3.0beta
- *	\date 2014
+ *	\author Andreas Waechter, Dennis Janka
+ *	\version 3.1
+ *	\date 2012-2015
  *
  *	Implementation of inlined member functions of the SQProblemSchur class which
  *	is able to use the newly developed online active set strategy for

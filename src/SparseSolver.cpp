@@ -24,8 +24,9 @@
 
 /**
  *	\file src/SparseSolver.cpp
- *	\author Andreas Waechter
- *	\date 2012
+ *	\author Andreas Waechter, Dennis Janka
+ *	\version 3.1
+ *	\date 2012-2015
  *
  *	Interfaces to sparse linear solvers that are used in a Schur-complement
  *	implementation in qpOASES.
