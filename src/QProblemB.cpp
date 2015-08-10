@@ -817,7 +817,7 @@ returnValue QProblemB::getDualSolution( real_t* const yOpt ) const
  */
 returnValue QProblemB::setPrintLevel( PrintLevel _printLevel )
 {
-	#ifndef __XPCTARGET__
+	#ifndef __SUPPRESSANYOUTPUT__
 		#ifndef __MATLAB__
 			if ( ( options.printLevel == PL_HIGH ) && ( options.printLevel != _printLevel ) )
 				THROWINFO( RET_PRINTLEVEL_CHANGED );
@@ -825,7 +825,7 @@ returnValue QProblemB::setPrintLevel( PrintLevel _printLevel )
 		options.printLevel = _printLevel;
 	#else
 	options.printLevel = PL_NONE;
-	#endif /* __XPCTARGET__ */
+	#endif /* __SUPPRESSANYOUTPUT__ */
 
 	/* update message handler preferences */
  	switch ( options.printLevel )
@@ -866,8 +866,8 @@ returnValue QProblemB::setPrintLevel( PrintLevel _printLevel )
  */
 returnValue QProblemB::printProperties( )
 {
-	#ifndef __XPCTARGET__
-	#ifndef __DSPACE__
+	#ifndef __SUPPRESSANYOUTPUT__
+
 	/* Do not print properties if print level is set to none! */
 	if ( options.printLevel == PL_NONE )
 		return SUCCESSFUL_RETURN;
@@ -994,8 +994,8 @@ returnValue QProblemB::printProperties( )
 	}
 
 	myPrintf( "\n" );
-	#endif
-	#endif
+
+	#endif /* __SUPPRESSANYOUTPUT__ */
 
 	return SUCCESSFUL_RETURN;
 }
@@ -2440,7 +2440,7 @@ returnValue QProblemB::solveQP(	const real_t* const g_new,
 
 	real_t homotopyLength;
 
-	#ifndef __XPCTARGET__
+	#ifndef __SUPPRESSANYOUTPUT__
 	char messageString[MAX_STRING_LENGTH];
 	#endif
 
@@ -2472,7 +2472,7 @@ returnValue QProblemB::solveQP(	const real_t* const g_new,
 
 		status = QPS_PERFORMINGHOMOTOPY;
 
-		#ifndef __XPCTARGET__
+		#ifndef __SUPPRESSANYOUTPUT__
 		if ( isFirstCall == BT_TRUE )
 			snprintf( messageString,MAX_STRING_LENGTH,"%d ...",iter );
 		else
@@ -2628,7 +2628,7 @@ returnValue QProblemB::solveQP(	const real_t* const g_new,
 	 * within the given maximum numbers of working set changes */
 	if ( options.printLevel == PL_HIGH )
 	{
-		#ifndef __XPCTARGET__
+		#ifndef __SUPPRESSANYOUTPUT__
 		snprintf( messageString,MAX_STRING_LENGTH,"(nWSR = %d)",iter );
 		return getGlobalMessageHandler( )->throwWarning( RET_MAX_NWSR_REACHED,messageString,__FUNC__,__FILE__,__LINE__,VS_VISIBLE );
 		#else
@@ -3290,7 +3290,7 @@ returnValue QProblemB::performStep(	const real_t* const delta_g,
 	delete[] num;
 
 
-	#ifndef __XPCTARGET__
+	#ifndef __SUPPRESSANYOUTPUT__
 	char messageString[MAX_STRING_LENGTH];
 
 	if ( BC_status == ST_UNDEFINED )
@@ -3330,7 +3330,7 @@ returnValue QProblemB::performStep(	const real_t* const delta_g,
 	else
 	{
 		/* print a warning if stepsize is zero */
-		#ifndef __XPCTARGET__
+		#ifndef __SUPPRESSANYOUTPUT__
 		snprintf( messageString,MAX_STRING_LENGTH,"Stepsize is %.15e",tau );
 		getGlobalMessageHandler( )->throwWarning( RET_STEPSIZE,messageString,__FUNC__,__FILE__,__LINE__,VS_VISIBLE );
 		#endif
@@ -3346,7 +3346,7 @@ returnValue QProblemB::performStep(	const real_t* const delta_g,
  */
 returnValue QProblemB::changeActiveSet( int BC_idx, SubjectToStatus BC_status )
 {
-	#ifndef __XPCTARGET__
+	#ifndef __SUPPRESSANYOUTPUT__
 	char messageString[MAX_STRING_LENGTH];
 	#endif
 
@@ -3360,7 +3360,7 @@ returnValue QProblemB::changeActiveSet( int BC_idx, SubjectToStatus BC_status )
 
 		/* Remove one variable from active set. */
 		case ST_INACTIVE:
-			#ifndef __XPCTARGET__
+			#ifndef __SUPPRESSANYOUTPUT__
 			snprintf( messageString,MAX_STRING_LENGTH,"bound no. %d.", BC_idx );
 			getGlobalMessageHandler( )->throwInfo( RET_REMOVE_FROM_ACTIVESET,messageString,__FUNC__,__FILE__,__LINE__,VS_VISIBLE );
 			#endif
@@ -3374,7 +3374,7 @@ returnValue QProblemB::changeActiveSet( int BC_idx, SubjectToStatus BC_status )
 
 		/* Add one variable to active set. */
 		default:
-			#ifndef __XPCTARGET__
+			#ifndef __SUPPRESSANYOUTPUT__
 			if ( BC_status == ST_LOWER )
 				snprintf( messageString,MAX_STRING_LENGTH,"lower bound no. %d.", BC_idx );
 			else
@@ -3687,7 +3687,7 @@ returnValue QProblemB::printIteration( 	int iter,
 										BooleanType isFirstCall
 										)
 {
-	#ifndef __XPCTARGET__
+	#ifndef __SUPPRESSANYOUTPUT__
 
 	/* consistency check */
 	if ( iter < 0 )
@@ -3835,7 +3835,7 @@ returnValue QProblemB::printIteration( 	int iter,
 			break;
 	}
 
-	#endif /* __XPCTARGET__ */
+	#endif /* __SUPPRESSANYOUTPUT__ */
 
 	return SUCCESSFUL_RETURN;
 }

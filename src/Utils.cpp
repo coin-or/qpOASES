@@ -54,7 +54,7 @@
 
 
 #ifdef __NO_SNPRINTF__
-#if (!defined(_MSC_VER)) || defined(__DSPACE__)
+#if (!defined(_MSC_VER)) || defined(__DSPACE__) || defined(__XPCTARGET__)
 /* If snprintf is not available, provide an empty implementation. */
 int snprintf( char* s, size_t n, const char* format, ... )
 {
@@ -76,7 +76,7 @@ BEGIN_NAMESPACE_QPOASES
 returnValue print( const real_t* const v, int n, const char* name )
 {
 	#ifndef __SUPPRESSANYOUTPUT__
-	#ifndef __XPCTARGET__
+
 	int i;
 	char myPrintfString[MAX_STRING_LENGTH];
 
@@ -94,7 +94,7 @@ returnValue print( const real_t* const v, int n, const char* name )
 		myPrintf( myPrintfString );
 	}
 	myPrintf( "\n" );
-	#endif /* __XPCTARGET__ */
+
 	#endif /* __SUPPRESSANYOUTPUT__ */
 
 	return SUCCESSFUL_RETURN;
@@ -107,7 +107,7 @@ returnValue print( const real_t* const v, int n, const char* name )
 returnValue print(	const real_t* const v, int n, const int* const V_idx, const char* name )
 {
 	#ifndef __SUPPRESSANYOUTPUT__
-	#ifndef __XPCTARGET__
+	
 	int i;
 	char myPrintfString[MAX_STRING_LENGTH];
 
@@ -125,7 +125,7 @@ returnValue print(	const real_t* const v, int n, const int* const V_idx, const c
 		myPrintf( myPrintfString );
 	}
 	myPrintf( "\n" );
-	#endif /* __XPCTARGET__ */
+
 	#endif /* __SUPPRESSANYOUTPUT__ */
 
 	return SUCCESSFUL_RETURN;
@@ -138,7 +138,7 @@ returnValue print(	const real_t* const v, int n, const int* const V_idx, const c
 returnValue print( const real_t* const M, int nrow, int ncol, const char* name )
 {
 	#ifndef __SUPPRESSANYOUTPUT__
-	#ifndef __XPCTARGET__
+	
 	int i;
 	char myPrintfString[MAX_STRING_LENGTH];
 
@@ -153,7 +153,7 @@ returnValue print( const real_t* const M, int nrow, int ncol, const char* name )
 	for( i=0; i<nrow; ++i )
 		print( &(M[i*ncol]), ncol );
 	myPrintf( "\n" );
-	#endif /* __XPCTARGET__ */
+
 	#endif /* __SUPPRESSANYOUTPUT__ */
 
 	return SUCCESSFUL_RETURN;
@@ -166,7 +166,7 @@ returnValue print( const real_t* const M, int nrow, int ncol, const char* name )
 returnValue print(	const real_t* const M, int nrow, int ncol, const int* const ROW_idx, const int* const COL_idx, const char* name )
 {
 	#ifndef __SUPPRESSANYOUTPUT__
-	#ifndef __XPCTARGET__
+	
 	int i;
 	char myPrintfString[MAX_STRING_LENGTH];
 
@@ -181,7 +181,7 @@ returnValue print(	const real_t* const M, int nrow, int ncol, const int* const R
 	for( i=0; i<nrow; ++i )
 		print( &( M[ ROW_idx[i]*ncol ] ), ncol, COL_idx );
 	myPrintf( "\n" );
-	#endif /* __XPCTARGET__ */
+
 	#endif /* __SUPPRESSANYOUTPUT__ */
 
 	return SUCCESSFUL_RETURN;
@@ -194,7 +194,7 @@ returnValue print(	const real_t* const M, int nrow, int ncol, const int* const R
 returnValue print( const int* const index, int n, const char* name )
 {
 	#ifndef __SUPPRESSANYOUTPUT__
-	#ifndef __XPCTARGET__
+	
 	int i;
 	char myPrintfString[MAX_STRING_LENGTH];
 
@@ -212,7 +212,7 @@ returnValue print( const int* const index, int n, const char* name )
 		myPrintf( myPrintfString );
 	}
 	myPrintf( "\n" );
-	#endif /* __XPCTARGET__ */
+
 	#endif /* __SUPPRESSANYOUTPUT__ */
 
 	return SUCCESSFUL_RETURN;
@@ -225,7 +225,7 @@ returnValue print( const int* const index, int n, const char* name )
 returnValue myPrintf( const char* s )
 {
 	#ifndef __SUPPRESSANYOUTPUT__
-	#ifndef __XPCTARGET__
+	
 	
 		if ( s == 0 )
 			return RET_INVALID_ARGUMENTS;
@@ -243,7 +243,6 @@ returnValue myPrintf( const char* s )
 			#endif /* __SCILAB__ */
 		#endif /* __MATLAB__ */
 
-	#endif /* __XPCTARGET__ */
 	#endif /* __SUPPRESSANYOUTPUT__ */
 
 	return SUCCESSFUL_RETURN;
@@ -275,7 +274,8 @@ returnValue readFromFile(	real_t* data, int nrow, int ncol,
 							const char* datafilename
 							)
 {
-	#ifndef __XPCTARGET__
+	#ifndef __SUPPRESSANYOUTPUT__
+
 	int i, j;
 	double float_data;
 	FILE* datafile;
@@ -312,11 +312,12 @@ returnValue readFromFile(	real_t* data, int nrow, int ncol,
 	fclose( datafile );
 
 	return SUCCESSFUL_RETURN;
-	#else /* __XPCTARGET__ */
+    
+	#else /* __SUPPRESSANYOUTPUT__ */
 
 	return RET_NOT_YET_IMPLEMENTED;
 
-	#endif /* __XPCTARGET__ */
+	#endif /* __SUPPRESSANYOUTPUT__ */
 }
 
 
@@ -339,7 +340,8 @@ returnValue readFromFile(	int* data, int n,
 							const char* datafilename
 							)
 {
-	#ifndef __XPCTARGET__
+	#ifndef __SUPPRESSANYOUTPUT__
+
 	int i;
 	FILE* datafile;
 
@@ -367,11 +369,12 @@ returnValue readFromFile(	int* data, int n,
 	fclose( datafile );
 
 	return SUCCESSFUL_RETURN;
-	#else /* __XPCTARGET__ */
+
+	#else /* __SUPPRESSANYOUTPUT__ */
 
 	return RET_NOT_YET_IMPLEMENTED;
 
-	#endif /* __XPCTARGET__ */
+	#endif /* __SUPPRESSANYOUTPUT__ */
 }
 
 
@@ -382,7 +385,8 @@ returnValue writeIntoFile(	const real_t* const data, int nrow, int ncol,
 							const char* datafilename, BooleanType append
 							)
 {
-	#ifndef __XPCTARGET__
+	#ifndef __SUPPRESSANYOUTPUT__
+
 	int i, j;
 	FILE* datafile;
 
@@ -421,11 +425,12 @@ returnValue writeIntoFile(	const real_t* const data, int nrow, int ncol,
 	fclose( datafile );
 
 	return SUCCESSFUL_RETURN;
-	#else /* __XPCTARGET__ */
+    
+	#else /* __SUPPRESSANYOUTPUT__ */
 
 	return RET_NOT_YET_IMPLEMENTED;
 
-	#endif /* __XPCTARGET__ */
+	#endif /* __SUPPRESSANYOUTPUT__ */
 }
 
 
@@ -447,7 +452,8 @@ returnValue writeIntoFile(	const int* const integer, int n,
 							const char* datafilename, BooleanType append
 							)
 {
-	#ifndef __XPCTARGET__
+	#ifndef __SUPPRESSANYOUTPUT__
+
 	int i;
 
 	FILE* datafile;
@@ -482,11 +488,12 @@ returnValue writeIntoFile(	const int* const integer, int n,
 	fclose( datafile );
 
 	return SUCCESSFUL_RETURN;
-	#else /* __XPCTARGET__ */
+
+	#else /* __SUPPRESSANYOUTPUT__ */
 
 	return RET_NOT_YET_IMPLEMENTED;
 
-	#endif /* __XPCTARGET__ */
+	#endif /* __SUPPRESSANYOUTPUT__ */
 }
 
 
@@ -500,7 +507,8 @@ returnValue writeIntoMatFile(	FILE* const matFile,
 	/*  Note, this code snippet has been inspired from the document
 	 *  "Matlab(R) MAT-file Format, R2013b" by MathWorks */
 
-	#ifndef __XPCTARGET__
+	#ifndef __SUPPRESSANYOUTPUT__
+
 	if ( ( matFile == 0 ) || ( data == 0 ) || ( nRows < 0 ) || ( nCols < 0 ) || ( name == 0 ) )
 		return RET_INVALID_ARGUMENTS;
 
@@ -532,11 +540,12 @@ returnValue writeIntoMatFile(	FILE* const matFile,
 		}
 
 	return SUCCESSFUL_RETURN;
-	#else /* __XPCTARGET__ */
+    
+	#else /* __SUPPRESSANYOUTPUT__ */
 
 	return RET_NOT_YET_IMPLEMENTED;
 
-	#endif /* __XPCTARGET__ */
+	#endif /* __SUPPRESSANYOUTPUT__ */
 }
 
 
@@ -798,12 +807,12 @@ returnValue getKktViolation(	int nV,
  */
 returnValue convertBooleanTypeToString( BooleanType value, char* const string )
 {
-	#ifndef __XPCTARGET__
+	#ifndef __SUPPRESSANYOUTPUT__
 	if ( value == BT_FALSE )
 		snprintf( string,20,"BT_FALSE" );
 	else
 		snprintf( string,20,"BT_TRUE" );
-	#endif /* __XPCTARGET__ */
+	#endif /* __SUPPRESSANYOUTPUT__ */
 
 	return SUCCESSFUL_RETURN;
 }
@@ -814,7 +823,7 @@ returnValue convertBooleanTypeToString( BooleanType value, char* const string )
  */
 returnValue convertSubjectToStatusToString( SubjectToStatus value, char* const string )
 {
-	#ifndef __XPCTARGET__
+	#ifndef __SUPPRESSANYOUTPUT__
 	switch( value )
 	{
 		case ST_INACTIVE:
@@ -845,7 +854,7 @@ returnValue convertSubjectToStatusToString( SubjectToStatus value, char* const s
 			snprintf( string,20,"<invalid value>" );
 			break;
 	}
-	#endif /* __XPCTARGET__ */
+	#endif /* __SUPPRESSANYOUTPUT__ */
 
 	return SUCCESSFUL_RETURN;
 }
@@ -856,7 +865,7 @@ returnValue convertSubjectToStatusToString( SubjectToStatus value, char* const s
  */
 returnValue convertPrintLevelToString( PrintLevel value, char* const string )
 {
-	#ifndef __XPCTARGET__
+	#ifndef __SUPPRESSANYOUTPUT__
 	switch( value )
 	{
 		case PL_NONE:
@@ -887,7 +896,7 @@ returnValue convertPrintLevelToString( PrintLevel value, char* const string )
 			snprintf( string,20,"<invalid value>" );
 			break;
 	}
-	#endif /* __XPCTARGET__ */
+	#endif /* __SUPPRESSANYOUTPUT__ */
 
 	return SUCCESSFUL_RETURN;
 }
@@ -1002,7 +1011,8 @@ returnValue normaliseConstraints(	int nV, int nC,
  */
 extern "C" void gdb_printmat(const char *fname, real_t *M, int n, int m, int ldim)
 {
-	#ifndef __XPCTARGET__
+	#ifndef __SUPPRESSANYOUTPUT__
+
 	int i, j;
 	FILE *fid;
 
@@ -1020,7 +1030,8 @@ extern "C" void gdb_printmat(const char *fname, real_t *M, int n, int m, int ldi
 		fprintf(fid, "\n");
 	}
 	fclose(fid);
-	#endif /* __XPCTARGET__ */
+
+	#endif /* __SUPPRESSANYOUTPUT__ */
 }
 #endif /* __DEBUG__ */
 
@@ -1034,7 +1045,7 @@ void __cxa_pure_virtual( void )
 {
 	/* put your customized implementation here! */
 }
-#endif /* __DSPACE__ || __XPCTARGET__*/ 
+#endif /* __DSPACE__ || __XPCTARGET__ || __C_WRAPPER__ */ 
 
 
 

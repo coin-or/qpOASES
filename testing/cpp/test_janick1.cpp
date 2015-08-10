@@ -23,10 +23,10 @@
 
 
 /**
- *	\file debugging/cpp/debug_janick1.cpp
+ *	\file testing/cpp/test_janick1.cpp
  *	\author Hans Joachim Ferreau
  *	\version 3.1
- *	\date 2007-2015
+ *	\date 2011-2015
  *
  *	Example that causes troubles when hotstarting.
  */

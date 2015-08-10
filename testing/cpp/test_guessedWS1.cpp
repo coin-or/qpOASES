@@ -26,7 +26,7 @@
  *	\file testing/cpp/test_guessedWS1.cpp
  *	\author Hans Joachim Ferreau
  *	\version 3.1
- *	\date 2014
+ *	\date 2014-2015
  *
  *	Very simple example for testing qpOASES (using QProblem class).
  */

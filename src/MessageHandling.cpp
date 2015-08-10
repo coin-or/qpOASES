@@ -50,7 +50,8 @@ FILE* stdFile = stdout;
 
 
 
-#ifndef __XPCTARGET__
+#ifndef __SUPPRESSANYOUTPUT__
+
 /** Defines pairs of global return values and messages. */
 MessageHandling::ReturnValueList returnValueList[] =
 {
@@ -221,9 +222,12 @@ MessageHandling::ReturnValueList returnValueList[] =
 /* IMPORTANT: Terminal list element! */
 { TERMINAL_LIST_ELEMENT, "", VS_HIDDEN }
 };
-#else
+
+#else /* __SUPPRESSANYOUTPUT__ */
+
 MessageHandling::ReturnValueList returnValueList[1]; /* Do not use messages for embedded platforms! */
-#endif
+
+#endif /* __SUPPRESSANYOUTPUT__ */
 
 
 
@@ -311,10 +315,10 @@ MessageHandling::MessageHandling( const MessageHandling& rhs )
  */
 MessageHandling::~MessageHandling( )
 {
-	#ifndef __XPCTARGET__
+	#ifndef __SUPPRESSANYOUTPUT__
 	if ( ( outputFile != 0 ) && ( outputFile != stdout ) && ( outputFile != stderr ) )
 		fclose( outputFile );
-	#endif /* __XPCTARGET__ */
+ 	#endif /* __SUPPRESSANYOUTPUT__ */
 }
 
 
@@ -430,7 +434,7 @@ returnValue MessageHandling::reset( )
  */
 returnValue MessageHandling::listAllMessages( )
 {
-	#ifndef __XPCTARGET__
+	#ifndef __SUPPRESSANYOUTPUT__
 	int keypos = 0;
 	char myPrintfString[MAX_STRING_LENGTH];
 
@@ -442,7 +446,7 @@ returnValue MessageHandling::listAllMessages( )
 
 		++keypos;
 	}
-	#endif
+	#endif /* __SUPPRESSANYOUTPUT__ */
 
 	return SUCCESSFUL_RETURN;
 }
@@ -468,7 +472,7 @@ returnValue MessageHandling::throwMessage(
  	)
 {
 	#ifndef __SUPPRESSANYOUTPUT__
-	#ifndef __XPCTARGET__
+
 	int keypos = 0;
 	char myPrintfString[MAX_STRING_LENGTH];
 
@@ -557,7 +561,7 @@ returnValue MessageHandling::throwMessage(
 			errorCount = 0;
 		}
 	}
-	#endif /* __XPCTARGET__ */
+
 	#endif /* __SUPPRESSANYOUTPUT__ */
 
 	return RETnumber;
@@ -570,9 +574,10 @@ returnValue MessageHandling::throwMessage(
 const char* MessageHandling::getErrorCodeMessage(	const returnValue _returnValue
 													)
 {
-	#ifndef __XPCTARGET__
-	int keypos = 0;
+	#ifndef __SUPPRESSANYOUTPUT__
 
+	int keypos = 0;
+	
 	/* 2) Find error/warning/info in list. */
 	while ( returnValueList[keypos].key != TERMINAL_LIST_ELEMENT )
 	{
@@ -588,11 +593,12 @@ const char* MessageHandling::getErrorCodeMessage(	const returnValue _returnValue
 	}
 
 	return (returnValueList[keypos].data != 0) ? returnValueList[keypos].data : "No message for this error code";
-	#else /* __XPCTARGET__ */
+    
+	#else /* __SUPPRESSANYOUTPUT__ */
 
 	return "No message for this error code";
 
-	#endif /* __XPCTARGET__ */
+	#endif /* __SUPPRESSANYOUTPUT__ */
 }
 
 
@@ -602,9 +608,9 @@ const char* MessageHandling::getErrorCodeMessage(	const returnValue _returnValue
 
 
 /** Global message handler for all qpOASES modules.*/
-#ifndef __XPCTARGET__
+#if defined(__DSPACE__) || defined(__XPCTARGET__)
 static MessageHandling globalMessageHandler( stdFile,VS_VISIBLE,VS_VISIBLE,VS_VISIBLE );
-#endif /* __XPCTARGET__ */
+#endif
 
 
 /*
@@ -612,9 +618,11 @@ static MessageHandling globalMessageHandler( stdFile,VS_VISIBLE,VS_VISIBLE,VS_VI
  */
 MessageHandling* getGlobalMessageHandler( )
 {
-	#ifdef __XPCTARGET__
+	#ifndef __DSPACE__
+    #ifndef __XPCTARGET__
 	static MessageHandling globalMessageHandler( stdFile,VS_VISIBLE,VS_VISIBLE,VS_VISIBLE );
-	#endif /* __XPCTARGET__ */
+	#endif /* __DSPACE__ */
+    #endif /* __XPCTARGET__ */
 
 	return &globalMessageHandler;
 }
