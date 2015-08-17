@@ -38,7 +38,8 @@ FURTHER AUTHORS
 ===============
 
 Moreover, the following developers have contributed code to qpOASES's
-third-party interfaces (in alphabetical order):
+third-party interfaces or provided additional functionality 
+(in alphabetical order):
 
     Alexander Buchner
     Holger Diedam
