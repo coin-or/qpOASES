@@ -45,7 +45,7 @@
 BEGIN_NAMESPACE_QPOASES
 
 
-/** 
+/**
  *	\brief Implements the online active set strategy for QPs with varying matrices.
  *
  *	A class for setting up and solving quadratic programs with varying QP matrices.
@@ -86,11 +86,11 @@ class SQProblem : public QProblem
 		virtual ~SQProblem( );
 
 		/** Assignment operator (deep copy). */
-		SQProblem& operator=(	const SQProblem& rhs	/**< Rhs object. */
+		virtual SQProblem& operator=(	const SQProblem& rhs	/**< Rhs object. */
 								);
 
 
-		/** Solves an initialised QP sequence with matrix shift using 
+		/** Solves an initialised QP sequence with matrix shift using
 		 *	the online active set strategy.
 		 *	\return SUCCESSFUL_RETURN \n
 		 			RET_MAX_NWSR_REACHED \n
@@ -126,8 +126,8 @@ class SQProblem : public QProblem
 								const Constraints* const guessedConstraints = 0	/**< Optimal working set of constraints for solution (xOpt,yOpt). \n
 																					 (If a null pointer is passed, the previous working set of constraints is kept!) */
 								);
-		
-		/** Solves an initialised QP sequence with matrix shift using 
+
+		/** Solves an initialised QP sequence with matrix shift using
 		 *	the online active set strategy.
 		 *	\return SUCCESSFUL_RETURN \n
 		 			RET_MAX_NWSR_REACHED \n
@@ -164,7 +164,7 @@ class SQProblem : public QProblem
 																					 (If a null pointer is passed, the previous working set of constraints is kept!) */
 								);
 
-		/** Solves an initialised QP sequence with matrix shift using 
+		/** Solves an initialised QP sequence with matrix shift using
 		 *	the online active set strategy, where QP data is read from files.
 		 *	\return SUCCESSFUL_RETURN \n
 		 			RET_MAX_NWSR_REACHED \n
@@ -203,7 +203,7 @@ class SQProblem : public QProblem
 																					 (If a null pointer is passed, the previous working set of constraints is kept!) */
 								);
 
-		/** Solves an initialised QP sequence (without matrix shift) using 
+		/** Solves an initialised QP sequence (without matrix shift) using
 		 *	the online active set strategy.
 		 *	By default, QP solution is started from previous solution. If a guess
 		 *	for the working set is provided, an initialised homotopy is performed.
@@ -240,7 +240,7 @@ class SQProblem : public QProblem
 																					 (If a null pointer is passed, the previous working set of constraints is kept!) */
 								);
 
-		/** Solves an initialised QP sequence (without matrix shift) using 
+		/** Solves an initialised QP sequence (without matrix shift) using
 		 *  the online active set strategy, where QP data is read from files.
 		 *	By default, QP solution is started from previous solution. If a guess
 		 *	for the working set is provided, an initialised homotopy is performed.

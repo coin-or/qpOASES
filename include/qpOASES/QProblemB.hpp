@@ -49,7 +49,7 @@ BEGIN_NAMESPACE_QPOASES
 
 class SolutionAnalysis;
 
-/** 
+/**
  *	\brief Implements the online active set strategy for box-constrained QPs.
  *
  *	Class for setting up and solving quadratic programs with bounds (= box constraints) only.
@@ -89,7 +89,7 @@ class QProblemB
 		virtual ~QProblemB( );
 
 		/** Assignment operator (deep copy). */
-		QProblemB& operator=(	const QProblemB& rhs	/**< Rhs object. */
+		virtual QProblemB& operator=(	const QProblemB& rhs	/**< Rhs object. */
 								);
 
 
@@ -135,7 +135,7 @@ class QProblemB
 																		 (If a null pointer is passed, the old dual solution is kept!) */
 							const Bounds* const guessedBounds = 0,	/**< Optimal working set of bounds for solution (xOpt,yOpt). \n
 																		 (If a null pointer is passed, all bounds are assumed inactive!) */
-							const real_t* const _R = 0				/**< Pre-computed (upper triangular) Cholesky factor of Hessian matrix. 
+							const real_t* const _R = 0				/**< Pre-computed (upper triangular) Cholesky factor of Hessian matrix.
 																	 	 The Cholesky factor must be stored in a real_t array of size nV*nV
 																		 in row-major format. Note: Only used if xOpt/yOpt and gB are NULL! \n
 																		 (If a null pointer is passed, Cholesky decomposition is computed internally!) */
@@ -178,7 +178,7 @@ class QProblemB
 																		 (If a null pointer is passed, the old dual solution is kept!) */
 							const Bounds* const guessedBounds = 0,	/**< Optimal working set of bounds for solution (xOpt,yOpt). \n
 																		 (If a null pointer is passed, all bounds are assumed inactive!) */
-							const real_t* const _R = 0				/**< Pre-computed (upper triangular) Cholesky factor of Hessian matrix. 
+							const real_t* const _R = 0				/**< Pre-computed (upper triangular) Cholesky factor of Hessian matrix.
 																	 	 The Cholesky factor must be stored in a real_t array of size nV*nV
 																		 in row-major format. Note: Only used if xOpt/yOpt and gB are NULL! \n
 																		 (If a null pointer is passed, Cholesky decomposition is computed internally!) */
@@ -221,7 +221,7 @@ class QProblemB
 																		 (If a null pointer is passed, the old dual solution is kept!) */
 							const Bounds* const guessedBounds = 0,	/**< Optimal working set of bounds for solution (xOpt,yOpt). \n
 																		 (If a null pointer is passed, all bounds are assumed inactive!) */
-							const char* const R_file = 0			/**< Name of the file where a pre-computed (upper triangular) Cholesky factor 
+							const char* const R_file = 0			/**< Name of the file where a pre-computed (upper triangular) Cholesky factor
 																		 of the Hessian matrix is stored. \n
 																		 (If a null pointer is passed, Cholesky decomposition is computed internally!) */
 							);
@@ -291,22 +291,22 @@ class QProblemB
 								const Bounds* const guessedBounds = 0	/**< Optimal working set of bounds for solution (xOpt,yOpt). \n
 																			 (If a null pointer is passed, the previous working set is kept!) */
 								);
-											
+
 
 		/** Writes a vector with the state of the working set
-		 *	\return SUCCESSFUL_RETURN \n 
+		 *	\return SUCCESSFUL_RETURN \n
 		 *	        RET_INVALID_ARGUMENTS */
 		virtual returnValue getWorkingSet(	real_t* workingSet				/** Output: array containing state of the working set. */
 											);
 
 		/** Writes a vector with the state of the working set of bounds
-		 *	\return SUCCESSFUL_RETURN \n 
+		 *	\return SUCCESSFUL_RETURN \n
 		 *	        RET_INVALID_ARGUMENTS */
 		virtual returnValue getWorkingSetBounds(	real_t* workingSetB		/** Output: array containing state of the working set of bounds. */
 													);
 
 		/** Writes a vector with the state of the working set of constraints
-		 *	\return SUCCESSFUL_RETURN \n 
+		 *	\return SUCCESSFUL_RETURN \n
 		 *	        RET_INVALID_ARGUMENTS */
 		virtual returnValue getWorkingSetConstraints(	real_t* workingSetC	/** Output: array containing state of the working set of constraints. */
 														);
@@ -447,12 +447,12 @@ class QProblemB
 		/** Frees all allocated memory.
 		 *  \return SUCCESSFUL_RETURN */
 		returnValue clear( );
-		
+
 		/** Copies all members from given rhs object.
 		 *  \return SUCCESSFUL_RETURN */
 		returnValue copy(	const QProblemB& rhs	/**< Rhs object. */
 							);
-		
+
 		/** If Hessian type has been set by the user, nothing is done.
 		 *  Otherwise the Hessian type is set to HST_IDENTITY, HST_ZERO, or
 		 *  HST_POSDEF (default), respectively.
@@ -483,7 +483,7 @@ class QProblemB
 		virtual returnValue computeCholesky( );
 
 
-		/** Computes initial Cholesky decomposition of the (simply projected) Hessian 
+		/** Computes initial Cholesky decomposition of the (simply projected) Hessian
 		 *  making use of the function computeCholesky().
 		 *	\return SUCCESSFUL_RETURN \n
 		 *			RET_HESSIAN_NOT_SPD \n
@@ -544,7 +544,7 @@ class QProblemB
 										);
 
 
-		/** Sets up internal QP data. 
+		/** Sets up internal QP data.
 		 *	\return SUCCESSFUL_RETURN \n
 					RET_INVALID_ARGUMENTS */
 		returnValue setupQPdata(	SymmetricMatrix *_H,	 	/**< Hessian matrix.*/
@@ -632,7 +632,7 @@ class QProblemB
 		 *	\return SUCCESSFUL_RETURN */
 		inline returnValue setH(	SymmetricMatrix* H_new	/**< New Hessian matrix (a shallow copy is made). */
 									);
-									
+
 		/** Sets dense Hessian matrix of the QP.
 		 *  If a null pointer is passed and
 		 *  a) hessianType is HST_IDENTITY, nothing is done,
@@ -753,7 +753,7 @@ class QProblemB
 										) const;
 
 
-		/** Creates a sparse diagonal (square-)matrix which is a given 
+		/** Creates a sparse diagonal (square-)matrix which is a given
 		 *  multiple of the identity matrix.
 		 *  \return Diagonal matrix \n
 		 */
@@ -1001,7 +1001,7 @@ class QProblemB
 		int rampOffset;				/**< Offset index for Ramping. */
 
 		Options options;			/**< Struct containing all user-defined options for solving QPs. */
-		
+
 		Flipper flipper;			/**< Struct for making a temporary copy of the matrix factorisations. */
 
 		TabularOutput tabularOutput;	/**< Struct storing information for tabular output (printLevel == PL_TABULAR). */

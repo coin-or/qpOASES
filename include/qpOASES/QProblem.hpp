@@ -88,7 +88,7 @@ class QProblem : public QProblemB
 		virtual ~QProblem( );
 
 		/** Assignment operator (deep copy). */
-		QProblem& operator=(	const QProblem& rhs	/**< Rhs object. */
+		virtual QProblem& operator=(	const QProblem& rhs	/**< Rhs object. */
 								);
 
 
@@ -142,7 +142,7 @@ class QProblem : public QProblemB
 																				 (If a null pointer is passed, all bounds are assumed inactive!) */
 							const Constraints* const guessedConstraints = 0,/**< Optimal working set of constraints for solution (xOpt,yOpt). \n
 																				 (If a null pointer is passed, all constraints are assumed inactive!) */
-							const real_t* const _R = 0						/**< Pre-computed (upper triangular) Cholesky factor of Hessian matrix. 
+							const real_t* const _R = 0						/**< Pre-computed (upper triangular) Cholesky factor of Hessian matrix.
 																			 	 The Cholesky factor must be stored in a real_t array of size nV*nV
 																				 in row-major format. Note: Only used if xOpt/yOpt and gB are NULL! \n
 																				 (If a null pointer is passed, Cholesky decomposition is computed internally!) */
@@ -194,7 +194,7 @@ class QProblem : public QProblemB
 																				 (If a null pointer is passed, all bounds are assumed inactive!) */
 							const Constraints* const guessedConstraints = 0,/**< Optimal working set of constraints for solution (xOpt,yOpt). \n
 																				 (If a null pointer is passed, all constraints are assumed inactive!) */
-							const real_t* const _R = 0						/**< Pre-computed (upper triangular) Cholesky factor of Hessian matrix. 
+							const real_t* const _R = 0						/**< Pre-computed (upper triangular) Cholesky factor of Hessian matrix.
 																			 	 The Cholesky factor must be stored in a real_t array of size nV*nV
 																				 in row-major format. Note: Only used if xOpt/yOpt and gB are NULL! \n
 																				 (If a null pointer is passed, Cholesky decomposition is computed internally!) */
@@ -246,7 +246,7 @@ class QProblem : public QProblemB
 																				 (If a null pointer is passed, all bounds are assumed inactive!) */
 							const Constraints* const guessedConstraints = 0,/**< Optimal working set of constraints for solution (xOpt,yOpt). \n
 																				 (If a null pointer is passed, all constraints are assumed inactive!) */
-							const char* const R_file = 0					/**< Name of the file where a pre-computed (upper triangular) Cholesky factor 
+							const char* const R_file = 0					/**< Name of the file where a pre-computed (upper triangular) Cholesky factor
 																			 	 of the Hessian matrix is stored. \n
 																				 (If a null pointer is passed, Cholesky decomposition is computed internally!) */
 							);
@@ -347,19 +347,19 @@ class QProblem : public QProblemB
 										);
 
 		/** Writes a vector with the state of the working set
-		 *	\return SUCCESSFUL_RETURN \n 
+		 *	\return SUCCESSFUL_RETURN \n
 		 *	        RET_INVALID_ARGUMENTS */
 		virtual returnValue getWorkingSet(	real_t* workingSet		/** Output: array containing state of the working set. */
 											);
 
 		/** Writes a vector with the state of the working set of bounds
-		 *	\return SUCCESSFUL_RETURN \n 
+		 *	\return SUCCESSFUL_RETURN \n
 		 *	        RET_INVALID_ARGUMENTS */
 		virtual returnValue getWorkingSetBounds(	real_t* workingSetB		/** Output: array containing state of the working set of bounds. */
 													);
 
 		/** Writes a vector with the state of the working set of constraints
-		 *	\return SUCCESSFUL_RETURN \n 
+		 *	\return SUCCESSFUL_RETURN \n
 		 *	        RET_INVALID_ARGUMENTS */
 		virtual returnValue getWorkingSetConstraints(	real_t* workingSetC	/** Output: array containing state of the working set of constraints. */
 														);

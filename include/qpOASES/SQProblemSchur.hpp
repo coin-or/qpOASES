@@ -143,7 +143,7 @@ class SQProblemSchur : public SQProblem
 		virtual ~SQProblemSchur( );
 
 		/** Assignment operator (deep copy). */
-		SQProblemSchur& operator=(	const SQProblemSchur& rhs	/**< Rhs object. */
+		virtual SQProblemSchur& operator=(	const SQProblemSchur& rhs	/**< Rhs object. */
 								);
 
 		/** Clears all data structures of QProblem except for QP data.
