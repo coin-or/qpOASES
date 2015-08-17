@@ -44,12 +44,15 @@
  *	</ul>
  *
  *	Moreover, the following developers have contributed code to qpOASES's 
- *	third-party interfaces (in alphabetical order):
- *  <ul>
+ *	third-party interfaces or provided additional functionality 
+ *	(in alphabetical order):
+ *	<ul>
  *	<li>Alexander Buchner
  *	<li>Holger Diedam
+ *	<li>Dennis Janka
  *	<li>Manuel Kudruss
- *  <li>Sebastian F. Walter
+ *	<li>Andreas Waechter
+ *	<li>Sebastian F. Walter
  *	</ul>
  *
  *	Finally, the following people have not contributed to the source code, 

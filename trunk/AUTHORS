@@ -37,12 +37,15 @@ following main developers (in alphabetical order):
 FURTHER AUTHORS
 ===============
 
-Moreover, the following developers have contributed code to qpOASES's 
-third-party interfaces (in alphabetical order):
+Moreover, the following developers have contributed code to qpOASES's
+third-party interfaces or provided additional functionality 
+(in alphabetical order):
 
     Alexander Buchner
     Holger Diedam
+    Dennis Janka
     Manuel Kudruss
+    Andreas Waechter
     Sebastian F. Walter
 
 
