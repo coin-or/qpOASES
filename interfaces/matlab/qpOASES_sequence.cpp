@@ -400,7 +400,7 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 	if ( ( strcmp( typeString,"i" ) == 0 ) || ( strcmp( typeString,"I" ) == 0 ) )
 	{
 		/* consistency checks */
-		if ( ( nlhs < 2 ) || ( nlhs > 7 ) )
+		if ( ( nlhs < 1 ) || ( nlhs > 7 ) )
 		{
 			myMexErrMsgTxt( "ERROR (qpOASES): Invalid number of output arguments!\nType 'help qpOASES_sequence' for further information." );
 			return;
