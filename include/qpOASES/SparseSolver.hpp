@@ -37,8 +37,6 @@
 
 #include <qpOASES/Utils.hpp>
 
-/* typedef for Fortran INTEGER type.  Might be platform dependent! */
-typedef int fint;
 
 BEGIN_NAMESPACE_QPOASES
 

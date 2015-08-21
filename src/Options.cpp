@@ -158,11 +158,8 @@ returnValue Options::setToDefault( )
     dropEqConPriority             =  1;
     dropIneqConPriority           =  1;
 
-    // For now: options only for Schur complement version
     enableInertiaCorrection       =  BT_TRUE;
     rcondSMin                     =  1.0e-14;
-
-    printResiduals                =  BT_FALSE;
 
 	return SUCCESSFUL_RETURN;
 }
@@ -494,9 +491,6 @@ returnValue Options::print( ) const
 	snprintf( myPrintfString,MAX_STRING_LENGTH,"epsNZCTests                    =  %e\n",epsNZCTests );
 	myPrintf( myPrintfString );
 
-	snprintf( myPrintfString,MAX_STRING_LENGTH,"printResiduals                 =  %d\n",(int)printResiduals);
-	myPrintf( myPrintfString );
-
 	myPrintf( "\n\n" );
 
 	#endif /* __SUPPRESSANYOUTPUT__ */
@@ -517,7 +511,6 @@ returnValue Options::copy(	const Options& rhs
 							)
 {
 	printLevel             = rhs.printLevel;
-	printResiduals         = rhs.printResiduals;
 
 	enableRamping                 =  rhs.enableRamping;
 	enableFarBounds               =  rhs.enableFarBounds;

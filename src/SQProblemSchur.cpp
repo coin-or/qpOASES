@@ -36,7 +36,6 @@
 
 #include <qpOASES/SQProblemSchur.hpp>
 
-//#define __DEBUG_ITER__
 
 #ifndef __MATLAB__
 # include <cstdarg>
@@ -1158,18 +1157,7 @@ returnValue SQProblemSchur::addBound(	int_t number, SubjectToStatus B_status,
 		}
 	}
 
-#if 0  // I (AW) don't think this is needed if we don't use QR factorization of constraints.
-
-	/* II) SWAP INDEXLIST OF FREE VARIABLES:
-         *     move the variable to be fixed to the end of the list of free variables. */
-	int_t lastfreenumber = bounds.getFree( )->getLastNumber( );
-		if ( lastfreenumber != number )
-			if ( bounds.swapFree( number,lastfreenumber ) != SUCCESSFUL_RETURN )
-				THROWERROR( RET_ADDBOUND_FAILED );
-#endif
-		/* Here was QR update stuff */
-
-	/* V) UPDATE INDICES */
+	/* II) UPDATE INDICES */
 	tabularOutput.idxAddB = number;
 	if ( bounds.moveFreeToFixed( number,B_status ) != SUCCESSFUL_RETURN )
 		return THROWERROR( RET_ADDBOUND_FAILED );
@@ -2178,12 +2166,13 @@ returnValue SQProblemSchur::backsolveR(	const real_t* const b, BooleanType trans
 	return THROWERROR( RET_UNKNOWN_BUG );
 }
 
+
 returnValue SQProblemSchur::backsolveR(	const real_t* const b, BooleanType transposed, BooleanType removingBound, real_t* const a ) const
 {
 	return THROWERROR( RET_UNKNOWN_BUG );
 }
 
-#if 1 // update QR factorization using Givens rotations
+
 real_t SQProblemSchur::calcDetSchur( int_t idxDel )
 {
 	if ( nS <= 0 )
@@ -2272,6 +2261,7 @@ real_t SQProblemSchur::calcDetSchur( int_t idxDel )
 
 	return newDet;
 }
+
 
 returnValue SQProblemSchur::updateSchurQR( int_t idxDel )
 {
@@ -2408,6 +2398,7 @@ returnValue SQProblemSchur::updateSchurQR( int_t idxDel )
 	return SUCCESSFUL_RETURN;
 }
 
+
 returnValue SQProblemSchur::backsolveSchurQR( int_t dimS, const real_t* const rhs, int_t dimRhs, real_t* const sol )
 {
 	if( dimS < 1 || dimRhs < 1 )
@@ -2445,147 +2436,6 @@ returnValue SQProblemSchur::backsolveSchurQR( int_t dimS, const real_t* const rh
 	return SUCCESSFUL_RETURN;
 }
 
-#else // compute QR factorization from scratch every time using LAPACK
-
-real_t SQProblemSchur::calcDetSchur( int_t idxDel )
-{
-	int_t i, j;
-	long INFO;
-	unsigned long M = nS;
-	unsigned long N = nS;
-	unsigned long LDA = nSmax;
-	unsigned long LWORK = nS*100+1;
-	double *WORK = new double[LWORK];
-
-	real_t *tempR = new double[nSmax*nSmax];
-	real_t *tempQ = new double[nSmax];
-	real_t det;
-
-	for( j=0; j<nS; j++ )
-		for( i=0; i<nS; i++ )
-			tempR[i+j*nSmax] = S[i+j*nSmax];
-
-	for( i=0; i<nSmax; i++ )
-		tempQ[i] = 0.0;
-
-	GEQRF( &M, &N, tempR, &LDA, tempQ, WORK, &LWORK, &INFO );
-	delete[] WORK;
-
-	if ( INFO != 0 )
-	{
-		MyPrintf("GEQRF returns INFO = %d\n", INFO);
-		return RET_QR_FACTORISATION_FAILED;
-	}
-
-	/* Compute determinant */
-	det = 1.0;
-	int_t countNz = 0;
-	for( i=0; i<nS; i++ )
-	{
-		det *= tempR[i+i*nSmax];
-
-		/* Householder reflections have determinant -1 */
-		if( tempQ[i] != 0.0 )
-			countNz++;
-	}
-	if( countNz % 2 == 1 )
-		det = -det;
-
-	delete[] tempR;
-	delete[] tempQ;
-
-	return det;
-}
-
-returnValue SQProblemSchur::updateSchurQR( int_t idxDel )
-{
-	int_t i, j, INFO;
-	unsigned long M = nS;
-	unsigned long N = nS;
-	unsigned long LDA = nSmax;
-	unsigned long LWORK = nS*100+1;
-	double *WORK = new double[LWORK];
-
-	for( j=0; j<nS; j++ )
-		for( i=0; i<nS; i++ )
-			R_[i+j*nSmax] = S[i+j*nSmax];
-
-	for( i=0; i<nSmax; i++ )
-		Q_[i] = 0.0;
-
-	GEQRF( &M, &N, R_, &LDA, Q_, WORK, &LWORK, &INFO );
-	delete[] WORK;
-
-	if ( INFO != 0 )
-	{
-		MyPrintf("GEQRF returns INFO = %d\n", INFO);
-		return RET_QR_FACTORISATION_FAILED;
-	}
-
-	/* Compute determinant */
-	detS = 1.0;
-	int_t countNz = 0;
-	for( i=0; i<nS; i++ )
-	{
-		detS *= R_[i+i*nSmax];
-
-		/* Householder reflections have determinant -1 */
-		if( Q_[i] != 0.0 )
-			countNz++;
-	}
-	if( countNz % 2 == 1 )
-		detS = -detS;
-
-	/* Monitoring of condition number of S not implemented */
-	rcondS = 1.0;
-
-	return SUCCESSFUL_RETURN;
-}
-
-
-returnValue SQProblemSchur::backsolveSchurQR( int_t dimS, const real_t* const rhs, int_t dimRhs, real_t* const sol )
-{
-	if( dimS < 1 || dimRhs < 1 )
-		return SUCCESSFUL_RETURN;
-
-	if( dimRhs > 1 )
-	{
-		MyPrintf("backsolve not implemented for dimRhs = %d\n", dimRhs);
-		return RET_QR_FACTORISATION_FAILED;
-	}
-
-	int_t i, INFO;
-	unsigned long NRHS = 1;
-	unsigned long M = dimS;
-	unsigned long LDA = nSmax;
-	unsigned long LDC = dimS;
-	unsigned long K = dimS;
-	unsigned long LWORK = dimS*100+1;
-	double *WORK = new double[LWORK];
-
-	for( i=0; i<dimS; i++ )
-		sol[i] = rhs[i];
-
-	/* Compute sol = Q**T * rhs */
-	ORMQR( "L", "T", &M, &NRHS, &K, R_, &LDA, Q_, sol, &LDC, WORK, &LWORK, &INFO );
-	delete[] WORK;
-	if ( INFO != 0 )
-	{
-		MyPrintf("ORMQR returns INFO = %d\n", INFO);
-		return RET_QR_FACTORISATION_FAILED;
-	}
-
-	/* Solve Rx = sol */
-	TRTRS( "U", "N", "N", &M, &NRHS, R_, &LDA, sol, &LDC, &INFO );
-	if ( INFO != 0 )
-	{
-		MyPrintf("TRTRS returns INFO = %d\n", INFO);
-		return RET_QR_FACTORISATION_FAILED;
-	}
-
-	return SUCCESSFUL_RETURN;
-}
-#endif
 
 returnValue SQProblemSchur::stepCalcRhs( int_t nFR, int_t nFX, int_t nAC, int_t* FR_idx, int_t* FX_idx, int_t* AC_idx, real_t& rhs_max, const real_t* const delta_g, const real_t* const delta_lbA, const real_t* const delta_ubA,
 												const real_t* const delta_lb, const real_t* const delta_ub,
@@ -2878,10 +2728,6 @@ returnValue SQProblemSchur::stepCalcResid(int_t nFR, int_t nFX, int_t nAC, int_t
 				for ( i=0; i<nFR; ++i )
 					if (rnrm < getAbs (tempA[i]))
 						rnrm = getAbs (tempA[i]);
-#if DBGOUT
-				for ( i=0; i<nFR; ++i )
-				  MyPrintf("residA[%3d] = %23.16e\n", i, tempA[i]);
-#endif
 
 				if (!Delta_bC_isZero)
 				{
@@ -2899,28 +2745,14 @@ returnValue SQProblemSchur::stepCalcResid(int_t nFR, int_t nFX, int_t nAC, int_t
 					for ( i=0; i<nAC; ++i )
 						tempB[i] = 0.0;
 				}
-#if DBGOUT
-				for ( i=0; i<nAC; ++i )
-				  MyPrintf("DBG tempB[%3d] = %23.16e\n", i, tempB[i]);
-				for ( i=0; i<nFR; ++i )
-				  MyPrintf("DBG delta_xFR[%3d] = %23.16e\n", i, delta_xFR[i]);
-				for ( i=0; i<nFX; ++i )
-				  MyPrintf("DBG delta_xFX[%3d] = %23.16e\n", i, delta_xFX[i]);
-#endif
 
 				A->times(constraints.getActive(), bounds.getFree(), 1, -1.0, delta_xFR, nFR, 1.0, tempB, nAC);
-#if DBGOUT
-				for ( i=0; i<nAC; ++i )
-				  MyPrintf("DBG tempB2[%3d] = %23.16e\n", i, tempB[i]);
-#endif
+
 				A->times(constraints.getActive(), bounds.getFixed(), 1, -1.0, delta_xFX, nFX, 1.0, tempB, nAC);
 				for ( i=0; i<nAC; ++i )
 					if (rnrm < getAbs (tempB[i]))
 						rnrm = getAbs (tempB[i]);
-#if DBGOUT
-				for ( i=0; i<nAC; ++i )
-				  MyPrintf("residB[%3d] = %23.16e\n", i, tempB[i]);
-#endif
+
 	return SUCCESSFUL_RETURN;
 }
 
@@ -3016,13 +2848,6 @@ returnValue SQProblemSchur::determineStepDirection2(	const real_t* const delta_g
 	bounds.getFixed( )->getNumberArray( &FX_idx );
 	constraints.getActive( )->getNumberArray( &AC_idx );
 
-#if 0
-	for ( i=0; i<nFR; i++ ) MyPrintf( "FR_idx[%3d] = %3d\n", i, FR_idx[i]);
-	for ( i=0; i<nFX; i++ ) MyPrintf( "FX_idx[%3d] = %3d\n", i, FX_idx[i]);
-	for ( i=0; i<nAC; i++ ) MyPrintf( "AC_idx[%3d] = %3d\n", i, AC_idx[i]);
-	MyPrintf( "status = %d\n", status);
-#endif
-
 
 	/* I) DETERMINE delta_xFX (this is exact, does not need refinement) */
 	if ( Delta_bB_isZero == BT_FALSE )
@@ -3073,10 +2898,6 @@ returnValue SQProblemSchur::determineStepDirection2(	const real_t* const delta_g
 		real_t* rhs = new real_t[dim];
 		real_t* sol = new real_t[dim];
 
-#if DBGOUT
-		for (i=0; i<nFR;i++) MyPrintf( "tempA(%3d)=%23.16e\n",i+1,tempA[i]);
-		for (i=0; i<nAC;i++) MyPrintf( "tempB(%3d)=%23.16e\n",i+1,tempB[i]);
-#endif
 		/* Iterative refinement loop for delta_xFR, delta_yAC */
 		for ( r=0; r<=options.numRefinementSteps; ++r )
 		{
@@ -3084,22 +2905,13 @@ returnValue SQProblemSchur::determineStepDirection2(	const real_t* const delta_g
 			if (retval != SUCCESSFUL_RETURN)
 				return retval;
 
-#if DBGOUT
-			for (i=0; i<dim;i++) MyPrintf( "rhs_ma27[%3d]=%23.16e\n",i,rhs[i]);
-#endif
 			retval = sparseSolver->solve(dim, rhs, sol);
-#if DBGOUT
-			for (i=0; i<dim;i++) MyPrintf( "sol_ma27[%3d]=%23.16e\n",i,sol[i]);
-#endif
+
 			if (retval != SUCCESSFUL_RETURN)
 			{
 				MyPrintf( "sparseSolver->solve (first time) failed.\n");
 				return THROWERROR(RET_MATRIX_FACTORISATION_FAILED); // TODO: Different return code
 			}
-
-#if DBGOUT
-			  for (i=0; i<dim;i++) MyPrintf( "sol[%3d]=%23.16e\n",i,sol[i]);
-#endif
 
 			if ( nS > 0 )
 			{
@@ -3141,17 +2953,6 @@ returnValue SQProblemSchur::determineStepDirection2(	const real_t* const delta_g
 		if (retval != SUCCESSFUL_RETURN)
 			return retval;
 	}
-
-#if DBGOUT
-	for (i=0; i<nFX; i++)
-	  MyPrintf("delta_xFX[%3d] = %23.15e\n", i,delta_xFX[i]);
-	for (i=0; i<nFR; i++)
-	  MyPrintf("delta_xFR[%3d] = %23.15e\n", i,delta_xFR[i]);
-	for (i=0; i<nAC; i++)
-	  MyPrintf("delta_yAC[%3d] = %23.15e\n", i,delta_yAC[i]);
-	for (i=0; i<nFX; i++)
-	  MyPrintf("delta_yFX[%3d] = %23.15e\n", i,delta_yFX[i]);
-#endif
 
 	return SUCCESSFUL_RETURN;
 }
@@ -3243,11 +3044,6 @@ returnValue SQProblemSchur::resetSchurComplement( BooleanType allowInertiaCorrec
 
 	A->getSparseSubmatrix( constraints.getActive(), bounds.getFree(), nFR+1, 1, numNonzerosA, irn+numNonzeros, jcn+numNonzeros, avals+numNonzeros, BT_FALSE);
 	numNonzeros += numNonzerosA;
-
-#if DBGOUT
-	for (int_t i=0; i<numNonzeros; i++)
-	  MyPrintf("A(%3d,%3d) = %23.16e\n", irn[i],jcn[i],avals[i]);
-#endif
 
 	// Call the linear solver
 	sparseSolver->reset();
@@ -3417,13 +3213,6 @@ returnValue SQProblemSchur::addToSchurComplement( int_t number, SchurUpdateType 
 
 	if ( options.printLevel == PL_HIGH )
 		MyPrintf( "added index %d with update type %d to Schur complement.  nS = %d\n", number, update, nS);
-#if 0
-	for (i=0;i<numNonzerosM;i++) MyPrintf("M[%3d]=%23.16e\n",Mpos[i],Mvals[i]);
-	for (i=0;i<numNonzerosN;i++) MyPrintf("N[%3d]=%23.16e\n",Npos[i],Nvals[i]);
-	MyPrintf("N_diag = %23.16e\n", N_diag);
-	for (i=0;i<nS;i++)
-	  for (int_t j=0; j<nS; j++) MyPrintf("S(%3d,%3d) = %23.16e\n",i+1,j+1,S[i+nSmax*j]);
-#endif
 
 	return SUCCESSFUL_RETURN;
 }

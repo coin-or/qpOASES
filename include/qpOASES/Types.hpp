@@ -173,6 +173,10 @@ typedef unsigned int uint_t;
 #endif /* __USE_LONG_INTEGERS__ */
 
 
+/** typedef for Fortran INTEGER type. Might be platform dependent! */
+typedef int fint;
+
+
 /** Summarises all possible logical values. */
 enum BooleanType
 {
@@ -251,6 +255,16 @@ enum SubjectToStatus
 	ST_INFEASIBLE_LOWER,	/**< (to be documented) */
 	ST_INFEASIBLE_UPPER,	/**< (to be documented) */
 	ST_UNDEFINED			/**< Status of bound/constraint undefined. */
+};
+
+/** Flag indicating which type of update generated column in Schur complement. */
+enum SchurUpdateType
+{
+	SUT_VarFixed,			/**< Free variable gets fixed. */
+	SUT_VarFreed,			/**< Fixed variable gets freed. */
+	SUT_ConAdded,			/**< Constraint becomes active. */
+	SUT_ConRemoved,			/**< Constraint becomes inactive. */
+	SUT_UNDEFINED			/**< Type of Schur update is undefined. */
 };
 
 /**

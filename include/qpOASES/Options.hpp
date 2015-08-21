@@ -95,7 +95,7 @@ class Options
 		 *	adjusting inconsistent ones.
 		 *	Note: This routine cannot (and does not try to) ensure that values
 		 *	      are set to reasonable values that make the QP solution work!
-		 *	\return SUCCESSFUL_RETURN \n 
+		 *	\return SUCCESSFUL_RETURN \n
 		 *          RET_OPTIONS_ADJUSTED */
 		returnValue ensureConsistency( );
 
@@ -132,7 +132,7 @@ class Options
 		BooleanType enableEqualities;			/**< Specifies whether equalities shall be always treated as active constraints. */
 
 		real_t terminationTolerance;			/**< Termination tolerance. */
-		real_t boundTolerance;					/**< Lower/upper (constraints') bound tolerance (an inequality constraint whose lower and 
+		real_t boundTolerance;					/**< Lower/upper (constraints') bound tolerance (an inequality constraint whose lower and
 													 upper bounds differ by less is regarded to be an equality constraint). */
 		real_t boundRelaxation;					/**< Offset for relaxing (constraints') bounds at beginning of an initial homotopy. It is also as initial value for far bounds. */
 		real_t epsNum;							/**< Numerator tolerance for ratio tests. */
@@ -153,7 +153,6 @@ class Options
 		real_t epsLITests;						/**< Tolerance for linear independence tests. */
 		real_t epsNZCTests;						/**< Tolerance for nonzero curvature tests. */
 
-		// For now: only for Schur complement version
 		real_t rcondSMin;						/**< Minimum reciprocal condition number of S before refactorization is triggered */
 		BooleanType enableInertiaCorrection;	/**< Specifies whether the working set should be repaired when negative curvature is discovered during hotstart. */
 
@@ -161,7 +160,6 @@ class Options
 		int_t    dropBoundPriority;				/**< ... */
         int_t    dropEqConPriority;				/**< ... */
         int_t    dropIneqConPriority;			/**< ... */
-        BooleanType printResiduals;             /**< If true, it will print the internal qpOASES residuals and other information per iteration */
 };
 
 

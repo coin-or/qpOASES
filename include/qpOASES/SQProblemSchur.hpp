@@ -383,16 +383,6 @@ class SQProblemSchur : public SQProblem
 			matrix) with vector.  y = alpha * M^T * x + beta * y */
 		returnValue computeMTransTimes( real_t alpha, const real_t* const x, real_t beta, real_t* const y );
 
-		/** Flag indicating which type of update generated column in Schur complement. */
-		enum SchurUpdateType
-		{
-			SUT_VarFixed,					/**< Free variable gets fixed. */
-			SUT_VarFreed,					/**< Fixed variable gets freed. */
-			SUT_ConAdded,					/**< Constraint becomes active. */
-			SUT_ConRemoved,					/**< Constraint becomes inactive. */
-			SUT_UNDEFINED					/**< Type of Schur update is undefined. */
-		};
-
 		/** Add a row/column to the Schur complement. */
 		returnValue addToSchurComplement( int_t number, SchurUpdateType update, int_t numNonzerosM, const sparse_int_t* M_pos, const real_t* const M_vals, int_t numNonzerosN, const sparse_int_t* Npos, const real_t* const Nvals, real_t N_diag );
 
