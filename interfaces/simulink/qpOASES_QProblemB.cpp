@@ -312,7 +312,7 @@ static void mdlOutputs(SimStruct *S, int_T tid)
 	in_ub = ssGetInputPortRealSignalPtrs(S, 2);
 
 	/* ... and to the QP data */
-	problem = (QProblemB *) ssGetPWork(S)[0];
+	problem = (QProblemB*) ssGetPWork(S)[0];
 
 	H  = (real_t *) ssGetPWork(S)[1];
 	g  = (real_t *) ssGetPWork(S)[2];
@@ -404,7 +404,7 @@ static void mdlTerminate(SimStruct *S)
 	getGlobalMessageHandler( )->reset( );
 
 	if ( ssGetPWork(S)[0] != 0 )
-		delete ssGetPWork(S)[0];
+		delete ((QProblemB*)(ssGetPWork(S)[0]));
 
 	for ( i=1; i<5; ++i )
 	{

@@ -368,7 +368,7 @@ static void mdlOutputs(SimStruct *S, int_T tid)
 
 
 	/* ... and to the QP data */
-	problem = (QProblem *) ssGetPWork(S)[0];
+	problem = (QProblem*)(ssGetPWork(S)[0]);
 
 	H   = (real_t *) ssGetPWork(S)[1];
 	g   = (real_t *) ssGetPWork(S)[2];
@@ -474,12 +474,12 @@ static void mdlTerminate(SimStruct *S)
 	USING_NAMESPACE_QPOASES
 
 	int i;
-
+	
 	/* reset global message handler */
 	getGlobalMessageHandler( )->reset( );
 
 	if ( ssGetPWork(S)[0] != 0 )
-		delete ssGetPWork(S)[0];
+		delete ((QProblem*)(ssGetPWork(S)[0]));
 
 	for ( i=1; i<8; ++i )
 	{
