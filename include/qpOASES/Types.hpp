@@ -63,7 +63,7 @@
 #define __ALWAYS_INITIALISE_WITH_ALL_EQUALITIES__
 
 
-/* Uncomment the following line to activate the use of an alternative Givens 
+/* Uncomment the following line to activate the use of an alternative Givens
  * plane rotation requiring only three multiplications. */
 /* #define __USE_THREE_MULTS_GIVENS__ */
 
@@ -91,7 +91,7 @@
 
 	/** Macro for switching on/off the beginning of the qpOASES namespace definition. */
 	#define BEGIN_NAMESPACE_QPOASES
-    
+
 	/** Macro for switching on/off the end of the qpOASES namespace definition. */
 	#define END_NAMESPACE_QPOASES
 
@@ -108,10 +108,10 @@
 
 	/** Macro for switching on/off the end of the qpOASES namespace definition. */
 	#define END_NAMESPACE_QPOASES    }
-	
+
 	/** Macro for switching on/off the use of the qpOASES namespace. */
 	#define USING_NAMESPACE_QPOASES  using namespace qpOASES;
-	
+
 	/** Macro for switching on/off references to the qpOASES namespace. */
 	#define REFER_NAMESPACE_QPOASES  qpOASES::
 
@@ -119,19 +119,19 @@
 
 
 /* Avoid any printing on embedded platforms. */
-#if defined(__DSPACE__) || defined(__XPCTARGET__) 
+#if defined(__DSPACE__) || defined(__XPCTARGET__)
   #define __SUPPRESSANYOUTPUT__
   #define __NO_SNPRINTF__
 #endif
 
 
 #ifdef __NO_SNPRINTF__
-  #if (!defined(_MSC_VER)) || defined(__DSPACE__) || defined(__XPCTARGET__) 
+  #if (!defined(_MSC_VER)) || defined(__DSPACE__) || defined(__XPCTARGET__)
     /* If snprintf is not available, provide an empty implementation... */
     int snprintf( char* s, size_t n, const char* format, ... );
   #else
 	/* ... or substitute snprintf by _snprintf for Microsoft compilers. */
-    #define snprintf _snprintf    
+    #define snprintf _snprintf
   #endif
 #endif /* __NO_SNPRINTF__ */
 
@@ -147,6 +147,10 @@
 #define TT( I,J )  T[(I)*sizeT+(J)]
 
 
+/* If neither MA57 nor MA27 are selected, activate the dummy solver */
+#if !defined(SOLVER_MA27) && !defined(SOLVER_MA57)
+#define SOLVER_NONE
+#endif
 
 BEGIN_NAMESPACE_QPOASES
 
@@ -223,7 +227,7 @@ enum SubjectToType
 	ST_UNBOUNDED,		/**< Bound/constraint is unbounded. */
 	ST_BOUNDED,			/**< Bound/constraint is bounded but not fixed. */
 	ST_EQUALITY,		/**< Bound/constraint is fixed (implicit equality bound/constraint). */
-	ST_DISABLED,		/**< Bound/constraint is disabled (i.e. ignored when solving QP). */ 
+	ST_DISABLED,		/**< Bound/constraint is disabled (i.e. ignored when solving QP). */
 	ST_UNKNOWN			/**< Type of bound/constraint unknown. */
 };
 
@@ -242,7 +246,7 @@ enum SubjectToStatus
 /**
  *	\brief Stores internal information for tabular (debugging) output.
  *
- *	Struct storing internal information for tabular (debugging) output 
+ *	Struct storing internal information for tabular (debugging) output
  *	when using the (S)QProblem(B) objects.
  *
  *	\author Hans Joachim Ferreau
@@ -265,8 +269,8 @@ struct TabularOutput {
 /**
  *	\brief Struct containing the variable header for mat file.
  *
- *	Struct storing the header of a variable to be stored in 
- *	Matlab's binary format (using the outdated Level 4 variant 
+ *	Struct storing the header of a variable to be stored in
+ *	Matlab's binary format (using the outdated Level 4 variant
  *  for simplictiy).
  *
  *  Note, this code snippet has been inspired from the document
@@ -275,7 +279,7 @@ struct TabularOutput {
  *	\author Hans Joachim Ferreau
  *	\version 3.1
  *	\date 2013-2015
- */ 
+ */
 typedef struct {
 	long numericFormat;		/**< Flag indicating numerical format. */
 	long nRows;				/**< Number of rows. */
