@@ -25,7 +25,7 @@
 /**
  *	\file interfaces/octave/qpOASES.cpp
  *	\author Hans Joachim Ferreau, Alexander Buchner, Andreas Potschka
- *	\version 3.1
+ *	\version 3.2
  *	\date 2007-2015
  *
  *	Interface for Matlab(R) that enables to call qpOASES as a MEX function.

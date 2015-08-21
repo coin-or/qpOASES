@@ -25,7 +25,7 @@
 /**
  *	\file interfaces/simulink/qpOASES_simulink_utils.cpp
  *	\author Hans Joachim Ferreau
- *	\version 3.1
+ *	\version 3.2
  *	\date 2007-2015
  *
  *	Collects utility functions for Interface to Simulink(R) that

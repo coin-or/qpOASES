@@ -25,7 +25,7 @@
 /**
  *	\file include/qpOASES/MessageHandling.hpp
  *	\author Hans Joachim Ferreau, Andreas Potschka, Christian Kirches (thanks to Leonard Wirsching)
- *	\version 3.1
+ *	\version 3.2
  *	\date 2007-2015
  *
  *	Declaration of the MessageHandling class including global return values.
@@ -238,7 +238,7 @@ RET_NO_SPARSE_SOLVER							/**< No factorization routine for the KKT matrix inst
  *  by qpOASES modules and stores the corresponding global preferences.
  *
  *	\author Hans Joachim Ferreau (thanks to Leonard Wirsching)
- *	\version 3.1
+ *	\version 3.2
  *	\date 2007-2015
  */
 class MessageHandling

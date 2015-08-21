@@ -25,7 +25,7 @@
 /**
  *	\file testing/cpp/test_constraintProduct1.cpp
  *	\author Hans Joachim Ferreau
- *	\version 3.1
+ *	\version 3.2
  *	\date 2014-2015
  *
  *	Another example for testing qpOASES using the possibility to specify 

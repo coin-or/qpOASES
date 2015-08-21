@@ -25,7 +25,7 @@
 /**
  *	\file examples/example4CP.cpp
  *	\author Hans Joachim Ferreau
- *	\version 3.1
+ *	\version 3.2
  *	\date 2009-2015
  *
  *	Sample implementation of the ConstraintProduct class tailored for Example4.
@@ -41,7 +41,7 @@ BEGIN_NAMESPACE_QPOASES
  *	Example illustrating the use of the \a ConstraintProduct class.
  *
  *	\author Hans Joachim Ferreau
- *	\version 3.1
+ *	\version 3.2
  *	\date 2007-2015
  */
 class MyConstraintProduct : public ConstraintProduct

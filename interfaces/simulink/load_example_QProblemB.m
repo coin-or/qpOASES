@@ -25,7 +25,7 @@
 %%
 %%	Filename:  interfaces/simulink/load_example_QProblemB.m
 %%	Author:    Hans Joachim Ferreau (thanks to Aude Perrin)
-%%	Version:   3.1
+%%	Version:   3.2
 %%	Date:      2007-2015
 %%
 

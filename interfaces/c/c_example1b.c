@@ -25,7 +25,7 @@
 /**
  *	\file interfaces/c/example1b.c
  *	\author Hans Joachim Ferreau
- *	\version 3.1
+ *	\version 3.2
  *	\date 2014-2015
  *
  *	Very simple example for testing qpOASES (using QProblemB class through C interface).

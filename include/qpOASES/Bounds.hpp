@@ -25,7 +25,7 @@
 /**
  *	\file include/qpOASES/Bounds.hpp
  *	\author Hans Joachim Ferreau, Andreas Potschka, Christian Kirches
- *	\version 3.1
+ *	\version 3.2
  *	\date 2007-2015
  *
  *	Declaration of the Bounds class designed to manage working sets of
@@ -44,13 +44,13 @@ BEGIN_NAMESPACE_QPOASES
 
 
 /** 
- *	\brief Manages working sets of bounds (= box constraints).
+ *	\brief Manages working sets of bounds (i.e. box constraints).
  *
  *	This class manages working sets of bounds (= box constraints) 
  *	by storing index sets and other status information.
  *
  *	\author Hans Joachim Ferreau
- *	\version 3.1
+ *	\version 3.2
  *	\date 2007-2015
  */
 class Bounds : public SubjectTo

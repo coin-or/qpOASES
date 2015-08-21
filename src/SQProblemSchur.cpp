@@ -25,7 +25,7 @@
 /**
  *	\file src/SQProblemSchur.cpp
  *	\author Andreas Waechter and Dennis Janka, based on QProblem.cpp by Hans Joachim Ferreau, Andreas Potschka, Christian Kirches
- *	\version 3.1
+ *	\version 3.2
  *	\date 2012-2015
  *
  *	Implementation of the SQProblemSchur class which is able to use the newly

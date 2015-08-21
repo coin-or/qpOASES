@@ -25,7 +25,7 @@
 /**
  *	\file testing/cpp/test_sebastien1.cpp
  *	\author Sebastien B.
- *	\version 3.1
+ *	\version 3.2
  *	\date 2007-2015
  *
  *	Example that caused troubles in an earlier release.

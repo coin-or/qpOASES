@@ -25,7 +25,7 @@
 /**
  *	\file testing/cpp/test_bench.cpp
  *	\author Andreas Potschka, Christian Kirches, Hans Joachim Ferreau
- *	\version 3.1
+ *	\version 3.2
  *	\date 2010-2015
  *
  *	Unit test running all benchmark examples stored in problems directory.

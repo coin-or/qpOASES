@@ -25,7 +25,7 @@
 /**
  *	\file src/LAPACKReplacement.cpp
  *	\author Hans Joachim Ferreau, Andreas Potschka, Christian Kirches
- *	\version 3.1
+ *	\version 3.2
  *	\date 2007-2015
  *
  *  LAPACK replacement routines.
@@ -122,27 +122,27 @@ extern "C" void dtrtrs_(	const char *UPLO, const char *TRANS, const char *DIAG,
 							const unsigned long *N, const unsigned long *NRHS,
 							double *A, const unsigned long *LDA, double *B, const unsigned long *LDB, int *INFO )
 {
-	; // Dummy. If SQProblemSchur is to be used, system LAPACK must be used
+	; /* Dummy. If SQProblemSchur is to be used, system LAPACK must be used */
 }
 
 extern "C" void strtrs_(	const char *UPLO, const char *TRANS, const char *DIAG,
 							const unsigned long *N, const unsigned long *NRHS,
 							float *A, const unsigned long *LDA, float *B, const unsigned long *LDB, int *INFO )
 {
-	; // Dummy. If SQProblemSchur is to be used, system LAPACK must be used
+	; /* Dummy. If SQProblemSchur is to be used, system LAPACK must be used */
 }
 
 extern "C" void dtrcon_(	const char *NORM, const char *UPLO, const char *DIAG,
 							const unsigned long *N, double *A, const unsigned long *LDA,
 							double *RCOND, double *WORK, const unsigned long *IWORK, int *INFO )
 {
-	; // Dummy. If SQProblemSchur is to be used, system LAPACK must be used
+	; /* Dummy. If SQProblemSchur is to be used, system LAPACK must be used */
 }
 
 extern "C" void strcon_(	const char *NORM, const char *UPLO, const char *DIAG,
 							const unsigned long *N, float *A, const unsigned long *LDA,
 							float *RCOND, float *WORK, const unsigned long *IWORK, int *INFO )
 {
-	; // Dummy. If SQProblemSchur is to be used, system LAPACK must be used
+	; /* Dummy. If SQProblemSchur is to be used, system LAPACK must be used */
 }
 

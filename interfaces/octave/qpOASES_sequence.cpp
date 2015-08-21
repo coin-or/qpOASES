@@ -25,7 +25,7 @@
 /**
  *	\file interfaces/octave/qpOASES_sequence.cpp
  *	\author Hans Joachim Ferreau, Christian Kirches, Andreas Potschka, Alexander Buchner
- *	\version 3.1
+ *	\version 3.2
  *	\date 2007-2015
  *
  *	Interface for octave that enables to call qpOASES as a MEX function

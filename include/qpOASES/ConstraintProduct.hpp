@@ -25,7 +25,7 @@
 /**
  *	\file include/qpOASES/ConstraintProduct.hpp
  *	\author Hans Joachim Ferreau, Andreas Potschka, Christian Kirches
- *	\version 3.1
+ *	\version 3.2
  *	\date 2009-2015
  *
  *	Declaration of the ConstraintProduct class which allows to specify a
@@ -51,7 +51,7 @@ BEGIN_NAMESPACE_QPOASES
  *	of a specially structured constraint matrix.
  *
  *	\author Hans Joachim Ferreau
- *	\version 3.1
+ *	\version 3.2
  *	\date 2009-2015
  */
 class ConstraintProduct

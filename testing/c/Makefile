@@ -25,7 +25,7 @@
 ##
 ##	Filename:  testing/c/Makefile
 ##	Author:    Hans Joachim Ferreau
-##	Version:   3.1
+##	Version:   3.2
 ##	Date:      2014-2015
 ##
 

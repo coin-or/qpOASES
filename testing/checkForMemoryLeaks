@@ -27,7 +27,7 @@
 ##
 ##	Filename:  testing/checkForMemoryLeaks
 ##	Author:    Hans Joachim Ferreau
-##	Version:   3.1
+##	Version:   3.2
 ##	Date:      2014-2015
 
 # defining colors for output

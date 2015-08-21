@@ -25,7 +25,7 @@
 /**
  *	\file include/qpOASES/Types.hpp
  *	\author Hans Joachim Ferreau, Andreas Potschka, Christian Kirches
- *	\version 3.1
+ *	\version 3.2
  *	\date 2007-2015
  *
  *	Declaration of all non-built-in types (except for classes).
@@ -250,7 +250,7 @@ enum SubjectToStatus
  *	when using the (S)QProblem(B) objects.
  *
  *	\author Hans Joachim Ferreau
- *	\version 3.1
+ *	\version 3.2
  *	\date 2013-2015
  */
 struct TabularOutput {
@@ -277,7 +277,7 @@ struct TabularOutput {
  *  "Matlab(R) MAT-file Format, R2013b" by MathWorks
  *
  *	\author Hans Joachim Ferreau
- *	\version 3.1
+ *	\version 3.2
  *	\date 2013-2015
  */
 typedef struct {

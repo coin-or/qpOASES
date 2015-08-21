@@ -25,7 +25,7 @@
 /**
  *	\file src/OQPinterface.cpp
  *	\author Hans Joachim Ferreau
- *	\version 3.1
+ *	\version 3.2
  *	\date 2008-2015
  *
  *	Implementation of an interface comprising several utility functions

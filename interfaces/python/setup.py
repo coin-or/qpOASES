@@ -25,7 +25,7 @@
 ##
 ##	Filename:  setup.py
 ##	Author:    Sebastian F. Walter, Manuel Kudruss
-##	Version:   3.1
+##	Version:   3.2
 ##	Date:      2013-2015
 ##
 

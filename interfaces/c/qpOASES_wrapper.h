@@ -25,7 +25,7 @@
 /**
  *	\file interfaces/c/qpOASES_wrapper.h
  *	\author Hans Joachim Ferreau
- *	\version 3.1
+ *	\version 3.2
  *	\date 2014-2015
  *
  *	Interface that enables to call qpOASES from plain C.
@@ -97,8 +97,8 @@
  *	quadratic programs.
  *
  *	\author Hans Joachim Ferreau
- *	\version 3.1
- *	\date 2014
+ *	\version 3.2
+ *	\date 2014-2015
  */
 typedef struct
 {

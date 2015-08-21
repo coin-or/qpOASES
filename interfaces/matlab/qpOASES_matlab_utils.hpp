@@ -25,7 +25,7 @@
 /**
  *	\file interfaces/matlab/qpOASES_matlab_utils.hpp
  *	\author Hans Joachim Ferreau, Alexander Buchner
- *	\version 3.1
+ *	\version 3.2
  *	\date 2007-2015
  *
  *	Collects utility functions for Interface to Matlab(R) that

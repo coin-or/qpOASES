@@ -25,7 +25,7 @@
 /**
  *	\file interfaces/octave/qpOASES_octave_utils.cpp
  *	\author Hans Joachim Ferreau, Andreas Potschka, Alexander Buchner
- *	\version 3.1
+ *	\version 3.2
  *	\date 2007-2015
  *
  *	Collects utility functions for Interface to octave that

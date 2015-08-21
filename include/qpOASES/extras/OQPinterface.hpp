@@ -25,7 +25,7 @@
 /**
  *	\file include/qpOASES/extras/OQPinterface.hpp
  *	\author Hans Joachim Ferreau, Andreas Potschka, Christian Kirches
- *	\version 3.1
+ *	\version 3.2
  *	\date 2007-2015
  *
  *	Declaration of an interface comprising several utility functions

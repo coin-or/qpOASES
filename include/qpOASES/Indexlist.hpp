@@ -25,7 +25,7 @@
 /**
  *	\file include/qpOASES/Indexlist.hpp
  *	\author Hans Joachim Ferreau, Andreas Potschka, Christian Kirches
- *	\version 3.1
+ *	\version 3.2
  *	\date 2007-2015
  *
  *	Declaration of the Indexlist class designed to manage index lists of
@@ -49,7 +49,7 @@ BEGIN_NAMESPACE_QPOASES
  *	This class manages index lists of active/inactive bounds/constraints.
  *
  *	\author Hans Joachim Ferreau
- *	\version 3.1
+ *	\version 3.2
  *	\date 2007-2015
  */
 class Indexlist

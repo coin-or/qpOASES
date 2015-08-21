@@ -25,7 +25,7 @@
 /**
  *	\file include/qpOASES/SubjectTo.ipp
  *	\author Hans Joachim Ferreau, Andreas Potschka, Christian Kirches
- *	\version 3.1
+ *	\version 3.2
  *	\date 2007-2015
  *
  *	Implementation of the inlined member functions of the SubjectTo class

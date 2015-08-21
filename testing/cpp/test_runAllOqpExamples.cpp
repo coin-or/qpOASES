@@ -25,7 +25,7 @@
 /**
  *	\file testing/cpp/test_runAllOqpExamples.cpp
  *	\author Hans Joachim Ferreau
- *	\version 3.1
+ *	\version 3.2
  *	\date 2013-2015
  *
  *	Use qpOASES for solving all QP sequences of the Online QP Benchmark 

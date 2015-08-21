@@ -25,7 +25,7 @@
 /**
  *	\file testing/cpp/test_matrices3.cpp
  *	\author Hans Joachim Ferreau,Andreas Potschka, Christian Kirches
- *	\version 3.1
+ *	\version 3.2
  *	\date 2014-2015
  *
  *	Unit test for Matrix classes.

@@ -25,7 +25,7 @@
 /**
  *	\file examples/example3.cpp
  *	\author Hans Joachim Ferreau
- *	\version 3.1
+ *	\version 3.2
  *	\date 2008-2015
  *
  *	Example demonstrating usage of qpOASES for solving a QP sequence of the

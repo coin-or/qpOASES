@@ -25,7 +25,7 @@
 /**
  *	\file src/Utils.cpp
  *	\author Hans Joachim Ferreau, Andreas Potschka, Christian Kirches (thanks to Eckhard Arnold)
- *	\version 3.1
+ *	\version 3.2
  *	\date 2007-2015
  *
  *	Implementation of some utility functions for working with qpOASES.

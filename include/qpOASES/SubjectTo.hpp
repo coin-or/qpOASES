@@ -25,7 +25,7 @@
 /**
  *	\file include/qpOASES/SubjectTo.hpp
  *	\author Hans Joachim Ferreau, Andreas Potschka, Christian Kirches
- *	\version 3.1
+ *	\version 3.2
  *	\date 2007-2015
  *
  *	Declaration of the SubjectTo class designed to manage working sets of
@@ -50,7 +50,7 @@ BEGIN_NAMESPACE_QPOASES
  *	index sets and other status information.
  *
  *	\author Hans Joachim Ferreau
- *	\version 3.1
+ *	\version 3.2
  *	\date 2007-2015
  */
 class SubjectTo

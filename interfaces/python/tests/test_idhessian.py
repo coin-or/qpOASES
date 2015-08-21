@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #TODO add doxygen support
 # \author Manuel Kudruss
-# \version 3.1
+# \version 3.2
 # \date 2013-2015
 
 import os

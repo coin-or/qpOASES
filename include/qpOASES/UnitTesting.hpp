@@ -25,7 +25,7 @@
 /**
  *	\file include/qpOASES/UnitTesting.hpp
  *	\author Hans Joachim Ferreau
- *	\version 3.1
+ *	\version 3.2
  *	\date 2014-2015
  *
  *	Definition of auxiliary functions/macros for unit testing.

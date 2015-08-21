@@ -25,7 +25,7 @@
 /**
  *	\file src/SolutionAnalysis.cpp
  *	\author Hans Joachim Ferreau (thanks to Boris Houska)
- *	\version 3.1
+ *	\version 3.2
  *	\date 2008-2015
  *
  *	Implementation of the SolutionAnalysis class designed to perform

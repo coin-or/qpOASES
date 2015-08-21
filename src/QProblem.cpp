@@ -25,7 +25,7 @@
 /**
  *	\file src/QProblem.cpp
  *	\author Hans Joachim Ferreau, Andreas Potschka, Christian Kirches
- *	\version 3.1
+ *	\version 3.2
  *	\date 2007-2015
  *
  *	Implementation of the QProblem class which is able to use the newly

@@ -25,7 +25,7 @@
 /**
  *	\file include/qpOASES/extras/SolutionAnalysis.hpp
  *	\author Hans Joachim Ferreau (thanks to Boris Houska)
- *	\version 3.1
+ *	\version 3.2
  *	\date 2008-2015
  *
  *	Declaration of the SolutionAnalysis class designed to perform
@@ -51,7 +51,7 @@ BEGIN_NAMESPACE_QPOASES
  *  a QP solution obtained with qpOASES.
  *
  *	\author Hans Joachim Ferreau (thanks to Boris Houska)
- *	\version 3.1
+ *	\version 3.2
  *	\date 2008-2015
  */
 class SolutionAnalysis

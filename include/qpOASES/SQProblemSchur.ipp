@@ -25,7 +25,7 @@
 /**
  *	\file include/qpOASES/SQProblemSchur.ipp
  *	\author Andreas Waechter, Dennis Janka
- *	\version 3.1
+ *	\version 3.2
  *	\date 2012-2015
  *
  *	Implementation of inlined member functions of the SQProblemSchur class which

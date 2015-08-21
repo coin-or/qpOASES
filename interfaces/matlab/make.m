@@ -39,7 +39,7 @@ function [] = make( varargin )
 %%
 %%	Filename:  interfaces/matlab/make.m
 %%	Author:    Hans Joachim Ferreau, Andreas Potschka, Christian Kirches
-%%	Version:   3.1
+%%	Version:   3.2
 %%	Date:      2007-2015
 %%
 

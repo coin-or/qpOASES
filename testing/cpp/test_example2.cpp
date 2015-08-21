@@ -25,7 +25,7 @@
 /**
  *	\file testing/cpp/test_example2.cpp
  *	\author Hans Joachim Ferreau (thanks to Boris Houska)
- *	\version 3.1
+ *	\version 3.2
  *	\date 2008-2015
  *
  *	Very simple example for testing qpOASES in combination

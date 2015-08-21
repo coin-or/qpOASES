@@ -25,7 +25,7 @@
 /**
  *	\file testing/cpp/test_janick1.cpp
  *	\author Hans Joachim Ferreau
- *	\version 3.1
+ *	\version 3.2
  *	\date 2011-2015
  *
  *	Example that causes troubles when hotstarting.

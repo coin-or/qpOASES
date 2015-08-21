@@ -25,7 +25,7 @@
 /**
  *	\file include/qpOASES/SQProblem.hpp
  *	\author Hans Joachim Ferreau, Andreas Potschka, Christian Kirches
- *	\version 3.1
+ *	\version 3.2
  *	\date 2007-2015
  *
  *	Declaration of the SQProblem class which is able to use the newly
@@ -53,7 +53,7 @@ BEGIN_NAMESPACE_QPOASES
  *	for parametric quadratic programming.
  *
  *	\author Hans Joachim Ferreau, Andreas Potschka, Christian Kirches
- *	\version 3.1
+ *	\version 3.2
  *	\date 2007-2015
  */
 class SQProblem : public QProblem

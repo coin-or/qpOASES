@@ -25,7 +25,7 @@
 /**
  *	\file include/qpOASES/SQProblemSchur.hpp
  *	\author Andreas Waechter and Dennis Janka, based on QProblem.hpp by Hans Joachim Ferreau, Andreas Potschka, Christian Kirches
- *	\version 3.1
+ *	\version 3.2
  *	\date 2012-2015
  *
  *	Declaration of the SQProblemSchur class which is able to use the newly
@@ -109,7 +109,7 @@ BEGIN_NAMESPACE_QPOASES
  *	Schur complement approach to solve the linear systems.
  *
  *	\author Andreas Waechter, Dennis Janka
- *	\version 3.1
+ *	\version 3.2
  *	\date 2012-2015
  */
 class SQProblemSchur : public SQProblem

@@ -25,7 +25,7 @@
 /**
  *	\file include/qpOASES/Options.hpp
  *	\author Hans Joachim Ferreau, Andreas Potschka, Christian Kirches
- *	\version 3.1
+ *	\version 3.2
  *	\date 2007-2015
  *
  *	Declaration of the Options class designed to manage user-specified
@@ -50,7 +50,7 @@ BEGIN_NAMESPACE_QPOASES
  *	quadratic programs.
  *
  *	\author Hans Joachim Ferreau, Andreas Potschka, Christian Kirches
- *	\version 3.1
+ *	\version 3.2
  *	\date 2007-2015
  */
 class Options

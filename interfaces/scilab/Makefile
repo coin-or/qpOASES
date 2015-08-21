@@ -25,7 +25,7 @@
 ##
 ##	Filename:  interfaces/scilab/Makefile
 ##	Author:    Holger Diedam, Hans Joachim Ferreau
-##	Version:   3.1
+##	Version:   3.2
 ##	Date:      2007-2015
 ##
 

@@ -25,7 +25,7 @@
 /**
  *	\file interfaces/CUTEst/qpoasesCutest.cpp
  *	\author Dennis Janka
- *	\version 3.1
+ *	\version 3.2
  *	\date 2015
  *
  *	Solve the CUTEst problem in prob/ subdirectory

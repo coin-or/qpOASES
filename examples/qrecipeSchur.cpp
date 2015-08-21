@@ -25,7 +25,7 @@
 /**
  *	\file examples/qrecipeSchur.cpp
  *	\author Dennis Janka
- *	\version 3.1
+ *	\version 3.2
  *	\date 2007-2015
  *
  *	QRECIPE example from the CUTEr test set with sparse matrices.

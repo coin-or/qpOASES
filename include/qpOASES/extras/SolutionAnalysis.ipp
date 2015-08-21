@@ -25,7 +25,7 @@
 /**
  *	\file include/qpOASES/extras/SolutionAnalysis.ipp
  *	\author Hans Joachim Ferreau (thanks to Boris Houska)
- *	\version 3.1
+ *	\version 3.2
  *	\date 2008-2015
  *
  *	Implementation of inlined member functions of the SolutionAnalysis class

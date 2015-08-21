@@ -26,7 +26,7 @@
 /**
  *	\file include/qpOASES/Utils.ipp
  *	\author Hans Joachim Ferreau, Andreas Potschka, Christian Kirches
- *	\version 3.1
+ *	\version 3.2
  *	\date 2007-2015
  *
  *	Implementation of some inlined utilities for working with the different QProblem classes.

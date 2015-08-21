@@ -25,7 +25,7 @@
 /**
  *	\file testing/c/test_c_example1.c
  *	\author Hans Joachim Ferreau
- *	\version 3.1
+ *	\version 3.2
  *	\date 2014-2015
  *
  *	Very simple example for testing qpOASES (using QProblem class through C interface).

@@ -25,7 +25,7 @@
 /**
  *	\file include/qpOASES/SparseSolver.hpp
  *	\author Andreas Waechter, Dennis Janka
- *	\version 3.1
+ *	\version 3.2
  *	\date 2012-2015
  *
  *	Interfaces to sparse linear solvers that are used in a Schur-complement
@@ -48,7 +48,7 @@ BEGIN_NAMESPACE_QPOASES
  *	implementation in qpOASES.
  *
  *	\author Andreas Waechter, Dennis Janka
- *	\version 3.1
+ *	\version 3.2
  *	\date 2012-2015
  */
 class SparseSolver

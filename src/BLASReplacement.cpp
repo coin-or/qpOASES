@@ -25,7 +25,7 @@
 /**
  *	\file src/BLASReplacement.cpp
  *	\author Hans Joachim Ferreau, Andreas Potschka, Christian Kirches
- *	\version 3.1
+ *	\version 3.2
  *	\date 2007-2015
  *
  *	BLAS Level 3 replacement routines.
@@ -142,4 +142,3 @@ extern "C" void sgemm_ ( const char *TRANSA, const char *TRANSB,
 					for (i = 0; i < *K; i++)
 						C[j+(*LDC)*k] += *ALPHA * A[i+(*LDA)*j] * B[i+(*LDB)*k];
 }
-
