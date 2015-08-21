@@ -68,7 +68,7 @@ int main( )
 	example.setOptions( options );
 
 	/* Solve first LP. */
-	int nWSR = 10;
+	int_t nWSR = 10;
 	example.init( 0,g,A,lb,ub,lbA,ubA, nWSR,0 );
 
 	real_t xOpt[2];

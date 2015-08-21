@@ -79,7 +79,7 @@ inline FILE* MessageHandling::getOutputFile( ) const
 /*
  *	g e t E r r o r C o u n t
  */
-inline int MessageHandling::getErrorCount( ) const
+inline int_t MessageHandling::getErrorCount( ) const
 {
  	return errorCount;
 }
@@ -124,7 +124,7 @@ inline void MessageHandling::setOutputFile( FILE* _outputFile )
 /*
  *	s e t E r r o r C o u n t
  */
-inline returnValue MessageHandling::setErrorCount( int _errorCount )
+inline returnValue MessageHandling::setErrorCount( int_t _errorCount )
 {
 	if ( _errorCount >= -1 )
 	{

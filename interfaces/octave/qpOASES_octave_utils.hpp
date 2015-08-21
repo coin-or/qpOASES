@@ -55,11 +55,11 @@
 class QPInstance
 {
 	private:
-		static int s_nexthandle;
+		static int_t s_nexthandle;
 
 	public:
-		QPInstance(	int _nV = 0,
-					int _nC = 0,
+		QPInstance(	uint_t _nV = 0,
+					uint_t _nC = 0,
 					HessianType _hessianType = HST_UNKNOWN,
 					BooleanType _isSimplyBounded = BT_FALSE
 					);
@@ -68,10 +68,10 @@ class QPInstance
 	
 		returnValue deleteQPMatrices();
 		
-		int getNV() const;
-		int getNC() const;
+		int_t getNV() const;
+		int_t getNC() const;
 
-		int handle;
+		int_t handle;
 
 		SQProblem* sqp;
 		QProblemB* qpb;

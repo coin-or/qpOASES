@@ -148,7 +148,7 @@
 
 
 /* If neither MA57 nor MA27 are selected, activate the dummy solver */
-#if !defined(SOLVER_MA27) && !defined(SOLVER_MA57)
+#if !defined(SOLVER_MA27) && !defined(SOLVER_MA57) && !defined(SOLVER_NONE)
 #define SOLVER_NONE
 #endif
 
@@ -161,6 +161,16 @@ typedef float real_t;
 #else
 typedef double real_t;
 #endif /* __USE_SINGLE_PRECISION__ */
+
+
+/** Defines int_t for facilitating switching between int and long int. */
+#ifdef __USE_LONG_INTEGERS__
+typedef long int_t;
+typedef unsigned long uint_t;
+#else
+typedef int int_t;
+typedef unsigned int uint_t;
+#endif /* __USE_LONG_INTEGERS__ */
 
 
 /** Summarises all possible logical values. */
@@ -254,14 +264,14 @@ enum SubjectToStatus
  *	\date 2013-2015
  */
 struct TabularOutput {
-	int idxAddB;		/**< Index of bound that has been added to working set. */
-	int idxRemB;		/**< Index of bound that has been removed from working set. */
-	int idxAddC;		/**< Index of constraint that has been added to working set. */
-	int idxRemC;		/**< Index of constraint that has been removed from working set. */
-	int excAddB;		/**< Flag indicating whether a bound has been added to working set to keep a regular projected Hessian. */
-	int excRemB;		/**< Flag indicating whether a bound has been removed from working set to keep a regular projected Hessian. */
-	int excAddC;		/**< Flag indicating whether a constraint has been added to working set to keep a regular projected Hessian. */
-	int excRemC;		/**< Flag indicating whether a constraint has been removed from working set to keep a regular projected Hessian. */
+	int_t idxAddB;		/**< Index of bound that has been added to working set. */
+	int_t idxRemB;		/**< Index of bound that has been removed from working set. */
+	int_t idxAddC;		/**< Index of constraint that has been added to working set. */
+	int_t idxRemC;		/**< Index of constraint that has been removed from working set. */
+	int_t excAddB;		/**< Flag indicating whether a bound has been added to working set to keep a regular projected Hessian. */
+	int_t excRemB;		/**< Flag indicating whether a bound has been removed from working set to keep a regular projected Hessian. */
+	int_t excAddC;		/**< Flag indicating whether a constraint has been added to working set to keep a regular projected Hessian. */
+	int_t excRemC;		/**< Flag indicating whether a constraint has been removed from working set to keep a regular projected Hessian. */
 };
 
 

@@ -56,34 +56,34 @@ static SQProblem* sqp = 0;
 extern "C"
 {
 	void qpoases(	real_t* H, real_t* g, real_t* A, real_t* lb, real_t* ub, real_t* lbA, real_t* ubA,
-					int *nV, int* nC, int* nWSR,
-					real_t* x, real_t* obj, int* status, int* nWSRout, real_t* y
+					int_t *nV, int_t* nC, int_t* nWSR,
+					real_t* x, real_t* obj, int_t* status, int_t* nWSRout, real_t* y
 					);
 
 	void init(		real_t* H, real_t* g, real_t* A, real_t* lb, real_t* ub, real_t* lbA, real_t* ubA,
-					int* nV, int* nC, int* nWSR,
-					real_t* x, real_t* obj, int* status, int* nWSRout, real_t* y
+					int_t* nV, int_t* nC, int_t* nWSR,
+					real_t* x, real_t* obj, int_t* status, int_t* nWSRout, real_t* y
 					);
 	void initSB(	real_t* H, real_t* g, real_t* lb, real_t* ub,
-					int* nV, int* nWSR,
-					real_t* x, real_t* obj, int* status, int* nWSRout, real_t* y
+					int_t* nV, int_t* nWSR,
+					real_t* x, real_t* obj, int_t* status, int_t* nWSRout, real_t* y
 					);
 	void initVM(	real_t* H, real_t* g, real_t* A, real_t* lb, real_t* ub, real_t* lbA, real_t* ubA,
-					int* nV, int* nC, int* nWSR,
-					real_t* x, real_t* obj, int* status, int* nWSRout, real_t* y
+					int_t* nV, int_t* nC, int_t* nWSR,
+					real_t* x, real_t* obj, int_t* status, int_t* nWSRout, real_t* y
 					);
 
 	void hotstart(		real_t* g, real_t* lb, real_t* ub, real_t* lbA, real_t* ubA,
-						int* nWSR,
-						real_t* x, real_t* obj, int* status, int* nWSRout, real_t* y
+						int_t* nWSR,
+						real_t* x, real_t* obj, int_t* status, int_t* nWSRout, real_t* y
 						);
 	void hotstartSB(	real_t* g, real_t* lb, real_t* ub,
-						int* nWSR,
-						real_t* x, real_t* obj, int* status, int* nWSRout, real_t* y
+						int_t* nWSR,
+						real_t* x, real_t* obj, int_t* status, int_t* nWSRout, real_t* y
 						);
 	void hotstartVM(	real_t* H, real_t* g, real_t* A, real_t* lb, real_t* ub, real_t* lbA, real_t* ubA,
-						int* nWSR,
-						real_t* x, real_t* obj, int* status, int* nWSRout, real_t* y
+						int_t* nWSR,
+						real_t* x, real_t* obj, int_t* status, int_t* nWSRout, real_t* y
 						);
 
 	void cleanupp( );
@@ -96,9 +96,9 @@ extern "C"
 /*
  *	t r a n s f o r m A
  */
-void transformA( real_t* A, int nV, int nC )
+void transformA( real_t* A, int_t nV, int_t nC )
 {
-	int i, j;
+	int_t i, j;
 
 	real_t* A_tmp = new real_t[nC*nV];
 
@@ -119,8 +119,8 @@ void transformA( real_t* A, int nV, int nC )
  *	q p o a s e s
  */
 void qpoases(	real_t* H, real_t* g, real_t* A, real_t* lb, real_t* ub, real_t* lbA, real_t* ubA,
-				int *nV, int* nC, int* nWSR,
-				real_t* x, real_t* obj, int* status, int* nWSRout, real_t* y
+				int_t *nV, int_t* nC, int_t* nWSR,
+				real_t* x, real_t* obj, int_t* status, int_t* nWSRout, real_t* y
 				)
 {
 	/* transform A into C style matrix */
@@ -157,8 +157,8 @@ void qpoases(	real_t* H, real_t* g, real_t* A, real_t* lb, real_t* ub, real_t* l
  *	i n i t
  */
 void init(	real_t* H, real_t* g, real_t* A, real_t* lb, real_t* ub, real_t* lbA, real_t* ubA,
-			int* nV, int* nC, int* nWSR,
-			real_t* x, real_t* obj, int* status, int* nWSRout, real_t* y
+			int_t* nV, int_t* nC, int_t* nWSR,
+			real_t* x, real_t* obj, int_t* status, int_t* nWSRout, real_t* y
 			)
 {
 	cleanupp( );
@@ -186,8 +186,8 @@ void init(	real_t* H, real_t* g, real_t* A, real_t* lb, real_t* ub, real_t* lbA,
  *	i n i t S B
  */
 void initSB(	real_t* H, real_t* g, real_t* lb, real_t* ub,
-				int* nV, int* nWSR,
-				real_t* x, real_t* obj, int* status, int* nWSRout, real_t* y
+				int_t* nV, int_t* nWSR,
+				real_t* x, real_t* obj, int_t* status, int_t* nWSRout, real_t* y
 				)
 {
 	cleanupSB( );
@@ -212,8 +212,8 @@ void initSB(	real_t* H, real_t* g, real_t* lb, real_t* ub,
  *	i n i t V M
  */
 void initVM(	real_t* H, real_t* g, real_t* A, real_t* lb, real_t* ub, real_t* lbA, real_t* ubA,
-				int* nV, int* nC, int* nWSR,
-				real_t* x, real_t* obj, int* status, int* nWSRout, real_t* y
+				int_t* nV, int_t* nC, int_t* nWSR,
+				real_t* x, real_t* obj, int_t* status, int_t* nWSRout, real_t* y
 				)
 {
 	cleanupVM( );
@@ -241,8 +241,8 @@ void initVM(	real_t* H, real_t* g, real_t* A, real_t* lb, real_t* ub, real_t* lb
  *	h o t s t a r t
  */
 void hotstart(	real_t* g, real_t* lb, real_t* ub, real_t* lbA, real_t* ubA,
-				int* nWSR,
-				real_t* x, real_t* obj, int* status, int* nWSRout, real_t* y
+				int_t* nWSR,
+				real_t* x, real_t* obj, int_t* status, int_t* nWSRout, real_t* y
 				)
 {
 	/* has QP been initialised? */
@@ -271,8 +271,8 @@ void hotstart(	real_t* g, real_t* lb, real_t* ub, real_t* lbA, real_t* ubA,
  *	h o t s t a r t S B
  */
 void hotstartSB(	real_t* g, real_t* lb, real_t* ub,
-					int* nWSR,
-					real_t* x, real_t* obj, int* status, int* nWSRout, real_t* y
+					int_t* nWSR,
+					real_t* x, real_t* obj, int_t* status, int_t* nWSRout, real_t* y
 					)
 {
 	/* has QP been initialised? */
@@ -301,8 +301,8 @@ void hotstartSB(	real_t* g, real_t* lb, real_t* ub,
  *	h o t s t a r t V M
  */
 void hotstartVM(	real_t* H, real_t* g, real_t* A, real_t* lb, real_t* ub, real_t* lbA, real_t* ubA,
-					int* nWSR,
-					real_t* x, real_t* obj, int* status, int* nWSRout, real_t* y
+					int_t* nWSR,
+					real_t* x, real_t* obj, int_t* status, int_t* nWSRout, real_t* y
 					)
 {
 	/* has QP been initialised? */

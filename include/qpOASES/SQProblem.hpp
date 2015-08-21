@@ -73,8 +73,8 @@ class SQProblem : public QProblem
 		 *  identity matrix (i.e. HST_IDENTITY), respectively, no memory
 		 *  is allocated for it and a NULL pointer can be passed for it
 		 *  to the init() functions. */
-		SQProblem(	int _nV,	  							/**< Number of variables. */
-					int _nC,  								/**< Number of constraints. */
+		SQProblem(	int_t _nV,	  							/**< Number of variables. */
+					int_t _nC,  							/**< Number of constraints. */
 					HessianType _hessianType = HST_UNKNOWN	/**< Type of Hessian matrix. */
 					);
 
@@ -117,7 +117,7 @@ class SQProblem : public QProblem
 													 		 						 If no lower constraints' bounds exist, a NULL pointer can be passed. */
 								const real_t* const ubA_new,					/**< Upper constraints' bounds of neighbouring QP to be solved. \n
 												 			 						 If no upper constraints' bounds exist, a NULL pointer can be passed. */
-								int& nWSR,										/**< Input: Maximum number of working set recalculations; \n
+								int_t& nWSR,									/**< Input: Maximum number of working set recalculations; \n
 																					 Output: Number of performed working set recalculations. */
 								real_t* const cputime = 0,						/**< Input: Maximum CPU time allowed for QP solution. \n
 																					 Output: CPU time spen for QP solution (or to perform nWSR iterations). */
@@ -154,7 +154,7 @@ class SQProblem : public QProblem
 													 							 	 If no lower constraints' bounds exist, a NULL pointer can be passed. */
 								const real_t* const ubA_new,					/**< Upper constraints' bounds of neighbouring QP to be solved. \n
 												 								 	 If no upper constraints' bounds exist, a NULL pointer can be passed. */
-								int& nWSR,										/**< Input: Maximum number of working set recalculations; \n
+								int_t& nWSR,									/**< Input: Maximum number of working set recalculations; \n
 																					 Output: Number of performed working set recalculations. */
 								real_t* const cputime = 0,						/**< Input: Maximum CPU time allowed for QP solution. \n
 																					 Output: CPU time spent for QP solution (or to perform nWSR iterations). */
@@ -193,7 +193,7 @@ class SQProblem : public QProblem
 													 								 If no lower constraints' bounds exist, a NULL pointer can be passed. */
 								const char* const ubA_file,						/**< Name of file where upper constraints' bounds, of neighbouring QP to be solved, is stored. \n
 													 								 If no upper constraints' bounds exist, a NULL pointer can be passed. */
-								int& nWSR,										/**< Input: Maximum number of working set recalculations; \n
+								int_t& nWSR,									/**< Input: Maximum number of working set recalculations; \n
 																					 Output: Number of performed working set recalculations. */
 								real_t* const cputime = 0,						/**< Input: Maximum CPU time allowed for QP solution. \n
 																					 Output: CPU time spent for QP solution (or to perform nWSR iterations). */
@@ -230,7 +230,7 @@ class SQProblem : public QProblem
 													 							 	 If no lower constraints' bounds exist, a NULL pointer can be passed. */
 								const real_t* const ubA_new,					/**< Upper constraints' bounds of neighbouring QP to be solved. \n
 													 							 	 If no upper constraints' bounds exist, a NULL pointer can be passed. */
-								int& nWSR,										/**< Input: Maximum number of working set recalculations; \n
+								int_t& nWSR,									/**< Input: Maximum number of working set recalculations; \n
 																			 		 Output: Number of performed working set recalculations. */
 								real_t* const cputime = 0,						/**< Input: Maximum CPU time allowed for QP solution. \n
 																				 	 Output: CPU time spent for QP solution (or to perform nWSR iterations). */
@@ -265,11 +265,11 @@ class SQProblem : public QProblem
 													 								 If no lower bounds exist, a NULL pointer can be passed. */
 								const char* const ub_file,						/**< Name of file where upper bounds, of neighbouring QP to be solved, is stored. \n
 													 								 If no upper bounds exist, a NULL pointer can be passed. */
-								const char* const lbA_file,						 /**< Name of file where lower constraints' bounds, of neighbouring QP to be solved, is stored. \n
+								const char* const lbA_file,						/**< Name of file where lower constraints' bounds, of neighbouring QP to be solved, is stored. \n
 													 								 If no lower constraints' bounds exist, a NULL pointer can be passed. */
-								const char* const ubA_file,						 /**< Name of file where upper constraints' bounds, of neighbouring QP to be solved, is stored. \n
+								const char* const ubA_file,						/**< Name of file where upper constraints' bounds, of neighbouring QP to be solved, is stored. \n
 													 								 If no upper constraints' bounds exist, a NULL pointer can be passed. */
-								int& nWSR, 										/**< Input: Maximum number of working set recalculations; \n
+								int_t& nWSR, 									/**< Input: Maximum number of working set recalculations; \n
 																					 Output: Number of performed working set recalculations. */
 								real_t* const cputime = 0,						/**< Input: Maximum CPU time allowed for QP solution. \n
 																				 	 Output: CPU time spent for QP solution (or to perform nWSR iterations). */

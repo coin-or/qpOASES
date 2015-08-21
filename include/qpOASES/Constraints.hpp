@@ -63,7 +63,7 @@ class Constraints : public SubjectTo
 		Constraints( );
 
 		/** Constructor which takes the number of constraints. */
-		Constraints(	int _n							/**< Number of constraints. */
+		Constraints(	int_t _n						/**< Number of constraints. */
 						);
 
 		/** Copy constructor (deep copy). */
@@ -81,7 +81,7 @@ class Constraints : public SubjectTo
 		/** Initialises object with given number of constraints.
 		 *	\return SUCCESSFUL_RETURN \n
 		 			RET_INVALID_ARGUMENTS */
-		returnValue init(	int _n = 0					/**< Number of constraints. */
+		returnValue init(	int_t _n = 0				/**< Number of constraints. */
 							);
 
 
@@ -91,7 +91,7 @@ class Constraints : public SubjectTo
 		 			RET_SETUP_CONSTRAINT_FAILED \n
 					RET_INDEX_OUT_OF_BOUNDS \n
 					RET_INVALID_ARGUMENTS */
-		returnValue setupConstraint(	int number,				/**< Number of new constraint. */
+		returnValue setupConstraint(	int_t number,			/**< Number of new constraint. */
 										SubjectToStatus _status	/**< Status of new constraint. */
 										);
 
@@ -120,13 +120,13 @@ class Constraints : public SubjectTo
 		/** Moves index of a constraint from index list of active to that of inactive constraints.
 		 *	\return SUCCESSFUL_RETURN \n
 		 			RET_MOVING_CONSTRAINT_FAILED */
-		returnValue moveActiveToInactive(	int number				/**< Number of constraint to become inactive. */
+		returnValue moveActiveToInactive(	int_t number			/**< Number of constraint to become inactive. */
 											);
 
 		/** Moves index of a constraint from index list of inactive to that of active constraints.
 		 *	\return SUCCESSFUL_RETURN \n
 		 			RET_MOVING_CONSTRAINT_FAILED */
-		returnValue moveInactiveToActive(	int number,				/**< Number of constraint to become active. */
+		returnValue moveInactiveToActive(	int_t number,			/**< Number of constraint to become active. */
 											SubjectToStatus _status	/**< Status of constraint to become active. */
 											);
 
@@ -134,32 +134,32 @@ class Constraints : public SubjectTo
 		 *	\return SUCCESSFUL_RETURN \n
 		 			RET_MOVING_CONSTRAINT_FAILED \n
 					RET_INDEX_OUT_OF_BOUNDS */
-		returnValue flipFixed( int number );
+		returnValue flipFixed( int_t number );
 
 
 		/** Returns the number of constraints.
 		 *	\return Number of constraints. */
-		inline int getNC( ) const;
+		inline int_t getNC( ) const;
 
 		/** Returns the number of implicit equality constraints.
 		 *	\return Number of implicit equality constraints. */
-		inline int getNEC( ) const;
+		inline int_t getNEC( ) const;
 
 		/** Returns the number of "real" inequality constraints.
 		 *	\return Number of "real" inequality constraints. */
-		inline int getNIC( ) const;
+		inline int_t getNIC( ) const;
 
 		/** Returns the number of unbounded constraints (i.e. without any bounds).
 		 *	\return Number of unbounded constraints (i.e. without any bounds). */
-		inline int getNUC( ) const;
+		inline int_t getNUC( ) const;
 
 		/** Returns the number of active constraints.
 		 *	\return Number of active constraints. */
-		inline int getNAC( ) const;
+		inline int_t getNAC( ) const;
 
 		/** Returns the number of inactive constraints.
 		 *	\return Number of inactive constraints. */
-		inline int getNIAC( ) const;
+		inline int_t getNIAC( ) const;
 
 
 		/** Returns a pointer to active constraints index list.
@@ -182,7 +182,7 @@ class Constraints : public SubjectTo
 		 			RET_INDEX_OUT_OF_BOUNDS \n
 		 			RET_INVALID_ARGUMENTS \n
 		 			RET_SHIFTING_FAILED */
-		virtual returnValue shift(	int offset		/**< Shift offset within the range [0,n/2] and integer divisor of n. */
+		virtual returnValue shift(	int_t offset	/**< Shift offset within the range [0,n/2] and integer divisor of n. */
 									);
 
 		/** Rotates forward type and status of all constraints by a given
@@ -192,7 +192,7 @@ class Constraints : public SubjectTo
 		 *	\return SUCCESSFUL_RETURN \n
 		 			RET_INDEX_OUT_OF_BOUNDS \n
 		 			RET_ROTATING_FAILED */
-		virtual returnValue rotate(	int offset		/**< Rotation offset within the range [0,n]. */
+		virtual returnValue rotate(	int_t offset	/**< Rotation offset within the range [0,n]. */
 									);
 
 

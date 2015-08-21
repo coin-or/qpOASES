@@ -217,17 +217,17 @@ RET_NO_DIAGONAL_AVAILABLE,						/**< Sparse matrix does not have entries on full
 RET_DIAGONAL_NOT_INITIALISED,					/**< Diagonal data of sparse matrix has not been initialised. (140) */
 /* Dropping of infeasible constraints */
 RET_ENSURELI_DROPPED,							/**< Linear independence resolved by dropping blocking constraint. */
+/* Schur complement computations */
+RET_KKT_MATRIX_SINGULAR,						/**< KKT matrix is singular. */
+RET_QR_FACTORISATION_FAILED,					/**< QR factorization of Schur complement failed. */
+RET_INERTIA_CORRECTION_FAILED,					/**< Inertia correction failed after KKT matrix had too many negative eigenvalues. */
+RET_NO_SPARSE_SOLVER,							/**< No factorization routine for the KKT matrix installed. */
 /* Simple exitflags */
 RET_SIMPLE_STATUS_P1,							/**< QP problem could not be solved within given number of iterations. */
 RET_SIMPLE_STATUS_P0,							/**< QP problem solved. */
 RET_SIMPLE_STATUS_M1,							/**< QP problem could not be solved due to an internal error. */
 RET_SIMPLE_STATUS_M2,							/**< QP problem is infeasible (and thus could not be solved). */
-RET_SIMPLE_STATUS_M3,							/**< QP problem is unbounded (and thus could not be solved). */
-/* Schur complement computations */
-RET_KKT_MATRIX_SINGULAR,						/**< KKT matrix is singular. */
-RET_QR_FACTORISATION_FAILED,					/**< QR factorization of Schur complement failed. */
-RET_INERTIA_CORRECTION_FAILED,					/**< Inertia correction failed after KKT matrix had too many negative eigenvalues. */
-RET_NO_SPARSE_SOLVER							/**< No factorization routine for the KKT matrix installed. (150) */
+RET_SIMPLE_STATUS_M3							/**< QP problem is unbounded (and thus could not be solved). (150) */
 };
 
 
@@ -370,7 +370,7 @@ class MessageHandling
 
 		/** Returns error count value.
 		 *	\return Error count value. */
-		inline int getErrorCount( ) const;
+		inline int_t getErrorCount( ) const;
 
 
 		/** Changes visibility status for error messages. */
@@ -392,7 +392,7 @@ class MessageHandling
 		/** Changes error count.
 		 * \return SUCCESSFUL_RETURN \n
 		 *		   RET_INVALID_ARGUMENT */
-		inline returnValue setErrorCount(	int _errorCount	/**< New error count value. */
+		inline returnValue setErrorCount(	int_t _errorCount	/**< New error count value. */
 											);
 
 		/** Provides message text corresponding to given \a returnValue.
@@ -431,7 +431,7 @@ class MessageHandling
 
 		FILE* outputFile;						/**< Output file for messages. */
 
-		int errorCount; 						/**< Counts number of errors (for nicer output only). */
+		int_t errorCount; 						/**< Counts number of errors (for nicer output only). */
 };
 
 

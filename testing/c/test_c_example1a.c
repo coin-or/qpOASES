@@ -57,12 +57,12 @@ int main( )
 	real_t lbA_new[1] = { -2.0 };
 	real_t ubA_new[1] = { 1.0 };
 
-	int nWSR;
+	int_t nWSR;
 
 	real_t xOpt[2];
 	real_t yOpt[2+1];
 	real_t obj;
-	int status;
+	int_t status;
 
 	qpOASES_Options options;
 	qpOASES_Options_init( &options,0 );

@@ -854,7 +854,7 @@ cdef class PySolutionAnalysis:
                                                   <double*> Primal_Dual_VAR.data)
 
 # Wrapped some utility functions for unit testing
-cpdef py_runOQPbenchmark(path,               # Full path of the benchmark files (without trailing slash!).
+cpdef py_runOqpBenchmark(path,               # Full path of the benchmark files (without trailing slash!).
                        isSparse,           # Shall convert matrices to sparse format before solution?
                        useHotstarts,       # Shall QP solution be hotstarted?
                        PyOptions options,  # QP solver options to be used while solving benchmark problems.
@@ -873,7 +873,7 @@ cpdef py_runOQPbenchmark(path,               # Full path of the benchmark files 
     maxCPUtime = maxCPUTime
 
     p = path.encode()
-    returnValue = runOQPbenchmark(p,
+    returnValue = runOqpBenchmark(p,
                                   isSparse,
                                   useHotstarts,
                                   deref(options.thisptr),
@@ -890,36 +890,36 @@ cpdef py_runOQPbenchmark(path,               # Full path of the benchmark files 
            maxStationarity, maxFeasibility, maxComplementarity
 
 """
-def py_getKKTResidual(int nV,                              # Number of variables.
-                      int nC,                              # Number of constraints.
-                      np.ndarray[np.double_t, ndim=2] H,   # Hessian matrix.
-                      np.ndarray[np.double_t, ndim=1] g,   # Sequence of gradient vectors.
-                      np.ndarray[np.double_t, ndim=2] A,   # Constraint matrix.
-                      np.ndarray[np.double_t, ndim=1] lb,  # Sequence of lower bound vectors (on variables).
-                      np.ndarray[np.double_t, ndim=1] ub,  # Sequence of upper bound vectors (on variables).
-                      np.ndarray[np.double_t, ndim=1] lbA, # Sequence of lower constraints' bound vectors.
-                      np.ndarray[np.double_t, ndim=1] ubA, # Sequence of upper constraints' bound vectors.
-                      np.ndarray[np.double_t, ndim=1] x,   # Sequence of primal trial vectors.
-                      np.ndarray[np.double_t, ndim=1] y,   # Sequence of dual trial vectors.
-                      ):
+def py_getKktViolation(int nV,                              # Number of variables.
+                       int nC,                              # Number of constraints.
+                       np.ndarray[np.double_t, ndim=2] H,   # Hessian matrix.
+                       np.ndarray[np.double_t, ndim=1] g,   # Sequence of gradient vectors.
+                       np.ndarray[np.double_t, ndim=2] A,   # Constraint matrix.
+                       np.ndarray[np.double_t, ndim=1] lb,  # Sequence of lower bound vectors (on variables).
+                       np.ndarray[np.double_t, ndim=1] ub,  # Sequence of upper bound vectors (on variables).
+                       np.ndarray[np.double_t, ndim=1] lbA, # Sequence of lower constraints' bound vectors.
+                       np.ndarray[np.double_t, ndim=1] ubA, # Sequence of upper constraints' bound vectors.
+                       np.ndarray[np.double_t, ndim=1] x,   # Sequence of primal trial vectors.
+                       np.ndarray[np.double_t, ndim=1] y,   # Sequence of dual trial vectors.
+                       ):
     stat = 0.0 # Maximum value of stationarity condition residual.
     feas = 0.0 # Maximum value of primal feasibility violation.
     cmpl = 0.0 # Maximum value of complementarity residual.
-    getKKTResidual(nV,
-                   nC,
-                   <double*> H.data,
-                   <double*> g.data,
-                   <double*> A.data,
-                   <double*> lb.data,
-                   <double*> ub.data,
-                   <double*> lbA.data,
-                   <double*> ubA.data,
-                   <double*> x.data,
-                   <double*> y.data,
-                   stat,
-                   feas,
-                   cmpl
-                   )
+    getKktViolation(nV,
+                    nC,
+                    <double*> H.data,
+                    <double*> g.data,
+                    <double*> A.data,
+                    <double*> lb.data,
+                    <double*> ub.data,
+                    <double*> lbA.data,
+                    <double*> ubA.data,
+                    <double*> x.data,
+                    <double*> y.data,
+                    stat,
+                    feas,
+                    cmpl
+                    )
     return stat, feas, cmpl
     """
 

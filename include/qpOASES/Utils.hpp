@@ -45,41 +45,41 @@ BEGIN_NAMESPACE_QPOASES
 /** Prints a (possibly named) vector.
  * \return SUCCESSFUL_RETURN */
 returnValue print(	const real_t* const v,	/**< Vector to be printed. */
-					int n,					/**< Length of vector. */
+					int_t n,				/**< Length of vector. */
 					const char* name = 0	/**< Name of vector. */
 					);
 
 /** Prints a (possibly named) permuted vector.
  * \return SUCCESSFUL_RETURN */
 returnValue print(	const real_t* const v,		/**< Vector to be printed. */
-					int n,						/**< Length of vector. */
-					const int* const V_idx,		/**< Pemutation vector. */
+					int_t n,					/**< Length of vector. */
+					const int_t* const V_idx,	/**< Pemutation vector. */
 					const char* name = 0		/**< Name of vector. */
 					);
 
 /** Prints a (possibly named) matrix.
  * \return SUCCESSFUL_RETURN */
 returnValue print(	const real_t* const M,	/**< Matrix to be printed. */
-					int nrow,				/**< Row number of matrix. */
-					int ncol,				/**< Column number of matrix. */
+					int_t nrow,				/**< Row number of matrix. */
+					int_t ncol,				/**< Column number of matrix. */
 					const char* name = 0	/**< Name of matrix. */
 					);
 
 /** Prints a (possibly named) permuted matrix.
  * \return SUCCESSFUL_RETURN */
 returnValue print(	const real_t* const M,		/**< Matrix to be printed. */
-					int nrow,					/**< Row number of matrix. */
-					int ncol	,				/**< Column number of matrix. */
-					const int* const ROW_idx,	/**< Row pemutation vector. */
-					const int* const COL_idx,	/**< Column pemutation vector. */
+					int_t nrow,					/**< Row number of matrix. */
+					int_t ncol	,				/**< Column number of matrix. */
+					const int_t* const ROW_idx,	/**< Row pemutation vector. */
+					const int_t* const COL_idx,	/**< Column pemutation vector. */
 					const char* name = 0		/**< Name of matrix. */
 					);
 
 /** Prints a (possibly named) index array.
  * \return SUCCESSFUL_RETURN */
-returnValue print(	const int* const index,	/**< Index array to be printed. */
-					int n,					/**< Length of index array. */
-					const char* name = 0	/**< Name of index array. */
+returnValue print(	const int_t* const index,	/**< Index array to be printed. */
+					int_t n,					/**< Length of index array. */
+					const char* name = 0		/**< Name of index array. */
 					);
 
 
@@ -99,8 +99,8 @@ returnValue printCopyrightNotice( );
  		   RET_UNABLE_TO_OPEN_FILE \n
 		   RET_UNABLE_TO_READ_FILE */
 returnValue readFromFile(	real_t* data,				/**< Matrix to be read from file. */
-							int nrow,					/**< Row number of matrix. */
-							int ncol,					/**< Column number of matrix. */
+							int_t nrow,					/**< Row number of matrix. */
+							int_t ncol,					/**< Column number of matrix. */
 							const char* datafilename	/**< Data file name. */
 							);
 
@@ -109,7 +109,7 @@ returnValue readFromFile(	real_t* data,				/**< Matrix to be read from file. */
  		   RET_UNABLE_TO_OPEN_FILE \n
 		   RET_UNABLE_TO_READ_FILE */
 returnValue readFromFile(	real_t* data,				/**< Vector to be read from file. */
-							int n,						/**< Length of vector. */
+							int_t n,					/**< Length of vector. */
 							const char* datafilename	/**< Data file name. */
 							);
 
@@ -117,8 +117,8 @@ returnValue readFromFile(	real_t* data,				/**< Vector to be read from file. */
  * \return SUCCESSFUL_RETURN \n
  		   RET_UNABLE_TO_OPEN_FILE \n
 		   RET_UNABLE_TO_READ_FILE */
-returnValue readFromFile(	int* data,					/**< Vector to be read from file. */
-							int n,						/**< Length of vector. */
+returnValue readFromFile(	int_t* data,				/**< Vector to be read from file. */
+							int_t n,					/**< Length of vector. */
 							const char* datafilename	/**< Data file name. */
 							);
 
@@ -127,8 +127,8 @@ returnValue readFromFile(	int* data,					/**< Vector to be read from file. */
  * \return SUCCESSFUL_RETURN \n
  		   RET_UNABLE_TO_OPEN_FILE  */
 returnValue writeIntoFile(	const real_t* const data,		/**< Matrix to be written into file. */
-							int nrow,						/**< Row number of matrix. */
-							int ncol,						/**< Column number of matrix. */
+							int_t nrow,						/**< Row number of matrix. */
+							int_t ncol,						/**< Column number of matrix. */
 							const char* datafilename,		/**< Data file name. */
 							BooleanType append = BT_FALSE	/**< Indicates if data shall be appended if the file already exists (otherwise it is overwritten). */
 							);
@@ -137,7 +137,7 @@ returnValue writeIntoFile(	const real_t* const data,		/**< Matrix to be written 
  * \return SUCCESSFUL_RETURN \n
  		   RET_UNABLE_TO_OPEN_FILE  */
 returnValue writeIntoFile(	const real_t* const data,		/**< Vector to be written into file. */
-							int n,							/**< Length of vector. */
+							int_t n,						/**< Length of vector. */
 							const char* datafilename,		/**< Data file name. */
 							BooleanType append = BT_FALSE	/**< Indicates if data shall be appended if the file already exists (otherwise it is overwritten). */
 							);
@@ -145,8 +145,8 @@ returnValue writeIntoFile(	const real_t* const data,		/**< Vector to be written 
 /** Writes an integer (column) vector into a file.
  * \return SUCCESSFUL_RETURN \n
  		   RET_UNABLE_TO_OPEN_FILE */
-returnValue writeIntoFile(	const int* const integer,		/**< Integer vector to be written into file. */
-							int n,							/**< Length of vector. */
+returnValue writeIntoFile(	const int_t* const integer,		/**< Integer vector to be written into file. */
+							int_t n,						/**< Length of vector. */
 							const char* datafilename,		/**< Data file name. */
 							BooleanType append = BT_FALSE	/**< Indicates if integer shall be appended if the file already exists (otherwise it is overwritten). */
 							);
@@ -157,8 +157,8 @@ returnValue writeIntoFile(	const int* const integer,		/**< Integer vector to be 
  		   RET_UNABLE_TO_WRITE_FILE */
 returnValue writeIntoMatFile(	FILE* const matFile,		/**< Pointer to Matlab binary file. */
 								const real_t* const data,	/**< Data to be written into file. */
-								int nRows,					/**< Row number of matrix. */
-								int nCols, 					/**< Column number of matrix. */
+								int_t nRows,				/**< Row number of matrix. */
+								int_t nCols, 				/**< Column number of matrix. */
 								const char* name			/**< Matlab name of matrix/vector to be stored. */
 								);
 
@@ -167,9 +167,9 @@ returnValue writeIntoMatFile(	FILE* const matFile,		/**< Pointer to Matlab binar
 		   RET_INVALID_ARGUMENTS
  		   RET_UNABLE_TO_WRITE_FILE */
 returnValue writeIntoMatFile(	FILE* const matFile,		/**< Pointer to Matlab binary file. */
-								const int* const data,		/**< Data to be written into file. */
-								int nRows,					/**< Row number of matrix. */
-								int nCols,					/**< Column number of matrix. */
+								const int_t* const data,	/**< Data to be written into file. */
+								int_t nRows,				/**< Row number of matrix. */
+								int_t nCols,				/**< Column number of matrix. */
 								const char* name			/**< Matlab name of matrix/vector to be stored. */
 								);
 
@@ -182,8 +182,8 @@ real_t getCPUtime( );
 /** Returns the N-norm of a vector.
  * \return >= 0.0: successful */
 real_t getNorm(	const real_t* const v,	/**< Vector. */
-				int n,					/**< Vector's dimension. */
-				int type = 2			/**< Norm type, 1: one-norm, 2: Euclidean norm. */
+				int_t n,				/**< Vector's dimension. */
+				int_t type = 2			/**< Norm type, 1: one-norm, 2: Euclidean norm. */
 				);
 
 
@@ -213,15 +213,15 @@ inline real_t getSign(	real_t arg	/**< real-valued argument whose sign is to be 
 
 /** Returns maximum of two integers.
  * \return	Maximum of two integers */
-inline int getMax(	int x,	/**< First integer. */
-					int y	/**< Second integer. */
-					);
+inline int_t getMax(	int_t x,	/**< First integer. */
+						int_t y		/**< Second integer. */
+						);
 					
 /** Returns minimum of two integers.
  * \return	Minimum of two integers */
-inline int getMin(	int x,	/**< First integer. */
-					int y	/**< Second integer. */
-					);
+inline int_t getMin(	int_t x,	/**< First integer. */
+						int_t y		/**< Second integer. */
+						);
 
 	
 /** Returns maximum of two reals.
@@ -249,8 +249,8 @@ inline real_t getSqrt(	real_t x	/**< Non-negative real number. */
 
 /** Computes the maximum violation of the KKT optimality conditions
  *	of given iterate for given QP data. */
-returnValue getKktViolation(	int nV,										/**< Number of variables. */
-								int nC,										/**< Number of constraints. */
+returnValue getKktViolation(	int_t nV,									/**< Number of variables. */
+								int_t nC,									/**< Number of constraints. */
 								const real_t* const H,						/**< Hessian matrix (may be NULL if Hessian is zero or identity matrix). */
 								const real_t* const g,						/**< Gradient vector. */
 								const real_t* const A,						/**< Constraint matrix. */
@@ -270,7 +270,7 @@ returnValue getKktViolation(	int nV,										/**< Number of variables. */
 
 /** Computes the maximum violation of the KKT optimality conditions
  *	of given iterate for given QP data. */
-returnValue getKktViolation(	int nV,										/**< Number of variables. */
+returnValue getKktViolation(	int_t nV,									/**< Number of variables. */
 								const real_t* const H,						/**< Hessian matrix (may be NULL if Hessian is zero or identity matrix). */
 								const real_t* const g,						/**< Gradient vector. */
 								const real_t* const lb,						/**< Lower bound vector (on variables). */
@@ -316,7 +316,7 @@ returnValue convertPrintLevelToString(	PrintLevel value, 		/**< Value to be writ
  *         -2: QP is infeasible (and thus could not be solved)
  *         -3: QP is unbounded (and thus could not be solved)
  */
-int getSimpleStatus(	returnValue returnvalue, 				/**< ReturnValue to be analysed. */
+int_t getSimpleStatus(	returnValue returnvalue, 				/**< ReturnValue to be analysed. */
 						BooleanType doPrintStatus = BT_FALSE	/**< Flag indicating whether simple status shall be printed to screen. */
 						);
 
@@ -324,15 +324,15 @@ int getSimpleStatus(	returnValue returnvalue, 				/**< ReturnValue to be analyse
 /** Normalises QP constraints.
  * \return SUCCESSFUL_RETURN \n
  *		   RET_INVALID_ARGUMENTS */
-returnValue normaliseConstraints(	int nV,			/**< Number of variables. */
-									int nC, 		/**< Number of constraints. */
+returnValue normaliseConstraints(	int_t nV,		/**< Number of variables. */
+									int_t nC, 		/**< Number of constraints. */
 									real_t* A,		/**< Input:  Constraint matrix, \n
 														 Output: Normalised constraint matrix. */
 									real_t* lbA,	/**< Input:  Constraints' lower bound vector, \n
 														 Output: Normalised constraints' lower bound vector. */
 									real_t* ubA,	/**< Input:  Constraints' upper bound vector, \n
 														 Output: Normalised constraints' upper bound vector. */
-									int type = 1	/**< Norm type, 1: one-norm, 2: Euclidean norm. */
+									int_t type = 1	/**< Norm type, 1: one-norm, 2: Euclidean norm. */
 									);
 
 
@@ -340,9 +340,9 @@ returnValue normaliseConstraints(	int nV,			/**< Number of variables. */
 /** Writes matrix with given dimension into specified file. */
 extern "C" void gdb_printmat(	const char *fname,			/**< File name. */
 								real_t *M,					/**< Matrix to be written. */
-								int n,						/**< Number of rows. */
-								int m,						/**< Number of columns. */
-								int ldim					/**< Leading dimension. */
+								int_t n,					/**< Number of rows. */
+								int_t m,					/**< Number of columns. */
+								int_t ldim					/**< Leading dimension. */
 								);
 #endif /* __DEBUG__ */
 

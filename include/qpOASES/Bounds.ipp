@@ -43,7 +43,7 @@ BEGIN_NAMESPACE_QPOASES
 /*
  *	g e t N V
  */
-inline int Bounds::getNV( ) const
+inline int_t Bounds::getNV( ) const
 {
  	return n;
 }
@@ -52,7 +52,7 @@ inline int Bounds::getNV( ) const
 /*
  *	g e t N F V
  */
-inline int Bounds::getNFV( ) const
+inline int_t Bounds::getNFV( ) const
 {
  	return getNumberOfType( ST_EQUALITY );
 }
@@ -61,7 +61,7 @@ inline int Bounds::getNFV( ) const
 /*
  *	g e t N B V
  */
-inline int Bounds::getNBV( ) const
+inline int_t Bounds::getNBV( ) const
 {
  	return getNumberOfType( ST_BOUNDED );
 }
@@ -70,7 +70,7 @@ inline int Bounds::getNBV( ) const
 /*
  *	g e t N U V
  */
-inline int Bounds::getNUV( ) const
+inline int_t Bounds::getNUV( ) const
 {
 	return getNumberOfType( ST_UNBOUNDED );
 }
@@ -79,7 +79,7 @@ inline int Bounds::getNUV( ) const
 /*
  *	g e t N F R
  */
-inline int Bounds::getNFR( ) const
+inline int_t Bounds::getNFR( ) const
 {
  	return freee.getLength( );
 }
@@ -88,7 +88,7 @@ inline int Bounds::getNFR( ) const
 /*
  *	g e t N F X
  */
-inline int Bounds::getNFX( ) const
+inline int_t Bounds::getNFX( ) const
 {
 	return fixed.getLength( );
 }

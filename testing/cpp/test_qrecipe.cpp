@@ -45,7 +45,7 @@ int main( )
 	USING_NAMESPACE_QPOASES
 
 	long i;
-	int nWSR;
+	int_t nWSR;
 	real_t tic, toc;
 	real_t errP=0.0, errD=0.0;
 	real_t *x1 = new real_t[180];
@@ -74,7 +74,7 @@ int main( )
 	qrecipeD.getPrimalSolution(x1);
 	qrecipeD.getDualSolution(y1);
 
-	fprintf(stdFile, "Solved dense problem in %d iterations, %.3f seconds.\n", nWSR, toc-tic);
+	fprintf(stdFile, "Solved dense problem in %d iterations, %.3f seconds.\n", (int)nWSR, toc-tic);
 
 	/* Compute KKT tolerances */
 	real_t statD, feasD, cmplD;
@@ -93,7 +93,7 @@ int main( )
 	qrecipeS.getPrimalSolution(x2);
 	qrecipeS.getDualSolution(y2);
 
-	fprintf(stdFile, "Solved sparse problem in %d iterations, %.3f seconds.\n", nWSR, toc-tic);
+	fprintf(stdFile, "Solved sparse problem in %d iterations, %.3f seconds.\n", (int)nWSR, toc-tic);
 	
 	/* Compute KKT tolerances */
 	real_t statS, feasS, cmplS;

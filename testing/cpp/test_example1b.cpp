@@ -64,7 +64,7 @@ int main( )
 	example.setOptions( options );
 
 	/* Solve first QP. */
-	int nWSR = 10;
+	int_t nWSR = 10;
 	example.init( H,g,lb,ub, nWSR,0 );
 // 	printf( "\nnWSR = %d\n\n", nWSR );
 

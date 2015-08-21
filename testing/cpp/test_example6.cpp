@@ -72,9 +72,9 @@ int main( )
 	
 	/* Solve first QP. */
 	returnValue retVal;
-	int simpleStatus = -1;
+	int_t simpleStatus = -1;
 
-	int nWSR = 10;
+	int_t nWSR = 10;
 	retVal = example.init( H,g,A,lb,ub,lbA,ubA, nWSR,0 );
 	simpleStatus = getSimpleStatus( retVal,BT_TRUE );
 

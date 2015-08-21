@@ -58,9 +58,9 @@ class MpcConstraintProduct : public ConstraintProduct
 		MpcConstraintProduct( ) {};
 
 		/** Constructor. */
-		MpcConstraintProduct(	int _nV,
-								int _nC,
-								int _diagOffset,
+		MpcConstraintProduct(	int_t _nV,
+								int_t _nC,
+								int_t _diagOffset,
 								real_t* _A
 								)
 		{
@@ -85,7 +85,7 @@ class MpcConstraintProduct : public ConstraintProduct
 		
 		/** Assignment operator (flat copy). */
 		MpcConstraintProduct& operator=(	const MpcConstraintProduct& rhs
-										)
+											)
 		{
 			if ( this != &rhs )
 			{
@@ -98,27 +98,28 @@ class MpcConstraintProduct : public ConstraintProduct
 				return *this;
 		};
 
-		virtual int operator() (	int constrIndex,
+		virtual int_t operator() (	int_t constrIndex,
 									const real_t* const x,
 									real_t* const constrValue
 									) const
 		{
-			int maxI = (int)(((real_t)constrIndex) * ((real_t)nV) / ((real_t)nC)) + diagOffset;
+			int_t i;
+			int_t maxI = (int_t)(((real_t)constrIndex) * ((real_t)nV) / ((real_t)nC)) + diagOffset;
 			maxI = getMin( maxI,nV );
 
 			constrValue[0] = 0.0;
 
-			for( int i=0; i<maxI; ++i )
+			for( i=0; i<maxI; ++i )
 				constrValue[0] += A[constrIndex*nV + i] * x[i];
 
 			return 0;
 		};
 
 	protected:
-		int nV;			/**< Number of variables. */
-		int nC;			/**< Number of constraints. */
-		int diagOffset;	/**< ... */
-		real_t* A;		/**< Pointer to full constraint matrix (typically not needed!). */
+		int_t nV;			/**< Number of variables. */
+		int_t nC;			/**< Number of constraints. */
+		int_t diagOffset;	/**< ... */
+		real_t* A;			/**< Pointer to full constraint matrix (typically not needed!). */
 		
 };
 
@@ -128,7 +129,9 @@ class MpcConstraintProduct : public ConstraintProduct
  *	user-defined constraint product function. */
 int main( )
 {
-	int nQP, nV, nC, nEC;
+	USING_NAMESPACE_QPOASES
+
+	int_t nQP, nV, nC, nEC;
 	real_t *H, *g, *A, *lb, *ub, *lbA, *ubA;
 	real_t cputime;
 
@@ -138,7 +141,7 @@ int main( )
 	real_t yOptCP[1000+1000];
 	
 	const char* path = "./cpp/data/oqp/chain80w/";
-	int k = 10; //th problem
+	int_t k = 10; //th problem
 	
 		
 	if ( readOQPdimensions(	path, nQP,nV,nC,nEC ) != SUCCESSFUL_RETURN )
@@ -153,7 +156,7 @@ int main( )
 	//myOptions.setToMPC();
 	myOptions.printLevel = PL_LOW;
 
-	int nWSR = 500;
+	int_t nWSR = 500;
 	cputime = 20.0;
 	QProblem qp( nV,nC );
 	qp.setOptions( myOptions );

@@ -43,10 +43,10 @@ USING_NAMESPACE_QPOASES
 /** Compare deviations when computing dot product. */
 int sumOfSquares()
 {
-	int i;
+	int_t i;
 
 	/* sum of first n squares */
-	const int N = 100;
+	const int_t N = 100;
 	real_t *av = new real_t[N];
 	real_t *aTv = new real_t[N];
 	real_t *bv = new real_t[N];
@@ -61,11 +61,11 @@ int sumOfSquares()
 
 	a.times(1, 1.0, bv, N, 0.0, &c, 1);
 	real_t err = c - (1.0/6.0)*N*(N+1)*(2*N+1);
-	fprintf(stdFile, "Dot product; Error in sum of first %d squares: %9.2e\n", N, err );
+	fprintf(stdFile, "Dot product; Error in sum of first %d squares: %9.2e\n", (int)N, err );
 	
 	aT.transTimes(1, 1.0, bv, N, 0.0, &c, 1);
 	real_t errT = c - (1.0/6.0)*N*(N+1)*(2*N+1);
-	fprintf(stdFile, "Transpose; Error in sum of first %d squares: %9.2e\n", N, errT);
+	fprintf(stdFile, "Transpose; Error in sum of first %d squares: %9.2e\n", (int)N, errT);
 
 	delete[] bv;
 	aT.free ();	// or delete[] aTv;
@@ -81,7 +81,7 @@ int sumOfSquares()
 /** Compare deviations when multiplying Hilbert matrix with its inverse. */
 int hilbert()
 {
-	int i, j;
+	int_t i, j;
 	real_t d, err;
 
 	/* permuted 4x4 Hilbert matrix, row major format */
@@ -128,7 +128,7 @@ int hilbert()
 /** Compare deviations when multiplying sub-matrices. */
 int submatrix()
 {
-	int i, j;
+	int_t i, j;
 	real_t d, err;
 
 	/* 2x3 transposed submatrix */
@@ -171,10 +171,10 @@ int submatrix()
 int indexDenseSubmatrix()
 {
 	/* dense submatrices via index lists */
-	const int M = 20, N = 15, K = 5;
-	int i, j, k, m, n;
+	const int_t M = 20, N = 15, K = 5;
+	int_t i, j, k, m, n;
 	Indexlist rows(N), cols(N);
-	int *rNum, *cNum;
+	int_t *rNum, *cNum;
 	real_t err=0.0, errT=0.0;
 	real_t *Av, *X, *Y, *x, *y, *xc, *yc;
 
@@ -188,12 +188,12 @@ int indexDenseSubmatrix()
 
 	rows.getNumberArray(&rNum);
 	fprintf(stdFile, "Rows: ");
-	for (i = 0; i < m; i++) fprintf(stdFile, " %2d", rNum[i]);
+	for (i = 0; i < m; i++) fprintf(stdFile, " %2d", (int)(rNum[i]) );
 	fprintf(stdFile, "\n");
 
 	cols.getNumberArray(&cNum);
 	fprintf(stdFile, "Cols: ");
-	for (i = 0; i < n; i++) fprintf(stdFile, " %2d", cNum[i]);
+	for (i = 0; i < n; i++) fprintf(stdFile, " %2d", (int)(cNum[i]) );
 	fprintf(stdFile, "\n");
 
 	// prepare input matrices
@@ -305,7 +305,7 @@ int spGetCol()
 	for (j = 0; j < 3; j++)
 	{
 		fprintf(stdFile, "Column %ld:\n", j);
-		A.getCol( (int)j, &rows, 1.0, col );
+		A.getCol( (int_t)j, &rows, 1.0, col );
 		for (i = 0; i < 4; i++)
 			fprintf(stdFile, " %3.0f\n", col[i]);
 	}
@@ -359,7 +359,7 @@ int spGetRow()
 
 	for (j = 0; j < 3; j++)
 	{
-		A.getRow( (int)j, &cols, 1.0, row );
+		A.getRow( (int_t)j, &cols, 1.0, row );
 		for (i = 0; i < 4; i++)
 			fprintf(stdFile, " %3.0f", row[i]);
 		fprintf(stdFile, "\n");
@@ -447,7 +447,7 @@ int spIndTimes()
 	real_t ATy[] = {0.278, 0.000, 0.548, 0.776, 0.000, 1.208};
 	real_t err=0.0, errT=0.0;
 
-	Indexlist rows(4), cols(3), allcols( (int)nCols );
+	Indexlist rows(4), cols(3), allcols( (int_t)nCols );
 
 	rows.addNumber(2);
 	rows.addNumber(4);
@@ -459,7 +459,7 @@ int spIndTimes()
 	cols.addNumber(0);
 
 	for (i = 0; i < nCols; i++) 
-		allcols.addNumber( (int)i );
+		allcols.addNumber( (int_t)i );
 
 	// build test matrix
 	for (i = 0; i <= N; i++) jc[i] = (sparse_int_t)(3*i);
@@ -469,12 +469,12 @@ int spIndTimes()
 			ir[j*3+i] = (sparse_int_t)(2*j + i);
 			val[j*3+i] = 1.0 - 0.1 * (double)(j*3+i);
 		}
-	SparseMatrix A( (int)nRows, (int)nCols, ir, jc, val );
+	SparseMatrix A( (int_t)nRows, (int_t)nCols, ir, jc, val );
 
 	fprintf(stdFile, "Test matrix A =\n");
 	for (j = 0; j < nRows; j++)
 	{
-		A.getRow( (int)j, &allcols, 1.0, xc );
+		A.getRow( (int_t)j, &allcols, 1.0, xc );
 		for (i = 0; i < nCols; i++)
 			fprintf(stdFile, "%6.2f", xc[i]);
 		fprintf(stdFile, "\n");
@@ -556,7 +556,7 @@ int sprGetCol()
 	for (j = 0; j < 3; j++)
 	{
 		fprintf(stdFile, "Column %ld:\n", j);
-		A.getCol( (int)j, &rows, 1.0, col );
+		A.getCol( (int_t)j, &rows, 1.0, col );
 		for (i = 0; i < 4; i++)
 			fprintf(stdFile, " %3.0f\n", col[i]);
 	}
@@ -614,7 +614,7 @@ int sprGetRow()
 
 	for (j = 0; j < 3; j++)
 	{
-		A.getRow( (int)j, &cols, 1.0, row );
+		A.getRow( (int_t)j, &cols, 1.0, row );
 		for (i = 0; i < 4; i++)
 			fprintf(stdFile, " %3.0f", row[i]);
 		fprintf(stdFile, "\n");
@@ -706,7 +706,7 @@ int sprIndTimes()
 	real_t ATy[] = {0.278, 0.000, 0.548, 0.776, 0.000, 1.208};
 	real_t err=0.0, errT=0.0;
 
-	Indexlist rows(4), cols(3), allcols( (int)nCols );
+	Indexlist rows(4), cols(3), allcols( (int_t)nCols );
 
 	rows.addNumber(2);
 	rows.addNumber(4);
@@ -718,7 +718,7 @@ int sprIndTimes()
 	cols.addNumber(0);
 
 	for (i = 0; i < nCols; i++) 
-		allcols.addNumber( (int)i );
+		allcols.addNumber( (int_t)i );
 
 	// build test matrix
 	for (i = 0; i <= N; i++) jc[i] = (sparse_int_t)(3*i);
@@ -728,16 +728,16 @@ int sprIndTimes()
 			ir[j*3+i] = (sparse_int_t)(2*j + i);
 			val[j*3+i] = 1.0 - 0.1 * (double)(j*3+i);
 		}
-	SparseMatrix Ac( (int)nRows, (int)nCols, ir, jc, val);
+	SparseMatrix Ac( (int_t)nRows, (int_t)nCols, ir, jc, val);
 	real_t *Acv = Ac.full(); // row major format
-	SparseMatrixRow A( (int)nRows, (int)nCols, (int)nCols, Acv);
+	SparseMatrixRow A( (int_t)nRows, (int_t)nCols, (int_t)nCols, Acv);
 	delete[] Acv;
 	Ac.free ();	// or delete[] val,jc,ir;
 
 	fprintf(stdFile, "Test matrix A =\n");
 	for (j = 0; j < nRows; j++)
 	{
-		A.getRow( (int)j, &allcols, 1.0, xc );
+		A.getRow( (int_t)j, &allcols, 1.0, xc );
 		for (i = 0; i < nCols; i++)
 			fprintf(stdFile, "%6.2f", xc[i]);
 		fprintf(stdFile, "\n");
@@ -785,7 +785,7 @@ int sprIndTimes()
 /** Compare deviations when using bilinear multiplication with dense matrix. */
 int symmetry()
 {
-	int i,j;
+	int_t i,j;
 	real_t *Hv = new real_t[6*6];
 	real_t *Z = new real_t[6*3];
 	real_t *ZHZd = new real_t[3*3];

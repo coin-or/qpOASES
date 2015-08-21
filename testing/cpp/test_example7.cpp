@@ -57,9 +57,9 @@ int main( )
 	QProblem example( 5,5 );
 
 	/* Solve first QP. */
-	int nWSR = 100;
+	int_t nWSR = 100;
 	returnValue retVal = example.init( H,g,A,lb,ub,lbA,ubA, nWSR,0 );
-	printf( "nWSR = %d,  retVal = %d (%s)\n", nWSR,retVal,getGlobalMessageHandler( )->getErrorCodeMessage(retVal) );
+	printf( "nWSR = %d,  retVal = %d (%s)\n", (int)nWSR,retVal,getGlobalMessageHandler( )->getErrorCodeMessage(retVal) );
 	
 	
 	real_t sol[5]    = {0};

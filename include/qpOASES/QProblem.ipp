@@ -47,7 +47,7 @@ BEGIN_NAMESPACE_QPOASES
  */
 inline returnValue QProblem::getConstraints( Constraints& _constraints ) const
 {
-	int nV = getNV( );
+	int_t nV = getNV( );
 
 	if ( nV == 0 )
 		return THROWERROR( RET_QPOBJECT_NOT_SETUP );
@@ -62,7 +62,7 @@ inline returnValue QProblem::getConstraints( Constraints& _constraints ) const
 /*
  *	g e t N C
  */
-inline int QProblem::getNC( ) const
+inline int_t QProblem::getNC( ) const
 {
 	return constraints.getNC( );
 }
@@ -71,7 +71,7 @@ inline int QProblem::getNC( ) const
 /*
  *	g e t N E C
  */
-inline int QProblem::getNEC( ) const
+inline int_t QProblem::getNEC( ) const
 {
 	return constraints.getNEC( );
 }
@@ -80,7 +80,7 @@ inline int QProblem::getNEC( ) const
 /*
  *	g e t N A C
  */
-inline int QProblem::getNAC( ) const
+inline int_t QProblem::getNAC( ) const
 {
 	return constraints.getNAC( );
 }
@@ -89,7 +89,7 @@ inline int QProblem::getNAC( ) const
 /*
  *	g e t N I A C
  */
-inline int QProblem::getNIAC( ) const
+inline int_t QProblem::getNIAC( ) const
 {
 	return constraints.getNIAC( );
 }
@@ -106,9 +106,9 @@ inline int QProblem::getNIAC( ) const
  */
 inline returnValue QProblem::setA( Matrix *A_new )
 {
-	int j;
-	int nV = getNV( );
-	int nC = getNC( );
+	int_t j;
+	int_t nV = getNV( );
+	int_t nC = getNC( );
 
 	if ( nV == 0 )
 		return THROWERROR( RET_QPOBJECT_NOT_SETUP );
@@ -148,9 +148,9 @@ inline returnValue QProblem::setA( Matrix *A_new )
  */
 inline returnValue QProblem::setA( const real_t* const A_new )
 {
-	int j;
-	int nV = getNV( );
-	int nC = getNC( );
+	int_t j;
+	int_t nV = getNV( );
+	int_t nC = getNC( );
 	DenseMatrix* dA;
 
 	if ( nV == 0 )
@@ -185,9 +185,9 @@ inline returnValue QProblem::setA( const real_t* const A_new )
  */
 inline returnValue QProblem::setLBA( const real_t* const lbA_new )
 {
-	unsigned int i;
-	unsigned int nV = (unsigned int)getNV( );
-	unsigned int nC = (unsigned int)getNC( );
+	uint_t i;
+	uint_t nV = (uint_t)getNV( );
+	uint_t nC = (uint_t)getNC( );
 
 	if ( nV == 0 )
 		return THROWERROR( RET_QPOBJECT_NOT_SETUP );
@@ -210,10 +210,10 @@ inline returnValue QProblem::setLBA( const real_t* const lbA_new )
 /*
  *	s e t L B A
  */
-inline returnValue QProblem::setLBA( int number, real_t value )
+inline returnValue QProblem::setLBA( int_t number, real_t value )
 {
-	int nV = getNV( );
-	int nC = getNC( );
+	int_t nV = getNV( );
+	int_t nC = getNC( );
 
 	if ( nV == 0 )
 		return THROWERROR( RET_QPOBJECT_NOT_SETUP );
@@ -233,9 +233,9 @@ inline returnValue QProblem::setLBA( int number, real_t value )
  */
 inline returnValue QProblem::setUBA( const real_t* const ubA_new )
 {
-	unsigned int i;
-	unsigned int nV = (unsigned int)getNV( );
-	unsigned int nC = (unsigned int)getNC( );
+	uint_t i;
+	uint_t nV = (uint_t)getNV( );
+	uint_t nC = (uint_t)getNC( );
 
 	if ( nV == 0 )
 		return THROWERROR( RET_QPOBJECT_NOT_SETUP );
@@ -258,10 +258,10 @@ inline returnValue QProblem::setUBA( const real_t* const ubA_new )
 /*
  *	s e t U B A
  */
-inline returnValue QProblem::setUBA( int number, real_t value )
+inline returnValue QProblem::setUBA( int_t number, real_t value )
 {
-	int nV = getNV( );
-	int nC = getNC( );
+	int_t nV = getNV( );
+	int_t nC = getNC( );
 
 	if ( nV == 0 )
 		return THROWERROR( RET_QPOBJECT_NOT_SETUP );

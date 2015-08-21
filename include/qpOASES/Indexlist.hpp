@@ -71,7 +71,7 @@ class Indexlist
 		Indexlist( );
 
 		/** Constructor which takes the desired physical length of the index list. */
-		Indexlist(	int n	/**< Physical length of index list. */
+		Indexlist(	int_t n	/**< Physical length of index list. */
 					);
 
 		/** Copy constructor (deep copy). */
@@ -89,66 +89,66 @@ class Indexlist
 		/** Initialises index list of desired physical length.
 		 *	\return SUCCESSFUL_RETURN \n
 		 			RET_INVALID_ARGUMENTS */
-		returnValue init(	int n = 0	/**< Physical length of index list. */
+		returnValue init(	int_t n = 0	/**< Physical length of index list. */
 							);
 
 
 		/** Creates an array of all numbers within the index set in correct order.
 		 *	\return SUCCESSFUL_RETURN \n
 		 			RET_INDEXLIST_CORRUPTED */
-		returnValue	getNumberArray(	int** const numberarray	/**< Output: Array of numbers (NULL on error). */
+		returnValue	getNumberArray(	int_t** const numberarray	/**< Output: Array of numbers (NULL on error). */
 									) const;
 
 		/** Creates an array of all numbers within the index set in correct order.
 		 *	\return SUCCESSFUL_RETURN \n
 					RET_INDEXLIST_CORRUPTED */
-		returnValue	getISortArray(	int** const iSortArray	/**< Output: iSort Array. */
+		returnValue	getISortArray(	int_t** const iSortArray	/**< Output: iSort Array. */
 									) const;
 
 
 		/** Determines the index within the index list at which a given number is stored.
 		 *	\return >= 0: Index of given number. \n
 		 			-1: Number not found. */
-		int	getIndex(	int givennumber	/**< Number whose index shall be determined. */
+		int_t getIndex(	int_t givennumber	/**< Number whose index shall be determined. */
 						) const;
 
 		/** Returns the number stored at a given physical index.
 		 *	\return >= 0: Number stored at given physical index. \n
 		 			-RET_INDEXLIST_OUTOFBOUNDS */
-		int	getNumber(	int physicalindex	/**< Physical index of the number to be returned. */
-						) const;
+		int_t getNumber(	int_t physicalindex	/**< Physical index of the number to be returned. */
+							) const;
 
 
 		/** Returns the current length of the index list.
 		 *	\return Current length of the index list. */
-		inline int getLength( ) const;
+		inline int_t getLength( ) const;
 
 		/** Returns last number within the index list.
 		 *	\return Last number within the index list. */
-		inline int getLastNumber( ) const;
+		inline int_t getLastNumber( ) const;
 
 
 		/** Adds number to index list.
 		 *	\return SUCCESSFUL_RETURN \n
 		 			RET_INDEXLIST_MUST_BE_REORDERD \n
 		 			RET_INDEXLIST_EXCEEDS_MAX_LENGTH */
-		returnValue addNumber(	int addnumber			/**< Number to be added. */
+		returnValue addNumber(	int_t addnumber			/**< Number to be added. */
 								);
 
 		/** Removes number from index list.
 		 *	\return SUCCESSFUL_RETURN */
-		returnValue removeNumber(	int removenumber	/**< Number to be removed. */
+		returnValue removeNumber(	int_t removenumber	/**< Number to be removed. */
 									);
 
 		/** Swaps two numbers within index list.
 		 *	\return SUCCESSFUL_RETURN */
-		returnValue swapNumbers(	int number1,		/**< First number for swapping. */
-									int number2			/**< Second number for swapping. */
+		returnValue swapNumbers(	int_t number1,		/**< First number for swapping. */
+									int_t number2			/**< Second number for swapping. */
 									);
 
 		/** Determines if a given number is contained in the index set.
 		 *	\return BT_TRUE iff number is contain in the index set */
-		inline BooleanType isMember(	int _number		/**< Number to be tested for membership. */
+		inline BooleanType isMember(	int_t _number		/**< Number to be tested for membership. */
 										) const;
 
 
@@ -169,22 +169,22 @@ class Indexlist
 		 *  iSort such that numbers[iSort[j]] <= i < numbers[iSort[j+1]]. Uses
 		 *  bisection.
 		 *  \return j. */
-		int findInsert(	int i
-						) const;
+		int_t findInsert(	int_t i
+							) const;
 
 
 	/*
 	 *	PROTECTED MEMBER VARIABLES
 	 */
 	protected:
-		int* number;		/**< Array to store numbers of constraints or bounds. */
-		int* iSort;			/**< Index list to sort vector \a number */
+		int_t* number;			/**< Array to store numbers of constraints or bounds. */
+		int_t* iSort;			/**< Index list to sort vector \a number */
 
-		int	length;			/**< Length of index list. */
-		int	first;			/**< Physical index of first element. */
-		int	last;			/**< Physical index of last element. */
-		int	lastusedindex;	/**< Physical index of last entry in index list. */
-		int	physicallength;	/**< Physical length of index list. */
+		int_t	length;			/**< Length of index list. */
+		int_t	first;			/**< Physical index of first element. */
+		int_t	last;			/**< Physical index of last element. */
+		int_t	lastusedindex;	/**< Physical index of last entry in index list. */
+		int_t	physicallength;	/**< Physical length of index list. */
 };
 
 END_NAMESPACE_QPOASES

@@ -46,6 +46,7 @@
 #include <Flipper.cpp>
 #include <QProblem.cpp>
 #include <SQProblem.cpp>
+#include <SparseSolver.cpp>
 #include <SQProblemSchur.cpp>
 
 #ifndef __C_WRAPPER__

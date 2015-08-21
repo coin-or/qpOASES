@@ -63,7 +63,7 @@ class Bounds : public SubjectTo
 		Bounds( );
 
 		/** Constructor which takes the number of bounds. */
-		Bounds(	int _n									/**< Number of bounds. */
+		Bounds(	int_t _n								/**< Number of bounds. */
 				);
 
 		/** Copy constructor (deep copy). */
@@ -81,7 +81,7 @@ class Bounds : public SubjectTo
 		/** Initialises object with given number of bounds.
 		 *	\return SUCCESSFUL_RETURN \n
 		 			RET_INVALID_ARGUMENTS */
-		returnValue init(	int _n = 0					/**< Number of bounds. */
+		returnValue init(	int_t _n = 0				/**< Number of bounds. */
 							);
 
 
@@ -91,7 +91,7 @@ class Bounds : public SubjectTo
 		 			RET_SETUP_BOUND_FAILED \n
 					RET_INDEX_OUT_OF_BOUNDS \n
 					RET_INVALID_ARGUMENTS */
-		returnValue setupBound(	int number,				/**< Number of new bound. */
+		returnValue setupBound(	int_t number,			/**< Number of new bound. */
 								SubjectToStatus _status	/**< Status of new bound. */
 								);
 
@@ -121,14 +121,14 @@ class Bounds : public SubjectTo
 		 *	\return SUCCESSFUL_RETURN \n
 		 			RET_MOVING_BOUND_FAILED \n
 					RET_INDEX_OUT_OF_BOUNDS */
-		returnValue moveFixedToFree(	int number				/**< Number of bound to be freed. */
+		returnValue moveFixedToFree(	int_t number			/**< Number of bound to be freed. */
 										);
 
 		/** Moves index of a bound from index list of free to that of fixed bounds.
 		 *	\return SUCCESSFUL_RETURN \n
 		 			RET_MOVING_BOUND_FAILED \n
 					RET_INDEX_OUT_OF_BOUNDS */
-		returnValue moveFreeToFixed(	int number,				/**< Number of bound to be fixed. */
+		returnValue moveFreeToFixed(	int_t number,			/**< Number of bound to be fixed. */
 										SubjectToStatus _status	/**< Status of bound to be fixed. */
 										);
 
@@ -136,39 +136,39 @@ class Bounds : public SubjectTo
 		 *	\return SUCCESSFUL_RETURN \n
 		 			RET_MOVING_BOUND_FAILED \n
 					RET_INDEX_OUT_OF_BOUNDS */
-		returnValue flipFixed( int number );
+		returnValue flipFixed( int_t number );
 
 		/** Swaps the indices of two free bounds within the index set.
 		 *	\return SUCCESSFUL_RETURN \n
 		 			RET_SWAPINDEX_FAILED */
-		returnValue swapFree(	int number1,					/**< Number of first constraint or bound. */
-								int number2						/**< Number of second constraint or bound. */
+		returnValue swapFree(	int_t number1,					/**< Number of first constraint or bound. */
+								int_t number2					/**< Number of second constraint or bound. */
 								);
 
 
 		/** Returns number of variables.
 		 *	\return Number of variables. */
-		inline int getNV( ) const;
+		inline int_t getNV( ) const;
 
 		/** Returns number of implicitly fixed variables.
 		 *	\return Number of implicitly fixed variables. */
-		inline int getNFV( ) const;
+		inline int_t getNFV( ) const;
 
 		/** Returns number of bounded (but possibly free) variables.
 		 *	\return Number of bounded (but possibly free) variables. */
-		inline int getNBV( ) const;
+		inline int_t getNBV( ) const;
 
 		/** Returns number of unbounded variables.
 		 *	\return Number of unbounded variables. */
-		inline int getNUV( ) const;
+		inline int_t getNUV( ) const;
 
 		/** Returns number of free variables.
 		 *	\return Number of free variables. */
-		inline int getNFR( ) const;
+		inline int_t getNFR( ) const;
 
 		/** Returns number of fixed variables.
 		 *	\return Number of fixed variables. */
-		inline int getNFX( ) const;
+		inline int_t getNFX( ) const;
 
 
 		/** Returns a pointer to free variables index list.
@@ -191,7 +191,7 @@ class Bounds : public SubjectTo
 		 			RET_INDEX_OUT_OF_BOUNDS \n
 		 			RET_INVALID_ARGUMENTS \n
 		 			RET_SHIFTING_FAILED */
-		virtual returnValue shift(	int offset		/**< Shift offset within the range [0,n/2] and integer divisor of n. */
+		virtual returnValue shift(	int_t offset	/**< Shift offset within the range [0,n/2] and integer divisor of n. */
 									);
 
 		/** Rotates forward type and status of all bounds by a given
@@ -201,7 +201,7 @@ class Bounds : public SubjectTo
 		 *	\return SUCCESSFUL_RETURN \n
 		 			RET_INDEX_OUT_OF_BOUNDS \n
 		 			RET_ROTATING_FAILED */
-		virtual returnValue rotate(	int offset		/**< Rotation offset within the range [0,n]. */
+		virtual returnValue rotate(	int_t offset	/**< Rotation offset within the range [0,n]. */
 									);
 
 

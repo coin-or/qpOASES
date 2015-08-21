@@ -73,11 +73,11 @@ BEGIN_NAMESPACE_QPOASES
 /*
  *	p r i n t
  */
-returnValue print( const real_t* const v, int n, const char* name )
+returnValue print( const real_t* const v, int_t n, const char* name )
 {
 	#ifndef __SUPPRESSANYOUTPUT__
 
-	int i;
+	int_t i;
 	char myPrintfString[MAX_STRING_LENGTH];
 
 	/* Print vector name. */
@@ -104,11 +104,11 @@ returnValue print( const real_t* const v, int n, const char* name )
 /*
  *	p r i n t
  */
-returnValue print(	const real_t* const v, int n, const int* const V_idx, const char* name )
+returnValue print(	const real_t* const v, int_t n, const int_t* const V_idx, const char* name )
 {
 	#ifndef __SUPPRESSANYOUTPUT__
 	
-	int i;
+	int_t i;
 	char myPrintfString[MAX_STRING_LENGTH];
 
 	/* Print vector name. */
@@ -135,11 +135,11 @@ returnValue print(	const real_t* const v, int n, const int* const V_idx, const c
 /*
  *	p r i n t
  */
-returnValue print( const real_t* const M, int nrow, int ncol, const char* name )
+returnValue print( const real_t* const M, int_t nrow, int_t ncol, const char* name )
 {
 	#ifndef __SUPPRESSANYOUTPUT__
 	
-	int i;
+	int_t i;
 	char myPrintfString[MAX_STRING_LENGTH];
 
 	/* Print matrix name. */
@@ -163,11 +163,11 @@ returnValue print( const real_t* const M, int nrow, int ncol, const char* name )
 /*
  *	p r i n t
  */
-returnValue print(	const real_t* const M, int nrow, int ncol, const int* const ROW_idx, const int* const COL_idx, const char* name )
+returnValue print(	const real_t* const M, int_t nrow, int_t ncol, const int_t* const ROW_idx, const int_t* const COL_idx, const char* name )
 {
 	#ifndef __SUPPRESSANYOUTPUT__
 	
-	int i;
+	int_t i;
 	char myPrintfString[MAX_STRING_LENGTH];
 
 	/* Print matrix name. */
@@ -191,11 +191,11 @@ returnValue print(	const real_t* const M, int nrow, int ncol, const int* const R
 /*
  *	p r i n t
  */
-returnValue print( const int* const index, int n, const char* name )
+returnValue print( const int_t* const index, int_t n, const char* name )
 {
 	#ifndef __SUPPRESSANYOUTPUT__
 	
-	int i;
+	int_t i;
 	char myPrintfString[MAX_STRING_LENGTH];
 
 	/* Print indexlist name. */
@@ -208,7 +208,7 @@ returnValue print( const int* const index, int n, const char* name )
 	/* Print a indexlist data. */
 	for( i=0; i<n; ++i )
 	{
-		snprintf( myPrintfString,MAX_STRING_LENGTH," %d\t", index[i] );
+		snprintf( myPrintfString,MAX_STRING_LENGTH," %d\t", (int)(index[i]) );
 		myPrintf( myPrintfString );
 	}
 	myPrintf( "\n" );
@@ -270,13 +270,13 @@ returnValue printCopyrightNotice( )
 /*
  *	r e a d F r o m F i l e
  */
-returnValue readFromFile(	real_t* data, int nrow, int ncol,
+returnValue readFromFile(	real_t* data, int_t nrow, int_t ncol,
 							const char* datafilename
 							)
 {
 	#ifndef __SUPPRESSANYOUTPUT__
 
-	int i, j;
+	int_t i, j;
 	double float_data;
 	FILE* datafile;
 
@@ -293,11 +293,11 @@ returnValue readFromFile(	real_t* data, int nrow, int ncol,
 	{
 		for( j=0; j<ncol; ++j )
 		{
-			//#ifdef __USE_SINGLE_PRECISION__
-			//if ( fscanf( datafile, "%f ", &float_data ) == 0 )
-			//#else
+			#ifdef __USE_SINGLE_PRECISION__
+			if ( fscanf( datafile, "%f ", &float_data ) == 0 )
+			#else
 			if ( fscanf( datafile, "%lf ", &float_data ) == 0 )
-			//#endif /* __USE_SINGLE_PRECISION__ */
+			#endif /* __USE_SINGLE_PRECISION__ */
 			{
 				fclose( datafile );
 				char errstr[MAX_STRING_LENGTH];
@@ -324,7 +324,7 @@ returnValue readFromFile(	real_t* data, int nrow, int ncol,
 /*
  *	r e a d F r o m F i l e
  */
-returnValue readFromFile(	real_t* data, int n,
+returnValue readFromFile(	real_t* data, int_t n,
 							const char* datafilename
 							)
 {
@@ -336,13 +336,13 @@ returnValue readFromFile(	real_t* data, int n,
 /*
  *	r e a d F r o m F i l e
  */
-returnValue readFromFile(	int* data, int n,
+returnValue readFromFile(	int_t* data, int_t n,
 							const char* datafilename
 							)
 {
 	#ifndef __SUPPRESSANYOUTPUT__
 
-	int i;
+	int_t i;
 	FILE* datafile;
 
 	/* 1) Open file. */
@@ -356,7 +356,11 @@ returnValue readFromFile(	int* data, int n,
 	/* 2) Read data from file. */
 	for( i=0; i<n; ++i )
 	{
+		#ifdef __USE_LONG_INTEGERS__
+		if ( fscanf( datafile, "%ld\n", &(data[i]) ) == 0 )
+		#else
 		if ( fscanf( datafile, "%d\n", &(data[i]) ) == 0 )
+		#endif
 		{
 			fclose( datafile );
 			char errstr[MAX_STRING_LENGTH];
@@ -381,13 +385,13 @@ returnValue readFromFile(	int* data, int n,
 /*
  *	w r i t e I n t o F i l e
  */
-returnValue writeIntoFile(	const real_t* const data, int nrow, int ncol,
+returnValue writeIntoFile(	const real_t* const data, int_t nrow, int_t ncol,
 							const char* datafilename, BooleanType append
 							)
 {
 	#ifndef __SUPPRESSANYOUTPUT__
 
-	int i, j;
+	int_t i, j;
 	FILE* datafile;
 
 	/* 1) Open file. */
@@ -437,7 +441,7 @@ returnValue writeIntoFile(	const real_t* const data, int nrow, int ncol,
 /*
  *	w r i t e I n t o F i l e
  */
-returnValue writeIntoFile(	const real_t* const data, int n,
+returnValue writeIntoFile(	const real_t* const data, int_t n,
 							const char* datafilename, BooleanType append
 							)
 {
@@ -448,13 +452,13 @@ returnValue writeIntoFile(	const real_t* const data, int n,
 /*
  *	w r i t e I n t o F i l e
  */
-returnValue writeIntoFile(	const int* const integer, int n,
+returnValue writeIntoFile(	const int_t* const integer, int_t n,
 							const char* datafilename, BooleanType append
 							)
 {
 	#ifndef __SUPPRESSANYOUTPUT__
 
-	int i;
+	int_t i;
 
 	FILE* datafile;
 
@@ -482,7 +486,7 @@ returnValue writeIntoFile(	const int* const integer, int n,
 
 	/* 2) Write data into file. */
 	for( i=0; i<n; ++i )
-		fprintf( datafile, "%d\n", integer[i] );
+		fprintf( datafile, "%d\n",(int)(integer[i]) );
 
 	/* 3) Close file. */
 	fclose( datafile );
@@ -501,7 +505,7 @@ returnValue writeIntoFile(	const int* const integer, int n,
  *	w r i t e I n t o M a t F i l e
  */
 returnValue writeIntoMatFile(	FILE* const matFile,
-								const real_t* const data, int nRows, int nCols, const char* name
+								const real_t* const data, int_t nRows, int_t nCols, const char* name
 								)
 {
 	/*  Note, this code snippet has been inspired from the document
@@ -528,7 +532,7 @@ returnValue writeIntoMatFile(	FILE* const matFile,
 	if ( fwrite( name, sizeof(char),(unsigned long)(var.nCharName), matFile ) < 1 )
 		return RET_UNABLE_TO_WRITE_FILE;
 
-	int ii, jj;
+	int_t ii, jj;
 	double curData;
 
 	for ( ii=0; ii<nCols; ++ii )
@@ -553,12 +557,12 @@ returnValue writeIntoMatFile(	FILE* const matFile,
  *	w r i t e I n t o M a t F i l e
  */
 returnValue writeIntoMatFile(	FILE* const matFile,
-								const int* const data, int nRows, int nCols, const char* name
+								const int_t* const data, int_t nRows, int_t nCols, const char* name
 								)
 {
 	real_t* realData = new real_t[nRows*nCols];
 
-	int ii, jj;
+	int_t ii, jj;
 
 	for ( ii=0; ii<nRows; ++ii )
 		for ( jj=0; jj<nCols; ++jj )
@@ -596,9 +600,9 @@ real_t getCPUtime( )
 /*
  *	g e t N o r m
  */
-real_t getNorm( const real_t* const v, int n, int type )
+real_t getNorm( const real_t* const v, int_t n, int_t type )
 {
-	int i;
+	int_t i;
 
 	real_t norm = 0.0;
 
@@ -624,7 +628,7 @@ real_t getNorm( const real_t* const v, int n, int type )
 /*
  *	g e t K k t V i o l a t i o n
  */
-returnValue getKktViolation(	int nV, int nC,
+returnValue getKktViolation(	int_t nV, int_t nC,
 								const real_t* const H, const real_t* const g, const real_t* const A,
 								const real_t* const lb, const real_t* const ub, const real_t* const lbA, const real_t* const ubA,
 								const real_t* const x, const real_t* const y,
@@ -635,7 +639,7 @@ returnValue getKktViolation(	int nV, int nC,
 	/* Tolerance for dual variables considered zero. */
 	const real_t dualActiveTolerance = 1.0e3 * EPS;
 
-	int i, j;
+	int_t i, j;
 	real_t sum, prod;
 
 	/* Initialize residuals */
@@ -785,7 +789,7 @@ returnValue getKktViolation(	int nV, int nC,
 /*
  *	g e t K k t V i o l a t i o n
  */
-returnValue getKktViolation(	int nV,
+returnValue getKktViolation(	int_t nV,
 								const real_t* const H, const real_t* const g,
 								const real_t* const lb, const real_t* const ub,
 								const real_t* const x, const real_t* const y,
@@ -905,11 +909,11 @@ returnValue convertPrintLevelToString( PrintLevel value, char* const string )
 /*
  *	g e t S i m p l e S t a t u s
  */
-int getSimpleStatus(	returnValue returnvalue,
+int_t getSimpleStatus(	returnValue returnvalue,
 						BooleanType doPrintStatus
 						)
 {
-	int simpleStatus = -1;
+	int_t simpleStatus = -1;
 
 	/* determine simple status from returnvalue */
 	switch ( returnvalue )
@@ -943,7 +947,7 @@ int getSimpleStatus(	returnValue returnvalue,
 		getGlobalMessageHandler( )->setInfoVisibilityStatus( VS_VISIBLE );
 		getGlobalMessageHandler( )->setErrorCount( -1 );
 		
-		int retValNumber = (int)RET_SIMPLE_STATUS_P0 - simpleStatus;
+		int_t retValNumber = (int_t)RET_SIMPLE_STATUS_P0 - simpleStatus;
 		THROWINFO( (returnValue)retValNumber );
 
 		getGlobalMessageHandler( )->setInfoVisibilityStatus( vsInfo );
@@ -956,12 +960,12 @@ int getSimpleStatus(	returnValue returnvalue,
 /*
  *	n o r m a l i s e C o n s t r a i n t s
  */
-returnValue normaliseConstraints(	int nV, int nC,
+returnValue normaliseConstraints(	int_t nV, int_t nC,
 									real_t* A, real_t* lbA, real_t* ubA,
-									int type
+									int_t type
 									)
 {
-	int ii, jj;
+	int_t ii, jj;
 	real_t curNorm;
 
 	if ( ( nV <= 0 ) || ( nC <= 0 ) || ( A == 0 ) )
@@ -1009,11 +1013,11 @@ returnValue normaliseConstraints(	int nV, int nC,
 /*
  *	g d b _ p r i n t m at
  */
-extern "C" void gdb_printmat(const char *fname, real_t *M, int n, int m, int ldim)
+extern "C" void gdb_printmat(const char *fname, real_t *M, int_t n, int_t m, int_t ldim)
 {
 	#ifndef __SUPPRESSANYOUTPUT__
 
-	int i, j;
+	int_t i, j;
 	FILE *fid;
 
 	fid = fopen(fname, "wt");

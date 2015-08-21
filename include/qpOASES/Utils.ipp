@@ -85,9 +85,9 @@ inline real_t getSign(	real_t arg
 /*
  *   g e t M a x
  */
-inline int getMax(	int x,
-					int y
-					)
+inline int_t getMax(	int_t x,
+						int_t y
+						)
 {
     return (y<x) ? x : y;
 }
@@ -96,9 +96,9 @@ inline int getMax(	int x,
 /*
  *   g e t M i n
  */
-inline int getMin(	int x,
-					int y
-					)
+inline int_t getMin(	int_t x,
+						int_t y
+						)
 {
     return (y>x) ? x : y;
 }

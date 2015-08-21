@@ -81,20 +81,20 @@ int main( int argc, char *argv[] )
  	//options.epsDen =  1.0e3 * EPS;
 
 
-	int nWSR;
+	int_t nWSR;
 	real_t maxCPUtime; /* seconds */
 	real_t maxStationarity = 0.0, maxFeasibility = 0.0, maxComplementarity = 0.0;
 	real_t avgStationarity = 0.0, avgFeasibility = 0.0, avgComplementarity = 0.0;
 
-	int scannedDir = 0;
-	int nfail = 0, npass = 0;
-	int nproblems, i;
+	int_t scannedDir = 0;
+	int_t nfail = 0, npass = 0;
+	int_t nproblems, i;
 	struct dirent **namelist;
 	char resstr[MAX_STRING_LENGTH], OQPproblem[MAX_STRING_LENGTH];
 	char *problem;
 	returnValue returnvalue;
 
-	int expectedNumSolvedProblems = 44;
+	int_t expectedNumSolvedProblems = 44;
 	real_t expectedAvgStationarity    = TOL;
 	real_t expectedAvgFeasibility     = TOL;
 	real_t expectedAvgComplementarity = TOL;
@@ -266,10 +266,10 @@ int main( int argc, char *argv[] )
 				return TEST_DATA_NOT_FOUND;
 
 			nfail++;
-			snprintf (resstr, MAX_STRING_LENGTH, "fail (%d)", returnvalue);
+			snprintf (resstr, MAX_STRING_LENGTH, "fail (%d)",(int)returnvalue);
 		}
 		fprintf(stdFile, "%9.2e %9.2e %9.2e %6d  %-12s\n", maxStationarity,
-				maxFeasibility, maxComplementarity, nWSR, resstr);
+				maxFeasibility, maxComplementarity, (int)nWSR, resstr);
 
 		if (scannedDir) free(namelist[i]);
 	}
@@ -284,8 +284,8 @@ int main( int argc, char *argv[] )
 	printf( "\n\n" );
 	printf( "Testbench results:\n" );
 	printf( "======================\n\n" );
-	printf( "Pass:  %3d\n",npass );
-	printf( "Fail:  %3d\n",nfail );
+	printf( "Pass:  %3d\n",(int)npass );
+	printf( "Fail:  %3d\n",(int)nfail );
 	printf( "Ratio: %5.1f%%\n", 100.0 * (real_t)npass / (real_t)(npass+nfail) );
 	printf( "\n" );
 

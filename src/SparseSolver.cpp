@@ -104,7 +104,7 @@ returnValue SparseSolver::reset( )
 /*
  *	g e t N e g a t i v e E i g e n v a l u e s
  */
-int SparseSolver::getNegativeEigenvalues( )
+int_t SparseSolver::getNegativeEigenvalues( )
 {
 	return -1;
 }
@@ -112,7 +112,7 @@ int SparseSolver::getNegativeEigenvalues( )
 /*
  *	g e t R a n k
  */
-int SparseSolver::getRank( )
+int_t SparseSolver::getRank( )
 {
 	return -1;
 }
@@ -120,7 +120,7 @@ int SparseSolver::getRank( )
 /*
  *	g e t Z e r o P i v o t s
  */
-returnValue SparseSolver::getZeroPivots( int *&zeroPivots )
+returnValue SparseSolver::getZeroPivots( int_t *&zeroPivots )
 {
 	if ( zeroPivots ) delete[] zeroPivots;
 	zeroPivots = 0;
@@ -248,10 +248,10 @@ Ma27SparseSolver& Ma27SparseSolver::operator=( const SparseSolver& rhs )
 /*
  *	s e t M a t r i x D a t a
  */
-returnValue Ma27SparseSolver::setMatrixData( int dim_,
-						   int numNonzeros_,
-						   const int* const irn,
-						   const int* const jcn,
+returnValue Ma27SparseSolver::setMatrixData( int_t dim_,
+						   int_t numNonzeros_,
+						   const int_t* const irn,
+						   const int_t* const jcn,
 						   const real_t* const avals
 						   )
 {
@@ -266,7 +266,7 @@ returnValue Ma27SparseSolver::setMatrixData( int dim_,
 		jcn_ma27 = new fint[numNonzeros_];
 
 		numNonzeros=0;
-		for (int i=0; i<numNonzeros_; ++i)
+		for (int_t i=0; i<numNonzeros_; ++i)
 			if ( avals[i] != 0 )
 			{
 				a_ma27[numNonzeros] = avals[i];
@@ -341,7 +341,7 @@ returnValue Ma27SparseSolver::factorize( )
 	double la_init_factor = 20.0; // This could be an option.
 	la_ma27 = getMax(numNonzeros,(fint)(la_init_factor * (double)(nrlnec)));
 	double* a_new = new double[la_ma27];
-	for (int i=0; i<numNonzeros; ++i)
+	for (int_t i=0; i<numNonzeros; ++i)
 		a_new[i] = a_ma27[i];
 	delete [] a_ma27;
 	a_ma27 = a_new;
@@ -386,7 +386,7 @@ returnValue Ma27SparseSolver::factorize( )
 /*
  *	s o l v e
  */
-returnValue Ma27SparseSolver::solve( int dim_,
+returnValue Ma27SparseSolver::solve( int_t dim_,
 					   const real_t* const rhs,
 					   real_t* const sol
 					   )
@@ -409,7 +409,7 @@ returnValue Ma27SparseSolver::solve( int dim_,
 	fint* iw1_ma27 = new fint[nsteps_ma27];
 
 	/* MA27CD overwrites rhs */
-	for (int i=0; i<dim; ++i) sol[i] = rhs[i];
+	for (int_t i=0; i<dim; ++i) sol[i] = rhs[i];
 	MA27CD(&dim, a_ma27, &la_ma27, iw_ma27, &liw_ma27, w_ma27, &maxfrt_ma27,
 		   sol, iw1_ma27, &nsteps_ma27, icntl_ma27, cntl_ma27);
 
@@ -435,7 +435,7 @@ returnValue Ma27SparseSolver::reset( )
 /*
  *	g e t N e g a t i v e E i g e n v a l u e s
  */
-int Ma27SparseSolver::getNegativeEigenvalues( )
+int_t Ma27SparseSolver::getNegativeEigenvalues( )
 {
 	if( !have_factorization )
 		return -1;
@@ -446,7 +446,7 @@ int Ma27SparseSolver::getNegativeEigenvalues( )
 /*
  *	g e t R a n k
  */
-int Ma27SparseSolver::getRank( )
+int_t Ma27SparseSolver::getRank( )
 {
 	return rank;
 }
@@ -527,10 +527,10 @@ returnValue Ma27SparseSolver::copy(	const Ma27SparseSolver& rhs
 	else
 		jcn_ma27 = 0;
 
-	for ( int i=0; i<30; ++i)
+	for ( int_t i=0; i<30; ++i)
 		icntl_ma27[i] = rhs.icntl_ma27[i];
 
-	for ( int i=0; i<5; ++i)
+	for ( int_t i=0; i<5; ++i)
 		cntl_ma27[i] = rhs.cntl_ma27[i];
 
 	liw_ma27 = rhs.liw_ma27;
@@ -721,10 +721,10 @@ Ma57SparseSolver& Ma57SparseSolver::operator=( const SparseSolver& rhs )
 /*
  *	s e t M a t r i x D a t a
  */
-returnValue Ma57SparseSolver::setMatrixData( int dim_,
-						   int numNonzeros_,
-						   const int* const irn,
-						   const int* const jcn,
+returnValue Ma57SparseSolver::setMatrixData( int_t dim_,
+						   int_t numNonzeros_,
+						   const int_t* const irn,
+						   const int_t* const jcn,
 						   const real_t* const avals
 						   )
 {
@@ -739,7 +739,7 @@ returnValue Ma57SparseSolver::setMatrixData( int dim_,
 		jcn_ma57 = new fint[numNonzeros_];
 
 		numNonzeros=0;
-		for (int i=0; i<numNonzeros_; ++i)
+		for (int_t i=0; i<numNonzeros_; ++i)
 			if ( isZero(avals[i]) == BT_FALSE )
 			{
 				a_ma57[numNonzeros] = avals[i];
@@ -806,7 +806,7 @@ returnValue Ma57SparseSolver::factorize( )
 	fact_ma57 = new double[lfact_ma57];
 
 	lifact_ma57 = (fint)(lfact_factor * (double)(info_ma57[9]));
-	ifact_ma57 = new int[lifact_ma57];
+	ifact_ma57 = new int_t[lifact_ma57];
 
     /*******************************************
 	 * Call MA57BD for numerical factorization *
@@ -829,8 +829,8 @@ returnValue Ma57SparseSolver::factorize( )
 	pivots = new fint[dim];
 	fint nrows, ncols;
 	fint nblk = ifact_ma57[2];
-	int iwpos = 3; // = 4-1
-    int k, kk, count = 0;
+	int_t iwpos = 3; // = 4-1
+    int_t k, kk, count = 0;
     for ( k=0; k<nblk; k++ )
     {
         ncols = ifact_ma57[iwpos];
@@ -866,7 +866,7 @@ returnValue Ma57SparseSolver::factorize( )
 /*
  *	s o l v e
  */
-returnValue Ma57SparseSolver::solve( int dim_,
+returnValue Ma57SparseSolver::solve( int_t dim_,
 					   const real_t* const rhs,
 					   real_t* const sol
 					   )
@@ -895,7 +895,7 @@ returnValue Ma57SparseSolver::solve( int dim_,
 	fint* iwork_ma57 = new fint[dim];
 
 	/* MA57CD overwrites rhs */
-	for (int i=0; i<dim; ++i) sol[i] = rhs[i];
+	for (int_t i=0; i<dim; ++i) sol[i] = rhs[i];
 	MA57CD(&job_ma57, &dim, fact_ma57, &lfact_ma57, ifact_ma57, &lifact_ma57,
 			&nrhs_ma57, sol, &lrhs_ma57, work_ma57, &lwork_ma57, iwork_ma57,
 			icntl_ma57, info_ma57);
@@ -931,7 +931,7 @@ returnValue Ma57SparseSolver::reset( )
 /*
  *	g e t N e g a t i v e E i g e n v a l u e s
  */
-int Ma57SparseSolver::getNegativeEigenvalues( )
+int_t Ma57SparseSolver::getNegativeEigenvalues( )
 {
 	if( !have_factorization )
 		return -1;
@@ -942,7 +942,7 @@ int Ma57SparseSolver::getNegativeEigenvalues( )
 /*
  *	g e t R a n k
  */
-int Ma57SparseSolver::getRank( )
+int_t Ma57SparseSolver::getRank( )
 {
 	return rank;
 }
@@ -950,9 +950,9 @@ int Ma57SparseSolver::getRank( )
 /*
  *	g e t Z e r o P i v o t s
  */
-returnValue Ma57SparseSolver::getZeroPivots( int *&zeroPivots )
+returnValue Ma57SparseSolver::getZeroPivots( int_t *&zeroPivots )
 {
-	for ( int k=0; k<dim-rank; k++ )
+	for ( int_t k=0; k<dim-rank; k++ )
 		zeroPivots[k] = pivots[rank+k];
 
 	return SUCCESSFUL_RETURN;
@@ -1030,10 +1030,10 @@ returnValue Ma57SparseSolver::copy(	const Ma57SparseSolver& rhs
 	else
 		jcn_ma57 = 0;
 
-	for ( int i=0; i<30; ++i)
+	for ( int_t i=0; i<30; ++i)
 		icntl_ma57[i] = rhs.icntl_ma57[i];
 
-	for ( int i=0; i<5; ++i)
+	for ( int_t i=0; i<5; ++i)
 		cntl_ma57[i] = rhs.cntl_ma57[i];
 
 	lfact_ma57 = rhs.lfact_ma57;
@@ -1070,10 +1070,10 @@ returnValue Ma57SparseSolver::copy(	const Ma57SparseSolver& rhs
 
 #ifdef SOLVER_NONE
 
-returnValue DummySparseSolver::setMatrixData( int dim, /**< Dimension of the linear system. */
-								   int numNonzeros, /**< Number of nonzeros in the matrix. */
-								   const int* const airn, /**< Row indices for each matrix entry. */
-								   const int* const acjn, /**< Column indices for each matrix entry. */
+returnValue DummySparseSolver::setMatrixData( int_t dim, /**< Dimension of the linear system. */
+								   int_t numNonzeros, /**< Number of nonzeros in the matrix. */
+								   const int_t* const airn, /**< Row indices for each matrix entry. */
+								   const int_t* const acjn, /**< Column indices for each matrix entry. */
 								   const real_t* const avals /**< Values for each matrix entry. */
 								   )
 {
@@ -1085,7 +1085,7 @@ returnValue DummySparseSolver::factorize( )
 	return THROWERROR(RET_NO_SPARSE_SOLVER);
 }
 
-returnValue DummySparseSolver::solve( int dim, /**< Dimension of the linear system. */
+returnValue DummySparseSolver::solve( int_t dim, /**< Dimension of the linear system. */
 				   const real_t* const rhs, /**< Values for the right hand side. */
 				   real_t* const sol /**< Solution of the linear system. */
 				   )

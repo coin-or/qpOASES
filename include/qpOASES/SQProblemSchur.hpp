@@ -85,17 +85,17 @@ extern "C" {
 
 	/** Solve a triangular system (double precision) */
 	void dtrtrs_(	const char *UPLO, const char *TRANS, const char *DIAG, const unsigned long *N, const unsigned long *NRHS,
-					double *A, const unsigned long *LDA, double *B, const unsigned long *LDB, int *INFO );
+					double *A, const unsigned long *LDA, double *B, const unsigned long *LDB, long *INFO );
 	/** Solve a triangular system (single precision) */
 	void strtrs_(	const char *UPLO, const char *TRANS, const char *DIAG, const unsigned long *N, const unsigned long *NRHS,
-					float *A, const unsigned long *LDA, float *B, const unsigned long *LDB, int *INFO );
+					float *A, const unsigned long *LDA, float *B, const unsigned long *LDB, long *INFO );
 
 	/** Estimate the reciprocal of the condition number of a triangular matrix in double precision */
 	void dtrcon_(	const char *NORM, const char *UPLO, const char *DIAG, const unsigned long *N, double *A, const unsigned long *LDA,
-					double *RCOND, double *WORK, const unsigned long *IWORK, int *INFO );
+					double *RCOND, double *WORK, const unsigned long *IWORK, long *INFO );
 	/** Estimate the reciprocal of the condition number of a triangular matrix in single precision */
 	void strcon_(	const char *NORM, const char *UPLO, const char *DIAG, const unsigned long *N, float *A, const unsigned long *LDA,
-					float *RCOND, float *WORK, const unsigned long *IWORK, int *INFO );
+					float *RCOND, float *WORK, const unsigned long *IWORK, long *INFO );
 }
 
 BEGIN_NAMESPACE_QPOASES
@@ -129,10 +129,10 @@ class SQProblemSchur : public SQProblem
 		 *  identity matrix (i.e. HST_IDENTITY), respectively, no memory
 		 *  is allocated for it and a NULL pointer can be passed for it
 		 *  to the init() functions. */
-		SQProblemSchur(	int _nV,	  							/**< Number of variables. */
-						int _nC,		  						/**< Number of constraints. */
+		SQProblemSchur(	int_t _nV,	  							/**< Number of variables. */
+						int_t _nC,		  						/**< Number of constraints. */
 						HessianType _hessianType = HST_UNKNOWN,	/**< Type of Hessian matrix. */
-						int maxSchurUpdates = 75				/**< Maximal number of Schur updates */
+						int_t maxSchurUpdates = 75				/**< Maximal number of Schur updates */
 					);
 
 		/** Copy constructor (deep copy). */
@@ -156,7 +156,7 @@ class SQProblemSchur : public SQProblem
 		returnValue resetSchurComplement( BooleanType allowInertiaCorrection );
 
 		/** Return the total number of sparse matrix factorizations performed so far. */
-		inline int getNumFactorizations( ) const;
+		inline int_t getNumFactorizations( ) const;
 
 	/*
 	 *	PROTECTED MEMBER FUNCTIONS
@@ -220,18 +220,18 @@ class SQProblemSchur : public SQProblem
 		 			RET_ADDCONSTRAINT_FAILED \n
 					RET_ADDCONSTRAINT_FAILED_INFEASIBILITY \n
 					RET_ENSURELI_FAILED */
-		virtual returnValue addConstraint(	int number,					/**< Number of constraint to be added to active set. */
-									SubjectToStatus C_status,	/**< Status of new active constraint. */
-									BooleanType updateCholesky,	/**< Flag indicating if Cholesky decomposition shall be updated. */
-									BooleanType ensureLI = BT_TRUE	/**< Ensure linear independence by exchange rules by default. */
-									);
+		virtual returnValue addConstraint(	int_t number,					/**< Number of constraint to be added to active set. */
+											SubjectToStatus C_status,		/**< Status of new active constraint. */
+											BooleanType updateCholesky,		/**< Flag indicating if Cholesky decomposition shall be updated. */
+											BooleanType ensureLI = BT_TRUE	/**< Ensure linear independence by exchange rules by default. */
+											);
 
 		/** Checks if new active constraint to be added is linearly dependent from
 		 *	from row of the active constraints matrix.
 		 *	\return	 RET_LINEARLY_DEPENDENT \n
 		 			 RET_LINEARLY_INDEPENDENT \n
 					 RET_INDEXLIST_CORRUPTED */
-		virtual returnValue addConstraint_checkLI(	int number			/**< Number of constraint to be added to active set. */
+		virtual returnValue addConstraint_checkLI(	int_t number	/**< Number of constraint to be added to active set. */
 											);
 
 		/** Ensures linear independence of constraint matrix when a new constraint is added.
@@ -242,27 +242,27 @@ class SQProblemSchur : public SQProblem
 					 RET_ENSURELI_FAILED_TQ \n
 					 RET_ENSURELI_FAILED_NOINDEX \n
 					 RET_REMOVE_FROM_ACTIVESET */
-		virtual returnValue addConstraint_ensureLI(	int number,					/**< Number of constraint to be added to active set. */
-											SubjectToStatus C_status	/**< Status of new active bound. */
-											);
+		virtual returnValue addConstraint_ensureLI(	int_t number,				/**< Number of constraint to be added to active set. */
+													SubjectToStatus C_status	/**< Status of new active bound. */
+													);
 
 		/** Adds a bound to active set.
 		 *	\return SUCCESSFUL_RETURN \n
 		 			RET_ADDBOUND_FAILED \n
 					RET_ADDBOUND_FAILED_INFEASIBILITY \n
 					RET_ENSURELI_FAILED */
-		virtual returnValue addBound(	int number,					/**< Number of bound to be added to active set. */
-								SubjectToStatus B_status,	/**< Status of new active bound. */
-								BooleanType updateCholesky,	/**< Flag indicating if Cholesky decomposition shall be updated. */
-								BooleanType ensureLI = BT_TRUE	/**< Ensure linear independence by exchange rules by default. */
-								);
+		virtual returnValue addBound(	int_t number,					/**< Number of bound to be added to active set. */
+										SubjectToStatus B_status,		/**< Status of new active bound. */
+										BooleanType updateCholesky,		/**< Flag indicating if Cholesky decomposition shall be updated. */
+										BooleanType ensureLI = BT_TRUE	/**< Ensure linear independence by exchange rules by default. */
+										);
 
 		/** Checks if new active bound to be added is linearly dependent from
 		 *	from row of the active constraints matrix.
 		 *	\return	 RET_LINEARLY_DEPENDENT \n
 		 			 RET_LINEARLY_INDEPENDENT */
-		virtual returnValue addBound_checkLI(	int number			/**< Number of bound to be added to active set. */
-										);
+		virtual returnValue addBound_checkLI(	int_t number	/**< Number of bound to be added to active set. */
+												);
 
 		/** Ensures linear independence of constraint matrix when a new bound is added.
 		 *	To this end a bound or constraint is removed simultaneously if necessary.
@@ -272,31 +272,31 @@ class SQProblemSchur : public SQProblem
 					 RET_ENSURELI_FAILED_TQ \n
 					 RET_ENSURELI_FAILED_NOINDEX \n
 					 RET_REMOVE_FROM_ACTIVESET */
-		virtual returnValue addBound_ensureLI(	int number,					/**< Number of bound to be added to active set. */
-										SubjectToStatus B_status	/**< Status of new active bound. */
-										);
+		virtual returnValue addBound_ensureLI(	int_t number,				/**< Number of bound to be added to active set. */
+												SubjectToStatus B_status	/**< Status of new active bound. */
+												);
 
 		/** Removes a constraint from active set.
 		 *	\return SUCCESSFUL_RETURN \n
 		 			RET_CONSTRAINT_NOT_ACTIVE \n
 					RET_REMOVECONSTRAINT_FAILED \n
 					RET_HESSIAN_NOT_SPD */
-		virtual returnValue removeConstraint(	int number,								/**< Number of constraint to be removed from active set. */
-										BooleanType updateCholesky,				/**< Flag indicating if Cholesky decomposition shall be updated. */
-										BooleanType allowFlipping = BT_FALSE,	/**< Flag indicating if flipping bounds are allowed. */
-										BooleanType ensureNZC = BT_FALSE		/**< Flag indicating if non-zero curvature is ensured by exchange rules. */
-										);
+		virtual returnValue removeConstraint(	int_t number,							/**< Number of constraint to be removed from active set. */
+												BooleanType updateCholesky,				/**< Flag indicating if Cholesky decomposition shall be updated. */
+												BooleanType allowFlipping = BT_FALSE,	/**< Flag indicating if flipping bounds are allowed. */
+												BooleanType ensureNZC = BT_FALSE		/**< Flag indicating if non-zero curvature is ensured by exchange rules. */
+												);
 
 		/** Removes a bounds from active set.
 		 *	\return SUCCESSFUL_RETURN \n
 		 			RET_BOUND_NOT_ACTIVE \n
 					RET_HESSIAN_NOT_SPD \n
 					RET_REMOVEBOUND_FAILED */
-		virtual returnValue removeBound(	int number,								/**< Number of bound to be removed from active set. */
-									BooleanType updateCholesky,				/**< Flag indicating if Cholesky decomposition shall be updated. */
-									BooleanType allowFlipping = BT_FALSE,	/**< Flag indicating if flipping bounds are allowed. */
-									BooleanType ensureNZC = BT_FALSE		/**< Flag indicating if non-zero curvature is ensured by exchange rules. */
-									);
+		virtual returnValue removeBound(	int_t number,							/**< Number of bound to be removed from active set. */
+											BooleanType updateCholesky,				/**< Flag indicating if Cholesky decomposition shall be updated. */
+											BooleanType allowFlipping = BT_FALSE,	/**< Flag indicating if flipping bounds are allowed. */
+											BooleanType ensureNZC = BT_FALSE		/**< Flag indicating if non-zero curvature is ensured by exchange rules. */
+											);
 
 		/** Solves the system Ta = b or T^Ta = b where T is a reverse upper triangular matrix.
 		 *	 This must not be called for the Schur complement version. */
@@ -360,7 +360,7 @@ class SQProblemSchur : public SQProblem
 		 *	the multipliers in the (full) test.
 		 *	\return	 RET_LINEARLY_DEPENDENT \n
 		 			 RET_LINEARLY_INDEPENDENT */
-		returnValue addBound_checkLISchur(	int number,			/**< Number of bound to be added to active set. */
+		returnValue addBound_checkLISchur(	int_t number,			/**< Number of bound to be added to active set. */
 											real_t* const xiC, 		/**< Output: Multipliers in linear independence test for active constraints. */
 											real_t* const xiX 		/**< Output: Multipliers in linear independence test for fixed variables. */
 										);
@@ -370,10 +370,10 @@ class SQProblemSchur : public SQProblem
 		 *	the multipliers in the (full) test.
 		 *	\return	 RET_LINEARLY_DEPENDENT \n
 		 			 RET_LINEARLY_INDEPENDENT */
-		returnValue addConstraint_checkLISchur(	int number,			/**< Number of bound to be added to active set. */
-											real_t* const xiC, 		/**< Output: Multipliers in linear independence test for active constraints. */
-											real_t* const xiX 		/**< Output: Multipliers in linear independence test for fixed variables. */
-										);
+		returnValue addConstraint_checkLISchur(	int_t number,		/**< Number of bound to be added to active set. */
+												real_t* const xiC, 	/**< Output: Multipliers in linear independence test for active constraints. */
+												real_t* const xiX 	/**< Output: Multipliers in linear independence test for fixed variables. */
+												);
 
 		/** Compute product of "M" matrix (additional columns in KKT
 			matrix) with vector.  y = alpha * M * x + beta * y */
@@ -384,31 +384,32 @@ class SQProblemSchur : public SQProblem
 		returnValue computeMTransTimes( real_t alpha, const real_t* const x, real_t beta, real_t* const y );
 
 		/** Flag indicating which type of update generated column in Schur complement. */
-		enum schurUpdateType
+		enum SchurUpdateType
 		{
 			SUT_VarFixed,					/**< Free variable gets fixed. */
 			SUT_VarFreed,					/**< Fixed variable gets freed. */
 			SUT_ConAdded,					/**< Constraint becomes active. */
-			SUT_ConRemoved					/**< Constraint becomes inactive. */
+			SUT_ConRemoved,					/**< Constraint becomes inactive. */
+			SUT_UNDEFINED					/**< Type of Schur update is undefined. */
 		};
 
 		/** Add a row/column to the Schur complement. */
-		returnValue addToSchurComplement( int number, schurUpdateType update, int numNonzerosM, const sparse_int_t* M_pos, const real_t* const M_vals, int numNonzerosN, const sparse_int_t* Npos, const real_t* const Nvals, real_t N_diag );
+		returnValue addToSchurComplement( int_t number, SchurUpdateType update, int_t numNonzerosM, const sparse_int_t* M_pos, const real_t* const M_vals, int_t numNonzerosN, const sparse_int_t* Npos, const real_t* const Nvals, real_t N_diag );
 
 		/** Remove a row/column from the Schur complement. */
-		returnValue deleteFromSchurComplement( int idx, BooleanType allowUndo = BT_FALSE );
+		returnValue deleteFromSchurComplement( int_t idx, BooleanType allowUndo = BT_FALSE );
 
 		/** Undo the last deletion from the Schur complement by moving the nS+1th row/column to position idx. */
-		returnValue undoDeleteFromSchurComplement( int idx );
+		returnValue undoDeleteFromSchurComplement( int_t idx );
 
 		/** Compute determinant of new nS*nS Schur complement from old factorization */
-		real_t calcDetSchur( int idxDel );
+		real_t calcDetSchur( int_t idxDel );
 
 		/** Update QR factorization and determinant of Schur complement after a row and column have been added or removed */
-		returnValue updateSchurQR( int idxDel );
+		returnValue updateSchurQR( int_t idxDel );
 
 		/** Compute the solution to QRx = rhs and store it in sol */
-		returnValue backsolveSchurQR( int dimS, const real_t* const rhs, int dimRhs, real_t* const sol );
+		returnValue backsolveSchurQR( int_t dimS, const real_t* const rhs, int_t dimRhs, real_t* const sol );
 
 		/** If negative curvature is discovered in the reduced Hessian, add bounds until all eigenvalues are positive */
 		returnValue correctInertia();
@@ -416,7 +417,7 @@ class SQProblemSchur : public SQProblem
 		/** If the KKT matrix is declared singular during refactorization, remove linearly dependent constraints or add bounds */
 		returnValue repairSingularWorkingSet( );
 
-		returnValue stepCalcRhs( int nFR, int nFX, int nAC, int* FR_idx, int* FX_idx, int* AC_idx, real_t& rhs_max, const real_t* const delta_g,
+		returnValue stepCalcRhs( int_t nFR, int_t nFX, int_t nAC, int_t* FR_idx, int_t* FX_idx, int_t* AC_idx, real_t& rhs_max, const real_t* const delta_g,
 								const real_t* const delta_lbA, const real_t* const delta_ubA,
 								const real_t* const delta_lb, const real_t* const delta_ub,
 								BooleanType Delta_bC_isZero, BooleanType Delta_bB_isZero,
@@ -424,23 +425,23 @@ class SQProblemSchur : public SQProblem
 								real_t* const delta_yAC, real_t* const delta_yFX
 								 );
 
-		returnValue stepCalcReorder(int nFR, int nAC, int* FR_idx, int* AC_idx, int nFRStart, int nACStart,
-									int* FR_idxStart, int* AC_idxStart, int* FR_iSort, int* FR_iSortStart,
-									int* AC_iSort, int* AC_iSortStart, real_t* rhs);
+		returnValue stepCalcReorder(int_t nFR, int_t nAC, int_t* FR_idx, int_t* AC_idx, int_t nFRStart, int_t nACStart,
+									int_t* FR_idxStart, int_t* AC_idxStart, int_t* FR_iSort, int_t* FR_iSortStart,
+									int_t* AC_iSort, int_t* AC_iSortStart, real_t* rhs);
 
-		returnValue stepCalcBacksolveSchur( int nFR, int nFX, int nAC, int* FR_idx, int* FX_idx, int* AC_idx,
-											int dim, real_t* rhs, real_t* sol );
+		returnValue stepCalcBacksolveSchur( int_t nFR, int_t nFX, int_t nAC, int_t* FR_idx, int_t* FX_idx, int_t* AC_idx,
+											int_t dim, real_t* rhs, real_t* sol );
 
-		returnValue stepCalcReorder2(	int nFR, int nAC, int* FR_idx, int* AC_idx, int nFRStart, int nACStart,
-										int* FR_idxStart, int* AC_idxStart, int* FR_iSort, int* FR_iSortStart,
-										int* AC_iSort, int* AC_iSortStart, real_t* sol, real_t* const delta_xFR, real_t* const delta_yAC);
+		returnValue stepCalcReorder2(	int_t nFR, int_t nAC, int_t* FR_idx, int_t* AC_idx, int_t nFRStart, int_t nACStart,
+										int_t* FR_idxStart, int_t* AC_idxStart, int_t* FR_iSort, int_t* FR_iSortStart,
+										int_t* AC_iSort, int_t* AC_iSortStart, real_t* sol, real_t* const delta_xFR, real_t* const delta_yAC);
 
-		returnValue stepCalcResid(	int nFR, int nFX, int nAC, int* FR_idx, int* FX_idx, int* AC_idx,
+		returnValue stepCalcResid(	int_t nFR, int_t nFX, int_t nAC, int_t* FR_idx, int_t* FX_idx, int_t* AC_idx,
 									BooleanType Delta_bC_isZero, real_t* const delta_xFX, real_t* const delta_xFR,
 									real_t* const delta_yAC, const real_t* const delta_g,
 									const real_t* const delta_lbA, const real_t* const delta_ubA, real_t& rnrm);
 
-		returnValue stepCalcDeltayFx(	int nFR, int nFX, int nAC, int* FX_idx, const real_t* const delta_g,
+		returnValue stepCalcDeltayFx(	int_t nFR, int_t nFX, int_t nAC, int_t* FX_idx, const real_t* const delta_g,
 										real_t* const delta_xFX, real_t* const delta_xFR, real_t* const delta_yAC, real_t* const delta_yFX);
 
 	/*
@@ -450,19 +451,19 @@ class SQProblemSchur : public SQProblem
 		SparseSolver* sparseSolver;			/**< Interface to the sparse linear solver. */
 
 		real_t* S;							/**< Schur complement matrix. (This is actually the negative of the Schur complement!) */
-		int nS;								/**< Current size of Schur complement matrix. -1 means that the Schur complement has not yet been initialized. */
-		int nSmax;							/**< Maximum size of Schur complement matrix. */
+		int_t nS;							/**< Current size of Schur complement matrix. -1 means that the Schur complement has not yet been initialized. */
+		int_t nSmax;						/**< Maximum size of Schur complement matrix. */
 
 		real_t* Q_;							/**< QR factorization of S: orthogonal matrix Q */
 		real_t* R_;							/**< QR factorization of S: upper triangular matrix R */
 		real_t detS;						/**< Determinant of Schur complement */
 		real_t rcondS;						/**< Reciprocal of condition number of S (estimate) */
-		int numFactorizations;    /**< Total number of factorizations performed */
+		int_t numFactorizations;			/**< Total number of factorizations performed */
 
-		int* schurUpdateIndex;				/**< Indices of variables or constraints for each update in Schur complement. */
-		schurUpdateType* schurUpdate;		/**< Type of update for each update in Schur complement. */
+		int_t* schurUpdateIndex;			/**< Indices of variables or constraints for each update in Schur complement. */
+		SchurUpdateType* schurUpdate;		/**< Type of update for each update in Schur complement. */
 
-		int M_physicallength;				/**< Allocated size of the M_vals and M_ir arrays. */
+		int_t M_physicallength;				/**< Allocated size of the M_vals and M_ir arrays. */
 		real_t* M_vals;						/**< Values of the sparse M matrix containing the vectors with the additional rows defining the Schur complement (length). */
 		sparse_int_t* M_ir;					/**< Row indices (length). */
 		sparse_int_t* M_jc;					/**< Indices in M to first entry of columns (nS+1). */

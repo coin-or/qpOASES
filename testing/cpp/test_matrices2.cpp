@@ -46,7 +46,7 @@ int main( )
 {
 	USING_NAMESPACE_QPOASES
 	
-	int i;
+	int_t i;
 
 	real_t errH=0.0, errA=0.0;
 	real_t v[180];

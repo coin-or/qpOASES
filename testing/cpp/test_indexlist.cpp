@@ -43,7 +43,7 @@ int main()
 	USING_NAMESPACE_QPOASES
 
 	Indexlist il(10);
-	int i, *numbers;
+	int_t i, *numbers;
 
 	il.addNumber(1);
 	il.addNumber(3);
@@ -59,22 +59,22 @@ int main()
 	il.getNumberArray(&numbers);
 	fprintf(stdFile, "Unsorted numbers: ");
 	for (i = 0; i < 10; i++)
-		fprintf(stdFile, " %2d", numbers[i]);
+		fprintf(stdFile, " %2d", (int)(numbers[i]) );
 	fprintf(stdFile, "\n");
 
-	fprintf(stdFile, "Unsorted index of number 0: %3d\n", il.getIndex(0));
+	fprintf(stdFile, "Unsorted index of number 0: %3d\n", (int)(il.getIndex(0)) );
 
 	QPOASES_TEST_FOR_TRUE( il.getIndex(0) == 5 )
 
 	il.removeNumber(5);
-	fprintf(stdFile, "Unsorted index of (removed) number 5: %3d\n", il.getIndex(5));
+	fprintf(stdFile, "Unsorted index of (removed) number 5: %3d\n", (int)(il.getIndex(5)) );
 
 	QPOASES_TEST_FOR_TRUE( il.getIndex(5) == -1 )
 
 	il.getNumberArray(&numbers);
 	fprintf(stdFile, "Unsorted numbers: ");
 	for (i = 0; i < 9; i++)
-		fprintf(stdFile, " %2d", numbers[i]);
+		fprintf(stdFile, " %2d", (int)(numbers[i]) );
 	fprintf(stdFile, "\n");
 
 	il.swapNumbers(2, 7);
@@ -82,7 +82,7 @@ int main()
 	il.getNumberArray(&numbers);
 	fprintf(stdFile, "Unsorted numbers: ");
 	for (i = 0; i < 9; i++)
-		fprintf(stdFile, " %2d", numbers[i]);
+		fprintf(stdFile, " %2d", (int)(numbers[i]) );
 	fprintf(stdFile, "\n");
 
 	QPOASES_TEST_FOR_TRUE( numbers[2] == 7 )

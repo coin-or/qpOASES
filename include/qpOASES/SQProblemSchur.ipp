@@ -44,7 +44,7 @@ BEGIN_NAMESPACE_QPOASES
 /*
  *	g e t N u m F a c t o r i z a t i o n s
  */
-inline int SQProblemSchur::getNumFactorizations( ) const
+inline int_t SQProblemSchur::getNumFactorizations( ) const
 {
 	return numFactorizations;
 }

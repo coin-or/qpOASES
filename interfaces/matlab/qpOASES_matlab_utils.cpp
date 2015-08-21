@@ -35,7 +35,7 @@
 
 
 
-QPInstance::QPInstance(	int _nV, int _nC, HessianType _hessianType,
+QPInstance::QPInstance(	uint_t _nV, uint_t _nC, HessianType _hessianType,
 						BooleanType _isSimplyBounded
 						)
 {
@@ -140,7 +140,7 @@ returnValue QPInstance::deleteQPMatrices( )
 }
 
 
-int QPInstance::getNV() const
+int_t QPInstance::getNV() const
 {
     if ( sqp != 0 )
         return sqp->getNV();
@@ -152,7 +152,7 @@ int QPInstance::getNV() const
 }
 
 
-int QPInstance::getNC() const
+int_t QPInstance::getNC() const
 {
     if ( sqp != 0 )
         return sqp->getNC();
@@ -178,9 +178,9 @@ bool mxIsScalar( const mxArray *pm )
 /*
  *	a l l o c a t e Q P r o b l e m I n s t a n c e
  */
-int allocateQPInstance(	int nV, int nC, HessianType hessianType,
-						BooleanType isSimplyBounded, const Options* options
-						)
+int_t allocateQPInstance(	int_t nV, int_t nC, HessianType hessianType,
+							BooleanType isSimplyBounded, const Options* options
+							)
 {
 	QPInstance* inst = new QPInstance( nV,nC,hessianType, isSimplyBounded );
 
@@ -198,9 +198,9 @@ int allocateQPInstance(	int nV, int nC, HessianType hessianType,
 /*
  *  g e t Q P r o b l e m I n s t a n c e
  */
-QPInstance* getQPInstance( int handle )
+QPInstance* getQPInstance( int_t handle )
 {
-	unsigned int ii;
+	uint_t ii;
 	// TODO: this may become slow ...
 	for (ii = 0; ii < g_instances.size (); ++ii)
 		if (g_instances[ii]->handle == handle)
@@ -212,7 +212,7 @@ QPInstance* getQPInstance( int handle )
 /*
  *	d e l e t e Q P r o b l e m I n s t a n c e
  */
-void deleteQPInstance( int handle )
+void deleteQPInstance( int_t handle )
 {
 	QPInstance *instance = getQPInstance (handle);
 	if (instance != 0) {
@@ -231,8 +231,8 @@ void deleteQPInstance( int handle )
 /*
  *	s m a r t D i m e n s i o n C h e c k
  */
-returnValue smartDimensionCheck(	real_t** input, unsigned int m, unsigned int n, BooleanType emptyAllowed,
-									const mxArray* prhs[], int idx
+returnValue smartDimensionCheck(	real_t** input, uint_t m, uint_t n, BooleanType emptyAllowed,
+									const mxArray* prhs[], int_t idx
 									)
 {
 	/* If index is negative, the input does not exist. */
@@ -275,10 +275,10 @@ returnValue smartDimensionCheck(	real_t** input, unsigned int m, unsigned int n,
                 char msg[MAX_STRING_LENGTH];
 				if ( idx > 0 )
 					snprintf(msg, MAX_STRING_LENGTH, "ERROR (qpOASES): Input dimension mismatch for argument %d ([%ld,%ld] ~= [%d,%d]).",
-							 idx+1, (long int)mxGetM(prhs[idx]), (long int)mxGetN(prhs[idx]), m, n);
+							 idx+1, (long int)mxGetM(prhs[idx]), (long int)mxGetN(prhs[idx]), (int)m,(int)n);
 				else /* idx==0 used for auxInput */
 					snprintf(msg, MAX_STRING_LENGTH, "ERROR (qpOASES): Input dimension mismatch for some auxInput entry ([%ld,%ld] ~= [%d,%d]).",
-							 (long int)mxGetM(prhs[idx]), (long int)mxGetN(prhs[idx]), m, n);
+							 (long int)mxGetM(prhs[idx]), (long int)mxGetN(prhs[idx]), (int)m,(int)n);
                 myMexErrMsgTxt( msg );
                 return RET_INVALID_ARGUMENTS;
             }
@@ -303,9 +303,9 @@ returnValue smartDimensionCheck(	real_t** input, unsigned int m, unsigned int n,
 /*
  *	c o n t a i n s N a N
  */
-BooleanType containsNaN( const real_t* const data, unsigned int dim )
+BooleanType containsNaN( const real_t* const data, uint_t dim )
 {
-	unsigned int i;
+	uint_t i;
 
 	if ( data == 0 )
 		return BT_FALSE;
@@ -321,9 +321,9 @@ BooleanType containsNaN( const real_t* const data, unsigned int dim )
 /*
  *	c o n t a i n s I n f
  */
-BooleanType containsInf( const real_t* const data, unsigned int dim )
+BooleanType containsInf( const real_t* const data, uint_t dim )
 {
-	unsigned int i;
+	uint_t i;
 
 	if ( data == 0 )
 		return BT_FALSE;
@@ -339,11 +339,11 @@ BooleanType containsInf( const real_t* const data, unsigned int dim )
 /*
  *	c o n t a i n s N a N o r I n f
  */
-BooleanType containsNaNorInf(	const mxArray* prhs[], int rhs_index,
+BooleanType containsNaNorInf(	const mxArray* prhs[], int_t rhs_index,
 								bool mayContainInf
 								)
 {
-	unsigned int dim;
+	uint_t dim;
 	char msg[MAX_STRING_LENGTH];
 
 	if ( rhs_index < 0 )
@@ -351,9 +351,9 @@ BooleanType containsNaNorInf(	const mxArray* prhs[], int rhs_index,
 
 	/* overwrite dim for sparse matrices */
 	if (mxIsSparse(prhs[rhs_index]) == 1)
-		dim = (unsigned int)mxGetNzmax(prhs[rhs_index]);
+		dim = (uint_t)mxGetNzmax(prhs[rhs_index]);
 	else
-		dim = mxGetM(prhs[rhs_index]) * mxGetN(prhs[rhs_index]);
+		dim = (uint_t)(mxGetM(prhs[rhs_index]) * mxGetN(prhs[rhs_index]));
 
 	if (containsNaN((real_t*) mxGetPr(prhs[rhs_index]), dim) == BT_TRUE) {
 		snprintf(msg, MAX_STRING_LENGTH,
@@ -379,9 +379,9 @@ BooleanType containsNaNorInf(	const mxArray* prhs[], int rhs_index,
 /*
  *	c o n v e r t F o r t r a n T o C
  */
-returnValue convertFortranToC( const real_t* const M_for, int nV, int nC, real_t* const M )
+returnValue convertFortranToC( const real_t* const M_for, int_t nV, int_t nC, real_t* const M )
 {
-	int i,j;
+	int_t i,j;
 
 	if ( ( M_for == 0 ) || ( M == 0 ) )
 		return RET_INVALID_ARGUMENTS;
@@ -430,10 +430,10 @@ BooleanType hasOptionsValue( const mxArray* optionsPtr, const char* const option
 /*
  *	s e t u p O p t i o n s
  */
-returnValue setupOptions( Options* options, const mxArray* optionsPtr, int& nWSRin, real_t& maxCpuTime )
+returnValue setupOptions( Options* options, const mxArray* optionsPtr, int_t& nWSRin, real_t& maxCpuTime )
 {
 	double* optionValue;
-	int optionValueInt;
+	int_t optionValueInt;
 
 	/* Check for correct number of option entries;
 	 * may occur, e.g., if user types options.<misspelledName> = <someValue>; */
@@ -443,7 +443,7 @@ returnValue setupOptions( Options* options, const mxArray* optionsPtr, int& nWSR
 
 	if ( hasOptionsValue( optionsPtr,"maxIter",&optionValue ) == BT_TRUE )
 		if ( *optionValue >= 0.0 )
-			nWSRin = (int)*optionValue;
+			nWSRin = (int_t)*optionValue;
 
 	if ( hasOptionsValue( optionsPtr,"maxCpuTime",&optionValue ) == BT_TRUE )
 		if ( *optionValue >= 0.0 )
@@ -454,7 +454,7 @@ returnValue setupOptions( Options* options, const mxArray* optionsPtr, int& nWSR
         #ifdef __SUPPRESSANYOUTPUT__
         options->printLevel = PL_NONE;
         #else
-		optionValueInt = (int)*optionValue;
+		optionValueInt = (int_t)*optionValue;
 		options->printLevel = (REFER_NAMESPACE_QPOASES PrintLevel)optionValueInt;
         if ( options->printLevel < PL_DEBUG_ITER )
             options->printLevel = PL_DEBUG_ITER;
@@ -465,49 +465,49 @@ returnValue setupOptions( Options* options, const mxArray* optionsPtr, int& nWSR
 
 	if ( hasOptionsValue( optionsPtr,"enableRamping",&optionValue ) == BT_TRUE )
 	{
-		optionValueInt = (int)*optionValue;
+		optionValueInt = (int_t)*optionValue;
 		options->enableRamping = (REFER_NAMESPACE_QPOASES BooleanType)optionValueInt;
 	}
 
 	if ( hasOptionsValue( optionsPtr,"enableFarBounds",&optionValue ) == BT_TRUE )
 	{
-		optionValueInt = (int)*optionValue;
+		optionValueInt = (int_t)*optionValue;
 		options->enableFarBounds = (REFER_NAMESPACE_QPOASES BooleanType)optionValueInt;
 	}
 
 	if ( hasOptionsValue( optionsPtr,"enableFlippingBounds",&optionValue ) == BT_TRUE )
 	{
-		optionValueInt = (int)*optionValue;
+		optionValueInt = (int_t)*optionValue;
 		options->enableFlippingBounds = (REFER_NAMESPACE_QPOASES BooleanType)optionValueInt;
 	}
 
 	if ( hasOptionsValue( optionsPtr,"enableRegularisation",&optionValue ) == BT_TRUE )
 	{
-		optionValueInt = (int)*optionValue;
+		optionValueInt = (int_t)*optionValue;
 		options->enableRegularisation = (REFER_NAMESPACE_QPOASES BooleanType)optionValueInt;
 	}
 
 	if ( hasOptionsValue( optionsPtr,"enableFullLITests",&optionValue ) == BT_TRUE )
 	{
-		optionValueInt = (int)*optionValue;
+		optionValueInt = (int_t)*optionValue;
 		options->enableFullLITests = (REFER_NAMESPACE_QPOASES BooleanType)optionValueInt;
 	}
 
 	if ( hasOptionsValue( optionsPtr,"enableNZCTests",&optionValue ) == BT_TRUE )
 	{
-		optionValueInt = (int)*optionValue;
+		optionValueInt = (int_t)*optionValue;
 		options->enableNZCTests = (REFER_NAMESPACE_QPOASES BooleanType)optionValueInt;
 	}
 
 	if ( hasOptionsValue( optionsPtr,"enableDriftCorrection",&optionValue ) == BT_TRUE )
-		options->enableDriftCorrection = (int)*optionValue;
+		options->enableDriftCorrection = (int_t)*optionValue;
 
 	if ( hasOptionsValue( optionsPtr,"enableCholeskyRefactorisation",&optionValue ) == BT_TRUE )
-		options->enableCholeskyRefactorisation = (int)*optionValue;
+		options->enableCholeskyRefactorisation = (int_t)*optionValue;
 
 	if ( hasOptionsValue( optionsPtr,"enableEqualities",&optionValue ) == BT_TRUE )
 	{
-		optionValueInt = (int)*optionValue;
+		optionValueInt = (int_t)*optionValue;
 		options->enableEqualities = (REFER_NAMESPACE_QPOASES BooleanType)optionValueInt;
 	}
 
@@ -548,7 +548,7 @@ returnValue setupOptions( Options* options, const mxArray* optionsPtr, int& nWSR
 
 	if ( hasOptionsValue( optionsPtr,"initialStatusBounds",&optionValue ) == BT_TRUE )
 	{
-		optionValueInt = (int)*optionValue;
+		optionValueInt = (int_t)*optionValue;
 		if ( optionValueInt < -1 ) 
 			optionValueInt = -1;
 		if ( optionValueInt > 1 ) 
@@ -560,13 +560,13 @@ returnValue setupOptions( Options* options, const mxArray* optionsPtr, int& nWSR
 		options->epsFlipping = *optionValue;
 
 	if ( hasOptionsValue( optionsPtr,"numRegularisationSteps",&optionValue ) == BT_TRUE )
-		options->numRegularisationSteps = (int)*optionValue;
+		options->numRegularisationSteps = (int_t)*optionValue;
 
 	if ( hasOptionsValue( optionsPtr,"epsRegularisation",&optionValue ) == BT_TRUE )
 		options->epsRegularisation = *optionValue;
 
 	if ( hasOptionsValue( optionsPtr,"numRefinementSteps",&optionValue ) == BT_TRUE )
-		options->numRefinementSteps = (int)*optionValue;
+		options->numRefinementSteps = (int_t)*optionValue;
 
 	if ( hasOptionsValue( optionsPtr,"epsIterRef",&optionValue ) == BT_TRUE )
 		options->epsIterRef = *optionValue;
@@ -585,7 +585,7 @@ returnValue setupOptions( Options* options, const mxArray* optionsPtr, int& nWSR
 /*
  *	s e t u p A u x i l i a r y I n p u t s
  */
-returnValue setupAuxiliaryInputs(	const mxArray* auxInput, unsigned int nV, unsigned int nC,
+returnValue setupAuxiliaryInputs(	const mxArray* auxInput, uint_t nV, uint_t nC,
 									HessianType* hessianType, double** x0, double** guessedBounds, double** guessedConstraints, double** R
 									)
 {
@@ -607,7 +607,7 @@ returnValue setupAuxiliaryInputs(	const mxArray* auxInput, unsigned int nV, unsi
 				return RET_INVALID_ARGUMENTS;
 
 			double* hessianTypeTmp = mxGetPr(curField);
-			int hessianTypeInt = (int)*hessianTypeTmp;
+			int_t hessianTypeInt = (int_t)*hessianTypeTmp;
 			if ( hessianTypeInt < 0 ) 
 				hessianTypeInt = 6; /* == HST_UNKNOWN */
 			if ( hessianTypeInt > 5 ) 
@@ -668,11 +668,11 @@ returnValue setupAuxiliaryInputs(	const mxArray* auxInput, unsigned int nV, unsi
 /*
  *	a l l o c a t e O u t p u t s
  */
-returnValue allocateOutputs(	int nlhs, mxArray* plhs[], int nV, int nC = 0, int nP = 1, int handle = -1
+returnValue allocateOutputs(	int nlhs, mxArray* plhs[], int_t nV, int_t nC = 0, int_t nP = 1, int_t handle = -1
 								)
 {
 	/* Create output vectors and assign pointers to them. */
-	int curIdx = 0;
+	int_t curIdx = 0;
 
 	/* handle */
 	if ( handle >= 0 )
@@ -705,7 +705,7 @@ returnValue allocateOutputs(	int nlhs, mxArray* plhs[], int nV, int nC = 0, int 
 					{
 						/* setup auxiliary output struct */
 						mxArray* auxOutput = mxCreateStructMatrix( 1,1,0,0 );
-						int curFieldNum;
+						int_t curFieldNum;
 						
 						/* working set */
 						curFieldNum = mxAddField( auxOutput,"workingSetB" );
@@ -734,12 +734,12 @@ returnValue allocateOutputs(	int nlhs, mxArray* plhs[], int nV, int nC = 0, int 
 /*
  *	o b t a i n O u t p u t s
  */
-returnValue obtainOutputs(	int k, QProblemB* qp, returnValue returnvalue, int _nWSRout, double _cpuTime,
-							int nlhs, mxArray* plhs[], int nV, int nC = 0, int handle = -1
+returnValue obtainOutputs(	int_t k, QProblemB* qp, returnValue returnvalue, int_t _nWSRout, double _cpuTime,
+							int nlhs, mxArray* plhs[], int_t nV, int_t nC = 0, int_t handle = -1
 							)
 {
 	/* Create output vectors and assign pointers to them. */
-	int curIdx = 0;
+	int_t curIdx = 0;
 
 	/* handle */
 	if ( handle >= 0 )
@@ -828,7 +828,7 @@ returnValue obtainOutputs(	int k, QProblemB* qp, returnValue returnvalue, int _n
 /*
  *	s e t u p H e s s i a n M a t r i x
  */
-returnValue setupHessianMatrix(	const mxArray* prhsH, int nV,
+returnValue setupHessianMatrix(	const mxArray* prhsH, int_t nV,
 								SymmetricMatrix** H, sparse_int_t** Hir, sparse_int_t** Hjc, real_t** Hv
 								)
 {
@@ -899,7 +899,7 @@ returnValue setupHessianMatrix(	const mxArray* prhsH, int nV,
 /*
  *	s e t u p C o n s t r a i n t M a t r i x
  */
-returnValue setupConstraintMatrix(	const mxArray* prhsA, int nV, int nC,
+returnValue setupConstraintMatrix(	const mxArray* prhsA, int_t nV, int_t nC,
 									Matrix** A, sparse_int_t** Air, sparse_int_t** Ajc, real_t** Av
 									)
 {

@@ -75,8 +75,8 @@ class QProblem : public QProblemB
 		 *  identity matrix (i.e. HST_IDENTITY), respectively, no memory
 		 *  is allocated for it and a NULL pointer can be passed for it
 		 *  to the init() functions. */
-		QProblem(	int _nV,	  							/**< Number of variables. */
-					int _nC,		  						/**< Number of constraints. */
+		QProblem(	int_t _nV,	  							/**< Number of variables. */
+					int_t _nC,		  						/**< Number of constraints. */
 					HessianType _hessianType = HST_UNKNOWN	/**< Type of Hessian matrix. */
 					);
 
@@ -130,7 +130,7 @@ class QProblem : public QProblemB
 																				 If no lower constraints' bounds exist, a NULL pointer can be passed. */
 							const real_t* const _ubA,						/**< Upper constraints' bound vector. \n
 																				 If no lower constraints' bounds exist, a NULL pointer can be passed. */
-							int& nWSR,										/**< Input: Maximum number of working set recalculations when using initial homotopy.
+							int_t& nWSR,									/**< Input: Maximum number of working set recalculations when using initial homotopy.
 																				 Output: Number of performed working set recalculations. */
 							real_t* const cputime = 0,						/**< Input: Maximum CPU time allowed for QP initialisation. \n
 																				 Output: CPU time spent for QP initialisation (if pointer passed). */
@@ -182,7 +182,7 @@ class QProblem : public QProblemB
 																				 If no lower constraints' bounds exist, a NULL pointer can be passed. */
 							const real_t* const _ubA,						/**< Upper constraints' bound vector. \n
 																				 If no lower constraints' bounds exist, a NULL pointer can be passed. */
-							int& nWSR,										/**< Input: Maximum number of working set recalculations when using initial homotopy.
+							int_t& nWSR,									/**< Input: Maximum number of working set recalculations when using initial homotopy.
 																				 Output: Number of performed working set recalculations. */
 							real_t* const cputime = 0,						/**< Input: Maximum CPU time allowed for QP initialisation. \n
 																				 Output: CPU time spent for QP initialisation (if pointer passed). */
@@ -234,7 +234,7 @@ class QProblem : public QProblemB
 																				 If no lower constraints' bounds exist, a NULL pointer can be passed. */
 							const char* const ubA_file,						/**< Name of file where upper constraints' bound vector. \n
 																				 If no upper constraints' bounds exist, a NULL pointer can be passed. */
-							int& nWSR,										/**< Input: Maximum number of working set recalculations when using initial homotopy.
+							int_t& nWSR,									/**< Input: Maximum number of working set recalculations when using initial homotopy.
 																				 Output: Number of performed working set recalculations. */
 							real_t* const cputime = 0,						/**< Input: Maximum CPU time allowed for QP initialisation. \n
 																				 Output: CPU time spent for QP initialisation (if pointer passed). */
@@ -278,7 +278,7 @@ class QProblem : public QProblemB
 													 							 	 If no lower constraints' bounds exist, a NULL pointer can be passed. */
 								const real_t* const ubA_new,					/**< Upper constraints' bounds of neighbouring QP to be solved. \n
 													 							 	 If no upper constraints' bounds exist, a NULL pointer can be passed. */
-								int& nWSR,										/**< Input: Maximum number of working set recalculations; \n
+								int_t& nWSR,									/**< Input: Maximum number of working set recalculations; \n
 																			 		 Output: Number of performed working set recalculations. */
 								real_t* const cputime = 0,						/**< Input: Maximum CPU time allowed for QP solution. \n
 																				 	 Output: CPU time spent for QP solution (or to perform nWSR iterations). */
@@ -313,11 +313,11 @@ class QProblem : public QProblemB
 													 								 If no lower bounds exist, a NULL pointer can be passed. */
 								const char* const ub_file,						/**< Name of file where upper bounds, of neighbouring QP to be solved, is stored. \n
 													 								 If no upper bounds exist, a NULL pointer can be passed. */
-								const char* const lbA_file,						 /**< Name of file where lower constraints' bounds, of neighbouring QP to be solved, is stored. \n
+								const char* const lbA_file,						/**< Name of file where lower constraints' bounds, of neighbouring QP to be solved, is stored. \n
 													 								 If no lower constraints' bounds exist, a NULL pointer can be passed. */
-								const char* const ubA_file,						 /**< Name of file where upper constraints' bounds, of neighbouring QP to be solved, is stored. \n
+								const char* const ubA_file,						/**< Name of file where upper constraints' bounds, of neighbouring QP to be solved, is stored. \n
 													 								 If no upper constraints' bounds exist, a NULL pointer can be passed. */
-								int& nWSR, 										/**< Input: Maximum number of working set recalculations; \n
+								int_t& nWSR, 									/**< Input: Maximum number of working set recalculations; \n
 																					 Output: Number of performed working set recalculations. */
 								real_t* const cputime = 0,						/**< Input: Maximum CPU time allowed for QP solution. \n
 																				 	 Output: CPU time spent for QP solution (or to perform nWSR iterations). */
@@ -333,7 +333,7 @@ class QProblem : public QProblemB
 		 *			RET_STEPDIRECTION_FAILED_TQ \n
 		 *			RET_STEPDIRECTION_FAILED_CHOLESKY \n
 		 *			RET_INVALID_ARGUMENTS */
-        returnValue solveCurrentEQP (	const int n_rhs,			/**< Number of consecutive right hand sides */
+        returnValue solveCurrentEQP (	const int_t n_rhs,			/**< Number of consecutive right hand sides */
 										const real_t* g_in,			/**< Gradient of neighbouring QP to be solved. */
 										const real_t* lb_in,		/**< Lower bounds of neighbouring QP to be solved. \n
 																		 If no lower bounds exist, a NULL pointer can be passed. */
@@ -374,23 +374,23 @@ class QProblem : public QProblemB
 
 		/** Returns the number of constraints.
 		 *	\return Number of constraints. */
-		inline int getNC( ) const;
+		inline int_t getNC( ) const;
 
 		/** Returns the number of (implicitly defined) equality constraints.
 		 *	\return Number of (implicitly defined) equality constraints. */
-		inline int getNEC( ) const;
+		inline int_t getNEC( ) const;
 
 		/** Returns the number of active constraints.
 		 *	\return Number of active constraints. */
-		inline int getNAC( ) const;
+		inline int_t getNAC( ) const;
 
 		/** Returns the number of inactive constraints.
 		 *	\return Number of inactive constraints. */
-		inline int getNIAC( ) const;
+		inline int_t getNIAC( ) const;
 
 		/** Returns the dimension of null space.
 		 *	\return Dimension of null space. */
-		virtual int getNZ( ) const;
+		virtual int_t getNZ( ) const;
 
 
 		/** Returns the dual solution vector (deep copy).
@@ -445,8 +445,8 @@ class QProblem : public QProblemB
 									const Bounds* const guessedBounds,				/**< Optimal working set of bounds for solution (xOpt,yOpt). */
 									const Constraints* const guessedConstraints,	/**< Optimal working set of constraints for solution (xOpt,yOpt). */
 									const real_t* const _R,							/**< Pre-computed (upper triangular) Cholesky factor of Hessian matrix. */
-									int& nWSR, 										/**< Input: Maximum number of working set recalculations; \n
-																 					 *	 Output: Number of performed working set recalculations. */
+									int_t& nWSR, 									/**< Input: Maximum number of working set recalculations; \n
+																 						 Output: Number of performed working set recalculations. */
 									real_t* const cputime							/**< Input: Maximum CPU time allowed for QP solution. \n
 																			 			 Output: CPU time spent for QP solution (or to perform nWSR iterations). */
 									);
@@ -472,11 +472,11 @@ class QProblem : public QProblemB
 													 			 		 If no lower constraints' bounds exist, a NULL pointer can be passed. */
 								const real_t* const ubA_new,		/**< Upper constraints' bounds of neighbouring QP to be solved. \n
 													 					 If no upper constraints' bounds exist, a NULL pointer can be passed. */
-								int& nWSR,							/**< Input: Maximum number of working set recalculations; \n
+								int_t& nWSR,						/**< Input: Maximum number of working set recalculations; \n
 																 		 Output: Number of performed working set recalculations. */
 								real_t* const cputime,				/**< Input: Maximum CPU time allowed for QP solution. \n
 																	 	 Output: CPU time spent for QP solution (or to perform nWSR iterations). */
-								int  nWSRperformed = 0,				/**< Number of working set recalculations already performed to solve
+								int_t nWSRperformed = 0,			/**< Number of working set recalculations already performed to solve
 																		 this QP within previous solveQP() calls. This number is
 																		 always zero, except for successive calls from solveRegularisedQP()
 																		 or when using the far bound strategy. */
@@ -505,11 +505,11 @@ class QProblem : public QProblemB
 															 				 	 If no lower constraints' bounds exist, a NULL pointer can be passed. */
 										const real_t* const ubA_new,		/**< Upper constraints' bounds of neighbouring QP to be solved. \n
 															 				 	 If no upper constraints' bounds exist, a NULL pointer can be passed. */
-										int& nWSR,							/**< Input: Maximum number of working set recalculations; \n
+										int_t& nWSR,						/**< Input: Maximum number of working set recalculations; \n
 																		 		 Output: Number of performed working set recalculations. */
 										real_t* const cputime,				/**< Input: Maximum CPU time allowed for QP solution. \n
 																			 	 Output: CPU time spent for QP solution (or to perform nWSR iterations). */
-										int  nWSRperformed = 0,				/**< Number of working set recalculations already performed to solve
+										int_t nWSRperformed = 0,			/**< Number of working set recalculations already performed to solve
 																				 this QP within previous solveRegularisedQP() calls. This number is
 																				 always zero, except for successive calls when using the far bound strategy. */
 										BooleanType isFirstCall = BT_TRUE	/**< Indicating whether this is the first call for current QP. */
@@ -625,19 +625,19 @@ class QProblem : public QProblemB
 		 			RET_ADDCONSTRAINT_FAILED \n
 					RET_ADDCONSTRAINT_FAILED_INFEASIBILITY \n
 					RET_ENSURELI_FAILED */
-		virtual returnValue addConstraint(	int number,					/**< Number of constraint to be added to active set. */
-									SubjectToStatus C_status,	/**< Status of new active constraint. */
-									BooleanType updateCholesky,	/**< Flag indicating if Cholesky decomposition shall be updated. */
-									BooleanType ensureLI = BT_TRUE	/**< Ensure linear independence by exchange rules by default. */
-									);
+		virtual returnValue addConstraint(	int_t number,					/**< Number of constraint to be added to active set. */
+											SubjectToStatus C_status,		/**< Status of new active constraint. */
+											BooleanType updateCholesky,		/**< Flag indicating if Cholesky decomposition shall be updated. */
+											BooleanType ensureLI = BT_TRUE	/**< Ensure linear independence by exchange rules by default. */
+											);
 
 		/** Checks if new active constraint to be added is linearly dependent from
 		 *	from row of the active constraints matrix.
 		 *	\return	 RET_LINEARLY_DEPENDENT \n
 		 			 RET_LINEARLY_INDEPENDENT \n
 					 RET_INDEXLIST_CORRUPTED */
-		virtual returnValue addConstraint_checkLI(	int number			/**< Number of constraint to be added to active set. */
-											);
+		virtual returnValue addConstraint_checkLI(	int_t number	/**< Number of constraint to be added to active set. */
+													);
 
 		/** Ensures linear independence of constraint matrix when a new constraint is added.
 		 * 	To this end a bound or constraint is removed simultaneously if necessary.
@@ -647,27 +647,27 @@ class QProblem : public QProblemB
 					 RET_ENSURELI_FAILED_TQ \n
 					 RET_ENSURELI_FAILED_NOINDEX \n
 					 RET_REMOVE_FROM_ACTIVESET */
-		virtual returnValue addConstraint_ensureLI(	int number,					/**< Number of constraint to be added to active set. */
-											SubjectToStatus C_status	/**< Status of new active bound. */
-											);
+		virtual returnValue addConstraint_ensureLI(	int_t number,				/**< Number of constraint to be added to active set. */
+													SubjectToStatus C_status	/**< Status of new active bound. */
+													);
 
 		/** Adds a bound to active set.
 		 *	\return SUCCESSFUL_RETURN \n
 		 			RET_ADDBOUND_FAILED \n
 					RET_ADDBOUND_FAILED_INFEASIBILITY \n
 					RET_ENSURELI_FAILED */
-		virtual returnValue addBound(	int number,					/**< Number of bound to be added to active set. */
-								SubjectToStatus B_status,	/**< Status of new active bound. */
-								BooleanType updateCholesky,	/**< Flag indicating if Cholesky decomposition shall be updated. */
-								BooleanType ensureLI = BT_TRUE	/**< Ensure linear independence by exchange rules by default. */
-								);
+		virtual returnValue addBound(	int_t number,					/**< Number of bound to be added to active set. */
+										SubjectToStatus B_status,		/**< Status of new active bound. */
+										BooleanType updateCholesky,		/**< Flag indicating if Cholesky decomposition shall be updated. */
+										BooleanType ensureLI = BT_TRUE	/**< Ensure linear independence by exchange rules by default. */
+										);
 
 		/** Checks if new active bound to be added is linearly dependent from
 		 *	from row of the active constraints matrix.
 		 *	\return	 RET_LINEARLY_DEPENDENT \n
 		 			 RET_LINEARLY_INDEPENDENT */
-		virtual returnValue addBound_checkLI(	int number			/**< Number of bound to be added to active set. */
-										);
+		virtual returnValue addBound_checkLI(	int_t number	/**< Number of bound to be added to active set. */
+												);
 
 		/** Ensures linear independence of constraint matrix when a new bound is added.
 		 *	To this end a bound or constraint is removed simultaneously if necessary.
@@ -677,44 +677,44 @@ class QProblem : public QProblemB
 					 RET_ENSURELI_FAILED_TQ \n
 					 RET_ENSURELI_FAILED_NOINDEX \n
 					 RET_REMOVE_FROM_ACTIVESET */
-		virtual returnValue addBound_ensureLI(	int number,					/**< Number of bound to be added to active set. */
-										SubjectToStatus B_status	/**< Status of new active bound. */
-										);
+		virtual returnValue addBound_ensureLI(	int_t number,				/**< Number of bound to be added to active set. */
+												SubjectToStatus B_status	/**< Status of new active bound. */
+												);
 
 		/** Removes a constraint from active set.
 		 *	\return SUCCESSFUL_RETURN \n
 		 			RET_CONSTRAINT_NOT_ACTIVE \n
 					RET_REMOVECONSTRAINT_FAILED \n
 					RET_HESSIAN_NOT_SPD */
-		virtual returnValue removeConstraint(	int number,								/**< Number of constraint to be removed from active set. */
-										BooleanType updateCholesky,				/**< Flag indicating if Cholesky decomposition shall be updated. */
-										BooleanType allowFlipping = BT_FALSE,	/**< Flag indicating if flipping bounds are allowed. */
-										BooleanType ensureNZC = BT_FALSE		/**< Flag indicating if non-zero curvature is ensured by exchange rules. */
-										);
+		virtual returnValue removeConstraint(	int_t number,							/**< Number of constraint to be removed from active set. */
+												BooleanType updateCholesky,				/**< Flag indicating if Cholesky decomposition shall be updated. */
+												BooleanType allowFlipping = BT_FALSE,	/**< Flag indicating if flipping bounds are allowed. */
+												BooleanType ensureNZC = BT_FALSE		/**< Flag indicating if non-zero curvature is ensured by exchange rules. */
+												);
 
 		/** Removes a bounds from active set.
 		 *	\return SUCCESSFUL_RETURN \n
 		 			RET_BOUND_NOT_ACTIVE \n
 					RET_HESSIAN_NOT_SPD \n
 					RET_REMOVEBOUND_FAILED */
-		virtual returnValue removeBound(	int number,								/**< Number of bound to be removed from active set. */
-									BooleanType updateCholesky,				/**< Flag indicating if Cholesky decomposition shall be updated. */
-									BooleanType allowFlipping = BT_FALSE,	/**< Flag indicating if flipping bounds are allowed. */
-									BooleanType ensureNZC = BT_FALSE		/**< Flag indicating if non-zero curvature is ensured by exchange rules. */
-									);
+		virtual returnValue removeBound(	int_t number,							/**< Number of bound to be removed from active set. */
+											BooleanType updateCholesky,				/**< Flag indicating if Cholesky decomposition shall be updated. */
+											BooleanType allowFlipping = BT_FALSE,	/**< Flag indicating if flipping bounds are allowed. */
+											BooleanType ensureNZC = BT_FALSE		/**< Flag indicating if non-zero curvature is ensured by exchange rules. */
+											);
 
 
 		/** Performs robustified ratio test yield the maximum possible step length
 		 *  along the homotopy path.
 		 *	\return  SUCCESSFUL_RETURN */
-		returnValue performPlainRatioTest(	int nIdx, 							/**< Number of ratios to be checked. */
-											const int* const idxList, 			/**< Array containing the indices of all ratios to be checked. */
+		returnValue performPlainRatioTest(	int_t nIdx, 						/**< Number of ratios to be checked. */
+											const int_t* const idxList, 		/**< Array containing the indices of all ratios to be checked. */
 											const real_t* const num,	 		/**< Array containing all numerators for performing the ratio test. */
 											const real_t* const den,		 	/**< Array containing all denominators for performing the ratio test. */
 											real_t epsNum,						/**< Numerator tolerance. */
 											real_t epsDen,						/**< Denominator tolerance. */
 											real_t& t,							/**< Output: Maximum possible step length along the homotopy path. */
-											int& BC_idx 						/**< Output: Index of blocking constraint. */
+											int_t& BC_idx 						/**< Output: Index of blocking constraint. */
 											) const;
 
 
@@ -723,10 +723,10 @@ class QProblem : public QProblemB
 		 *          RET_HOTSTART_STOPPED_UNBOUNDEDNESS */
 		returnValue ensureNonzeroCurvature(
 				BooleanType removeBoundNotConstraint,	/**< SubjectTo to be removed is a bound. */
-				int remIdx,								/**< Index of bound/constraint to be removed. */
+				int_t remIdx,							/**< Index of bound/constraint to be removed. */
 				BooleanType &exchangeHappened,			/**< Output: Exchange was necessary to ensure. */
 				BooleanType &addBoundNotConstraint,		/**< SubjectTo to be added is a bound. */
-				int &addIdx,							/**< Index of bound/constraint to be added. */
+				int_t &addIdx,							/**< Index of bound/constraint to be added. */
 				SubjectToStatus &addStatus				/**< Status of bound/constraint to be added. */
 				);
 
@@ -787,7 +787,7 @@ class QProblem : public QProblemB
 									const real_t* const delta_xFR,		/**< Primal homotopy step direction of free variables. */
 									const real_t* const delta_yAC,		/**< Dual homotopy step direction of active constraints' multiplier. */
 									const real_t* const delta_yFX,		/**< Dual homotopy step direction of fixed variables' multiplier. */
-									int& BC_idx, 						/**< Output: Index of blocking constraint. */
+									int_t& BC_idx, 						/**< Output: Index of blocking constraint. */
 									SubjectToStatus& BC_status,			/**< Output: Status of blocking constraint. */
 									BooleanType& BC_isBound 			/**< Output: Indicates if blocking constraint is a bound. */
 									);
@@ -796,7 +796,7 @@ class QProblem : public QProblemB
 		 *	\return  SUCCESSFUL_RETURN \n
 		 			 RET_REMOVE_FROM_ACTIVESET_FAILED \n
 					 RET_ADD_TO_ACTIVESET_FAILED */
-		returnValue changeActiveSet(	int BC_idx, 						/**< Index of blocking constraint. */
+		returnValue changeActiveSet(	int_t BC_idx, 						/**< Index of blocking constraint. */
 										SubjectToStatus BC_status,			/**< Status of blocking constraint. */
 										BooleanType BC_isBound 				/**< Indicates if blocking constraint is a bound. */
 										);
@@ -821,7 +821,7 @@ class QProblem : public QProblemB
 
 		/** ... */
 		returnValue updateFarBounds(	real_t curFarBound,					/**< ... */
-                                        int nRamp,							/**< ... */
+                                        int_t nRamp,						/**< ... */
                                         const real_t* const lb_new,			/**< ... */
                                         real_t* const lb_new_far,			/**< ... */
                                         const real_t* const ub_new,			/**< ... */
@@ -942,8 +942,8 @@ class QProblem : public QProblemB
 
 		/** Prints concise information on the current iteration.
 		 *	\return  SUCCESSFUL_RETURN \n */
-		returnValue printIteration(	int iter,							/**< Number of current iteration. */
-									int BC_idx, 						/**< Index of blocking constraint. */
+		returnValue printIteration(	int_t iter,							/**< Number of current iteration. */
+									int_t BC_idx, 						/**< Index of blocking constraint. */
 									SubjectToStatus BC_status,			/**< Status of blocking constraint. */
 									BooleanType BC_isBound,				/**< Indicates if blocking constraint is a bound. */
 									real_t homotopyLength,				/**< Current homotopy distance. */
@@ -976,7 +976,7 @@ class QProblem : public QProblemB
 		 *	\return SUCCESSFUL_RETURN \n
 		 *			RET_QPOBJECT_NOT_SETUP \n
 		 *			RET_INDEX_OUT_OF_BOUNDS */
-		inline returnValue setLBA(	int number,		/**< Number of entry to be changed. */
+		inline returnValue setLBA(	int_t number,	/**< Number of entry to be changed. */
 									real_t value	/**< New value for entry of lower constraints' bound vector (with correct dimension!). */
 									);
 
@@ -990,7 +990,7 @@ class QProblem : public QProblemB
 		 *	\return SUCCESSFUL_RETURN \n
 		 *			RET_QPOBJECT_NOT_SETUP \n
 		 *			RET_INDEX_OUT_OF_BOUNDS */
-		inline returnValue setUBA(	int number,		/**< Number of entry to be changed. */
+		inline returnValue setUBA(	int_t number,	/**< Number of entry to be changed. */
 									real_t value	/**< New value for entry of upper constraints' bound vector (with correct dimension!). */
 									);
 
@@ -999,7 +999,7 @@ class QProblem : public QProblemB
 		 *  bound/constraint to drop according to drop priorities.
 		 *  \return SUCCESSFUL_RETURN \n
 		 */
-		returnValue dropInfeasibles ( 	int BC_number,				/**< Number of the bound or constraint to be added. */
+		returnValue dropInfeasibles ( 	int_t BC_number,			/**< Number of the bound or constraint to be added. */
 										SubjectToStatus BC_status, 	/**< New status of the bound or constraint to be added. */
 										BooleanType BC_isBound,		/**< Whether a bound or a constraint is to be added. */
 										real_t *xiB,				/**< (not yet documented) */
@@ -1047,7 +1047,7 @@ class QProblem : public QProblemB
 
 		real_t* T;								/**< Reverse triangular matrix, A = [0 T]*Q'. */
 		real_t* Q;								/**< Orthonormal quadratic matrix, A = [0 T]*Q'. */
-		int sizeT;								/**< Matrix T is stored in a (sizeT x sizeT) array. */
+		int_t sizeT;							/**< Matrix T is stored in a (sizeT x sizeT) array. */
 
 		real_t* Ax;								/**< Stores the current A*x \n
 												 *	 (for increased efficiency only). */

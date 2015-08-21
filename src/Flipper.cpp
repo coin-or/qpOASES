@@ -60,8 +60,8 @@ Flipper::Flipper( )
 /*
  *	F l i p p e r
  */
-Flipper::Flipper(	unsigned int _nV,
-					unsigned int _nC
+Flipper::Flipper(	uint_t _nV,
+					uint_t _nC
 					)
 {
 	R = 0;
@@ -113,8 +113,8 @@ Flipper& Flipper::operator=( const Flipper& rhs )
 /*
  *	i n i t
  */
-returnValue Flipper::init(	unsigned int _nV,
-							unsigned int _nC
+returnValue Flipper::init(	uint_t _nV,
+							uint_t _nC
 							)
 {
 	clear( );
@@ -242,7 +242,7 @@ returnValue Flipper::copy(	const Flipper& rhs
 }
 
 
-unsigned int Flipper::getDimT( ) const
+uint_t Flipper::getDimT( ) const
 {
 	if ( nV > nC )
 		return nC*nC;

@@ -66,7 +66,7 @@ int main( )
 	example.setOptions( options );
 
 	/* Solve first QP. */
-	int nWSR = 10;
+	int_t nWSR = 10;
 	example.init( H,g,A,lb,ub,lbA,ubA, nWSR );
 
 	/* Get and print solution of second QP. */

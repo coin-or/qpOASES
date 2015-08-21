@@ -79,7 +79,7 @@ class ConstraintProduct
 		 *	user-defined constraint product function.
 		 *	\return 0:         successful \n
 					otherwise: not successful */
-		virtual int operator() (	int constrIndex,			/**< Number of constraint to be evaluated. */
+		virtual int_t operator() (	int_t constrIndex,			/**< Number of constraint to be evaluated. */
 									const real_t* const x,		/**< Array containing current primal iterate. */
 									real_t* const constrValue	/**< Output: Scalar value of the evaluated constraint. */
 									) const = 0;

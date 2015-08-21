@@ -53,7 +53,7 @@ int main( )
 	QProblemB qp(2);
 	qp.setOptions( options );
 
-	int iter = 10;
+	int_t iter = 10;
 	qp.init( H,g,0,0,iter );
 
 	real_t xOpt[2];

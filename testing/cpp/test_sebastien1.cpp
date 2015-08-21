@@ -60,14 +60,14 @@ int main( )
 	example.setPrintLevel(REFER_NAMESPACE_QPOASES PL_NONE);
 
 	// Solve first QP.
-	int nWSR = 10;
+	REFER_NAMESPACE_QPOASES int_t nWSR = 10;
 	QPOASES_TEST_FOR_TRUE( example.init(H, g, A, lb, ub, lbA, ubA, nWSR, NULL) == REFER_NAMESPACE_QPOASES SUCCESSFUL_RETURN );
 	QPOASES_TEST_FOR_TRUE( example.isSolved() == REFER_NAMESPACE_QPOASES BT_TRUE );
 	example.getPrimalSolution(solution);
 
 	printf( "\nxOpt = [ %e, %e ];\n\n", solution[0],solution[1] );
 
-	for (unsigned int i=0; i<2; i++)
+	for( REFER_NAMESPACE_QPOASES uint_t i=0; i<2; i++ )
 		QPOASES_TEST_FOR_NEAR( solution[i],expectedFirst[i] );
 
 	return TEST_PASSED;

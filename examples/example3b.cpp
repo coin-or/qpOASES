@@ -50,7 +50,7 @@ int main( )
 	options.setToMPC();
 	options.printLevel = PL_NONE;
 	
-	int nWSR = 300;
+	int_t nWSR = 300;
 	real_t maxCPUtime = 10.0; /* seconds */
 	real_t maxStationarity, maxFeasibility, maxComplementarity;
 

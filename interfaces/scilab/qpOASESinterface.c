@@ -63,34 +63,34 @@ extern int C2F(qpOASESgateway)();
 
 /* forward declaration of C++ routines */
 void qpoases(	double* H, double* g, double* A, double* lb, double* ub, double* lbA, double* ubA,
-				int *nV, int* nC, int* nWSR,
-				double* x, double* obj, int* status, int* nWSRout, double* y
+				int_t *nV, int_t* nC, int_t* nWSR,
+				double* x, double* obj, int_t* status, int_t* nWSRout, double* y
 				);
 
 void init(		double* H, double* g, double* A, double* lb, double* ub, double* lbA, double* ubA,
-				int *nV, int* nC, int* nWSR,
-				double* x, double* obj, int* status, int* nWSRout, double* y
+				int_t *nV, int_t* nC, int_t* nWSR,
+				double* x, double* obj, int_t* status, int_t* nWSRout, double* y
 				);
 void initSB(	double* H, double* g, double* lb, double* ub,
-				int *nV, int* nWSR,
-				double* x, double* obj, int* status, int* nWSRout, double* y
+				int_t *nV, int_t* nWSR,
+				double* x, double* obj, int_t* status, int_t* nWSRout, double* y
 				);
 void initVM(	double* H, double* g, double* A, double* lb, double* ub, double* lbA, double* ubA,
-				int *nV, int* nC, int* nWSR,
-				double* x, double* obj, int* status, int* nWSRout, double* y
+				int_t *nV, int_t* nC, int_t* nWSR,
+				double* x, double* obj, int_t* status, int_t* nWSRout, double* y
 				);
 
 void hotstart(		double* g, double* lb, double* ub, double* lbA, double* ubA,
-					int* nWSR,
-					double* x, double* obj, int* status, int* nWSRout, double* y
+					int_t* nWSR,
+					double* x, double* obj, int_t* status, int_t* nWSRout, double* y
 					);
 void hotstartSB(	double* g, double* lb, double* ub,
-					int* nWSR,
-					double* x, double* obj, int* status, int* nWSRout, double* y
+					int_t* nWSR,
+					double* x, double* obj, int_t* status, int_t* nWSRout, double* y
 					);
 void hotstartVM(	double* H, double* g, double* A, double* lb, double* ub, double* lbA, double* ubA,
-					int* nWSR,
-					double* x, double* obj, int* status, int* nWSRout, double* y
+					int_t* nWSR,
+					double* x, double* obj, int_t* status, int_t* nWSRout, double* y
 					);
 
 void cleanupp( );
@@ -100,11 +100,11 @@ void cleanupVM( );
 
 /* global variables containing dimensions of matrices
  * (also used to check whether qpOASES object were initialised) */
-static int qp_rowsH = -1;
-static int qp_rowsA = -1;
-static int qpb_rowsH = -1;
-static int sqp_rowsH = -1;
-static int sqp_rowsA = -1;
+static int_t qp_rowsH = -1;
+static int_t qp_rowsA = -1;
+static int_t qpb_rowsH = -1;
+static int_t sqp_rowsH = -1;
+static int_t sqp_rowsA = -1;
 
 
 /*
@@ -112,16 +112,16 @@ static int sqp_rowsA = -1;
  */
 int int_qpOASES( char* fname )
 {
-	int H, H_rows, H_cols;
-	int g, g_rows, g_cols;
-	int A, A_rows, A_cols;
-	int lb, lb_rows, lb_cols;
-	int ub, ub_rows, ub_cols;
-	int lbA, lbA_rows, lbA_cols;
-	int ubA, ubA_rows, ubA_cols;
-	int nWSR, nWSR_rows, nWSR_cols;
+	int_t H, H_rows, H_cols;
+	int_t g, g_rows, g_cols;
+	int_t A, A_rows, A_cols;
+	int_t lb, lb_rows, lb_cols;
+	int_t ub, ub_rows, ub_cols;
+	int_t lbA, lbA_rows, lbA_cols;
+	int_t ubA, ubA_rows, ubA_cols;
+	int_t nWSR, nWSR_rows, nWSR_cols;
 
-	int x, obj, status, nWSRout, y;
+	int_t x, obj, status, nWSRout, y;
 
 
 	int minlhs = 1, maxlhs = 5, minrhs = 8, maxrhs = 8, one = 1, y_size;
@@ -242,16 +242,16 @@ int int_qpOASES( char* fname )
  */
 int int_init( char* fname )
 {
-	int H, H_rows, H_cols;
-	int g, g_rows, g_cols;
-	int A, A_rows, A_cols;
-	int lb, lb_rows, lb_cols;
-	int ub, ub_rows, ub_cols;
-	int lbA, lbA_rows, lbA_cols;
-	int ubA, ubA_rows, ubA_cols;
-	int nWSR, nWSR_rows, nWSR_cols;
+	int_t H, H_rows, H_cols;
+	int_t g, g_rows, g_cols;
+	int_t A, A_rows, A_cols;
+	int_t lb, lb_rows, lb_cols;
+	int_t ub, ub_rows, ub_cols;
+	int_t lbA, lbA_rows, lbA_cols;
+	int_t ubA, ubA_rows, ubA_cols;
+	int_t nWSR, nWSR_rows, nWSR_cols;
 
-	int x, obj, status, nWSRout, y;
+	int_t x, obj, status, nWSRout, y;
 
 
 	int minlhs = 1, maxlhs = 5, minrhs = 8, maxrhs = 8, one = 1, y_size;
@@ -376,13 +376,13 @@ int int_init( char* fname )
  */
 int int_initSB( char* fname )
 {
-	int H, H_rows, H_cols;
-	int g, g_rows, g_cols;
-	int lb, lb_rows, lb_cols;
-	int ub, ub_rows, ub_cols;
-	int nWSR, nWSR_rows, nWSR_cols;
+	int_t H, H_rows, H_cols;
+	int_t g, g_rows, g_cols;
+	int_t lb, lb_rows, lb_cols;
+	int_t ub, ub_rows, ub_cols;
+	int_t nWSR, nWSR_rows, nWSR_cols;
 
-	int x, obj, status, nWSRout, y;
+	int_t x, obj, status, nWSRout, y;
 
 
 	int minlhs = 1, maxlhs = 5, minrhs = 5, maxrhs = 5, one = 1;
@@ -483,16 +483,16 @@ int int_initSB( char* fname )
  */
 int int_initVM( char* fname )
 {
-	int H, H_rows, H_cols;
-	int g, g_rows, g_cols;
-	int A, A_rows, A_cols;
-	int lb, lb_rows, lb_cols;
-	int ub, ub_rows, ub_cols;
-	int lbA, lbA_rows, lbA_cols;
-	int ubA, ubA_rows, ubA_cols;
-	int nWSR, nWSR_rows, nWSR_cols;
+	int_t H, H_rows, H_cols;
+	int_t g, g_rows, g_cols;
+	int_t A, A_rows, A_cols;
+	int_t lb, lb_rows, lb_cols;
+	int_t ub, ub_rows, ub_cols;
+	int_t lbA, lbA_rows, lbA_cols;
+	int_t ubA, ubA_rows, ubA_cols;
+	int_t nWSR, nWSR_rows, nWSR_cols;
 
-	int x, obj, status, nWSRout, y;
+	int_t x, obj, status, nWSRout, y;
 
 
 	int minlhs = 1, maxlhs = 5, minrhs = 8, maxrhs = 8, one = 1, y_size;
@@ -617,14 +617,14 @@ int int_initVM( char* fname )
  */
 int int_hotstart( char* fname )
 {
-	int g, g_rows, g_cols;
-	int lb, lb_rows, lb_cols;
-	int ub, ub_rows, ub_cols;
-	int lbA, lbA_rows, lbA_cols;
-	int ubA, ubA_rows, ubA_cols;
-	int nWSR, nWSR_rows, nWSR_cols;
+	int_t g, g_rows, g_cols;
+	int_t lb, lb_rows, lb_cols;
+	int_t ub, ub_rows, ub_cols;
+	int_t lbA, lbA_rows, lbA_cols;
+	int_t ubA, ubA_rows, ubA_cols;
+	int_t nWSR, nWSR_rows, nWSR_cols;
 
-	int x, obj, status, nWSRout, y;
+	int_t x, obj, status, nWSRout, y;
 
 
 	int minlhs = 1, maxlhs = 5, minrhs = 6, maxrhs = 6, one = 1, y_size;
@@ -738,12 +738,12 @@ int int_hotstart( char* fname )
  */
 int int_hotstartSB( char* fname )
 {
-	int g, g_rows, g_cols;
-	int lb, lb_rows, lb_cols;
-	int ub, ub_rows, ub_cols;
-	int nWSR, nWSR_rows, nWSR_cols;
+	int_t g, g_rows, g_cols;
+	int_t lb, lb_rows, lb_cols;
+	int_t ub, ub_rows, ub_cols;
+	int_t nWSR, nWSR_rows, nWSR_cols;
 
-	int x, obj, status, nWSRout, y;
+	int_t x, obj, status, nWSRout, y;
 
 
 	int minlhs = 1, maxlhs = 5, minrhs = 4, maxrhs = 4, one = 1;
@@ -841,16 +841,16 @@ int int_hotstartSB( char* fname )
  */
 int int_hotstartVM( char* fname )
 {
-	int H, H_rows, H_cols;
-	int g, g_rows, g_cols;
-	int A, A_rows, A_cols;
-	int lb, lb_rows, lb_cols;
-	int ub, ub_rows, ub_cols;
-	int lbA, lbA_rows, lbA_cols;
-	int ubA, ubA_rows, ubA_cols;
-	int nWSR, nWSR_rows, nWSR_cols;
+	int_t H, H_rows, H_cols;
+	int_t g, g_rows, g_cols;
+	int_t A, A_rows, A_cols;
+	int_t lb, lb_rows, lb_cols;
+	int_t ub, ub_rows, ub_cols;
+	int_t lbA, lbA_rows, lbA_cols;
+	int_t ubA, ubA_rows, ubA_cols;
+	int_t nWSR, nWSR_rows, nWSR_cols;
 
-	int obj, x, y, status, nWSRout;
+	int_t obj, x, y, status, nWSRout;
 
 
 	int minlhs = 1, maxlhs = 5, minrhs = 8, maxrhs = 8, one = 1, y_size;

@@ -64,7 +64,7 @@ int main( )
 
 
 	/* Solve first QP. */
-	int nWSR = 10;
+	int_t nWSR = 10;
 	example.init( H,g,lb,ub, nWSR,0 );
 
 	/* Get and print solution of first QP. */

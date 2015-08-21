@@ -63,11 +63,11 @@ int main( )
 	example.setOptions( options );
 	
 	returnValue ret;
-	int nWSR = 10;
+	int_t nWSR = 10;
 	double Xopt[2]={0.0,0.0};
 	//fprintf(stdFile, "g[0]\t,\tReturn code\n");
-	int errorCount=0;
-	int i=0;
+	int_t errorCount=0;
+	int_t i=0;
 	double granularity=0.00001;
 	g[0]=gStart;
 	for( i=0; i< 70000; i++)
@@ -85,34 +85,34 @@ int main( )
 		//fprintf(stdFile, "%f\t,\t%d\n",g[0],ret);
 	}
 	example.printProperties();
-	fprintf(stdFile, "#Number of optimizer runs: %d\n",i);
-	fprintf(stdFile, "#g[0] test interval: %f < g[0] < %f\n",gStart,g[0]);
-	fprintf(stdFile, "#Granularity: %f\n",granularity);
+	fprintf( stdFile, "#Number of optimizer runs: %d\n",(int)i );
+	fprintf( stdFile, "#g[0] test interval: %f < g[0] < %f\n",gStart,g[0] );
+	fprintf( stdFile, "#Granularity: %f\n",granularity);
 	double errorPercent = double(errorCount)/double(i)*100.0;
-	fprintf(stdFile, "#Number of errors (error): %d (%f)\n",errorCount,errorPercent);
+	fprintf( stdFile, "#Number of errors (error): %d (%f)\n",(int)errorCount,errorPercent );
 
 	example.getPrimalSolution(Xopt);
-	fprintf(stdFile,"#Optimization primary result : LD=%f BD=%f\n",Xopt[0], Xopt[1]);
+	fprintf( stdFile,"#Optimization primary result : LD=%f BD=%f\n",Xopt[0], Xopt[1]);
 
 	double Yopt[3]={0.0,0.0,0.0};
 	example.getDualSolution(Yopt);
-	fprintf(stdFile,"#Optimization dual result : %f %f %f8\n",Yopt[0], Yopt[1], Yopt[2]);
+	fprintf( stdFile,"#Optimization dual result : %f %f %f8\n",Yopt[0], Yopt[1], Yopt[2]);
 
-	int Nc=0;
+	int_t Nc=0;
 	Nc=example.getNC();
-	fprintf(stdFile,"#Number of constraints : %d\n",Nc);
+	fprintf( stdFile,"#Number of constraints : %d\n",(int)Nc );
 
-	int Nec=0;
+	int_t Nec=0;
 	Nec=example.getNEC();
-	fprintf(stdFile,"#Number of equality constraints : %d\n",Nec);
+	fprintf( stdFile,"#Number of equality constraints : %d\n",(int)Nec );
 
-	int Nac=0;
+	int_t Nac=0;
 	Nac=example.getNAC();
-	fprintf(stdFile,"#Number of active constraints : %d\n",Nac);
+	fprintf( stdFile,"#Number of active constraints : %d\n",(int)Nac );
 
-	int Niac=0;
+	int_t Niac=0;
 	Niac=example.getNIAC();
-	fprintf(stdFile,"#Number of inactive constraints : %d\n",Niac);
+	fprintf( stdFile,"#Number of inactive constraints : %d\n",(int)Niac );
 
 	QPOASES_TEST_FOR_TRUE( errorCount == 0 )
 

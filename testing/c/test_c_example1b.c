@@ -50,13 +50,13 @@ int main( )
 	real_t lb_new[2] = { 0.0, -1.0 };
 	real_t ub_new[2] = { 5.0, -0.5 };
 
-	int nWSR;
+	int_t nWSR;
 	qpOASES_Options options;
 
 	real_t xOpt[2];
 	real_t yOpt[2];
 	real_t obj;
-	int status;
+	int_t status;
 
 	qpOASES_Options_init( &options,0 );
 	/*options.enableFlippingBounds = 0; */

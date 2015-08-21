@@ -97,7 +97,7 @@ SQProblemSchur::SQProblemSchur( ) : SQProblem( )
 /*
  *	Q P r o b l e m
  */
-SQProblemSchur::SQProblemSchur( int _nV, int _nC, HessianType _hessianType, int maxSchurUpdates ) : SQProblem( _nV,_nC,_hessianType )
+SQProblemSchur::SQProblemSchur( int_t _nV, int_t _nC, HessianType _hessianType, int_t maxSchurUpdates ) : SQProblem( _nV,_nC,_hessianType )
 {
 	/* We use the variables Q and R to store the QR factorization of S.
 	 * T is not required. */
@@ -120,8 +120,8 @@ SQProblemSchur::SQProblemSchur( int _nV, int _nC, HessianType _hessianType, int 
 	if ( nSmax > 0 )
 	{
 		S = new real_t[nSmax*nSmax];
-		schurUpdateIndex = new int[nSmax];
-		schurUpdate = new schurUpdateType[nSmax];
+		schurUpdateIndex = new int_t[nSmax];
+		schurUpdate = new SchurUpdateType[nSmax];
 		Q_ = new real_t[nSmax*nSmax];
 		R_ = new real_t[nSmax*nSmax];
 		M_physicallength = 10*nSmax;  /* TODO: Decide good default. */
@@ -239,9 +239,9 @@ returnValue SQProblemSchur::clear( )
  *	c o p y
  */
 returnValue SQProblemSchur::copy(	const SQProblemSchur& rhs
-							)
+									)
 {
-	int i, j, length;
+	int_t i, j, length;
 
 	*sparseSolver = *(rhs.sparseSolver);
 
@@ -254,8 +254,8 @@ returnValue SQProblemSchur::copy(	const SQProblemSchur& rhs
 		S = new real_t[nSmax*nSmax];
 		Q_ = new real_t[nSmax*nSmax];
 		R_ = new real_t[nSmax*nSmax];
-		schurUpdateIndex = new int[nSmax];
-		schurUpdate = new schurUpdateType[nSmax];
+		schurUpdateIndex = new int_t[nSmax];
+		schurUpdate = new SchurUpdateType[nSmax];
 
 		if ( nS>0 )
 		{
@@ -267,8 +267,8 @@ returnValue SQProblemSchur::copy(	const SQProblemSchur& rhs
 					R_[i*nSmax + j] = rhs.R_[i*nSmax + j];
 				}
 
-			memcpy( schurUpdateIndex, rhs.schurUpdateIndex, nS*sizeof(int));
-			memcpy( schurUpdate, rhs.schurUpdate, nS*sizeof(schurUpdateType));
+			memcpy( schurUpdateIndex, rhs.schurUpdateIndex, ((unsigned int)nS)*sizeof(int_t));
+			memcpy( schurUpdate, rhs.schurUpdate, ((unsigned int)nS)*sizeof(SchurUpdateType));
 		}
 
 		M_physicallength = rhs.M_physicallength;
@@ -280,10 +280,10 @@ returnValue SQProblemSchur::copy(	const SQProblemSchur& rhs
 
 			if ( nS>0 )
 			{
-				memcpy(M_jc, rhs.M_jc, (nS+1)*sizeof(sparse_int_t));
+				memcpy(M_jc, rhs.M_jc, ((unsigned int)(nS+1))*sizeof(sparse_int_t));
 				length = M_jc[nS];
-				memcpy(M_vals, rhs.M_vals, length*sizeof(real_t));
-				memcpy(M_ir, rhs.M_ir, length*sizeof(sparse_int_t));
+				memcpy(M_vals, rhs.M_vals, ((unsigned int)length)*sizeof(real_t));
+				memcpy(M_ir, rhs.M_ir, ((unsigned int)length)*sizeof(sparse_int_t));
 			}
 			else if ( nS==0 )
 				M_jc[0] = rhs.M_jc[0];
@@ -318,9 +318,9 @@ returnValue SQProblemSchur::setupAuxiliaryQP ( SymmetricMatrix *H_new, Matrix *A
     const real_t *lb_new, const real_t *ub_new, const real_t *lbA_new, const real_t *ubA_new
 )
 {
-	int i;
-	int nV = getNV( );
-	int nC = getNC( );
+	int_t i;
+	int_t nV = getNV( );
+	int_t nC = getNC( );
 	returnValue returnvalue;
 
 	if ( ( getStatus( ) == QPS_NOTINITIALISED )       ||
@@ -402,7 +402,7 @@ returnValue SQProblemSchur::setupAuxiliaryQP ( SymmetricMatrix *H_new, Matrix *A
 
 	/* 1) Check if current active set is linearly independent and has the correct inertia */
 	returnvalue = resetSchurComplement( BT_FALSE );
-	int neig = sparseSolver->getNegativeEigenvalues( );
+	int_t neig = sparseSolver->getNegativeEigenvalues( );
 
 	if ( returnvalue == SUCCESSFUL_RETURN && neig == getNAC( ) )
 	{
@@ -497,7 +497,7 @@ returnValue SQProblemSchur::setupAuxiliaryQP ( SymmetricMatrix *H_new, Matrix *A
 		return THROWERROR( RET_SETUP_AUXILIARYQP_FAILED );
 
 	/* adjust lb/ub */
-	for (int ii = 0; ii < nC; ++ii)
+	for (int_t ii = 0; ii < nC; ++ii)
 		Ax_l[ii] = Ax_u[ii] = Ax[ii];
 	setupAuxiliaryQPbounds (&bounds, &constraints, BT_FALSE);
 
@@ -515,9 +515,9 @@ returnValue SQProblemSchur::setupAuxiliaryWorkingSet(	const Bounds* const auxili
 														BooleanType setupAfresh
 														)
 {
-	int i;
-	int nV = getNV( );
-	int nC = getNC( );
+	int_t i;
+	int_t nV = getNV( );
+	int_t nC = getNC( );
 
 	/* consistency checks */
 	if ( auxiliaryBounds != 0 )
@@ -595,7 +595,7 @@ returnValue SQProblemSchur::setupAuxiliaryWorkingSet(	const Bounds* const auxili
 		return THROWERROR( RET_SETUP_WORKINGSET_FAILED );
 
 	/* III.2.) Check if inertia is correct. If so, we now have a linearly independent working set with a pos def reduced Hessian */
-	int neig = sparseSolver->getNegativeEigenvalues( );
+	int_t neig = sparseSolver->getNegativeEigenvalues( );
 	if ( neig == getNAC( ) )
 	{
 		/* We now have a linearly independent working set with a pos def reduced Hessian.
@@ -643,12 +643,12 @@ returnValue SQProblemSchur::setupTQfactorisation( )
 /*
  *	a d d C o n s t r a i n t
  */
-returnValue SQProblemSchur::addConstraint(	int number, SubjectToStatus C_status,
-										BooleanType updateCholesky,
-										BooleanType ensureLI
-										)
+returnValue SQProblemSchur::addConstraint(	int_t number, SubjectToStatus C_status,
+											BooleanType updateCholesky,
+											BooleanType ensureLI
+											)
 {
-	int idxDeleted = -1;
+	int_t idxDeleted = -1;
 
 	/* consistency checks */
 	if ( constraints.getStatus( number ) != ST_INACTIVE )
@@ -704,7 +704,7 @@ returnValue SQProblemSchur::addConstraint(	int number, SubjectToStatus C_status,
 	/* First check if this constraint had been removed before. In that
 	   case delete this constraint from the Schur complement. */
 	bool found = false;
-	for ( int i=0; i<nS; i++ )
+	for ( int_t i=0; i<nS; i++ )
 	{
 		if ( schurUpdate[i] == SUT_ConRemoved && number == schurUpdateIndex[i] )
 		{
@@ -735,24 +735,24 @@ returnValue SQProblemSchur::addConstraint(	int number, SubjectToStatus C_status,
 		else
 		{
 			/* If the constraint was not yet in Schur complement, add it now. */
-			int nFRStart = boundsFreeStart.getLength();
-			int* FR_idxStart;
+			int_t nFRStart = boundsFreeStart.getLength();
+			int_t* FR_idxStart;
 			boundsFreeStart.getNumberArray( &FR_idxStart );
 
 			sparse_int_t* MNpos = new sparse_int_t[nFRStart+nS]; // This is an overestimate
 			real_t* MNvals = new real_t[nFRStart+nS];
 
-			int* irn = new int[nFRStart+nS];
-			int* jcn = new int[nFRStart+nS];
+			int_t* irn = new int_t[nFRStart+nS];
+			int_t* jcn = new int_t[nFRStart+nS];
 			real_t* vals = new real_t[nFRStart+nS];
-			int* icolsNumber = new int[nFRStart+nS];
-			int* icolsSIdx = new int[nS];
+			int_t* icolsNumber = new int_t[nFRStart+nS];
+			int_t* icolsSIdx = new int_t[nS];
 
-			for ( int i=0; i<nFRStart; i++)
+			for ( int_t i=0; i<nFRStart; i++)
 				icolsNumber[i] = FR_idxStart[i];
 
-			int icolsLength = nFRStart;
-			for ( int i=0; i<nS; i++)
+			int_t icolsLength = nFRStart;
+			for ( int_t i=0; i<nS; i++)
 				if ( schurUpdate[i] == SUT_VarFreed )
 				{
 					icolsNumber[icolsLength] = schurUpdateIndex[i];
@@ -765,13 +765,13 @@ returnValue SQProblemSchur::addConstraint(	int number, SubjectToStatus C_status,
 				MyPrintf( "In SQProblemSchur::addConstraint, constraintProduct not yet implemented.\n");
 				return THROWERROR(RET_NOT_YET_IMPLEMENTED);
 			}
-			int numNonzerosA;
+			int_t numNonzerosA;
 			A->getSparseSubmatrix( 1, &number, icolsLength, icolsNumber, 0, 0, numNonzerosA, irn, jcn, vals );
 			delete [] irn;
 
-			int numNonzerosM = 0;
-			int numNonzerosN = 0;
-			for ( int i=0; i<numNonzerosA; i++ )
+			int_t numNonzerosM = 0;
+			int_t numNonzerosN = 0;
+			for ( int_t i=0; i<numNonzerosA; i++ )
 				if ( jcn[i] < nFRStart )
 				{
 					MNpos[numNonzerosM] = jcn[i];
@@ -828,11 +828,11 @@ returnValue SQProblemSchur::addConstraint(	int number, SubjectToStatus C_status,
 /*
  *	a d d C o n s t r a i n t _ c h e c k L I
  */
-returnValue SQProblemSchur::addConstraint_checkLI( int number )
+returnValue SQProblemSchur::addConstraint_checkLI( int_t number )
 {
 	/* Get space for the multipliers xi in linear independence test */
-	int nAC = getNAC();
-	int nFX = getNFX();
+	int_t nAC = getNAC();
+	int_t nFX = getNFX();
 	real_t *xiC = new real_t[nAC];
 	real_t *xiB = new real_t[nFX];
 
@@ -848,17 +848,17 @@ returnValue SQProblemSchur::addConstraint_checkLI( int number )
 /*
  *	a d d C o n s t r a i n t _ c h e c k L I S c h u r
  */
-returnValue SQProblemSchur::addConstraint_checkLISchur( int number, real_t* xiC, real_t* xiB )
+returnValue SQProblemSchur::addConstraint_checkLISchur( int_t number, real_t* xiC, real_t* xiB )
 {
 	returnValue returnvalue = RET_LINEARLY_DEPENDENT;
 
-	int ii;
-	int nV  = getNV( );
-	int nFR = getNFR( );
-	int nC  = getNC( );
-	int nAC = getNAC();
-	int nFX = getNFX();
-	int *FR_idx;
+	int_t ii;
+	int_t nV  = getNV( );
+	int_t nFR = getNFR( );
+	int_t nC  = getNC( );
+	int_t nAC = getNAC();
+	int_t nFX = getNFX();
+	int_t *FR_idx;
 
 	bounds.getFree( )->getNumberArray( &FR_idx );
 
@@ -870,7 +870,7 @@ returnValue SQProblemSchur::addConstraint_checkLISchur( int number, real_t* xiC,
 		 * "zero". We then check linear independence relative to this estimate.
 		 */
 
-		int *FX_idx, *AC_idx, *IAC_idx;
+		int_t *FX_idx, *AC_idx, *IAC_idx;
 
 		real_t *delta_g   = new real_t[nV];
 		real_t *delta_xFX = new real_t[nFX];
@@ -882,7 +882,7 @@ returnValue SQProblemSchur::addConstraint_checkLISchur( int number, real_t* xiC,
 		constraints.getActive( )->getNumberArray( &AC_idx );
 		constraints.getInactive( )->getNumberArray( &IAC_idx );
 
-		int dim = (nC>nV)?nC:nV;
+		int_t dim = (nC>nV)?nC:nV;
 		real_t *nul = new real_t[dim];
 		for (ii = 0; ii < dim; ++ii)
 			nul[ii]=0.0;
@@ -939,11 +939,11 @@ returnValue SQProblemSchur::addConstraint_checkLISchur( int number, real_t* xiC,
 /*
  *	a d d C o n s t r a i n t _ e n s u r e L I
  */
-returnValue SQProblemSchur::addConstraint_ensureLI( int number, SubjectToStatus C_status )
+returnValue SQProblemSchur::addConstraint_ensureLI( int_t number, SubjectToStatus C_status )
 {
 	/* Get space for the multipliers xi in linear independence test */
-	int nAC = getNAC();
-	int nFX = getNFX();
+	int_t nAC = getNAC();
+	int_t nFX = getNFX();
 	real_t *xiC = new real_t[nAC];
 	real_t *xiB = new real_t[nFX];
 
@@ -966,7 +966,7 @@ returnValue SQProblemSchur::addConstraint_ensureLI( int number, SubjectToStatus 
 
  	/* II) NEW BOUND IS LINEARLY DEPENDENT: */
 	/* 1) Coefficients of linear combination, have already been computed, but we need to correct the sign.  */
-	int i, ii;
+	int_t i, ii;
 
 	if ( C_status != ST_LOWER )
 	{
@@ -976,19 +976,19 @@ returnValue SQProblemSchur::addConstraint_ensureLI( int number, SubjectToStatus 
 			xiB[i] = -xiB[i];
 	}
 
-	int nV  = getNV( );
+	int_t nV  = getNV( );
 
-	int* FX_idx;
+	int_t* FX_idx;
 	bounds.getFixed( )->getNumberArray( &FX_idx );
 
-	int* AC_idx;
+	int_t* AC_idx;
 	constraints.getActive( )->getNumberArray( &AC_idx );
 
 	real_t* num = new real_t[nV];
 
 	real_t y_min = options.maxDualJump;
-	int y_min_number = -1;
-	int y_min_number_bound = -1;
+	int_t y_min_number = -1;
+	int_t y_min_number_bound = -1;
 	BooleanType y_min_isBound = BT_FALSE;
 
 	returnValue returnvalue = SUCCESSFUL_RETURN;
@@ -1049,7 +1049,7 @@ returnValue SQProblemSchur::addConstraint_ensureLI( int number, SubjectToStatus 
 		if ( y_min_isBound == BT_TRUE )
 		{
 			#ifndef __XPCTARGET__
-			snprintf( messageString,80,"bound no. %d.",y_min_number );
+			snprintf( messageString,80,"bound no. %d.",(int)y_min_number );
 			getGlobalMessageHandler( )->throwInfo( RET_REMOVE_FROM_ACTIVESET,messageString,__FUNCTION__,__FILE__,__LINE__,VS_VISIBLE );
 			#endif
 
@@ -1065,7 +1065,7 @@ returnValue SQProblemSchur::addConstraint_ensureLI( int number, SubjectToStatus 
 		else
 		{
 			#ifndef __XPCTARGET__
-			snprintf( messageString,80,"constraint no. %d.",y_min_number );
+			snprintf( messageString,80,"constraint no. %d.",(int)y_min_number );
 			getGlobalMessageHandler( )->throwInfo( RET_REMOVE_FROM_ACTIVESET,messageString,__FUNCTION__,__FILE__,__LINE__,VS_VISIBLE );
 			#endif
 
@@ -1107,12 +1107,12 @@ farewell:
 /*
  *	a d d B o u n d
  */
-returnValue SQProblemSchur::addBound(	int number, SubjectToStatus B_status,
+returnValue SQProblemSchur::addBound(	int_t number, SubjectToStatus B_status,
 								BooleanType updateCholesky,
 								BooleanType ensureLI
 								)
 {
-	int idxDeleted = -1;
+	int_t idxDeleted = -1;
 
 	/* consistency checks */
 	if ( bounds.getStatus( number ) != ST_INACTIVE )
@@ -1162,7 +1162,7 @@ returnValue SQProblemSchur::addBound(	int number, SubjectToStatus B_status,
 
 	/* II) SWAP INDEXLIST OF FREE VARIABLES:
          *     move the variable to be fixed to the end of the list of free variables. */
-	int lastfreenumber = bounds.getFree( )->getLastNumber( );
+	int_t lastfreenumber = bounds.getFree( )->getLastNumber( );
 		if ( lastfreenumber != number )
 			if ( bounds.swapFree( number,lastfreenumber ) != SUCCESSFUL_RETURN )
 				THROWERROR( RET_ADDBOUND_FAILED );
@@ -1179,7 +1179,7 @@ returnValue SQProblemSchur::addBound(	int number, SubjectToStatus B_status,
 	/* First check if this variable had been freed before. In that
 	   case delete this variable from the Schur complement. */
 	bool found = false;
-	for ( int i=0; i<nS; i++ )
+	for ( int_t i=0; i<nS; i++ )
 	{
 		if ( schurUpdate[i] == SUT_VarFreed && number == schurUpdateIndex[i] )
 		{
@@ -1210,10 +1210,10 @@ returnValue SQProblemSchur::addBound(	int number, SubjectToStatus B_status,
 		else
 		{
 			/* If the variable was not yet in Schur complement, add it now. */
-			int nFRStart = boundsFreeStart.getLength();
-			int* FR_idxStart;
+			int_t nFRStart = boundsFreeStart.getLength();
+			int_t* FR_idxStart;
 			boundsFreeStart.getNumberArray( &FR_idxStart );
-			for ( int i=0; i<nFRStart; i++ )
+			for ( int_t i=0; i<nFRStart; i++ )
 				if ( FR_idxStart[i] == number )
 				{
 					real_t one = 1.0;
@@ -1252,11 +1252,11 @@ returnValue SQProblemSchur::addBound(	int number, SubjectToStatus B_status,
 /*
  *	a d d B o u n d _ c h e c k L I
  */
-returnValue SQProblemSchur::addBound_checkLI( int number )
+returnValue SQProblemSchur::addBound_checkLI( int_t number )
 {
 	/* Get space for the multipliers xi in linear independence test */
-	int nAC = getNAC();
-	int nFX = getNFX();
+	int_t nAC = getNAC();
+	int_t nFX = getNFX();
 	real_t *xiC = new real_t[nAC];
 	real_t *xiB = new real_t[nFX];
 
@@ -1272,18 +1272,18 @@ returnValue SQProblemSchur::addBound_checkLI( int number )
 /*
  *	a d d B o u n d _ c h e c k L I S c h u r
  */
-returnValue SQProblemSchur::addBound_checkLISchur( int number, real_t* xiC, real_t* xiB )
+returnValue SQProblemSchur::addBound_checkLISchur( int_t number, real_t* xiC, real_t* xiB )
 {
 	returnValue returnvalue = RET_LINEARLY_DEPENDENT;
 
 
-	int ii;
-	int nV  = getNV( );
-	int nFR = getNFR( );
-	int nC  = getNC( );
-	int nAC = getNAC();
-	int nFX = getNFX();
-	int *FR_idx;
+	int_t ii;
+	int_t nV  = getNV( );
+	int_t nFR = getNFR( );
+	int_t nC  = getNC( );
+	int_t nAC = getNAC();
+	int_t nFX = getNFX();
+	int_t *FR_idx;
 
 	bounds.getFree( )->getNumberArray( &FR_idx );
 
@@ -1305,7 +1305,7 @@ returnValue SQProblemSchur::addBound_checkLISchur( int number, real_t* xiC, real
 			delta_g[ii] = 0.0;
 		delta_g[number] = 1.0;
 
-		int dim = (nC>nV)?nC:nV;
+		int_t dim = (nC>nV)?nC:nV;
 		real_t *nul = new real_t[dim];
 		for (ii = 0; ii < dim; ++ii)
 			nul[ii]=0.0;
@@ -1359,11 +1359,11 @@ returnValue SQProblemSchur::addBound_checkLISchur( int number, real_t* xiC, real
 /*
  *	a d d B o u n d _ e n s u r e L I
  */
-returnValue SQProblemSchur::addBound_ensureLI( int number, SubjectToStatus B_status )
+returnValue SQProblemSchur::addBound_ensureLI( int_t number, SubjectToStatus B_status )
 {
 	/* Get space for the multipliers xi in linear independence test */
-	int nAC = getNAC();
-	int nFX = getNFX();
+	int_t nAC = getNAC();
+	int_t nFX = getNFX();
 	real_t *xiC = new real_t[nAC];
 	real_t *xiB = new real_t[nFX];
 
@@ -1386,7 +1386,7 @@ returnValue SQProblemSchur::addBound_ensureLI( int number, SubjectToStatus B_sta
 
  	/* II) NEW BOUND IS LINEARLY DEPENDENT: */
 	/* 1) Coefficients of linear combination, have already been computed, but we need to correct the sign.  */
-	int i, ii;
+	int_t i, ii;
 
 	if ( B_status != ST_LOWER )
 	{
@@ -1396,19 +1396,19 @@ returnValue SQProblemSchur::addBound_ensureLI( int number, SubjectToStatus B_sta
 			xiB[i] = -xiB[i];
 	}
 
-	int nV  = getNV( );
+	int_t nV  = getNV( );
 
-	int* FX_idx;
+	int_t* FX_idx;
 	bounds.getFixed( )->getNumberArray( &FX_idx );
 
-	int* AC_idx;
+	int_t* AC_idx;
 	constraints.getActive( )->getNumberArray( &AC_idx );
 
 	real_t* num = new real_t[nV];
 
 	real_t y_min = options.maxDualJump;
-	int y_min_number = -1;
-	int y_min_number_bound = -1;
+	int_t y_min_number = -1;
+	int_t y_min_number_bound = -1;
 	BooleanType y_min_isBound = BT_FALSE;
 
 	returnValue returnvalue = SUCCESSFUL_RETURN;
@@ -1466,7 +1466,7 @@ returnValue SQProblemSchur::addBound_ensureLI( int number, SubjectToStatus B_sta
 		if ( y_min_isBound == BT_TRUE )
 		{
 			#ifndef __XPCTARGET__
-			snprintf( messageString,80,"bound no. %d.",y_min_number );
+			snprintf( messageString,80,"bound no. %d.",(int)y_min_number );
 			getGlobalMessageHandler( )->throwInfo( RET_REMOVE_FROM_ACTIVESET,messageString,__FUNCTION__,__FILE__,__LINE__,VS_VISIBLE );
 			#endif
 
@@ -1482,7 +1482,7 @@ returnValue SQProblemSchur::addBound_ensureLI( int number, SubjectToStatus B_sta
 		else
 		{
 			#ifndef __XPCTARGET__
-			snprintf( messageString,80,"constraint no. %d.",y_min_number );
+			snprintf( messageString,80,"constraint no. %d.",(int)y_min_number );
 			getGlobalMessageHandler( )->throwInfo( RET_REMOVE_FROM_ACTIVESET,messageString,__FUNCTION__,__FILE__,__LINE__,VS_VISIBLE );
 			#endif
 
@@ -1525,7 +1525,7 @@ farewell:
 /*
  *	r e m o v e C o n s t r a i n t
  */
-returnValue SQProblemSchur::removeConstraint(	int number,
+returnValue SQProblemSchur::removeConstraint(	int_t number,
 										BooleanType updateCholesky,
 										BooleanType allowFlipping,
 										BooleanType ensureNZC
@@ -1533,8 +1533,8 @@ returnValue SQProblemSchur::removeConstraint(	int number,
 {
 	returnValue returnvalue = SUCCESSFUL_RETURN;
 
-	int sModType = 0;
-	int idxDeleted = -1;
+	int_t sModType = 0;
+	int_t idxDeleted = -1;
 	SubjectToStatus oldStatus;
 	real_t oldDet, newDet;
 
@@ -1548,10 +1548,10 @@ returnValue SQProblemSchur::removeConstraint(	int number,
 	}
 
 	/* some definitions */
-	int nAC = getNAC( );
-	int number_idx = constraints.getActive( )->getIndex( number );
+	int_t nAC = getNAC( );
+	int_t number_idx = constraints.getActive( )->getIndex( number );
 
-	int addIdx;
+	int_t addIdx;
 	BooleanType addBoundNotConstraint;
 	SubjectToStatus addStatus;
 	BooleanType exchangeHappened = BT_FALSE;
@@ -1587,7 +1587,7 @@ returnValue SQProblemSchur::removeConstraint(	int number,
 	/* First check if this constraint had been added before. In that
 	   case delete this constraint from the Schur complement. */
 	bool found = false;
-	for ( int i=0; i<nS; i++ )
+	for ( int_t i=0; i<nS; i++ )
 	{
 		if ( schurUpdate[i] == SUT_ConAdded && number == schurUpdateIndex[i] )
 		{
@@ -1620,12 +1620,12 @@ returnValue SQProblemSchur::removeConstraint(	int number,
 		else
 		{
 			/* If the constraint was not yet in Schur complement, add it now. */
-			int nFRStart = boundsFreeStart.getLength();
-			int nACStart = constraintsActiveStart.getLength();
-			int* AC_idxStart;
+			int_t nFRStart = boundsFreeStart.getLength();
+			int_t nACStart = constraintsActiveStart.getLength();
+			int_t* AC_idxStart;
 			constraintsActiveStart.getNumberArray( &AC_idxStart );
 
-			for ( int i=0; i<nACStart; i++ )
+			for ( int_t i=0; i<nACStart; i++ )
 				if ( AC_idxStart[i] == number )
 				{
 					real_t one = 1.0;
@@ -1726,7 +1726,7 @@ returnValue SQProblemSchur::removeConstraint(	int number,
 		{/* Case 3: S was reset. */
 
 			/* Check inertia of new factorization given by the sparse solver: must be ( nFR, nAC, 0 ) */
-			int neig = sparseSolver->getNegativeEigenvalues( );
+			int_t neig = sparseSolver->getNegativeEigenvalues( );
 			if( neig > getNAC( ) ) // Wrong inertia!
 			{
 				/* Flip bounds and update Schur complement */
@@ -1800,20 +1800,20 @@ returnValue SQProblemSchur::removeConstraint(	int number,
 /*
  *	r e m o v e B o u n d
  */
-returnValue SQProblemSchur::removeBound(	int number,
+returnValue SQProblemSchur::removeBound(	int_t number,
 									BooleanType updateCholesky,
 									BooleanType allowFlipping,
 									BooleanType ensureNZC
 									)
 {
 	returnValue returnvalue = SUCCESSFUL_RETURN;
-	int addIdx;
+	int_t addIdx;
 	BooleanType addBoundNotConstraint;
 	SubjectToStatus addStatus;
 	BooleanType exchangeHappened = BT_FALSE;
 
-	int sModType = 0;
-	int idxDeleted = -1;
+	int_t sModType = 0;
+	int_t idxDeleted = -1;
 	SubjectToStatus oldStatus;
 	real_t oldDet, newDet;
 
@@ -1852,7 +1852,7 @@ returnValue SQProblemSchur::removeBound(	int number,
 	/* First check if this variable had been fixed before. In that
 	   case delete this variable from the Schur complement. */
 	bool found = false;
-	for ( int i=0; i<nS; i++ )
+	for ( int_t i=0; i<nS; i++ )
 	{
 		if ( schurUpdate[i] == SUT_VarFixed && number == schurUpdateIndex[i] )
 		{
@@ -1885,28 +1885,28 @@ returnValue SQProblemSchur::removeBound(	int number,
 		else
 		{
 			/* If the variable was not yet in Schur complement, add it now. */
-			int nFRStart = boundsFreeStart.getLength();
-			int nACStart = constraintsActiveStart.getLength();
-			int* FR_idxStart;
+			int_t nFRStart = boundsFreeStart.getLength();
+			int_t nACStart = constraintsActiveStart.getLength();
+			int_t* FR_idxStart;
 			boundsFreeStart.getNumberArray( &FR_idxStart );
-			int* AC_idxStart;
+			int_t* AC_idxStart;
 			constraintsActiveStart.getNumberArray( &AC_idxStart );
 
-			int numNonzerosM = 0;
+			int_t numNonzerosM = 0;
 			sparse_int_t* Mpos = new sparse_int_t[nFRStart+nACStart+nS]; // This is an overestimate
 			real_t* Mvals = new real_t[nFRStart+nACStart+nS];
-			int numNonzerosN = 0;
+			int_t numNonzerosN = 0;
 			sparse_int_t* Npos = new sparse_int_t[nFRStart+nACStart+nS]; // This is an overestimate
 			real_t* Nvals = new real_t[nFRStart+nACStart+nS];
 			real_t N_diag;
 
-			int* irn = new int[nFRStart+nACStart+nS+1];
-			int* jcn = new int[nFRStart+nACStart+nS+1];
+			int_t* irn = new int_t[nFRStart+nACStart+nS+1];
+			int_t* jcn = new int_t[nFRStart+nACStart+nS+1];
 			real_t* vals = new real_t[nFRStart+nACStart+nS+1];
-			int iLength;
-			int* iNumber = new int[nFRStart+nACStart+nS+1];
-			int numNonzeros;
-			int* iSIdx = new int[nS];
+			int_t iLength;
+			int_t* iNumber = new int_t[nFRStart+nACStart+nS+1];
+			int_t numNonzeros;
+			int_t* iSIdx = new int_t[nS];
 
 			/* First the Hessian part. */
 			real_t regularisation = options.epsRegularisation;
@@ -1922,10 +1922,10 @@ returnValue SQProblemSchur::removeBound(	int number,
 
 				default:
 					N_diag = regularisation;
-					for ( int i=0; i<nFRStart; i++ )
+					for ( int_t i=0; i<nFRStart; i++ )
 						iNumber[i] = FR_idxStart[i];
 					iLength = nFRStart;
-					for ( int i=0; i<nS; i++ )
+					for ( int_t i=0; i<nS; i++ )
 						if ( schurUpdate[i] == SUT_VarFreed )
 						{
 							iNumber[iLength] = schurUpdateIndex[i];
@@ -1936,7 +1936,7 @@ returnValue SQProblemSchur::removeBound(	int number,
 
 					H->getSparseSubmatrix( iLength, iNumber, 1, &number, 0, 0, numNonzeros, irn, jcn, vals );
 
-					for ( int i=0; i<numNonzeros; i++ )
+					for ( int_t i=0; i<numNonzeros; i++ )
 					{
 						if ( irn[i] < nFRStart )
 						{
@@ -1962,10 +1962,10 @@ returnValue SQProblemSchur::removeBound(	int number,
 				return THROWERROR(RET_NOT_YET_IMPLEMENTED);
 			}
 
-			for ( int i=0; i<nACStart; i++ )
+			for ( int_t i=0; i<nACStart; i++ )
 				iNumber[i] = AC_idxStart[i];
 			iLength = nACStart;
-			for ( int i=0; i<nS; i++ )
+			for ( int_t i=0; i<nS; i++ )
 				if ( schurUpdate[i] == SUT_ConAdded )
 				{
 					iNumber[iLength] = schurUpdateIndex[i];
@@ -1975,7 +1975,7 @@ returnValue SQProblemSchur::removeBound(	int number,
 
 			A->getSparseSubmatrix( iLength, iNumber, 1, &number, 0, 0, numNonzeros, irn, jcn, vals );
 
-			for ( int i=0; i<numNonzeros; i++ )
+			for ( int_t i=0; i<numNonzeros; i++ )
 			{
 				if ( irn[i] < nACStart )
 				{
@@ -2094,7 +2094,7 @@ returnValue SQProblemSchur::removeBound(	int number,
 		{/* Case 3: S was reset. */
 
 			/* Check inertia of new factorization given by the sparse solver: must be ( nFR, nAC, 0 ) */
-			int neig = sparseSolver->getNegativeEigenvalues( );
+			int_t neig = sparseSolver->getNegativeEigenvalues( );
 			if( neig > getNAC( ) ) // Wrong inertia, flip bounds!
 			{
 				/* Flip bounds and update Schur complement */
@@ -2184,13 +2184,13 @@ returnValue SQProblemSchur::backsolveR(	const real_t* const b, BooleanType trans
 }
 
 #if 1 // update QR factorization using Givens rotations
-real_t SQProblemSchur::calcDetSchur( int idxDel )
+real_t SQProblemSchur::calcDetSchur( int_t idxDel )
 {
 	if ( nS <= 0 )
 		return 1.0;
 
 	real_t newDet;
-	int i, j;
+	int_t i, j;
 	real_t c, s, nu;
 
 	/* Case 1: S has been bordered by one row and column */
@@ -2213,7 +2213,7 @@ real_t SQProblemSchur::calcDetSchur( int idxDel )
 	/* Case 2: row and column idxDel have been deleted from S */
 	else
 	{
-		const int dim = nS+1;
+		const int_t dim = nS+1;
 		real_t *tempR = new real_t[dim*(dim-1)];
 		real_t *tempColQ = new real_t[dim];
 
@@ -2273,9 +2273,9 @@ real_t SQProblemSchur::calcDetSchur( int idxDel )
 	return newDet;
 }
 
-returnValue SQProblemSchur::updateSchurQR( int idxDel )
+returnValue SQProblemSchur::updateSchurQR( int_t idxDel )
 {
-	int i, j;
+	int_t i, j;
 	real_t c, s, nu;
 
 	if ( nS <= 0 )
@@ -2387,16 +2387,16 @@ returnValue SQProblemSchur::updateSchurQR( int idxDel )
 
 	/* Estimate condition number of R (= condition number of S)*/
 	real_t *WORK;
-	unsigned long N = nS;
-	unsigned long LDA = nSmax;
+	unsigned long N = (unsigned long)nS;
+	unsigned long LDA = (unsigned long)nSmax;
 	unsigned long *IWORK;
-	int INFO;
+	long INFO = 0;
 	IWORK = new unsigned long[N];
 	WORK = new real_t[3*N];
 	TRCON( "1", "U", "N", &N, R_, &LDA, &rcondS, WORK, IWORK, &INFO );
 	if ( INFO != 0 )
 	{
-		MyPrintf( "TRCON returns INFO = %d\n", INFO );
+		MyPrintf( "TRCON returns INFO = %d\n",(int)INFO );
 	}
 
 	if ( options.printLevel == PL_HIGH )
@@ -2408,7 +2408,7 @@ returnValue SQProblemSchur::updateSchurQR( int idxDel )
 	return SUCCESSFUL_RETURN;
 }
 
-returnValue SQProblemSchur::backsolveSchurQR( int dimS, const real_t* const rhs, int dimRhs, real_t* const sol )
+returnValue SQProblemSchur::backsolveSchurQR( int_t dimS, const real_t* const rhs, int_t dimRhs, real_t* const sol )
 {
 	if( dimS < 1 || dimRhs < 1 )
 		return SUCCESSFUL_RETURN;
@@ -2419,12 +2419,12 @@ returnValue SQProblemSchur::backsolveSchurQR( int dimS, const real_t* const rhs,
 		return RET_QR_FACTORISATION_FAILED;
 	}
 
-	int i, j;
-	int INFO;
+	int_t i, j;
+	long INFO = 0;
 	unsigned long NRHS = 1;
-	unsigned long M = dimS;
-	unsigned long LDA = nSmax;
-	unsigned long LDC = dimS;
+	unsigned long M = (unsigned long)dimS;
+	unsigned long LDA = (unsigned long)nSmax;
+	unsigned long LDC = (unsigned long)dimS;
 
 	for( i=0; i<dimS; i++ )
 		sol[i] = 0.0;
@@ -2447,9 +2447,10 @@ returnValue SQProblemSchur::backsolveSchurQR( int dimS, const real_t* const rhs,
 
 #else // compute QR factorization from scratch every time using LAPACK
 
-real_t SQProblemSchur::calcDetSchur( int idxDel )
+real_t SQProblemSchur::calcDetSchur( int_t idxDel )
 {
-	int i, j, INFO;
+	int_t i, j;
+	long INFO;
 	unsigned long M = nS;
 	unsigned long N = nS;
 	unsigned long LDA = nSmax;
@@ -2478,7 +2479,7 @@ real_t SQProblemSchur::calcDetSchur( int idxDel )
 
 	/* Compute determinant */
 	det = 1.0;
-	int countNz = 0;
+	int_t countNz = 0;
 	for( i=0; i<nS; i++ )
 	{
 		det *= tempR[i+i*nSmax];
@@ -2496,9 +2497,9 @@ real_t SQProblemSchur::calcDetSchur( int idxDel )
 	return det;
 }
 
-returnValue SQProblemSchur::updateSchurQR( int idxDel )
+returnValue SQProblemSchur::updateSchurQR( int_t idxDel )
 {
-	int i, j, INFO;
+	int_t i, j, INFO;
 	unsigned long M = nS;
 	unsigned long N = nS;
 	unsigned long LDA = nSmax;
@@ -2523,7 +2524,7 @@ returnValue SQProblemSchur::updateSchurQR( int idxDel )
 
 	/* Compute determinant */
 	detS = 1.0;
-	int countNz = 0;
+	int_t countNz = 0;
 	for( i=0; i<nS; i++ )
 	{
 		detS *= R_[i+i*nSmax];
@@ -2542,7 +2543,7 @@ returnValue SQProblemSchur::updateSchurQR( int idxDel )
 }
 
 
-returnValue SQProblemSchur::backsolveSchurQR( int dimS, const real_t* const rhs, int dimRhs, real_t* const sol )
+returnValue SQProblemSchur::backsolveSchurQR( int_t dimS, const real_t* const rhs, int_t dimRhs, real_t* const sol )
 {
 	if( dimS < 1 || dimRhs < 1 )
 		return SUCCESSFUL_RETURN;
@@ -2553,7 +2554,7 @@ returnValue SQProblemSchur::backsolveSchurQR( int dimS, const real_t* const rhs,
 		return RET_QR_FACTORISATION_FAILED;
 	}
 
-	int i, INFO;
+	int_t i, INFO;
 	unsigned long NRHS = 1;
 	unsigned long M = dimS;
 	unsigned long LDA = nSmax;
@@ -2586,14 +2587,14 @@ returnValue SQProblemSchur::backsolveSchurQR( int dimS, const real_t* const rhs,
 }
 #endif
 
-returnValue SQProblemSchur::stepCalcRhs( int nFR, int nFX, int nAC, int* FR_idx, int* FX_idx, int* AC_idx, real_t& rhs_max, const real_t* const delta_g, const real_t* const delta_lbA, const real_t* const delta_ubA,
+returnValue SQProblemSchur::stepCalcRhs( int_t nFR, int_t nFX, int_t nAC, int_t* FR_idx, int_t* FX_idx, int_t* AC_idx, real_t& rhs_max, const real_t* const delta_g, const real_t* const delta_lbA, const real_t* const delta_ubA,
 												const real_t* const delta_lb, const real_t* const delta_ub,
 												BooleanType Delta_bC_isZero, BooleanType Delta_bB_isZero,
 												real_t* const delta_xFX, real_t* const delta_xFR,
 												real_t* const delta_yAC, real_t* const delta_yFX
 												)
 {
-	int i, ii;
+	int_t i, ii;
 	returnValue retval;
 
 	if ( nS < 0 )
@@ -2652,9 +2653,9 @@ returnValue SQProblemSchur::stepCalcRhs( int nFR, int nFX, int nAC, int* FR_idx,
 	return SUCCESSFUL_RETURN;
 }
 
-returnValue SQProblemSchur::stepCalcReorder(int nFR, int nAC, int* FR_idx, int* AC_idx, int nFRStart, int nACStart, int* FR_idxStart, int* AC_idxStart, int* FR_iSort, int* FR_iSortStart, int* AC_iSort, int* AC_iSortStart, real_t* rhs)
+returnValue SQProblemSchur::stepCalcReorder(int_t nFR, int_t nAC, int_t* FR_idx, int_t* AC_idx, int_t nFRStart, int_t nACStart, int_t* FR_idxStart, int_t* AC_idxStart, int_t* FR_iSort, int_t* FR_iSortStart, int_t* AC_iSort, int_t* AC_iSortStart, real_t* rhs)
 {
-	int i, ii;
+	int_t i, ii;
 	/* Reorder information for the new to the old free variables. */
 	i = 0;
 	ii = 0;
@@ -2664,8 +2665,8 @@ returnValue SQProblemSchur::stepCalcReorder(int nFR, int nAC, int* FR_idx, int* 
 			rhs[FR_iSortStart[ii++]] = 0.0;
 		else
 		{
-			int idx = FR_idx[FR_iSort[i]];
-			int idxStart = FR_idxStart[FR_iSortStart[ii]];
+			int_t idx = FR_idx[FR_iSort[i]];
+			int_t idxStart = FR_idxStart[FR_iSortStart[ii]];
 
 			if ( idx == idxStart )
 				rhs[FR_iSortStart[ii++]] = -tempA[FR_iSort[i++]];
@@ -2684,8 +2685,8 @@ returnValue SQProblemSchur::stepCalcReorder(int nFR, int nAC, int* FR_idx, int* 
 			rhs[nFRStart+AC_iSortStart[ii++]] = 0.0;
 		else
 		{
-			int idx = AC_idx[AC_iSort[i]];
-			int idxStart = AC_idxStart[AC_iSortStart[ii]];
+			int_t idx = AC_idx[AC_iSort[i]];
+			int_t idxStart = AC_idxStart[AC_iSortStart[ii]];
 
 			if ( idx == idxStart )
 				rhs[nFRStart+AC_iSortStart[ii++]] = tempB[AC_iSort[i++]];
@@ -2698,17 +2699,17 @@ returnValue SQProblemSchur::stepCalcReorder(int nFR, int nAC, int* FR_idx, int* 
 	return SUCCESSFUL_RETURN;
 }
 
-returnValue SQProblemSchur::stepCalcBacksolveSchur( int nFR, int nFX, int nAC, int* FR_idx, int* FX_idx, int* AC_idx, int dim, real_t* rhs, real_t* sol )
+returnValue SQProblemSchur::stepCalcBacksolveSchur( int_t nFR, int_t nFX, int_t nAC, int_t* FR_idx, int_t* FX_idx, int_t* AC_idx, int_t dim, real_t* rhs, real_t* sol )
 {
 	returnValue retval;
-	int i, ii;
+	int_t i, ii;
 
 	real_t* q = new real_t[nS];
 
 	/* Compute extra compoments of the RHS */
 	for ( ii=0; ii<nS; ii++ )
 	{
-		int idx = schurUpdateIndex[ii];
+		int_t idx = schurUpdateIndex[ii];
 		switch ( schurUpdate[ii] ) // TODO: All the loops below could be done faster by binary search or so
 		{
 			case SUT_VarFixed:
@@ -2738,6 +2739,9 @@ returnValue SQProblemSchur::stepCalcBacksolveSchur( int nFR, int nFX, int nAC, i
 			case SUT_ConRemoved:
 				q[ii] = 0.0;
 				break;
+
+			default:
+				return THROWERROR( RET_UNKNOWN_BUG );
 		}
 	}
 
@@ -2760,7 +2764,7 @@ returnValue SQProblemSchur::stepCalcBacksolveSchur( int nFR, int nFX, int nAC, i
 	/* Transfer extra compoments of the Schur complement solution to the correct place. */
 	for ( ii=0; ii<nS; ii++ )
 	{
-		int idx = schurUpdateIndex[ii];
+		int_t idx = schurUpdateIndex[ii];
 		switch ( schurUpdate[ii] ) // TODO: All the loops below could be done faster by binary search or so
 		{
 			case SUT_VarFixed:
@@ -2788,6 +2792,9 @@ returnValue SQProblemSchur::stepCalcBacksolveSchur( int nFR, int nFX, int nAC, i
 
 			case SUT_ConRemoved:
 				break;
+
+			default:
+				return THROWERROR( RET_UNKNOWN_BUG );
 		}
 	}
 
@@ -2796,15 +2803,15 @@ returnValue SQProblemSchur::stepCalcBacksolveSchur( int nFR, int nFX, int nAC, i
 	return SUCCESSFUL_RETURN;
 }
 
-returnValue SQProblemSchur::stepCalcReorder2(int nFR, int nAC, int* FR_idx, int* AC_idx, int nFRStart, int nACStart, int* FR_idxStart, int* AC_idxStart, int* FR_iSort, int* FR_iSortStart, int* AC_iSort, int* AC_iSortStart, real_t* sol, real_t* const delta_xFR, real_t* const delta_yAC)
+returnValue SQProblemSchur::stepCalcReorder2(int_t nFR, int_t nAC, int_t* FR_idx, int_t* AC_idx, int_t nFRStart, int_t nACStart, int_t* FR_idxStart, int_t* AC_idxStart, int_t* FR_iSort, int_t* FR_iSortStart, int_t* AC_iSort, int_t* AC_iSortStart, real_t* sol, real_t* const delta_xFR, real_t* const delta_yAC)
 {
-	int i, ii;
+	int_t i, ii;
 			i = 0;
 			ii = 0;
 			while ( ii < nFRStart && i < nFR )
 			{
-				int idx = FR_idx[FR_iSort[i]];
-				int idxStart = FR_idxStart[FR_iSortStart[ii]];
+				int_t idx = FR_idx[FR_iSort[i]];
+				int_t idxStart = FR_idxStart[FR_iSortStart[ii]];
 
 				if ( idx == idxStart )
 					delta_xFR_TMP[FR_iSort[i++]] = sol[FR_iSortStart[ii++]];
@@ -2818,8 +2825,8 @@ returnValue SQProblemSchur::stepCalcReorder2(int nFR, int nAC, int* FR_idx, int*
 			ii = 0;
 			while ( ii < nACStart && i < nAC )
 			{
-				int idx = AC_idx[AC_iSort[i]];
-				int idxStart = AC_idxStart[AC_iSortStart[ii]];
+				int_t idx = AC_idx[AC_iSort[i]];
+				int_t idxStart = AC_idxStart[AC_iSortStart[ii]];
 
 				if ( idx == idxStart )
 					delta_yAC_TMP[AC_iSort[i++]] = -sol[nFRStart+AC_iSortStart[ii++]];
@@ -2837,9 +2844,9 @@ returnValue SQProblemSchur::stepCalcReorder2(int nFR, int nAC, int* FR_idx, int*
 	return SUCCESSFUL_RETURN;
 }
 
-returnValue SQProblemSchur::stepCalcResid(int nFR, int nFX, int nAC, int* FR_idx, int* FX_idx, int* AC_idx, BooleanType Delta_bC_isZero, real_t* const delta_xFX, real_t* const delta_xFR, real_t* const delta_yAC, const real_t* const delta_g, const real_t* const delta_lbA, const real_t* const delta_ubA, real_t& rnrm)
+returnValue SQProblemSchur::stepCalcResid(int_t nFR, int_t nFX, int_t nAC, int_t* FR_idx, int_t* FX_idx, int_t* AC_idx, BooleanType Delta_bC_isZero, real_t* const delta_xFX, real_t* const delta_xFR, real_t* const delta_yAC, const real_t* const delta_g, const real_t* const delta_lbA, const real_t* const delta_ubA, real_t& rnrm)
 {
-	int i, ii;
+	int_t i, ii;
 				/* compute residuals in tempA and tempB, and max-norm */
 				for ( i=0; i<nFR; ++i )
 				{
@@ -2917,9 +2924,9 @@ returnValue SQProblemSchur::stepCalcResid(int nFR, int nFX, int nAC, int* FR_idx
 	return SUCCESSFUL_RETURN;
 }
 
-returnValue SQProblemSchur::stepCalcDeltayFx(int nFR, int nFX, int nAC, int* FX_idx, const real_t* const delta_g, real_t* const delta_xFX, real_t* const delta_xFR, real_t* const delta_yAC, real_t* const delta_yFX)
+returnValue SQProblemSchur::stepCalcDeltayFx(int_t nFR, int_t nFX, int_t nAC, int_t* FX_idx, const real_t* const delta_g, real_t* const delta_xFX, real_t* const delta_xFR, real_t* const delta_yAC, real_t* const delta_yFX)
 {
-	int i;
+	int_t i;
 		for( i=0; i<nFX; ++i )
 			delta_yFX[i] = delta_g[FX_idx[i]];
 
@@ -2992,18 +2999,18 @@ returnValue SQProblemSchur::determineStepDirection2(	const real_t* const delta_g
 	*/
 
 
-	int i, ii, r;
+	int_t i, ii, r;
 
 	returnValue retval;
 
-  //int nV  = getNV( );
-	int nFR = getNFR( );
-	int nFX = getNFX( );
-	int nAC = getNAC( );
+  //int_t nV  = getNV( );
+	int_t nFR = getNFR( );
+	int_t nFX = getNFX( );
+	int_t nAC = getNAC( );
 
-	int* FR_idx;
-	int* FX_idx;
-	int* AC_idx;
+	int_t* FR_idx;
+	int_t* FX_idx;
+	int_t* AC_idx;
 
 	bounds.getFree( )->getNumberArray( &FR_idx );
 	bounds.getFixed( )->getNumberArray( &FX_idx );
@@ -3044,25 +3051,25 @@ returnValue SQProblemSchur::determineStepDirection2(	const real_t* const delta_g
 
 		if (retval != SUCCESSFUL_RETURN)
 			return retval;
-		int nFRStart = boundsFreeStart.getLength();
-		int nACStart = constraintsActiveStart.getLength();
+		int_t nFRStart = boundsFreeStart.getLength();
+		int_t nACStart = constraintsActiveStart.getLength();
 
-		int* FR_iSort;
-		int* AC_iSort;
+		int_t* FR_iSort;
+		int_t* AC_iSort;
 		bounds.getFree( )->getISortArray( &FR_iSort );
 		constraints.getActive( )->getISortArray( &AC_iSort );
 
-		int* FR_idxStart;
-		int* AC_idxStart;
+		int_t* FR_idxStart;
+		int_t* AC_idxStart;
 		boundsFreeStart.getNumberArray( &FR_idxStart );
 		constraintsActiveStart.getNumberArray( &AC_idxStart );
 
-		int* FR_iSortStart;
-		int* AC_iSortStart;
+		int_t* FR_iSortStart;
+		int_t* AC_iSortStart;
 		boundsFreeStart.getISortArray( &FR_iSortStart );
 		constraintsActiveStart.getISortArray( &AC_iSortStart );
 
-		int dim = nFRStart + nACStart;
+		int_t dim = nFRStart + nACStart;
 		real_t* rhs = new real_t[dim];
 		real_t* sol = new real_t[dim];
 
@@ -3151,9 +3158,9 @@ returnValue SQProblemSchur::determineStepDirection2(	const real_t* const delta_g
 
 returnValue SQProblemSchur::resetSchurComplement( BooleanType allowInertiaCorrection )
 {
-	int j;
-	int nFR = getNFR( );
-	int nAC = getNAC( );
+	int_t j;
+	int_t nFR = getNFR( );
+	int_t nAC = getNAC( );
 
 	if ( options.printLevel == PL_HIGH )
 		MyPrintf( "Resetting Schur complement.\n");
@@ -3167,9 +3174,9 @@ returnValue SQProblemSchur::resetSchurComplement( BooleanType allowInertiaCorrec
 	if ( nSmax > 0 )
 		M_jc[0] = 0;
 
-	int dim = nFR+nAC;
+	int_t dim = nFR+nAC;
 	// Count the number of nonzeros
-	int numNonzeros;
+	int_t numNonzeros;
 	switch ( hessianType )
 	{
 		case HST_ZERO:
@@ -3188,7 +3195,7 @@ returnValue SQProblemSchur::resetSchurComplement( BooleanType allowInertiaCorrec
 	if (options.epsRegularisation > 0.0)
 		numNonzeros += nFR;
 
-	int numNonzerosA;
+	int_t numNonzerosA;
 
 	if ( constraintProduct != 0 )
 	{
@@ -3200,8 +3207,8 @@ returnValue SQProblemSchur::resetSchurComplement( BooleanType allowInertiaCorrec
 
 	// Get the values
 	real_t* avals = new real_t[numNonzeros];
-	int* irn = new int[numNonzeros];
-	int* jcn = new int[numNonzeros];
+	int_t* irn = new int_t[numNonzeros];
+	int_t* jcn = new int_t[numNonzeros];
 	numNonzeros = 0;
 	switch ( hessianType )
 	{
@@ -3238,7 +3245,7 @@ returnValue SQProblemSchur::resetSchurComplement( BooleanType allowInertiaCorrec
 	numNonzeros += numNonzerosA;
 
 #if DBGOUT
-	for (int i=0; i<numNonzeros; i++)
+	for (int_t i=0; i<numNonzeros; i++)
 	  MyPrintf("A(%3d,%3d) = %23.16e\n", irn[i],jcn[i],avals[i]);
 #endif
 
@@ -3269,7 +3276,7 @@ returnValue SQProblemSchur::resetSchurComplement( BooleanType allowInertiaCorrec
 	// If matrix has wrong inertia, add bounds until inertia is correct
 	if (retval == SUCCESSFUL_RETURN && allowInertiaCorrection)
 	{
-		int neig = sparseSolver->getNegativeEigenvalues( );
+		int_t neig = sparseSolver->getNegativeEigenvalues( );
 		if( neig > getNAC( ) )
 		{
 			if ( options.printLevel == PL_HIGH )
@@ -3292,7 +3299,7 @@ returnValue SQProblemSchur::computeMTimes( real_t alpha, const real_t* const x_,
 	if ( isEqual( alpha, -1.0 ) == BT_FALSE || isEqual( beta, 1.0 ) == BT_FALSE )
 		return THROWERROR(RET_NOT_YET_IMPLEMENTED);
 
-	int i, j;
+	int_t i, j;
 
 	for ( j=0; j<nS; j++ )
 	{
@@ -3309,7 +3316,7 @@ returnValue SQProblemSchur::computeMTransTimes( real_t alpha, const real_t* cons
 	if ( isEqual( alpha, 1.0 ) == BT_FALSE || ( isZero( beta ) == BT_FALSE && isEqual( beta, -1.0 ) == BT_FALSE ) )
 		return THROWERROR(RET_NOT_YET_IMPLEMENTED);
 
-	int i, j;
+	int_t i, j;
 
 	if ( isZero( beta ) == BT_TRUE )
 	{
@@ -3333,16 +3340,16 @@ returnValue SQProblemSchur::computeMTransTimes( real_t alpha, const real_t* cons
 	return SUCCESSFUL_RETURN;
 }
 
-returnValue SQProblemSchur::addToSchurComplement( int number, schurUpdateType update, int numNonzerosM, const sparse_int_t* Mpos, const real_t* const Mvals, int numNonzerosN, const sparse_int_t* Npos, const real_t* const Nvals, real_t N_diag )
+returnValue SQProblemSchur::addToSchurComplement( int_t number, SchurUpdateType update, int_t numNonzerosM, const sparse_int_t* Mpos, const real_t* const Mvals, int_t numNonzerosN, const sparse_int_t* Npos, const real_t* const Nvals, real_t N_diag )
 {
-	int i;
+	int_t i;
 
-	int nFRStart = boundsFreeStart.getLength();
-	int nACStart = constraintsActiveStart.getLength();
+	int_t nFRStart = boundsFreeStart.getLength();
+	int_t nACStart = constraintsActiveStart.getLength();
 
 	real_t* new_Scol = new real_t[nS];
 
-	int dim = nFRStart + nACStart;
+	int_t dim = nFRStart + nACStart;
 	real_t* rhs = new real_t[dim];
 	real_t* sol = new real_t[dim];
 
@@ -3383,11 +3390,11 @@ returnValue SQProblemSchur::addToSchurComplement( int number, schurUpdateType up
 	if ( M_physicallength < M_jc[nS] + numNonzerosM )
 	{
 		/* If necessary, allocate more memory for M. */
-		int M_physicallength_new = getMax(2*M_physicallength, M_physicallength + 2*numNonzerosM);
+		int_t M_physicallength_new = getMax(2*M_physicallength, M_physicallength + 2*numNonzerosM);
 		real_t* M_vals_new = new real_t[M_physicallength_new];
 		sparse_int_t* M_ir_new = new sparse_int_t[M_physicallength_new];
-		memcpy( M_vals_new, M_vals, M_jc[nS]*sizeof(real_t) );
-		memcpy( M_ir_new, M_ir, M_jc[nS]*sizeof(sparse_int_t) );
+		memcpy( M_vals_new, M_vals, ((unsigned int)(M_jc[nS]))*sizeof(real_t) );
+		memcpy( M_ir_new, M_ir, ((unsigned int)(M_jc[nS]))*sizeof(sparse_int_t) );
 		M_physicallength = M_physicallength_new;
 		delete [] M_vals;
 		delete [] M_ir;
@@ -3415,14 +3422,14 @@ returnValue SQProblemSchur::addToSchurComplement( int number, schurUpdateType up
 	for (i=0;i<numNonzerosN;i++) MyPrintf("N[%3d]=%23.16e\n",Npos[i],Nvals[i]);
 	MyPrintf("N_diag = %23.16e\n", N_diag);
 	for (i=0;i<nS;i++)
-	  for (int j=0; j<nS; j++) MyPrintf("S(%3d,%3d) = %23.16e\n",i+1,j+1,S[i+nSmax*j]);
+	  for (int_t j=0; j<nS; j++) MyPrintf("S(%3d,%3d) = %23.16e\n",i+1,j+1,S[i+nSmax*j]);
 #endif
 
 	return SUCCESSFUL_RETURN;
 }
 
 
-returnValue SQProblemSchur::deleteFromSchurComplement( int idx, BooleanType allowUndo )
+returnValue SQProblemSchur::deleteFromSchurComplement( int_t idx, BooleanType allowUndo )
 {
 	if ( options.printLevel == PL_HIGH )
 		MyPrintf( "deleting entry %d with idx = %d and type %d from Schur complement.", idx, schurUpdateIndex[idx], schurUpdate[idx]);
@@ -3430,15 +3437,15 @@ returnValue SQProblemSchur::deleteFromSchurComplement( int idx, BooleanType allo
 	if ( idx != nS-1 )
 	{
 		real_t *temp_vals = NULL;
-		int *temp_ir = NULL;
-		int schurUpdateIndexTemp;
-		schurUpdateType schurUpdateTemp;
+		int_t *temp_ir = NULL;
+		int_t schurUpdateIndexTemp = -1;
+		SchurUpdateType schurUpdateTemp = SUT_UNDEFINED;
 
 		/* temporarily save the column of S to be deleted */
 		if( allowUndo == BT_TRUE )
 		{
 			temp_vals = new real_t[nS];
-			for ( int i=0; i<nS; i++ )
+			for ( int_t i=0; i<nS; i++ )
 				temp_vals[i] = S[idx*nSmax + i];
 
 			schurUpdateIndexTemp = schurUpdateIndex[idx];
@@ -3446,17 +3453,17 @@ returnValue SQProblemSchur::deleteFromSchurComplement( int idx, BooleanType allo
 		}
 
 		/* Shift rows and columns >idx of S by one to the upper left */
-		for ( int i=0; i<idx; i++ )
-			for ( int j=idx+1; j<nS; j++ )
+		for ( int_t i=0; i<idx; i++ )
+			for ( int_t j=idx+1; j<nS; j++ )
 				S[i*nSmax + j-1] = S[i*nSmax + j];
-		for ( int i=idx+1; i<nS; i++ )
+		for ( int_t i=idx+1; i<nS; i++ )
 		{
-			for ( int j=0; j<idx; j++ )
+			for ( int_t j=0; j<idx; j++ )
 				S[(i-1)*nSmax + j] = S[i*nSmax + j];
-			for ( int j=idx+1; j<nS; j++ )
+			for ( int_t j=idx+1; j<nS; j++ )
 				S[(i-1)*nSmax + j-1] = S[i*nSmax + j];
 		}
-		for ( int i=idx+1; i<nS; i++ )
+		for ( int_t i=idx+1; i<nS; i++ )
 		{
 			schurUpdateIndex[i-1] = schurUpdateIndex[i];
 			schurUpdate[i-1] = schurUpdate[i];
@@ -3465,7 +3472,7 @@ returnValue SQProblemSchur::deleteFromSchurComplement( int idx, BooleanType allo
 		/* Store deleted row/column in the last row/column of S, can retrieve it from there later */
 		if( allowUndo == BT_TRUE )
 		{
-			for ( int i=0; i<nS; i++ )
+			for ( int_t i=0; i<nS; i++ )
 			{
 				S[(nS-1)*nSmax + i] = temp_vals[i];
 				S[i*nSmax + (nS-1)] = temp_vals[i];
@@ -3476,13 +3483,13 @@ returnValue SQProblemSchur::deleteFromSchurComplement( int idx, BooleanType allo
 		}
 
 		/* temporarily save the (sparse) column of M to be deleted */
-		int numEntries = M_jc[idx+1] - M_jc[idx];
+		int_t numEntries = M_jc[idx+1] - M_jc[idx];
 		if( allowUndo == BT_TRUE )
 		{
-			temp_ir = new int[numEntries];
+			temp_ir = new int_t[numEntries];
 			temp_vals = new real_t[numEntries];
 
-			for ( int i=M_jc[idx]; i<M_jc[idx+1]; i++ )
+			for ( int_t i=M_jc[idx]; i<M_jc[idx+1]; i++ )
 			{
 				temp_ir[i-M_jc[idx]] = M_ir[i];
 				temp_vals[i-M_jc[idx]] = M_vals[i];
@@ -3490,18 +3497,18 @@ returnValue SQProblemSchur::deleteFromSchurComplement( int idx, BooleanType allo
 		}
 
 		/* Shift all columns >idx one to the left */
-		for ( int i=M_jc[idx+1]; i<M_jc[nS]; i++ )
+		for ( int_t i=M_jc[idx+1]; i<M_jc[nS]; i++ )
 		{
 			M_ir[i-numEntries] = M_ir[i];
 			M_vals[i-numEntries] = M_vals[i];
 		}
-		for ( int i=idx; i<nS; i++ )
+		for ( int_t i=idx; i<nS; i++ )
 			M_jc[i] = M_jc[i+1] - numEntries;
 
 		/* Store deleted column of M in the last column, can retrieve it from there later */
 		if( allowUndo == BT_TRUE )
 		{
-			for ( int i=M_jc[nS-1]; i<M_jc[nS]; i++ )
+			for ( int_t i=M_jc[nS-1]; i<M_jc[nS]; i++ )
 			{
 				M_ir[i] = temp_ir[i-M_jc[nS-1]];
 				M_vals[i] = temp_vals[i-M_jc[nS-1]];
@@ -3521,7 +3528,7 @@ returnValue SQProblemSchur::deleteFromSchurComplement( int idx, BooleanType allo
 }
 
 
-returnValue SQProblemSchur::undoDeleteFromSchurComplement( int idx )
+returnValue SQProblemSchur::undoDeleteFromSchurComplement( int_t idx )
 {
 	if ( options.printLevel == PL_HIGH )
 		MyPrintf( "undo deletion of entry %d with idx = %d and type %d from Schur complement. nS = %i\n", idx, schurUpdateIndex[nS-1], schurUpdate[nS-1],nS+1);
@@ -3529,37 +3536,37 @@ returnValue SQProblemSchur::undoDeleteFromSchurComplement( int idx )
 	if ( idx != nS )
 	{
 		real_t *temp_vals;
-		int *temp_ir;
-		int schurUpdateIndexTemp;
-		schurUpdateType schurUpdateTemp;
+		int_t *temp_ir;
+		int_t schurUpdateIndexTemp = -1;
+		SchurUpdateType schurUpdateTemp = SUT_UNDEFINED;
 
 		/* temporarily save the last column of S */
 		temp_vals = new real_t[nS+1];
-		for ( int i=0; i<nS+1; i++ )
+		for ( int_t i=0; i<nS+1; i++ )
 			temp_vals[i] = S[i+nS*nSmax];
 
 		schurUpdateIndexTemp = schurUpdateIndex[nS];
 		schurUpdateTemp = schurUpdate[nS];
 
 		/* Shift rows and columns =>idx of S by one to the lower right */
-		for ( int i=idx-1; i>-1; i-- )
-			for ( int j=nS-1; j>idx-1; j-- )
+		for ( int_t i=idx-1; i>-1; i-- )
+			for ( int_t j=nS-1; j>idx-1; j-- )
 				S[(j+1)+i*nSmax] = S[j+i*nSmax];
-		for ( int i=nS-1; i>idx-1; i-- )
+		for ( int_t i=nS-1; i>idx-1; i-- )
 		{
-			for ( int j=idx-1; j>-1; j-- )
+			for ( int_t j=idx-1; j>-1; j-- )
 				S[j+(i+1)*nSmax] = S[j+i*nSmax];
-			for ( int j=nS-1; j>idx-1; j-- )
+			for ( int_t j=nS-1; j>idx-1; j-- )
 				S[(j+1)+(i+1)*nSmax] = S[j+i*nSmax];
 		}
-		for ( int i=nS-1; i>idx-1; i-- )
+		for ( int_t i=nS-1; i>idx-1; i-- )
 		{
 			schurUpdateIndex[i+1] = schurUpdateIndex[i];
 			schurUpdate[i+1] = schurUpdate[i];
 		}
 
 		/* Insert stored row/column of S at position idx */
-		for ( int i=0; i<nS+1; i++ )
+		for ( int_t i=0; i<nS+1; i++ )
 		{
 			S[idx*nSmax + i] = temp_vals[i];
 			S[i*nSmax + idx] = temp_vals[i];
@@ -3569,26 +3576,26 @@ returnValue SQProblemSchur::undoDeleteFromSchurComplement( int idx )
 		delete[] temp_vals;
 
 		/* temporarily save the last (sparse) column of M */
-		int numEntries = M_jc[nS+1] - M_jc[nS];
-		temp_ir = new int[numEntries];
+		int_t numEntries = M_jc[nS+1] - M_jc[nS];
+		temp_ir = new int_t[numEntries];
 		temp_vals = new real_t[numEntries];
-		for ( int i=M_jc[nS]; i<M_jc[nS+1]; i++ )
+		for ( int_t i=M_jc[nS]; i<M_jc[nS+1]; i++ )
 		{
 			temp_ir[i-M_jc[nS]] = M_ir[i];
 			temp_vals[i-M_jc[nS]] = M_vals[i];
 		}
 
 		/* Shift all columns =>idx one to the right */
-		for ( int i=M_jc[nS]-1; i>M_jc[idx]-1; i-- )
+		for ( int_t i=M_jc[nS]-1; i>M_jc[idx]-1; i-- )
 		{
 			M_ir[i+numEntries] = M_ir[i];
 			M_vals[i+numEntries] = M_vals[i];
 		}
-		for ( int i=nS; i>idx-1; i-- )
+		for ( int_t i=nS; i>idx-1; i-- )
 			M_jc[i+1] = M_jc[i] + numEntries;
 
 		/* Insert stored column of M at position idx */
-		for ( int i=M_jc[idx]; i<M_jc[idx+1]; i++ )
+		for ( int_t i=M_jc[idx]; i<M_jc[idx+1]; i++ )
 		{
 			M_ir[i] = temp_ir[i-M_jc[idx]];
 			M_vals[i] = temp_vals[i-M_jc[idx]];
@@ -3610,10 +3617,10 @@ returnValue SQProblemSchur::correctInertia( )
 {
 	SubjectToStatus B_status;
 	real_t oldDetS;
-	int nFR = getNFR( );
-	int k, number, neig, nAdded;
-	int *freeBoundIdx = new int[nFR];
-	int *numberarray;
+	int_t nFR = getNFR( );
+	int_t k, number, neig, nAdded;
+	int_t *freeBoundIdx = new int_t[nFR];
+	int_t *numberarray;
 
 	/* method may only be called after refactorization or if one bound/constraint
 	 * has been added, i.e. when a bound has flipped after refactorization */
@@ -3705,11 +3712,11 @@ returnValue SQProblemSchur::correctInertia( )
 
 returnValue SQProblemSchur::repairSingularWorkingSet( )
 {
-	int k, number;
+	int_t k, number;
 	SubjectToStatus B_status;
-	int rank = sparseSolver->getRank( );
-	int nFR = getNFR( );
-	int defect = nFR + getNAC( ) - rank;
+	int_t rank = sparseSolver->getRank( );
+	int_t nFR = getNFR( );
+	int_t defect = nFR + getNAC( ) - rank;
 
 	/* Rank detection not supported by linear solver */
 	if ( rank < 0 )
@@ -3720,7 +3727,7 @@ returnValue SQProblemSchur::repairSingularWorkingSet( )
 		return RET_UNKNOWN_BUG;
 
 	/* Determine zero pivots */
-	int *zeroPivots = new int[defect];
+	int_t *zeroPivots = new int_t[defect];
 	sparseSolver->getZeroPivots( zeroPivots );
 
 	/* Determination of zero pivots not supported by linear solver */
@@ -3730,7 +3737,7 @@ returnValue SQProblemSchur::repairSingularWorkingSet( )
 	/* We assume implicitly that pivots are sorted in ascending order */
 	/// \todo make sure that this is so.
 	/* Remove the one with the highest index first so not to mess up index lists */
-	int bndsAdded = 0;
+	int_t bndsAdded = 0;
 	for ( k=defect-1; k>-1; k-- )
 	{
 		/* Zero curvature in the Hessian: add a bound */

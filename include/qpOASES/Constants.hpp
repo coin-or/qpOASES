@@ -63,7 +63,7 @@ const real_t INFTY = 1.0e20;
 
 /** Maximum number of characters within a string.
  *	Note: this value should be at least 41! */
-const unsigned int MAX_STRING_LENGTH = 160;
+const uint_t MAX_STRING_LENGTH = 160;
 
 
 END_NAMESPACE_QPOASES

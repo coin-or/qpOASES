@@ -41,7 +41,7 @@ USING_NAMESPACE_QPOASES
 #include "qpOASES_octave_utils.hpp"
 
 /** initialise handle counter of QPInstance class */
-int QPInstance::s_nexthandle = 1;
+int_t QPInstance::s_nexthandle = 1;
 
 /** global pointer to QP objects */
 static std::vector<QPInstance *> g_instances;
@@ -52,18 +52,18 @@ static std::vector<QPInstance *> g_instances;
 /*
  *	Q P r o b l e m _ q p O A S E S
  */
-int QProblem_qpOASES(	int nV, int nC, HessianType hessianType, int nP,
-						SymmetricMatrix *H, double* g, Matrix *A,
+int_t QProblem_qpOASES(	int_t nV, int_t nC, HessianType hessianType, int_t nP,
+						SymmetricMatrix* H, double* g, Matrix* A,
 						double* lb, double* ub,
 						double* lbA, double* ubA,
-						int nWSRin, real_t maxCpuTimeIn,
+						int_t nWSRin, real_t maxCpuTimeIn,
 						const double* const x0, Options* options,
-						int nOutputs, mxArray* plhs[],
+						int_t nOutputs, mxArray* plhs[],
 						const double* const guessedBounds, const double* const guessedConstraints,
 						const double* const _R
 						)
 {
-	int nWSRout;
+	int_t nWSRout;
 	real_t maxCpuTimeOut;
 	
 	/* 1) Setup initial QP. */
@@ -76,7 +76,7 @@ int QProblem_qpOASES(	int nV, int nC, HessianType hessianType, int nP,
 	Bounds bounds(nV);
 	Constraints constraints(nC);
 	if (guessedBounds != 0) {
-		for (int i = 0; i < nV; i++) {
+		for (int_t i = 0; i < nV; i++) {
 			if ( isEqual(guessedBounds[i],-1.0) == BT_TRUE ) {
 				bounds.setupBound(i, ST_LOWER);
 			} else if ( isEqual(guessedBounds[i],1.0) == BT_TRUE ) {
@@ -94,7 +94,7 @@ int QProblem_qpOASES(	int nV, int nC, HessianType hessianType, int nP,
 	}
 
 	if (guessedConstraints != 0) {
-		for (int i = 0; i < nC; i++) {
+		for (int_t i = 0; i < nC; i++) {
 			if ( isEqual(guessedConstraints[i],-1.0) == BT_TRUE ) {
 				constraints.setupConstraint(i, ST_LOWER);
 			} else if ( isEqual(guessedConstraints[i],1.0) == BT_TRUE ) {
@@ -113,7 +113,7 @@ int QProblem_qpOASES(	int nV, int nC, HessianType hessianType, int nP,
 
 	nWSRout = nWSRin;
 	maxCpuTimeOut = (maxCpuTimeIn >= 0.0) ? maxCpuTimeIn : INFTY;
-	
+
 	returnvalue = QP.init(	H,g,A,lb,ub,lbA,ubA,
 							nWSRout,&maxCpuTimeOut,
 							x0,0,
@@ -130,7 +130,7 @@ int QProblem_qpOASES(	int nV, int nC, HessianType hessianType, int nP,
 	real_t* ubA_current = ubA;
 
 	/* Loop through QP sequence. */
-	for ( int k=0; k<nP; ++k )
+	for ( int_t k=0; k<nP; ++k )
 	{
 		if ( k > 0 )
 		{
@@ -165,17 +165,17 @@ int QProblem_qpOASES(	int nV, int nC, HessianType hessianType, int nP,
 /*
  *	Q P r o b l e m B _ q p O A S E S
  */
-int QProblemB_qpOASES(	int nV, HessianType hessianType, int nP,
-						SymmetricMatrix *H, double* g,
-						double* lb, double* ub,
-						int nWSRin, real_t maxCpuTimeIn,
-						const double* const x0, Options* options,
-						int nOutputs, mxArray* plhs[],
-						const double* const guessedBounds,
-						const double* const _R
-						)
+int_t QProblemB_qpOASES(	int_t nV, HessianType hessianType, int_t nP,
+							SymmetricMatrix *H, double* g,
+							double* lb, double* ub,
+							int_t nWSRin, real_t maxCpuTimeIn,
+							const double* const x0, Options* options,
+							int_t nOutputs, mxArray* plhs[],
+							const double* const guessedBounds,
+							const double* const _R
+							)
 {
-	int nWSRout;
+	int_t nWSRout;
 	real_t maxCpuTimeOut;
 
 	/* 1) Setup initial QP. */
@@ -187,7 +187,7 @@ int QProblemB_qpOASES(	int nV, HessianType hessianType, int nP,
 
 	Bounds bounds(nV);
 	if (guessedBounds != 0) {
-		for (int i = 0; i < nV; i++) {
+		for (int_t i = 0; i < nV; i++) {
 			if ( isEqual(guessedBounds[i],-1.0) == BT_TRUE ) {
 				bounds.setupBound(i, ST_LOWER);
 			} else if ( isEqual(guessedBounds[i],1.0) == BT_TRUE ) {
@@ -221,7 +221,7 @@ int QProblemB_qpOASES(	int nV, HessianType hessianType, int nP,
 	real_t* ub_current = ub;
 
 	/* Loop through QP sequence. */
-	for ( int k=0; k<nP; ++k )
+	for ( int_t k=0; k<nP; ++k )
 	{
 		if ( k > 0 )
 		{
@@ -275,7 +275,7 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 	#endif
 
 	/* dimensions */
-	unsigned int nV=0, nC=0, nP=0;
+	uint_t nV=0, nC=0, nP=0;
 	BooleanType isSimplyBoundedQp = BT_FALSE;
 
 	/* sparse matrix indices and values */
@@ -311,15 +311,15 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 	if ( mxIsEmpty(prhs[0]) == 1 )
 	{
 		H_idx = -1;
-		nV = (int)mxGetM( prhs[ g_idx ] ); /* if Hessian is empty, row number of gradient vector */
+		nV = (int_t)mxGetM( prhs[ g_idx ] ); /* if Hessian is empty, row number of gradient vector */
 	}
 	else
 	{
 		H_idx = 0;
-		nV = (int)mxGetM( prhs[ H_idx ] ); /* row number of Hessian matrix */
+		nV = (int_t)mxGetM( prhs[ H_idx ] ); /* row number of Hessian matrix */
 	}
 	
-	nP = (int)mxGetN( prhs[ g_idx ] ); /* number of columns of the gradient matrix (vectors series have to be stored columnwise!) */
+	nP = (int_t)mxGetN( prhs[ g_idx ] ); /* number of columns of the gradient matrix (vectors series have to be stored columnwise!) */
 
 	if ( nrhs <= 6 )
         isSimplyBoundedQp = BT_TRUE;
@@ -347,7 +347,7 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 	}
 
 	// Is the third argument constraint Matrix A?
-	int numberOfColumns = (int)mxGetN(prhs[2]);
+	int_t numberOfColumns = (int_t)mxGetN(prhs[2]);
 
 	/* 1) Simply bounded QP. */
 	if ( ( isSimplyBoundedQp == BT_TRUE ) ||
@@ -395,7 +395,7 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 			lbA_idx  = 5;
 			ubA_idx  = 6;
 
-			nC = (int)mxGetM( prhs[ A_idx ] ); /* row number of constraint matrix */
+			nC = (int_t)mxGetM( prhs[ A_idx ] ); /* row number of constraint matrix */
 		}
 
 		if ( ( nrhs >= 9 ) && ( !mxIsEmpty(prhs[8]) ) )
@@ -446,7 +446,7 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 	{
 		char msg[MAX_STRING_LENGTH]; 
 		snprintf(msg, MAX_STRING_LENGTH, "ERROR (qpOASES): Hessian matrix dimension mismatch (%ld != %d)!", 
-				(long int)mxGetN(prhs[H_idx]), nV);
+				(long int)mxGetN(prhs[H_idx]), (int)nV);
 		myMexErrMsgTxt(msg);
 		return;
 	}
@@ -465,7 +465,7 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 		{
 			char msg[MAX_STRING_LENGTH]; 
 			snprintf(msg, MAX_STRING_LENGTH, "ERROR (qpOASES): Constraint matrix input dimension mismatch (%ld != %d)!", 
-					(long int)mxGetN(prhs[A_idx]), nV);
+					(long int)mxGetN(prhs[A_idx]), (int)nV);
 			myMexErrMsgTxt(msg);
 			return;
 		}
@@ -513,7 +513,7 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 	}
 	
 	/* III) ACTUALLY PERFORM QPOASES FUNCTION CALL: */
-	int nWSRin = 5*(nV+nC);
+	int_t nWSRin = 5*(nV+nC);
 	real_t maxCpuTimeIn = -1.0;
 
 	if ( options_idx > 0 )
@@ -524,7 +524,7 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 		setupHessianMatrix(	prhs[H_idx],nV, &H,&Hir,&Hjc,&Hv );
 	
 	/* make a deep-copy of the user-specified constraint matrix (possibly sparse) */
-	if ( nC > 0 )
+	if ( ( nC > 0 ) && ( A_idx >= 0 ) )
 		setupConstraintMatrix( prhs[A_idx],nV,nC, &A,&Air,&Ajc,&Av );
 
 	allocateOutputs( nlhs,plhs,nV,nC,nP );
@@ -550,6 +550,12 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 	}
 	else
 	{
+		if ( A == 0 )
+		{
+			myMexErrMsgTxt( "ERROR (qpOASES): Internal interface error related to constraint matrix!" );
+			return;
+		}
+
 		/* Call qpOASES (using QProblem class). */
 		QProblem_qpOASES(	nV,nC,hessianType, nP,
 							H,g,A,

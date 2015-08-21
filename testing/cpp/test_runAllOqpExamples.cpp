@@ -52,11 +52,11 @@ int main( )
 	options.setToMPC();
 	options.printLevel = PL_LOW;
 
-	int maxAllowedNWSR;
+	int_t maxAllowedNWSR;
 	real_t maxNWSR, avgNWSR, maxCPUtime, avgCPUtime;
 	real_t maxStationarity, maxFeasibility, maxComplementarity;
 
-	const int numBenchmarks = 4; //5
+	const int_t numBenchmarks = 4; //5
 	const char *benchmarkPath[numBenchmarks];
 	benchmarkPath[0] = "../testing/cpp/data/oqp/chain80/";
 	benchmarkPath[1] = "../testing/cpp/data/oqp/chain80w/";
@@ -66,7 +66,7 @@ int main( )
 
 
 	/* 2) Run all benchmarks in a loop */
-	for ( int ii=0; ii<2*numBenchmarks; ++ii )
+	for ( int_t ii=0; ii<2*numBenchmarks; ++ii )
 	{
 		if ( ii%2 == 0 )
 			useHotstarts = BT_FALSE;

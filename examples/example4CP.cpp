@@ -51,8 +51,8 @@ class MyConstraintProduct : public ConstraintProduct
 		MyConstraintProduct( ) {};
 
 		/** Constructor. */
-		MyConstraintProduct(	int _nV,
-								int _nC,
+		MyConstraintProduct(	int_t _nV,
+								int_t _nC,
 								real_t* _A
 								)
 		{
@@ -86,22 +86,24 @@ class MyConstraintProduct : public ConstraintProduct
 			return *this;
 		};
 
-		virtual int operator() (	int constrIndex,
+		virtual int_t operator() (	int_t constrIndex,
 									const real_t* const x,
 									real_t* const constrValue
 									) const
 		{
+			int_t i;
+
 			constrValue[0] = 1.0 * x[(constrIndex/10)+2];
 
-			for( int i=0; i<2; ++i )
+			for( i=0; i<2; ++i )
 				constrValue[0] += A[constrIndex*nV + i] * x[i];
 
 			return 0;
 		};
 
 	protected:
-		int nV;			/**< Number of variables. */
-		int nC;			/**< Number of constraints. */
+		int_t nV;		/**< Number of variables. */
+		int_t nC;		/**< Number of constraints. */
 		real_t* A;		/**< Pointer to full constraint matrix (typically not needed!). */
 };
 

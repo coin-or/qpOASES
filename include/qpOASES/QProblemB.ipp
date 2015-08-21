@@ -47,7 +47,7 @@ BEGIN_NAMESPACE_QPOASES
  */
 inline returnValue QProblemB::getBounds( Bounds& _bounds ) const
 {
-	int nV = getNV( );
+	int_t nV = getNV( );
 
 	if ( nV == 0 )
 		return THROWERROR( RET_QPOBJECT_NOT_SETUP );
@@ -61,7 +61,7 @@ inline returnValue QProblemB::getBounds( Bounds& _bounds ) const
 /*
  *	g e t N V
  */
-inline int QProblemB::getNV( ) const
+inline int_t QProblemB::getNV( ) const
 {
 	return bounds.getNV( );
 }
@@ -70,7 +70,7 @@ inline int QProblemB::getNV( ) const
 /*
  *	g e t N F R
  */
-inline int QProblemB::getNFR( ) const
+inline int_t QProblemB::getNFR( ) const
 {
 	return bounds.getNFR( );
 }
@@ -79,7 +79,7 @@ inline int QProblemB::getNFR( ) const
 /*
  *	g e t N F X
  */
-inline int QProblemB::getNFX( ) const
+inline int_t QProblemB::getNFX( ) const
 {
 	return bounds.getNFX( );
 }
@@ -88,7 +88,7 @@ inline int QProblemB::getNFX( ) const
 /*
  *	g e t N F V
  */
-inline int QProblemB::getNFV( ) const
+inline int_t QProblemB::getNFV( ) const
 {
 	return bounds.getNFV( );
 }
@@ -213,7 +213,7 @@ inline PrintLevel QProblemB::getPrintLevel( ) const
 /*
  *	g e t C o u n t
  */
-inline unsigned int QProblemB::getCount( ) const
+inline uint_t QProblemB::getCount( ) const
 {
 	return count;
 }
@@ -256,7 +256,7 @@ inline returnValue QProblemB::setH( SymmetricMatrix* H_new )
  */
 inline returnValue QProblemB::setH( const real_t* const H_new )
 {
-	int nV = getNV();
+	int_t nV = getNV();
 	SymDenseMat* dH;
 
 	/* if null pointer is passed, Hessian is set to zero matrix
@@ -292,7 +292,7 @@ inline returnValue QProblemB::setH( const real_t* const H_new )
  */
 inline returnValue QProblemB::setG( const real_t* const g_new )
 {
-	unsigned int nV = (unsigned int)getNV( );
+	uint_t nV = (uint_t)getNV( );
 
 	if ( nV == 0 )
 		return THROWERROR( RET_QPOBJECT_NOT_SETUP );
@@ -311,8 +311,8 @@ inline returnValue QProblemB::setG( const real_t* const g_new )
  */
 inline returnValue QProblemB::setLB( const real_t* const lb_new )
 {
-	unsigned int i;
-	unsigned int nV = (unsigned int)getNV( );
+	uint_t i;
+	uint_t nV = (uint_t)getNV( );
 
 	if ( nV == 0 )
 		return THROWERROR( RET_QPOBJECT_NOT_SETUP );
@@ -335,9 +335,9 @@ inline returnValue QProblemB::setLB( const real_t* const lb_new )
 /*
  *	s e t L B
  */
-inline returnValue QProblemB::setLB( int number, real_t value )
+inline returnValue QProblemB::setLB( int_t number, real_t value )
 {
-	int nV = getNV( );
+	int_t nV = getNV( );
 
 	if ( nV == 0 )
 		return THROWERROR( RET_QPOBJECT_NOT_SETUP );
@@ -359,8 +359,8 @@ inline returnValue QProblemB::setLB( int number, real_t value )
  */
 inline returnValue QProblemB::setUB( const real_t* const ub_new )
 {
-	unsigned int i;
-	unsigned int nV = (unsigned int)getNV( );
+	uint_t i;
+	uint_t nV = (uint_t)getNV( );
 
 	if ( nV == 0 )
 		return THROWERROR( RET_QPOBJECT_NOT_SETUP );
@@ -383,9 +383,9 @@ inline returnValue QProblemB::setUB( const real_t* const ub_new )
 /*
  *	s e t U B
  */
-inline returnValue QProblemB::setUB( int number, real_t value )
+inline returnValue QProblemB::setUB( int_t number, real_t value )
 {
-	int nV = getNV( );
+	int_t nV = getNV( );
 
 	if ( nV == 0 )
 		return THROWERROR( RET_QPOBJECT_NOT_SETUP );

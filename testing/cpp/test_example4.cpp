@@ -47,7 +47,7 @@ int main( )
 {
 	USING_NAMESPACE_QPOASES
 
-	int i,j;
+	int_t i,j;
 
 	/* Setup data of first QP... */
 	real_t H[7*7];
@@ -119,7 +119,7 @@ int main( )
 
 	/* Solve first QP. */
 	real_t cputime = 1.0;
-	int nWSR = 100;
+	int_t nWSR = 100;
 	exampleCP.init( H,g,A,0,0,lbA,0, nWSR,&cputime );
 
 
@@ -189,10 +189,10 @@ int main( )
 	QPOASES_TEST_FOR_TOL( feas,1e-15 );
 	QPOASES_TEST_FOR_TOL( cmpl,1e-15 );
 
-	for( int ii=0; ii<7; ++ii )
+	for( int_t ii=0; ii<7; ++ii )
 		QPOASES_TEST_FOR_NEAR( xOptCP[ii],xOpt[ii] );
 
-	for( int ii=0; ii<7+50; ++ii )
+	for( int_t ii=0; ii<7+50; ++ii )
 		QPOASES_TEST_FOR_NEAR( yOptCP[ii],yOpt[ii] );
 
 	QPOASES_TEST_FOR_NEAR( exampleCP.getObjVal(),example.getObjVal() );

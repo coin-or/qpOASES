@@ -65,7 +65,7 @@ int main( )
 	SQProblem example( 2,1 );
 
 	/* Solve first QP. */
-	int nWSR = 10;
+	int_t nWSR = 10;
 	example.init( H,g,A,lb,ub,lbA,ubA, nWSR,0 );
 
 	real_t xOpt[2];

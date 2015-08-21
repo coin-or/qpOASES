@@ -67,7 +67,7 @@ int main( )
 	SolutionAnalysis analyser;
 
 	/* Solve first QP ... */
-	int nWSR = 10;
+	int_t nWSR = 10;
 	example.init( H,g,A,lb,ub,lbA,ubA, nWSR,0 );
 
 	/* ... and analyse it. */
@@ -93,7 +93,7 @@ int main( )
         real_t *Var              = new real_t[5*5];
         real_t *Primal_Dual_Var  = new real_t[5*5];
 
-        int run1, run2;
+        int_t run1, run2;
         for( run1 = 0; run1 < 5*5; run1++ )
             Var[run1] = 0.0;
 

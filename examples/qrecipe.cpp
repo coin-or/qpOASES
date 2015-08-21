@@ -421,7 +421,7 @@ long A_nnz =  sizeof(A_val) / sizeof(real_t);
 int main( )
 {
 	long i;
-	int nWSR;
+	int_t nWSR;
 	real_t err, tic, toc;
 	real_t *x1 = new real_t[180];
 	real_t *y1 = new real_t[271];
@@ -449,7 +449,7 @@ int main( )
 	qrecipeD.getPrimalSolution(x1);
 	qrecipeD.getDualSolution(y1);
 
-	fprintf(stdFile, "Solved dense problem in %d iterations, %.3f seconds.\n", nWSR, toc-tic);
+	fprintf(stdFile, "Solved dense problem in %d iterations, %.3f seconds.\n", (int)nWSR, toc-tic);
 
 	/* solve with sparse matrices */
 	nWSR = 1000;
@@ -460,7 +460,7 @@ int main( )
 	qrecipeS.getPrimalSolution(x2);
 	qrecipeS.getDualSolution(y2);
 
-	fprintf(stdFile, "Solved sparse problem in %d iterations, %.3f seconds.\n", nWSR, toc-tic);
+	fprintf(stdFile, "Solved sparse problem in %d iterations, %.3f seconds.\n", (int)nWSR, toc-tic);
 
 	/* check distance of solutions */
 	err = 0.0;

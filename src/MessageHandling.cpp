@@ -208,17 +208,17 @@ MessageHandling::ReturnValueList returnValueList[] =
 { RET_DIAGONAL_NOT_INITIALISED, "Diagonal data of sparse matrix has not been initialised", VS_VISIBLE },
 /* Dropping of infeasible constraints */
 { RET_ENSURELI_DROPPED, "Linear independence resolved by dropping blocking constraint", VS_VISIBLE },
+/* Schur complement computations */
+{ RET_KKT_MATRIX_SINGULAR, "KKT matrix is singular", VS_VISIBLE },
+{ RET_QR_FACTORISATION_FAILED, "QR factorization of Schur complement failed", VS_VISIBLE },
+{ RET_INERTIA_CORRECTION_FAILED, "Inertia correction of KKT matrix failed", VS_VISIBLE },
+{ RET_NO_SPARSE_SOLVER, "No Sparse Solver installed", VS_VISIBLE },
 /* Simple exitflags */
 { RET_SIMPLE_STATUS_P1, "QP problem could not be solved within given number of iterations", VS_VISIBLE },
 { RET_SIMPLE_STATUS_P0, "QP problem solved", VS_VISIBLE },
 { RET_SIMPLE_STATUS_M1, "QP problem could not be solved due to an internal error", VS_VISIBLE },
 { RET_SIMPLE_STATUS_M2, "QP problem is infeasible (and thus could not be solved)", VS_VISIBLE },
 { RET_SIMPLE_STATUS_M3, "QP problem is unbounded (and thus could not be solved)", VS_VISIBLE },
-/* Schur complement computations */
-{ RET_KKT_MATRIX_SINGULAR, "KKT matrix is singular", VS_VISIBLE },
-{ RET_QR_FACTORISATION_FAILED, "QR factorization of Schur complement failed", VS_VISIBLE },
-{ RET_INERTIA_CORRECTION_FAILED, "Inertia correction of KKT matrix failed", VS_VISIBLE },
-{ RET_NO_SPARSE_SOLVER, "No Sparse Solver installed", VS_VISIBLE },
 /* IMPORTANT: Terminal list element! */
 { TERMINAL_LIST_ELEMENT, "", VS_HIDDEN }
 };
@@ -435,13 +435,13 @@ returnValue MessageHandling::reset( )
 returnValue MessageHandling::listAllMessages( )
 {
 	#ifndef __SUPPRESSANYOUTPUT__
-	int keypos = 0;
+	int_t keypos = 0;
 	char myPrintfString[MAX_STRING_LENGTH];
 
 	/* Run through whole returnValueList and print each item. */
 	while ( returnValueList[keypos].key != TERMINAL_LIST_ELEMENT )
 	{
-		snprintf( myPrintfString,MAX_STRING_LENGTH," %d - %s \n",keypos,returnValueList[keypos].data );
+		snprintf( myPrintfString,MAX_STRING_LENGTH," %d - %s \n",(int)keypos,returnValueList[keypos].data );
 		myPrintf( myPrintfString );
 
 		++keypos;
@@ -473,12 +473,12 @@ returnValue MessageHandling::throwMessage(
 {
 	#ifndef __SUPPRESSANYOUTPUT__
 
-	int keypos = 0;
+	int_t keypos = 0;
 	char myPrintfString[MAX_STRING_LENGTH];
 
 	/* 1) Determine number of whitespace for output. */
 	char whitespaces[MAX_STRING_LENGTH];
-	int numberOfWhitespaces = (errorCount-1)*2;
+	int_t numberOfWhitespaces = (errorCount-1)*2;
 
 	if ( numberOfWhitespaces < 0 )
 		numberOfWhitespaces = 0;
@@ -486,8 +486,8 @@ returnValue MessageHandling::throwMessage(
 	if ( numberOfWhitespaces > 40 )
 		numberOfWhitespaces = 40;
 
-	if ( numberOfWhitespaces >= (int)MAX_STRING_LENGTH )
-		numberOfWhitespaces = (int)MAX_STRING_LENGTH-1;
+	if ( numberOfWhitespaces >= (int_t)MAX_STRING_LENGTH )
+		numberOfWhitespaces = (int_t)MAX_STRING_LENGTH-1;
 
 	memset( whitespaces, ' ', (size_t) numberOfWhitespaces );
 	whitespaces[numberOfWhitespaces] = '\0';
@@ -526,7 +526,7 @@ returnValue MessageHandling::throwMessage(
 		{
 			#ifdef __DEBUG__
 			snprintf(	myPrintfString,MAX_STRING_LENGTH,"%s (%s, %s:%d): \t%s\n",
-						RETstring,functionname,filename,(int)linenumber,returnValueList[keypos].data
+						RETstring,functionname,filename,(int_t)linenumber,returnValueList[keypos].data
 						);
 			#else
 			snprintf(	myPrintfString,MAX_STRING_LENGTH,"%s:  %s\n",
@@ -539,7 +539,7 @@ returnValue MessageHandling::throwMessage(
 		{
 			#ifdef __DEBUG__
 			snprintf(	myPrintfString,MAX_STRING_LENGTH,"%s (%s, %s:%d): \t%s %s\n",
-						RETstring,functionname,filename,(int)linenumber,returnValueList[keypos].data,additionaltext
+						RETstring,functionname,filename,(int_t)linenumber,returnValueList[keypos].data,additionaltext
 						);
 			#else
 			snprintf(	myPrintfString,MAX_STRING_LENGTH,"%s:  %s %s\n",
@@ -576,7 +576,7 @@ const char* MessageHandling::getErrorCodeMessage(	const returnValue _returnValue
 {
 	#ifndef __SUPPRESSANYOUTPUT__
 
-	int keypos = 0;
+	int_t keypos = 0;
 	
 	/* 2) Find error/warning/info in list. */
 	while ( returnValueList[keypos].key != TERMINAL_LIST_ELEMENT )

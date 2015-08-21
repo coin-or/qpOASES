@@ -50,11 +50,11 @@ BEGIN_NAMESPACE_QPOASES
  * \return SUCCESSFUL_RETURN \n
 		   RET_UNABLE_TO_READ_FILE \n
 		   RET_FILEDATA_INCONSISTENT */
-returnValue readOQPdimensions(	const char* path,	/**< Full path of the data files (without trailing slash!). */
-								int& nQP,			/**< Output: Number of QPs. */
-								int& nV,			/**< Output: Number of variables. */
-								int& nC,			/**< Output: Number of constraints. */
-								int& nEC			/**< Output: Number of equality constraints. */
+returnValue readOqpDimensions(	const char* path,	/**< Full path of the data files (without trailing slash!). */
+								int_t& nQP,			/**< Output: Number of QPs. */
+								int_t& nV,			/**< Output: Number of variables. */
+								int_t& nC,			/**< Output: Number of constraints. */
+								int_t& nEC			/**< Output: Number of equality constraints. */
 								);
 
 /** Reads data of an Online QP Benchmark problem from file.
@@ -65,11 +65,11 @@ returnValue readOQPdimensions(	const char* path,	/**< Full path of the data file
 		   RET_INVALID_ARGUMENTS \n
 		   RET_UNABLE_TO_READ_FILE \n
 		   RET_FILEDATA_INCONSISTENT */
-returnValue readOQPdata(	const char* path,	/**< Full path of the data files (without trailing slash!). */
-							int& nQP,			/**< Output: Number of QPs. */
-							int& nV,			/**< Output: Number of variables. */
-							int& nC,			/**< Output: Number of constraints. */
-							int& nEC,			/**< Output: Number of equality constraints. */
+returnValue readOqpData(	const char* path,	/**< Full path of the data files (without trailing slash!). */
+							int_t& nQP,			/**< Output: Number of QPs. */
+							int_t& nV,			/**< Output: Number of variables. */
+							int_t& nC,			/**< Output: Number of constraints. */
+							int_t& nEC,			/**< Output: Number of equality constraints. */
 							real_t** H,		 	/**< Output: Hessian matrix. */
 							real_t** g,		 	/**< Output: Sequence of gradient vectors. */
 							real_t** A,		 	/**< Output: Constraint matrix. */
@@ -95,10 +95,10 @@ returnValue readOQPdata(	const char* path,	/**< Full path of the data files (wit
  *
  * \return SUCCESSFUL_RETURN \n
  		   RET_BENCHMARK_ABORTED */
-returnValue solveOQPbenchmark(	int nQP,					/**< Number of QPs. */
-								int nV,						/**< Number of variables. */
-								int nC,						/**< Number of constraints. */
-								int nEC,					/**< Number of equality constraints. */
+returnValue solveOqpBenchmark(	int_t nQP,					/**< Number of QPs. */
+								int_t nV,					/**< Number of variables. */
+								int_t nC,					/**< Number of constraints. */
+								int_t nEC,					/**< Number of equality constraints. */
 								const real_t* const _H,		/**< Hessian matrix. */
 								const real_t* const g,		/**< Sequence of gradient vectors. */
 								const real_t* const _A,		/**< Constraint matrix. */
@@ -108,7 +108,7 @@ returnValue solveOQPbenchmark(	int nQP,					/**< Number of QPs. */
 								const real_t* const ubA,	/**< Sequence of upper constraints' bound vectors. */
 								BooleanType isSparse,		/**< Shall convert matrices to sparse format before solution? */
 								const Options& options,		/**< QP solver options to be used while solving benchmark problems. */
-								int& nWSR, 					/**< Input: Maximum number of working set recalculations; \n
+								int_t& nWSR, 				/**< Input: Maximum number of working set recalculations; \n
 																 Output: Maximum number of performed working set recalculations. */
 								real_t& maxCPUtime,			/**< Output: Maximum CPU time required for solving each QP. */
 								real_t& maxStationarity,	/**< Output: Maximum residual of stationarity condition. */
@@ -122,10 +122,10 @@ returnValue solveOQPbenchmark(	int nQP,					/**< Number of QPs. */
  *
  * \return SUCCESSFUL_RETURN \n
  		   RET_BENCHMARK_ABORTED */
-returnValue solveOQPbenchmark(	int nQP,					/**< Number of QPs. */
-								int nV,						/**< Number of variables. */
-								int nC,						/**< Number of constraints. */
-								int nEC,					/**< Number of equality constraints. */
+returnValue solveOqpBenchmark(	int_t nQP,					/**< Number of QPs. */
+								int_t nV,					/**< Number of variables. */
+								int_t nC,					/**< Number of constraints. */
+								int_t nEC,					/**< Number of equality constraints. */
 								const real_t* const _H,		/**< Hessian matrix. */
 								const real_t* const g,		/**< Sequence of gradient vectors. */
 								const real_t* const _A,		/**< Constraint matrix. */
@@ -136,7 +136,7 @@ returnValue solveOQPbenchmark(	int nQP,					/**< Number of QPs. */
 								BooleanType isSparse,		/**< Shall convert matrices to sparse format before solution? */
 								BooleanType useHotstarts,	/**< Shall QP solution be hotstarted? */
 								const Options& options,		/**< QP solver options to be used while solving benchmark problems. */
-								int maxAllowedNWSR, 		/**< Maximum number of working set recalculations to be performed. */
+								int_t maxAllowedNWSR, 		/**< Maximum number of working set recalculations to be performed. */
 								real_t& maxNWSR,			/**< Output: Maximum number of performed working set recalculations. */
 								real_t& avgNWSR,			/**< Output: Average number of performed working set recalculations. */
 								real_t& maxCPUtime,			/**< Output: Maximum CPU time required for solving each QP. */
@@ -156,15 +156,15 @@ returnValue solveOQPbenchmark(	int nQP,					/**< Number of QPs. */
  *
  * \return SUCCESSFUL_RETURN \n
  		   RET_BENCHMARK_ABORTED */
-returnValue solveOQPbenchmark(	int nQP,					/**< Number of QPs. */
-								int nV,						/**< Number of variables. */
+returnValue solveOqpBenchmark(	int_t nQP,					/**< Number of QPs. */
+								int_t nV,					/**< Number of variables. */
 								const real_t* const _H,		/**< Hessian matrix. */
 								const real_t* const g,		/**< Sequence of gradient vectors. */
 								const real_t* const lb,		/**< Sequence of lower bound vectors (on variables). */
 								const real_t* const ub,		/**< Sequence of upper bound vectors (on variables). */
 								BooleanType isSparse,		/**< Shall convert matrices to sparse format before solution? */
 								const Options& options,		/**< QP solver options to be used while solving benchmark problems. */
-								int& nWSR, 					/**< Input: Maximum number of working set recalculations; \n
+								int_t& nWSR, 				/**< Input: Maximum number of working set recalculations; \n
 																 Output: Maximum number of performed working set recalculations. */
 								real_t& maxCPUtime,			/**< Output: Maximum CPU time required for solving each QP. */
 								real_t& maxStationarity,	/**< Output: Maximum residual of stationarity condition. */
@@ -178,8 +178,8 @@ returnValue solveOQPbenchmark(	int nQP,					/**< Number of QPs. */
  *
  * \return SUCCESSFUL_RETURN \n
  		   RET_BENCHMARK_ABORTED */
-returnValue solveOQPbenchmark(	int nQP,					/**< Number of QPs. */
-								int nV,						/**< Number of variables. */
+returnValue solveOqpBenchmark(	int_t nQP,					/**< Number of QPs. */
+								int_t nV,					/**< Number of variables. */
 								const real_t* const _H,		/**< Hessian matrix. */
 								const real_t* const g,		/**< Sequence of gradient vectors. */
 								const real_t* const lb,		/**< Sequence of lower bound vectors (on variables). */
@@ -187,7 +187,7 @@ returnValue solveOQPbenchmark(	int nQP,					/**< Number of QPs. */
 								BooleanType isSparse,		/**< Shall convert matrices to sparse format before solution? */
 								BooleanType useHotstarts,	/**< Shall QP solution be hotstarted? */
 								const Options& options,		/**< QP solver options to be used while solving benchmark problems. */
-								int maxAllowedNWSR, 		/**< Maximum number of working set recalculations to be performed. */
+								int_t maxAllowedNWSR, 		/**< Maximum number of working set recalculations to be performed. */
 								real_t& maxNWSR,			/**< Output: Maximum number of performed working set recalculations. */
 								real_t& avgNWSR,			/**< Output: Average number of performed working set recalculations. */
 								real_t& maxCPUtime,			/**< Output: Maximum CPU time required for solving each QP. */
@@ -205,10 +205,10 @@ returnValue solveOQPbenchmark(	int nQP,					/**< Number of QPs. */
  * \return SUCCESSFUL_RETURN \n
 		   RET_UNABLE_TO_READ_BENCHMARK \n
  		   RET_BENCHMARK_ABORTED */
-returnValue runOQPbenchmark(	const char* path,			/**< Full path of the benchmark files (without trailing slash!). */
+returnValue runOqpBenchmark(	const char* path,			/**< Full path of the benchmark files (without trailing slash!). */
 								BooleanType isSparse,		/**< Shall convert matrices to sparse format before solution? */
 								const Options& options,		/**< QP solver options to be used while solving benchmark problems. */
-								int& nWSR, 					/**< Input: Maximum number of working set recalculations; \n
+								int_t& nWSR, 				/**< Input: Maximum number of working set recalculations; \n
 																 Output: Maximum number of performed working set recalculations. */
 								real_t& maxCPUtime,			/**< Output: Maximum CPU time required for solving each QP. */
 								real_t& maxStationarity,	/**< Output: Maximum residual of stationarity condition. */
@@ -225,11 +225,11 @@ returnValue runOQPbenchmark(	const char* path,			/**< Full path of the benchmark
  * \return SUCCESSFUL_RETURN \n
 		   RET_UNABLE_TO_READ_BENCHMARK \n
  		   RET_BENCHMARK_ABORTED */
-returnValue runOQPbenchmark(	const char* path,			/**< Full path of the benchmark files (without trailing slash!). */
+returnValue runOqpBenchmark(	const char* path,			/**< Full path of the benchmark files (without trailing slash!). */
 								BooleanType isSparse,		/**< Shall convert matrices to sparse format before solution? */
 								BooleanType useHotstarts,	/**< Shall QP solution be hotstarted? */
 								const Options& options,		/**< QP solver options to be used while solving benchmark problems. */
-								int maxAllowedNWSR, 		/**< Maximum number of working set recalculations to be performed. */
+								int_t maxAllowedNWSR, 		/**< Maximum number of working set recalculations to be performed. */
 								real_t& maxNWSR,			/**< Output: Maximum number of performed working set recalculations. */
 								real_t& avgNWSR,			/**< Output: Average number of performed working set recalculations. */
 								real_t& maxCPUtime,			/**< Output: Maximum CPU time required for solving each QP. */

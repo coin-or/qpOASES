@@ -74,18 +74,18 @@ class SparseSolver
 		/** Set new matrix data.  The matrix is to be provided
 		    in the Harwell-Boeing format.  Only the lower
 		    triangular part should be set. */
-		virtual returnValue setMatrixData( int dim, /**< Dimension of the linear system. */
-						   int numNonzeros, /**< Number of nonzeros in the matrix. */
-						   const int* const airn, /**< Row indices for each matrix entry. */
-						   const int* const acjn, /**< Column indices for each matrix entry. */
-						   const real_t* const avals /**< Values for each matrix entry. */
-						   ) = 0;
+		virtual returnValue setMatrixData( int_t dim,					/**< Dimension of the linear system. */
+										   int_t numNonzeros,			/**< Number of nonzeros in the matrix. */
+										   const int_t* const airn,		/**< Row indices for each matrix entry. */
+										   const int_t* const acjn,		/**< Column indices for each matrix entry. */
+										   const real_t* const avals	/**< Values for each matrix entry. */
+										   ) = 0;
 
 		/** Compute factorization of current matrix.  This method must be called before solve.*/
 		virtual returnValue factorize( ) = 0;
 
 		/** Solve linear system with most recently set matrix data. */
-		virtual returnValue solve( int dim, /**< Dimension of the linear system. */
+		virtual returnValue solve( int_t dim, /**< Dimension of the linear system. */
 					   const real_t* const rhs, /**< Values for the right hand side. */
 					   real_t* const sol /**< Solution of the linear system. */
 					   ) = 0;
@@ -94,13 +94,13 @@ class SparseSolver
 		virtual returnValue reset( );
 
 		/** Return the number of negative eigenvalues. */
-		virtual int getNegativeEigenvalues( );
+		virtual int_t getNegativeEigenvalues( );
 
 		/** Return the rank after a factorization */
-		virtual int getRank( );
+		virtual int_t getRank( );
 
 		/** Returns the zero pivots in case the matrix is rank deficient */
-		virtual returnValue getZeroPivots( int *&zeroPivots );
+		virtual returnValue getZeroPivots( int_t *&zeroPivots );
 
 	/*
 	 *	PROTECTED MEMBER FUNCTIONS
@@ -128,7 +128,7 @@ class SparseSolver
  *	\brief Implementation of the linear solver interface using Harwell's MA27.
  *
  *	\author Andreas Waechter, Dennis Janka
- *	\version 3.1
+ *	\version 3.2
  *	\date 2012-2015
  */
 class Ma27SparseSolver: public SparseSolver
@@ -154,27 +154,27 @@ class Ma27SparseSolver: public SparseSolver
 		/** Set new matrix data.  The matrix is to be provided
 		    in the Harwell-Boeing format.  Only the lower
 		    triangular part should be set. */
-		virtual returnValue setMatrixData( int dim, /**< Dimension of the linear system. */
-						   int numNonzeros, /**< Number of nonzeros in the matrix. */
-						   const int* const airn, /**< Row indices for each matrix entry. */
-						   const int* const acjn, /**< Column indices for each matrix entry. */
-						   const real_t* const avals /**< Values for each matrix entry. */
-						   );
+		virtual returnValue setMatrixData( int_t dim,					/**< Dimension of the linear system. */
+										   int_t numNonzeros,			/**< Number of nonzeros in the matrix. */
+										   const int_t* const airn,		/**< Row indices for each matrix entry. */
+										   const int_t* const acjn,		/**< Column indices for each matrix entry. */
+										   const real_t* const avals	/**< Values for each matrix entry. */
+										   );
 
 		/** Compute factorization of current matrix.  This method must be called before solve.*/
 		virtual returnValue factorize( );
 
 		/** Solve linear system with most recently set matrix data. */
-		virtual returnValue solve( int dim, /**< Dimension of the linear system. */
-					   const real_t* const rhs, /**< Values for the right hand side. */
-					   real_t* const sol /**< Solution of the linear system. */
-					   );
+		virtual returnValue solve( int_t dim,				/**< Dimension of the linear system. */
+								   const real_t* const rhs, /**< Values for the right hand side. */
+								   real_t* const sol		/**< Solution of the linear system. */
+								   );
 
 		/** Clears all data structures. */
 		virtual returnValue reset( );
 
 		/** Return the number of negative eigenvalues. */
-		virtual int getNegativeEigenvalues( );
+		virtual int_t getNegativeEigenvalues( );
 
 		/** Return the rank after a factorization */
 		virtual int getRank( );
@@ -242,7 +242,7 @@ class Ma27SparseSolver: public SparseSolver
  *	\brief Implementation of the linear solver interface using Harwell's MA57.
  *
  *	\author Andreas Waechter, Dennis Janka
- *	\version 3.1
+ *	\version 3.2
  *	\date 2013-2015
  */
 class Ma57SparseSolver: public SparseSolver
@@ -268,33 +268,33 @@ class Ma57SparseSolver: public SparseSolver
 		/** Set new matrix data.  The matrix is to be provided
 		    in the Harwell-Boeing format.  Only the lower
 		    triangular part should be set. */
-		virtual returnValue setMatrixData( int dim, /**< Dimension of the linear system. */
-						   int numNonzeros, /**< Number of nonzeros in the matrix. */
-						   const int* const airn, /**< Row indices for each matrix entry. */
-						   const int* const acjn, /**< Column indices for each matrix entry. */
-						   const real_t* const avals /**< Values for each matrix entry. */
-						   );
+		virtual returnValue setMatrixData( int_t dim,					/**< Dimension of the linear system. */
+										   int_t numNonzeros,			/**< Number of nonzeros in the matrix. */
+										   const int_t* const airn,		/**< Row indices for each matrix entry. */
+										   const int_t* const acjn,		/**< Column indices for each matrix entry. */
+										   const real_t* const avals	/**< Values for each matrix entry. */
+										   );
 
 		/** Compute factorization of current matrix.  This method must be called before solve.*/
 		virtual returnValue factorize( );
 
 		/** Solve linear system with most recently set matrix data. */
-		virtual returnValue solve( int dim, /**< Dimension of the linear system. */
-					   const real_t* const rhs, /**< Values for the right hand side. */
-					   real_t* const sol /**< Solution of the linear system. */
-					   );
+		virtual returnValue solve(	int_t dim,					/**< Dimension of the linear system. */
+									const real_t* const rhs,	/**< Values for the right hand side. */
+									real_t* const sol			/**< Solution of the linear system. */
+									);
 
 		/** Clears all data structures. */
 		virtual returnValue reset( );
 
 		/** Return the number of negative eigenvalues. */
-		virtual int getNegativeEigenvalues( );
+		virtual int_t getNegativeEigenvalues( );
 
 		/** Return the rank after a factorization */
-		virtual int getRank( );
+		virtual int_t getRank( );
 
 		/** Returns the zero pivots in case the matrix is rank deficient */
-		virtual returnValue getZeroPivots( int *&zeroPivots );
+		virtual returnValue getZeroPivots( int_t *&zeroPivots );
 	/*
 	 *	PROTECTED MEMBER FUNCTIONS
 	 */
@@ -356,7 +356,7 @@ class Ma57SparseSolver: public SparseSolver
  *	\brief Implementation of a dummy sparse solver. An error is thrown if a factorization is attempted.
  *
  *	\author Dennis Janka
- *	\version 3.1
+ *	\version 3.2
  *	\date 2015
  */
 class DummySparseSolver: public SparseSolver
@@ -368,21 +368,21 @@ class DummySparseSolver: public SparseSolver
 		/** Set new matrix data.  The matrix is to be provided
 		    in the Harwell-Boeing format.  Only the lower
 		    triangular part should be set. */
-		virtual returnValue setMatrixData( int dim, /**< Dimension of the linear system. */
-						   int numNonzeros, /**< Number of nonzeros in the matrix. */
-						   const int* const airn, /**< Row indices for each matrix entry. */
-						   const int* const acjn, /**< Column indices for each matrix entry. */
-						   const real_t* const avals /**< Values for each matrix entry. */
-						   );
+		virtual returnValue setMatrixData(	int_t dim,					/**< Dimension of the linear system. */
+											int_t numNonzeros,			/**< Number of nonzeros in the matrix. */
+											const int_t* const airn,	/**< Row indices for each matrix entry. */
+											const int_t* const acjn,	/**< Column indices for each matrix entry. */
+											const real_t* const avals	/**< Values for each matrix entry. */
+											);
 
 		/** Compute factorization of current matrix.  This method must be called before solve.*/
 		virtual returnValue factorize( );
 
 		/** Solve linear system with most recently set matrix data. */
-		virtual returnValue solve( int dim, /**< Dimension of the linear system. */
-					   const real_t* const rhs, /**< Values for the right hand side. */
-					   real_t* const sol /**< Solution of the linear system. */
-					   );
+		virtual returnValue solve(	int_t dim,					/**< Dimension of the linear system. */
+									const real_t* const rhs,	/**< Values for the right hand side. */
+									real_t* const sol			/**< Solution of the linear system. */
+									);
 };
 
 #endif // SOLVER_NONE

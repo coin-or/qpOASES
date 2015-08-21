@@ -44,7 +44,7 @@ BEGIN_NAMESPACE_QPOASES
 /*
  *	g e t N u m b e r
  */
-inline int Indexlist::getNumber( int physicalindex ) const
+inline int_t Indexlist::getNumber( int_t physicalindex ) const
 {
 	/* consistency check */
 	if ( ( physicalindex < 0 ) || ( physicalindex > length ) )
@@ -57,7 +57,7 @@ inline int Indexlist::getNumber( int physicalindex ) const
 /*
  *	g e t L e n g t h
  */
-inline int Indexlist::getLength( ) const
+inline int_t Indexlist::getLength( ) const
 {
 	return length;
 }
@@ -66,7 +66,7 @@ inline int Indexlist::getLength( ) const
 /*
  *	g e t L a s t N u m b e r
  */
-inline int Indexlist::getLastNumber( ) const
+inline int_t Indexlist::getLastNumber( ) const
 {
 	return number[length-1];
 }
@@ -75,7 +75,7 @@ inline int Indexlist::getLastNumber( ) const
 /*
  *	g e t L a s t N u m b e r
  */
-inline BooleanType Indexlist::isMember( int _number ) const
+inline BooleanType Indexlist::isMember( int_t _number ) const
 {
 	if ( getIndex( _number ) >= 0 )
 		return BT_TRUE;

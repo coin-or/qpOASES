@@ -46,17 +46,17 @@ BEGIN_NAMESPACE_QPOASES
 returnValue Matrix::getSparseSubmatrix(
 				const Indexlist* const irows,
 				const Indexlist* const icols,
-				int rowoffset,
-				int coloffset,
-				int& numNonzeros,
-				int* irn,
-				int* jcn,
+				int_t rowoffset,
+				int_t coloffset,
+				int_t& numNonzeros,
+				int_t* irn,
+				int_t* jcn,
 				real_t* avals,
 				BooleanType only_lower_triangular) const
 {
-	int* rowsNumbers;
+	int_t* rowsNumbers;
 	irows->getNumberArray( &rowsNumbers );
-	int* colsNumbers;
+	int_t* colsNumbers;
 	icols->getNumberArray( &colsNumbers );
 
 	return getSparseSubmatrix(irows->getLength(), rowsNumbers, icols->getLength(), colsNumbers, rowoffset, coloffset, numNonzeros, irn, jcn, avals, only_lower_triangular);
@@ -64,33 +64,33 @@ returnValue Matrix::getSparseSubmatrix(
 
 returnValue Matrix::getSparseSubmatrix(
 				const Indexlist* const irows,
-				int idx_icol,
-				int rowoffset,
-				int coloffset,
-				int& numNonzeros,
-				int* irn,
-				int* jcn,
+				int_t idx_icol,
+				int_t rowoffset,
+				int_t coloffset,
+				int_t& numNonzeros,
+				int_t* irn,
+				int_t* jcn,
 				real_t* avals,
 				BooleanType only_lower_triangular) const
 {
-	int* rowsNumbers;
+	int_t* rowsNumbers;
 	irows->getNumberArray( &rowsNumbers );
 
 	return getSparseSubmatrix(irows->getLength(), rowsNumbers, 1, &idx_icol, rowoffset, coloffset, numNonzeros, irn, jcn, avals, only_lower_triangular);
 }
 
 returnValue Matrix::getSparseSubmatrix(
-				int idx_row,
+				int_t idx_row,
 				const Indexlist* const icols,
-				int rowoffset,
-				int coloffset,
-				int& numNonzeros,
-				int* irn,
-				int* jcn,
+				int_t rowoffset,
+				int_t coloffset,
+				int_t& numNonzeros,
+				int_t* irn,
+				int_t* jcn,
 				real_t* avals,
 				BooleanType only_lower_triangular) const
 {
-	int* colsNumbers;
+	int_t* colsNumbers;
 	icols->getNumberArray( &colsNumbers );
 
 	return getSparseSubmatrix(1, &idx_row, icols->getLength(), colsNumbers, rowoffset, coloffset, numNonzeros, irn, jcn, avals, only_lower_triangular);
@@ -117,7 +117,7 @@ Matrix *DenseMatrix::duplicate( ) const
 	if ( needToFreeMemory( ) == BT_TRUE )
 	{
 		real_t* val_new = new real_t[nRows*nCols];
-		memcpy( val_new,val, ((unsigned int)(nRows*nCols))*sizeof(real_t) );
+		memcpy( val_new,val, ((uint_t)(nRows*nCols))*sizeof(real_t) );
 		dupl = new DenseMatrix(nRows, nCols, nCols, val_new);
 		dupl->doFreeMemory( );
 	}
@@ -129,7 +129,7 @@ Matrix *DenseMatrix::duplicate( ) const
 	return dupl;
 }
 
-real_t DenseMatrix::diag(	int i
+real_t DenseMatrix::diag(	int_t i
 							) const
 {
 	return val[i*(leaDim+1)];
@@ -137,7 +137,7 @@ real_t DenseMatrix::diag(	int i
 
 BooleanType DenseMatrix::isDiag( ) const
 {
-	int i, j;
+	int_t i, j;
 
 	if (nRows != nCols)
 		return BT_FALSE;
@@ -151,21 +151,21 @@ BooleanType DenseMatrix::isDiag( ) const
 }
 
 
-real_t DenseMatrix::getNorm(	int type
+real_t DenseMatrix::getNorm(	int_t type
 								) const
 {
 	return REFER_NAMESPACE_QPOASES getNorm( val,nCols*nRows,type );
 }
 
 
-real_t DenseMatrix::getRowNorm( int rNum, int type ) const
+real_t DenseMatrix::getRowNorm( int_t rNum, int_t type ) const
 {
 	return REFER_NAMESPACE_QPOASES getNorm( &(val[rNum*leaDim]),nCols,type );
 }
 
-returnValue DenseMatrix::getRow(int rNum, const Indexlist* const icols, real_t alpha, real_t *row) const
+returnValue DenseMatrix::getRow(int_t rNum, const Indexlist* const icols, real_t alpha, real_t *row) const
 {
-	int i;
+	int_t i;
     if (icols != 0)
     {
 	    if ( isEqual(alpha,1.0) == BT_TRUE )
@@ -194,9 +194,9 @@ returnValue DenseMatrix::getRow(int rNum, const Indexlist* const icols, real_t a
 }
 
 
-returnValue DenseMatrix::getCol(int cNum, const Indexlist* const irows, real_t alpha, real_t *col) const
+returnValue DenseMatrix::getCol(int_t cNum, const Indexlist* const irows, real_t alpha, real_t *col) const
 {
-	int i;
+	int_t i;
 
 	if ( isEqual(alpha,1.0) == BT_TRUE )
 		for (i = 0; i < irows->length; i++)
@@ -211,13 +211,13 @@ returnValue DenseMatrix::getCol(int cNum, const Indexlist* const irows, real_t a
 	return SUCCESSFUL_RETURN;
 }
 
-returnValue DenseMatrix::getSparseSubmatrix (int irowsLength, const int* const irowsNumber,
-											 int icolsLength, const int* const icolsNumber,
-											 int rowoffset, int coloffset, int& numNonzeros,	int* irn,
-											 int* jcn, real_t* avals,
+returnValue DenseMatrix::getSparseSubmatrix (int_t irowsLength, const int_t* const irowsNumber,
+											 int_t icolsLength, const int_t* const icolsNumber,
+											 int_t rowoffset, int_t coloffset, int_t& numNonzeros,	int_t* irn,
+											 int_t* jcn, real_t* avals,
 											 BooleanType only_lower_triangular /*= BT_FALSE */) const
 {
-	int i, j, irA;
+	int_t i, j, irA;
 	real_t v;
 	numNonzeros = 0;
 	if ( only_lower_triangular == BT_FALSE )
@@ -290,7 +290,7 @@ returnValue DenseMatrix::getSparseSubmatrix (int irowsLength, const int* const i
 	return SUCCESSFUL_RETURN;
 }
 
-returnValue DenseMatrix::times(	int xN, real_t alpha, const real_t *x, int xLD, real_t beta, real_t *y, int yLD) const
+returnValue DenseMatrix::times(	int_t xN, real_t alpha, const real_t *x, int_t xLD, real_t beta, real_t *y, int_t yLD) const
 {
 	unsigned long _xN     = (unsigned long)xN;
 	unsigned long _nRows  = (unsigned long)nRows;
@@ -304,7 +304,7 @@ returnValue DenseMatrix::times(	int xN, real_t alpha, const real_t *x, int xLD, 
 	return SUCCESSFUL_RETURN;
 }
 
-returnValue DenseMatrix::transTimes( int xN, real_t alpha, const real_t *x, int xLD, real_t beta, real_t *y, int yLD) const
+returnValue DenseMatrix::transTimes( int_t xN, real_t alpha, const real_t *x, int_t xLD, real_t beta, real_t *y, int_t yLD) const
 {
 	unsigned long _xN     = (unsigned long)xN;
 	unsigned long _nRows  = (unsigned long)nRows;
@@ -319,10 +319,10 @@ returnValue DenseMatrix::transTimes( int xN, real_t alpha, const real_t *x, int 
 }
 
 returnValue DenseMatrix::times(	const Indexlist* const irows, const Indexlist* const icols,
-								int xN, real_t alpha, const real_t *x, int xLD, real_t beta, real_t *y, int yLD,
+								int_t xN, real_t alpha, const real_t *x, int_t xLD, real_t beta, real_t *y, int_t yLD,
 								BooleanType yCompr) const
 {
-	int i, j, k, row, col, iy, irA;
+	int_t i, j, k, row, col, iy, irA;
 
 	if (yCompr == BT_TRUE)
 	{
@@ -503,9 +503,9 @@ returnValue DenseMatrix::times(	const Indexlist* const irows, const Indexlist* c
 }
 
 returnValue DenseMatrix::transTimes(	const Indexlist* const irows, const Indexlist* const icols,
-										int xN, real_t alpha, const real_t *x, int xLD, real_t beta, real_t *y, int yLD) const
+										int_t xN, real_t alpha, const real_t *x, int_t xLD, real_t beta, real_t *y, int_t yLD) const
 {
-	int i, j, k, row, col;
+	int_t i, j, k, row, col;
 
 	if ( isZero(beta) == BT_TRUE )
 		for (k = 0; k < xN; k++)
@@ -560,7 +560,7 @@ returnValue DenseMatrix::transTimes(	const Indexlist* const irows, const Indexli
 
 returnValue DenseMatrix::addToDiag( real_t alpha )
 {
-	int i;
+	int_t i;
 	for (i = 0; i < nRows && i < nCols; i++)
 		val[i*(leaDim+1)] += alpha;
 
@@ -577,7 +577,7 @@ returnValue DenseMatrix::writeToFile( FILE* output_file, const char* prefix ) co
 real_t* DenseMatrix::full() const
 {
 	real_t* v = new real_t[nRows*nCols];
-	memcpy( v,val, ((unsigned int)(nRows*nCols))*sizeof(real_t) );
+	memcpy( v,val, ((uint_t)(nRows*nCols))*sizeof(real_t) );
 	return v;
 }
 
@@ -603,7 +603,7 @@ SymmetricMatrix *SymDenseMat::duplicateSym( ) const
 	if ( needToFreeMemory( ) == BT_TRUE )
 	{
 		real_t* val_new = new real_t[nRows*nCols];
-		memcpy( val_new,val, ((unsigned int)(nRows*nCols))*sizeof(real_t) );
+		memcpy( val_new,val, ((uint_t)(nRows*nCols))*sizeof(real_t) );
 		dupl = new SymDenseMat(nRows, nCols, nCols, val_new);
 		dupl->doFreeMemory( );
 	}
@@ -617,10 +617,10 @@ SymmetricMatrix *SymDenseMat::duplicateSym( ) const
 
 
 returnValue SymDenseMat::bilinear(	const Indexlist* const icols,
-									int xN, const real_t *x, int xLD, real_t *y, int yLD) const
+									int_t xN, const real_t *x, int_t xLD, real_t *y, int_t yLD) const
 {
-	int ii, jj, kk, col;
-	int i,j,k,irA;
+	int_t ii, jj, kk, col;
+	int_t i,j,k,irA;
 
 	for (ii = 0; ii < xN; ii++)
 		for (jj = 0; jj < xN; jj++)
@@ -659,13 +659,13 @@ returnValue SymDenseMat::bilinear(	const Indexlist* const icols,
 
 SparseMatrix::SparseMatrix() : nRows(0), nCols(0), ir(0), jc(0), jd(0), val(0) {}
 
-SparseMatrix::SparseMatrix(	int nr, int nc, sparse_int_t *r, sparse_int_t *c, real_t *v)
+SparseMatrix::SparseMatrix(	int_t nr, int_t nc, sparse_int_t *r, sparse_int_t *c, real_t *v)
 								: nRows(nr), nCols(nc), ir(r), jc(c), jd(0), val(v) { doNotFreeMemory(); }
 
-SparseMatrix::SparseMatrix(	int nr, int nc, int ld, const real_t * const v)
+SparseMatrix::SparseMatrix(	int_t nr, int_t nc, int_t ld, const real_t * const v)
 								: nRows(nr), nCols(nc), jd(0)
 {
-	int i, j, nnz;
+	int_t i, j, nnz;
 
 	jc = new sparse_int_t[nc+1];
 	ir = new sparse_int_t[nr*nc];
@@ -743,7 +743,7 @@ Matrix *SparseMatrix::duplicate() const
 
 
 
-real_t SparseMatrix::diag(int i) const
+real_t SparseMatrix::diag(int_t i) const
 {
 	if ( jd == 0 )
 	{
@@ -751,14 +751,14 @@ real_t SparseMatrix::diag(int i) const
 		return INFTY;
 	}
 
-	int entry = jd[i];
+	int_t entry = jd[i];
 	return (entry < jc[i+1] && ir[entry] == i) ? val[entry] : 0.0;
 }
 
 
 BooleanType SparseMatrix::isDiag() const
 {
-	int j;
+	int_t j;
 
 	if ( nCols != nRows )
 		return BT_FALSE;
@@ -777,17 +777,17 @@ BooleanType SparseMatrix::isDiag() const
 
 
 
-real_t SparseMatrix::getNorm(	int type
+real_t SparseMatrix::getNorm(	int_t type
 								) const
 {
-	int length = jc[nCols];
+	int_t length = jc[nCols];
 	return REFER_NAMESPACE_QPOASES getNorm( val,length,type );
 }
 
 
-real_t SparseMatrix::getRowNorm( int rNum, int type ) const
+real_t SparseMatrix::getRowNorm( int_t rNum, int_t type ) const
 {
-    int i,j;
+    int_t i,j;
     real_t norm = 0.0;
 
 	switch( type )
@@ -813,7 +813,7 @@ real_t SparseMatrix::getRowNorm( int rNum, int type ) const
 }
 
 
-returnValue SparseMatrix::getRow(int rNum, const Indexlist* const icols, real_t alpha, real_t *row) const
+returnValue SparseMatrix::getRow(int_t rNum, const Indexlist* const icols, real_t alpha, real_t *row) const
 {
 	long i, j, k;
 
@@ -866,7 +866,7 @@ returnValue SparseMatrix::getRow(int rNum, const Indexlist* const icols, real_t 
 }
 
 
-returnValue SparseMatrix::getCol(int cNum, const Indexlist* const irows, real_t alpha, real_t *col) const
+returnValue SparseMatrix::getCol(int_t cNum, const Indexlist* const irows, real_t alpha, real_t *col) const
 {
 	long i, j;
 
@@ -904,17 +904,17 @@ returnValue SparseMatrix::getCol(int cNum, const Indexlist* const irows, real_t 
 	return SUCCESSFUL_RETURN;
 }
 
-returnValue SparseMatrix::getSparseSubmatrix (int irowsLength, const int* const irowsNumber,
-											  int icolsLength, const int* const icolsNumber,
-											  int rowoffset, int coloffset, int& numNonzeros,	int* irn,
-											  int* jcn, real_t* avals,
+returnValue SparseMatrix::getSparseSubmatrix (int_t irowsLength, const int_t* const irowsNumber,
+											  int_t icolsLength, const int_t* const icolsNumber,
+											  int_t rowoffset, int_t coloffset, int_t& numNonzeros,	int_t* irn,
+											  int_t* jcn, real_t* avals,
 											  BooleanType only_lower_triangular /*= BT_FALSE */) const
 {
-	int i, j, k, l;
+	int_t i, j, k, l;
 
 	// Compute the "inverse" of the irows->number array
 	// TODO: Ideally this should be a part of Indexlist
-	int* rowNumberInv = new int[nRows];
+	int_t* rowNumberInv = new int_t[nRows];
 	for (i=0; i<nRows; i++)
 		rowNumberInv[i] = -1;
 	for (i=0; i<irowsLength; i++)
@@ -998,8 +998,8 @@ returnValue SparseMatrix::getSparseSubmatrix (int irowsLength, const int* const 
 	return SUCCESSFUL_RETURN;
 }
 
-returnValue SparseMatrix::times(int xN, real_t alpha, const real_t *x, int xLD,
-		real_t beta, real_t *y, int yLD) const
+returnValue SparseMatrix::times(int_t xN, real_t alpha, const real_t *x, int_t xLD,
+		real_t beta, real_t *y, int_t yLD) const
 {
 	long i, j, k;
 
@@ -1036,8 +1036,8 @@ returnValue SparseMatrix::times(int xN, real_t alpha, const real_t *x, int xLD,
 }
 
 
-returnValue SparseMatrix::transTimes(int xN, real_t alpha, const real_t *x, int xLD,
-		real_t beta, real_t *y, int yLD) const
+returnValue SparseMatrix::transTimes(int_t xN, real_t alpha, const real_t *x, int_t xLD,
+		real_t beta, real_t *y, int_t yLD) const
 {
 	long i, j, k;
 
@@ -1075,7 +1075,7 @@ returnValue SparseMatrix::transTimes(int xN, real_t alpha, const real_t *x, int 
 
 
 returnValue SparseMatrix::times(const Indexlist* const irows, const Indexlist* const icols,
-		int xN, real_t alpha, const real_t *x, int xLD, real_t beta, real_t *y, int yLD,
+		int_t xN, real_t alpha, const real_t *x, int_t xLD, real_t beta, real_t *y, int_t yLD,
 		BooleanType yCompr) const
 {
 	long i, j, k, l, col;
@@ -1117,7 +1117,7 @@ returnValue SparseMatrix::times(const Indexlist* const irows, const Indexlist* c
 	}
 
 	// First, work with full, unordered copy of y and store matrix times x in there
-	const int yfullLength = nRows;
+	const int_t yfullLength = nRows;
 	real_t* ytmp = new real_t[xN*yfullLength];
 	for (k = 0; k < xN*yfullLength; k++)
 		ytmp[k] = 0.0;
@@ -1241,7 +1241,7 @@ returnValue SparseMatrix::times(const Indexlist* const irows, const Indexlist* c
 
 
 returnValue SparseMatrix::transTimes(const Indexlist* const irows, const Indexlist* const icols,
-		int xN, real_t alpha, const real_t *x, int xLD, real_t beta, real_t *y, int yLD) const
+		int_t xN, real_t alpha, const real_t *x, int_t xLD, real_t beta, real_t *y, int_t yLD) const
 {
 	long i, j, k, l, col;
 	real_t yadd;
@@ -1262,7 +1262,7 @@ returnValue SparseMatrix::transTimes(const Indexlist* const irows, const Indexli
 		return SUCCESSFUL_RETURN;
 
 	// work with full, unordered copy of x
-	const int xfullLength = nRows;
+	const int_t xfullLength = nRows;
 	real_t* xtmp = new real_t[xfullLength];
 	for (k = 0; k < xN; k++)
 	{
@@ -1357,14 +1357,14 @@ returnValue SparseMatrix::print( const char* name ) const
 
 returnValue SparseMatrix::writeToFile( FILE* output_file, const char* prefix ) const
 {
-	for (int i=0; i<=nCols; i++) {
-		fprintf(output_file,"%sjc[%d] = %d\n",prefix,i,jc[i]);
+	for (int_t i=0; i<=nCols; i++) {
+		fprintf( output_file,"%sjc[%d] = %d\n",prefix,(int)i,(int)(jc[i]) );
 	}
-	for (int i=0; i<jc[nCols]; i++) {
-		fprintf(output_file,"%sir[%d] = %d\n",prefix,i,ir[i]);
+	for (int_t i=0; i<jc[nCols]; i++) {
+		fprintf( output_file,"%sir[%d] = %d\n",prefix,(int)i,(int)(ir[i]) );
 	}
-	for (int i=0; i<jc[nCols]; i++) {
-		fprintf(output_file,"%sval[%d] = %23.16e\n",prefix,i,val[i]);
+	for (int_t i=0; i<jc[nCols]; i++) {
+		fprintf( output_file,"%sval[%d] = %23.16e\n",prefix,(int)i,val[i] );
 	}
 
 	return SUCCESSFUL_RETURN;
@@ -1373,12 +1373,12 @@ returnValue SparseMatrix::writeToFile( FILE* output_file, const char* prefix ) c
 
 SparseMatrixRow::SparseMatrixRow() : nRows(0), nCols(0), jr(0), ic(0), jd(0), val(0) {}
 
-SparseMatrixRow::SparseMatrixRow(int nr, int nc, sparse_int_t *r, sparse_int_t *c, real_t *v)
+SparseMatrixRow::SparseMatrixRow(int_t nr, int_t nc, sparse_int_t *r, sparse_int_t *c, real_t *v)
 	: nRows(nr), nCols(nc), jr(r), ic(c), jd(0), val(v) { doNotFreeMemory(); }
 
-SparseMatrixRow::SparseMatrixRow(int nr, int nc, int ld, const real_t * const v) : nRows(nr), nCols(nc), jd(0)
+SparseMatrixRow::SparseMatrixRow(int_t nr, int_t nc, int_t ld, const real_t * const v) : nRows(nr), nCols(nc), jd(0)
 {
-	int i, j, nnz;
+	int_t i, j, nnz;
 
 	jr = new sparse_int_t[nr+1];
 	ic = new sparse_int_t[nr*nc];
@@ -1457,7 +1457,7 @@ Matrix *SparseMatrixRow::duplicate() const
 
 
 
-real_t SparseMatrixRow::diag(int i) const
+real_t SparseMatrixRow::diag(int_t i) const
 {
 	if ( jd == 0 )
 	{
@@ -1465,14 +1465,14 @@ real_t SparseMatrixRow::diag(int i) const
 		return INFTY;
 	}
 
-	int entry = jd[i];
+	int_t entry = jd[i];
 	return (entry < jr[i+1] && ic[entry] == i) ? val[entry] : 0.0;
 }
 
 
 BooleanType SparseMatrixRow::isDiag() const
 {
-	int i;
+	int_t i;
 
 	if ( nCols != nRows )
 		return BT_FALSE;
@@ -1491,24 +1491,24 @@ BooleanType SparseMatrixRow::isDiag() const
 
 
 
-real_t SparseMatrixRow::getNorm(	int type
+real_t SparseMatrixRow::getNorm(	int_t type
 									) const
 {
-	int length = jr[nRows];
+	int_t length = jr[nRows];
 	return REFER_NAMESPACE_QPOASES getNorm( val,length,type );
 
 }
 
 
-real_t SparseMatrixRow::getRowNorm( int rNum, int type ) const
+real_t SparseMatrixRow::getRowNorm( int_t rNum, int_t type ) const
 {
-	int length = jr[rNum+1] - jr[rNum];
+	int_t length = jr[rNum+1] - jr[rNum];
 	return REFER_NAMESPACE_QPOASES getNorm( &(val[jr[rNum]]),length,type );
 }
 
 
 
-returnValue SparseMatrixRow::getRow(int rNum, const Indexlist* const icols, real_t alpha, real_t *row) const
+returnValue SparseMatrixRow::getRow(int_t rNum, const Indexlist* const icols, real_t alpha, real_t *row) const
 {
 	long i, j;
 
@@ -1565,7 +1565,7 @@ returnValue SparseMatrixRow::getRow(int rNum, const Indexlist* const icols, real
 }
 
 
-returnValue SparseMatrixRow::getCol(int cNum, const Indexlist* const irows, real_t alpha, real_t *col) const
+returnValue SparseMatrixRow::getCol(int_t cNum, const Indexlist* const irows, real_t alpha, real_t *col) const
 {
 	long i, j, k, srt;
 
@@ -1621,18 +1621,18 @@ returnValue SparseMatrixRow::getCol(int cNum, const Indexlist* const irows, real
 }
 
 returnValue SparseMatrixRow::getSparseSubmatrix (
-				int irowsLength, const int* const irowsNumber,
-				int icolsLength, const int* const icolsNumber,
-				int rowoffset, int coloffset, int& numNonzeros,	int* irn,
-				int* jcn, real_t* avals, BooleanType only_lower_triangular /*= BT_FALSE */) const
+				int_t irowsLength, const int_t* const irowsNumber,
+				int_t icolsLength, const int_t* const icolsNumber,
+				int_t rowoffset, int_t coloffset, int_t& numNonzeros,	int_t* irn,
+				int_t* jcn, real_t* avals, BooleanType only_lower_triangular /*= BT_FALSE */) const
 {
 	fprintf(stderr, "SparseMatrixRow::getSparseSubmatrix not implemented!\n");
 
 	return THROWERROR(RET_NOT_YET_IMPLEMENTED);
 }
 
-returnValue SparseMatrixRow::times(int xN, real_t alpha, const real_t *x, int xLD,
-		real_t beta, real_t *y, int yLD) const
+returnValue SparseMatrixRow::times(int_t xN, real_t alpha, const real_t *x, int_t xLD,
+		real_t beta, real_t *y, int_t yLD) const
 {
 	long i, j, k;
 
@@ -1669,8 +1669,8 @@ returnValue SparseMatrixRow::times(int xN, real_t alpha, const real_t *x, int xL
 }
 
 
-returnValue SparseMatrixRow::transTimes(int xN, real_t alpha, const real_t *x, int xLD,
-		real_t beta, real_t *y, int yLD) const
+returnValue SparseMatrixRow::transTimes(int_t xN, real_t alpha, const real_t *x, int_t xLD,
+		real_t beta, real_t *y, int_t yLD) const
 {
 	long i, j, k;
 
@@ -1708,7 +1708,7 @@ returnValue SparseMatrixRow::transTimes(int xN, real_t alpha, const real_t *x, i
 
 
 returnValue SparseMatrixRow::times(const Indexlist* const irows, const Indexlist* const icols,
-		int xN, real_t alpha, const real_t *x, int xLD, real_t beta, real_t *y, int yLD,
+		int_t xN, real_t alpha, const real_t *x, int_t xLD, real_t beta, real_t *y, int_t yLD,
 		BooleanType yCompr) const
 {
 	long i, j, k, l, srt, row;
@@ -1904,7 +1904,7 @@ returnValue SparseMatrixRow::times(const Indexlist* const irows, const Indexlist
 
 
 returnValue SparseMatrixRow::transTimes(const Indexlist* const irows, const Indexlist* const icols,
-		int xN, real_t alpha, const real_t *x, int xLD, real_t beta, real_t *y, int yLD) const
+		int_t xN, real_t alpha, const real_t *x, int_t xLD, real_t beta, real_t *y, int_t yLD) const
 {
 	long i, j, k, l, row, srt;
 
@@ -2085,9 +2085,9 @@ SymmetricMatrix *SymSparseMat::duplicateSym() const
 
 
 returnValue SymSparseMat::bilinear(const Indexlist* const icols,
-		int xN, const real_t *x, int xLD, real_t *y, int yLD) const
+		int_t xN, const real_t *x, int_t xLD, real_t *y, int_t yLD) const
 {
-	int i, j, k, l, idx, row, col;
+	int_t i, j, k, l, idx, row, col;
 
 	if ( jd == 0 )
 		return THROWERROR( RET_DIAGONAL_NOT_INITIALISED );

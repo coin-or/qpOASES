@@ -57,8 +57,8 @@ int main( int argc, char *argv[] )
 	options.printLevel = PL_TABULAR;
 
 
-	int nWSR;
-	int npass = 0;
+	int_t nWSR;
+	int_t npass = 0;
 	real_t maxCPUtime; /* seconds */
 	real_t maxStationarity = 0.0, maxFeasibility = 0.0, maxComplementarity = 0.0;
 

@@ -46,7 +46,7 @@ int main( )
 {
 	USING_NAMESPACE_QPOASES
 
-	int nWSR = 100;
+	int_t nWSR = 100;
 	/* Setting up QProblem object. */
 	SQProblem example( 11,3 );
 
@@ -104,8 +104,8 @@ int main( )
 	example.getPrimalSolution( xOpt );
 	example.getDualSolution( yOpt );
 	printf("first QP:\n");
-	for (int ii =0; ii<11; ++ii )	{
-		printf("x[%d] = %.3e\n", ii, xOpt[ii]);
+	for (int_t ii =0; ii<11; ++ii )	{
+		printf("x[%d] = %.3e\n", (int)ii, xOpt[ii]);
 	}
 
 	/* Compute KKT tolerances */
@@ -168,8 +168,8 @@ int main( )
 	example.getPrimalSolution( xOpt );
 	example.getDualSolution( yOpt );
 	printf("second QP:\n");
-	for (int ii =0; ii<11; ++ii )	{
-		printf("x[%d] = %.3e\n", ii, xOpt[ii]);
+	for (int_t ii =0; ii<11; ++ii )	{
+		printf("x[%d] = %.3e\n", (int)ii, xOpt[ii]);
 	}
 
 	/* Compute KKT tolerances */

@@ -47,7 +47,7 @@ int main( )
 {
 	USING_NAMESPACE_QPOASES
 
-	int i,j,jj;
+	int_t i,j,jj;
 	real_t d = 0.0;
 
 	/* Setup data of first QP... */
@@ -118,7 +118,7 @@ int main( )
 
 	/* Solve first QP. */
 	real_t cputime = 1.0;
-	int nWSR = 100;
+	int_t nWSR = 100;
 	example.init( H,g,A,0,0,lbA,0, nWSR,&cputime );
 
 	/* Get and print solution of QP. */
@@ -128,14 +128,14 @@ int main( )
 
 
 	/* Compute local linear feedback law */
-	const int n_rhs = 7+7+50;
+	const int_t n_rhs = 7+7+50;
 	real_t g_in[7*n_rhs];
 	real_t b_in[7*n_rhs];
 	real_t bA_in[50*n_rhs];
 	real_t x_out[7*n_rhs];
 	real_t y_out[(7+50)*n_rhs];
 
-	int ii;
+	int_t ii;
 	memset (g_in, 0, sizeof (g_in));
 	memset (b_in, 0, sizeof (b_in));
 	memset (bA_in, 0, sizeof (bA_in));

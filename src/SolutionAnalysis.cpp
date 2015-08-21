@@ -94,8 +94,8 @@ real_t SolutionAnalysis::getKktViolation(	QProblemB* const qp,
 											real_t* const maxStat, real_t* const maxFeas, real_t* const maxCmpl
 											) const
 {
-	int i;
-	int nV = qp->getNV();
+	int_t i;
+	int_t nV = qp->getNV();
 
 	if ( qp == 0 )
 		return INFTY;
@@ -167,9 +167,9 @@ real_t SolutionAnalysis::getKktViolation(	QProblem* const qp,
 											real_t* const maxStat, real_t* const maxFeas, real_t* const maxCmpl
 											) const
 {
-	int i;
-	int nV = qp->getNV();
-	int nC = qp->getNC();
+	int_t i;
+	int_t nV = qp->getNV();
+	int_t nC = qp->getNC();
 
 	if ( qp == 0 )
 		return INFTY;
@@ -280,11 +280,11 @@ returnValue SolutionAnalysis::getVarianceCovariance(	QProblem* qp,
 
   /* DEFINITION OF THE DIMENSIONS nV AND nC:
    * --------------------------------------- */
-  int nV  = qp->getNV( );                      /* dimension of x / the bounds */
-  int nC  = qp->getNC( );                      /* dimension of the constraints */
-  int dim = 2*nV+nC;                           /* dimension of input and output */
+  int_t nV  = qp->getNV( );                      /* dimension of x / the bounds */
+  int_t nC  = qp->getNC( );                      /* dimension of the constraints */
+  int_t dim = 2*nV+nC;                           /* dimension of input and output */
                                                /* variance-covariance matrix */
-  int run1, run2, run3;                        /* simple run variables (for loops). */
+  int_t run1, run2, run3;                        /* simple run variables (for loops). */
 
 
   /* ALLOCATION OF MEMORY:
@@ -305,7 +305,7 @@ returnValue SolutionAnalysis::getVarianceCovariance(	QProblem* qp,
    * (ASSUMES THAT ACTIVE SET IS CONSTANT FOR THE
    *  VARIANCE-COVARIANCE EVALUATION)
    * ----------------------------------------------- */
-  int nFR, nFX, nAC;
+  int_t nFR, nFX, nAC;
 
   nFR = qp->getNFR( );
   nFX = qp->getNFX( );
@@ -314,7 +314,7 @@ returnValue SolutionAnalysis::getVarianceCovariance(	QProblem* qp,
 
   /* ASK FOR THE CORRESPONDING INDEX ARRAYS:
    * --------------------------------------- */
-  int *FR_idx, *FX_idx, *AC_idx;
+  int_t *FR_idx, *FX_idx, *AC_idx;
 
   if ( qp->bounds.getFree( )->getNumberArray( &FR_idx ) != SUCCESSFUL_RETURN )
        return THROWERROR( RET_HOTSTART_FAILED );
@@ -537,7 +537,7 @@ returnValue SolutionAnalysis::checkCurvatureOnStronglyActiveConstraints( SQProbl
   returnValue ret;
   Bounds saveBounds;
   QProblemStatus saveStatus;
-  int k, neig, nAC, nFX, *FX_idx;
+  int_t k, neig, nAC, nFX, *FX_idx;
 
   nFX = qp->getNFX( );
   nAC = qp->getNAC( );
@@ -576,16 +576,16 @@ returnValue SolutionAnalysis::checkCurvatureOnStronglyActiveConstraints( SQProbl
 }
 
 
-//int SolutionAnalysis::checkCurvatureOnStronglyActiveConstraints( SQProblemSchur* qp )
+//int_t SolutionAnalysis::checkCurvatureOnStronglyActiveConstraints( SQProblemSchur* qp )
 //{
   //real_t eps = 1.0e-16;
   //real_t oldDet, newDet;
-  //int oldNS;
+  //int_t oldNS;
   //returnValue ret;
   //Bounds saveBounds;
   //QProblemStatus saveStatus;
-  //int nFX, *FX_idx;
-  //int k, fail, neig, rmCnt, nAC;
+  //int_t nFX, *FX_idx;
+  //int_t k, fail, neig, rmCnt, nAC;
 
   //// Get active bounds (deep copy)
   //nFX = qp->getNFX( );

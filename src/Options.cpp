@@ -415,10 +415,10 @@ returnValue Options::print( ) const
 	snprintf( myPrintfString,MAX_STRING_LENGTH,"enableNZCTests                 =  %s\n",info );
 	myPrintf( myPrintfString );
 
-	snprintf( myPrintfString,MAX_STRING_LENGTH,"enableDriftCorrection          =  %d\n",enableDriftCorrection );
+	snprintf( myPrintfString,MAX_STRING_LENGTH,"enableDriftCorrection          =  %d\n",(int)enableDriftCorrection );
 	myPrintf( myPrintfString );
 
-	snprintf( myPrintfString,MAX_STRING_LENGTH,"enableCholeskyRefactorisation  =  %d\n",enableCholeskyRefactorisation );
+	snprintf( myPrintfString,MAX_STRING_LENGTH,"enableCholeskyRefactorisation  =  %d\n",(int)enableCholeskyRefactorisation );
 	myPrintf( myPrintfString );
 
 	convertBooleanTypeToString( enableEqualities,info );
@@ -476,13 +476,13 @@ returnValue Options::print( ) const
 	snprintf( myPrintfString,MAX_STRING_LENGTH,"epsFlipping                    =  %e\n",epsFlipping );
 	myPrintf( myPrintfString );
 
-	snprintf( myPrintfString,MAX_STRING_LENGTH,"numRegularisationSteps         =  %d\n",numRegularisationSteps );
+	snprintf( myPrintfString,MAX_STRING_LENGTH,"numRegularisationSteps         =  %d\n",(int)numRegularisationSteps );
 	myPrintf( myPrintfString );
 
 	snprintf( myPrintfString,MAX_STRING_LENGTH,"epsRegularisation              =  %e\n",epsRegularisation );
 	myPrintf( myPrintfString );
 
-	snprintf( myPrintfString,MAX_STRING_LENGTH,"numRefinementSteps             =  %d\n",numRefinementSteps );
+	snprintf( myPrintfString,MAX_STRING_LENGTH,"numRefinementSteps             =  %d\n",(int)numRefinementSteps );
 	myPrintf( myPrintfString );
 
 	snprintf( myPrintfString,MAX_STRING_LENGTH,"epsIterRef                     =  %e\n",epsIterRef );
@@ -494,7 +494,7 @@ returnValue Options::print( ) const
 	snprintf( myPrintfString,MAX_STRING_LENGTH,"epsNZCTests                    =  %e\n",epsNZCTests );
 	myPrintf( myPrintfString );
 
-	snprintf( myPrintfString,MAX_STRING_LENGTH,"printResiduals                 =  %d\n", printResiduals);
+	snprintf( myPrintfString,MAX_STRING_LENGTH,"printResiduals                 =  %d\n",(int)printResiduals);
 	myPrintf( myPrintfString );
 
 	myPrintf( "\n\n" );

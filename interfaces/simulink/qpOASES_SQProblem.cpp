@@ -314,8 +314,8 @@ static void mdlOutputs(SimStruct *S, int_T tid)
 	int nV, nC;
 	returnValue status;
 
-	int nWSR = MAXITER;
-	int nU   = NCONTROLINPUTS;
+	int_t nWSR = MAXITER;
+	int nU     = NCONTROLINPUTS;
 
 	InputRealPtrsType in_H, in_g, in_A, in_lb, in_ub, in_lbA, in_ubA;
 
@@ -407,7 +407,7 @@ static void mdlOutputs(SimStruct *S, int_T tid)
 			problem->reset( );
             
             /* ... and initialise/solve again with remaining number of iterations. */
-            int nWSR_retry = MAXITER - nWSR;
+            int_t nWSR_retry = MAXITER - nWSR;
 			status = problem->init( H,g,A,lb,ub,lbA,ubA, nWSR_retry,0 );
             nWSR += nWSR_retry;
 		}
