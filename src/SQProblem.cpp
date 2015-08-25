@@ -523,9 +523,14 @@ returnValue SQProblem::setupNewAuxiliaryQP(	const real_t* const H_new, const rea
 	SymDenseMat *sH = 0;
 
 	if ( A_new != 0 )
+	{
 		dA = new DenseMatrix(nC, nV, nV, (real_t*) A_new);
+	}
 	else
-		return THROWERROR( RET_INVALID_ARGUMENTS );
+	{
+		if ( nC > 0 )
+			return THROWERROR( RET_INVALID_ARGUMENTS );
+	}
 
 	if ( H_new != 0 )
 		sH = new SymDenseMat(nV, nV, nV, (real_t*) H_new);
