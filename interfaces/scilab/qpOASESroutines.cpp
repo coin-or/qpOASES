@@ -55,40 +55,40 @@ static SQProblem* sqp = 0;
 
 extern "C"
 {
-	void qpoases(	real_t* H, real_t* g, real_t* A, real_t* lb, real_t* ub, real_t* lbA, real_t* ubA,
-					int_t *nV, int_t* nC, int_t* nWSR,
-					real_t* x, real_t* obj, int_t* status, int_t* nWSRout, real_t* y
-					);
-
-	void init(		real_t* H, real_t* g, real_t* A, real_t* lb, real_t* ub, real_t* lbA, real_t* ubA,
-					int_t* nV, int_t* nC, int_t* nWSR,
-					real_t* x, real_t* obj, int_t* status, int_t* nWSRout, real_t* y
-					);
-	void initSB(	real_t* H, real_t* g, real_t* lb, real_t* ub,
-					int_t* nV, int_t* nWSR,
-					real_t* x, real_t* obj, int_t* status, int_t* nWSRout, real_t* y
-					);
-	void initVM(	real_t* H, real_t* g, real_t* A, real_t* lb, real_t* ub, real_t* lbA, real_t* ubA,
-					int_t* nV, int_t* nC, int_t* nWSR,
-					real_t* x, real_t* obj, int_t* status, int_t* nWSRout, real_t* y
-					);
-
-	void hotstart(		real_t* g, real_t* lb, real_t* ub, real_t* lbA, real_t* ubA,
-						int_t* nWSR,
-						real_t* x, real_t* obj, int_t* status, int_t* nWSRout, real_t* y
-						);
-	void hotstartSB(	real_t* g, real_t* lb, real_t* ub,
-						int_t* nWSR,
-						real_t* x, real_t* obj, int_t* status, int_t* nWSRout, real_t* y
-						);
-	void hotstartVM(	real_t* H, real_t* g, real_t* A, real_t* lb, real_t* ub, real_t* lbA, real_t* ubA,
-						int_t* nWSR,
+	void sci_qpOASES(	real_t* H, real_t* g, real_t* A, real_t* lb, real_t* ub, real_t* lbA, real_t* ubA,
+						int_t *nV, int_t* nC, int_t* nWSR,
 						real_t* x, real_t* obj, int_t* status, int_t* nWSRout, real_t* y
 						);
 
-	void cleanupp( );
-	void cleanupSB( );
-	void cleanupVM( );
+	void sci_QProblem_init( 	real_t* H, real_t* g, real_t* A, real_t* lb, real_t* ub, real_t* lbA, real_t* ubA,
+								int_t* nV, int_t* nC, int_t* nWSR,
+								real_t* x, real_t* obj, int_t* status, int_t* nWSRout, real_t* y
+								);
+	void sci_QProblemB_init(	real_t* H, real_t* g, real_t* lb, real_t* ub,
+								int_t* nV, int_t* nWSR,
+								real_t* x, real_t* obj, int_t* status, int_t* nWSRout, real_t* y
+								);
+	void sci_SQProblem_init(	real_t* H, real_t* g, real_t* A, real_t* lb, real_t* ub, real_t* lbA, real_t* ubA,
+								int_t* nV, int_t* nC, int_t* nWSR,
+								real_t* x, real_t* obj, int_t* status, int_t* nWSRout, real_t* y
+								);
+
+	void sci_QProblem_hotstart( 	real_t* g, real_t* lb, real_t* ub, real_t* lbA, real_t* ubA,
+									int_t* nWSR,
+									real_t* x, real_t* obj, int_t* status, int_t* nWSRout, real_t* y
+									);
+	void sci_QProblemB_hotstart(	real_t* g, real_t* lb, real_t* ub,
+									int_t* nWSR,
+									real_t* x, real_t* obj, int_t* status, int_t* nWSRout, real_t* y
+									);
+	void sci_SQProblem_hotstart(	real_t* H, real_t* g, real_t* A, real_t* lb, real_t* ub, real_t* lbA, real_t* ubA,
+									int_t* nWSR,
+									real_t* x, real_t* obj, int_t* status, int_t* nWSRout, real_t* y
+									);
+
+	void sci_QProblem_cleanup( );
+	void sci_QProblemB_cleanup( );
+	void sci_SQProblem_cleanup( );
 } /* extern "C" */
 
 
@@ -116,27 +116,16 @@ void transformA( real_t* A, int_t nV, int_t nC )
 
 
 /*
- *	q p o a s e s
+ *	q p O A S E S
  */
-void qpoases(	real_t* H, real_t* g, real_t* A, real_t* lb, real_t* ub, real_t* lbA, real_t* ubA,
-				int_t *nV, int_t* nC, int_t* nWSR,
-				real_t* x, real_t* obj, int_t* status, int_t* nWSRout, real_t* y
-				)
+void sci_qpOASES(	real_t* H, real_t* g, real_t* A, real_t* lb, real_t* ub, real_t* lbA, real_t* ubA,
+					int_t *nV, int_t* nC, int_t* nWSR,
+					real_t* x, real_t* obj, int_t* status, int_t* nWSRout, real_t* y
+					)
 {
 	/* transform A into C style matrix */
 	transformA( A, *nV,*nC );
 	
-	/*nWSRout[0] = nWSR[0];
-
-	QProblem_setup(	*nV,*nC,HST_UNKNOWN );
-	
-	QProblem_init(	H,g,A,lb,ub,lbA,ubA,
-					nWSRout,0,0,
-					x,y,obj,status
-					);
-	
-	QProblem_cleanup();*/
-
 	/* setup and solve initial QP */
 	QProblem single_qp( *nV,*nC );
 	single_qp.setPrintLevel( PL_LOW );
@@ -154,14 +143,14 @@ void qpoases(	real_t* H, real_t* g, real_t* A, real_t* lb, real_t* ub, real_t* l
 
 
 /*
- *	i n i t
+ *	Q P r o b l e m _ i n i t
  */
-void init(	real_t* H, real_t* g, real_t* A, real_t* lb, real_t* ub, real_t* lbA, real_t* ubA,
-			int_t* nV, int_t* nC, int_t* nWSR,
-			real_t* x, real_t* obj, int_t* status, int_t* nWSRout, real_t* y
-			)
+void sci_QProblem_init( 	real_t* H, real_t* g, real_t* A, real_t* lb, real_t* ub, real_t* lbA, real_t* ubA,
+							int_t* nV, int_t* nC, int_t* nWSR,
+							real_t* x, real_t* obj, int_t* status, int_t* nWSRout, real_t* y
+							)
 {
-	cleanupp( );
+	sci_QProblem_cleanup( );
 
 	/* transform A into C style matrix */
 	transformA( A, *nV,*nC );
@@ -183,14 +172,14 @@ void init(	real_t* H, real_t* g, real_t* A, real_t* lb, real_t* ub, real_t* lbA,
 
 
 /*
- *	i n i t S B
+ *	Q P r o b l e m B _ i n i t
  */
-void initSB(	real_t* H, real_t* g, real_t* lb, real_t* ub,
-				int_t* nV, int_t* nWSR,
-				real_t* x, real_t* obj, int_t* status, int_t* nWSRout, real_t* y
-				)
+void sci_QProblemB_init(	real_t* H, real_t* g, real_t* lb, real_t* ub,
+							int_t* nV, int_t* nWSR,
+							real_t* x, real_t* obj, int_t* status, int_t* nWSRout, real_t* y
+							)
 {
-	cleanupSB( );
+	sci_QProblemB_cleanup( );
 
 	/* setup and solve initial QP */
 	qpb = new QProblemB( *nV );
@@ -209,14 +198,14 @@ void initSB(	real_t* H, real_t* g, real_t* lb, real_t* ub,
 
 
 /*
- *	i n i t V M
+ *	S Q P r o b l e m _ i n i t
  */
-void initVM(	real_t* H, real_t* g, real_t* A, real_t* lb, real_t* ub, real_t* lbA, real_t* ubA,
-				int_t* nV, int_t* nC, int_t* nWSR,
-				real_t* x, real_t* obj, int_t* status, int_t* nWSRout, real_t* y
-				)
+void sci_SQProblem_init(	real_t* H, real_t* g, real_t* A, real_t* lb, real_t* ub, real_t* lbA, real_t* ubA,
+							int_t* nV, int_t* nC, int_t* nWSR,
+							real_t* x, real_t* obj, int_t* status, int_t* nWSRout, real_t* y
+							)
 {
-	cleanupVM( );
+	sci_SQProblem_cleanup( );
 
 	/* transform A into C style matrix */
 	transformA( A, *nV,*nC );
@@ -238,12 +227,12 @@ void initVM(	real_t* H, real_t* g, real_t* A, real_t* lb, real_t* ub, real_t* lb
 
 
 /*
- *	h o t s t a r t
+ *	Q P r o b l e m _ h o t s t a r t
  */
-void hotstart(	real_t* g, real_t* lb, real_t* ub, real_t* lbA, real_t* ubA,
-				int_t* nWSR,
-				real_t* x, real_t* obj, int_t* status, int_t* nWSRout, real_t* y
-				)
+void sci_QProblem_hotstart( 	real_t* g, real_t* lb, real_t* ub, real_t* lbA, real_t* ubA,
+								int_t* nWSR,
+								real_t* x, real_t* obj, int_t* status, int_t* nWSRout, real_t* y
+								)
 {
 	/* has QP been initialised? */
 	if ( qp == 0 )
@@ -268,18 +257,18 @@ void hotstart(	real_t* g, real_t* lb, real_t* ub, real_t* lbA, real_t* ubA,
 
 
 /*
- *	h o t s t a r t S B
+ *	Q P r o b l e m B _ h o t s t a r t
  */
-void hotstartSB(	real_t* g, real_t* lb, real_t* ub,
-					int_t* nWSR,
-					real_t* x, real_t* obj, int_t* status, int_t* nWSRout, real_t* y
-					)
+void sci_QProblemB_hotstart(	real_t* g, real_t* lb, real_t* ub,
+								int_t* nWSR,
+								real_t* x, real_t* obj, int_t* status, int_t* nWSRout, real_t* y
+								)
 {
 	/* has QP been initialised? */
 	if ( qpb == 0 )
 	{
 		*status = -1;
-		Scierror( 999,"ERROR (qpOASES): Need to call qpOASES_init first!\n" );
+		Scierror( 999,"ERROR (qpOASES): Need to call qpOASES_initSB first!\n" );
 		return;
 	}
 
@@ -298,18 +287,18 @@ void hotstartSB(	real_t* g, real_t* lb, real_t* ub,
 
 
 /*
- *	h o t s t a r t V M
+ *	S Q P r o b l e m _ h o t s t a r t
  */
-void hotstartVM(	real_t* H, real_t* g, real_t* A, real_t* lb, real_t* ub, real_t* lbA, real_t* ubA,
-					int_t* nWSR,
-					real_t* x, real_t* obj, int_t* status, int_t* nWSRout, real_t* y
-					)
+void sci_SQProblem_hotstart(	real_t* H, real_t* g, real_t* A, real_t* lb, real_t* ub, real_t* lbA, real_t* ubA,
+								int_t* nWSR,
+								real_t* x, real_t* obj, int_t* status, int_t* nWSRout, real_t* y
+								)
 {
 	/* has QP been initialised? */
 	if ( sqp == 0 )
 	{
 		*status = -1;
-		Scierror( 999,"ERROR (qpOASES): Need to call qpOASES_init first!\n" );
+		Scierror( 999,"ERROR (qpOASES): Need to call qpOASES_initVM first!\n" );
 		return;
 	}
 
@@ -331,11 +320,10 @@ void hotstartVM(	real_t* H, real_t* g, real_t* A, real_t* lb, real_t* ub, real_t
 
 
 /*
- *	c l e a n u p p
+ *	Q P r o b l e m _ c l e a n u p
  */
-void cleanupp( )
+void sci_QProblem_cleanup( )
 {
-	/* Remark: A function cleanup already exists! */
 	if ( qp != 0 )
 	{
 		delete qp;
@@ -347,9 +335,9 @@ void cleanupp( )
 
 
 /*
- *	c l e a n u p S B
+ *	Q P r o b l e m B _ c l e a n u p
  */
-void cleanupSB( )
+void sci_QProblemB_cleanup( )
 {
 	if ( qpb != 0 )
 	{
@@ -362,9 +350,9 @@ void cleanupSB( )
 
 
 /*
- *	c l e a n u p V M
+ *	S Q P r o b l e m _ c l e a n u p
  */
-void cleanupVM( )
+void sci_SQProblem_cleanup( )
 {
 	if ( sqp != 0 )
 	{

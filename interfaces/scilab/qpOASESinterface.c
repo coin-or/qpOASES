@@ -40,20 +40,23 @@
 #include <scilab/stack-c.h>
 #include <scilab/Scierror.h>
 
+#include "../c/qpOASES_wrapper.h"
 
-extern int int_qpOASES( char* fname );
 
-extern int int_init(   char* fname );
-extern int int_initSB( char* fname );
-extern int int_initVM( char* fname );
 
-extern int int_solve(   char* fname );
-extern int int_solveSB( char* fname );
-extern int int_solveVM( char* fname );
+extern int interface_qpOASES( char* fname );
 
-extern int int_cleanup(   char* fname );
-extern int int_cleanupSB( char* fname );
-extern int int_cleanupVM( char* fname );
+extern int interface_QProblem_init(  char* fname );
+extern int interface_QProblemB_init( char* fname );
+extern int interface_SQProblem_init( char* fname );
+
+extern int interface_QProblem_hotstart(  char* fname );
+extern int interface_QProblemB_hotstart( char* fname );
+extern int interface_SQProblem_hotstart( char* fname );
+
+extern int interface_QProblem_cleanup(  char* fname );
+extern int interface_QProblemB_cleanup( char* fname );
+extern int interface_SQProblem_cleanup( char* fname );
 
 
 typedef int (*gate_function) ( char* );
@@ -62,40 +65,40 @@ extern int C2F(qpOASESgateway)();
 
 
 /* forward declaration of C++ routines */
-void qpoases(	double* H, double* g, double* A, double* lb, double* ub, double* lbA, double* ubA,
-				int_t *nV, int_t* nC, int_t* nWSR,
-				double* x, double* obj, int_t* status, int_t* nWSRout, double* y
-				);
-
-void init(		double* H, double* g, double* A, double* lb, double* ub, double* lbA, double* ubA,
-				int_t *nV, int_t* nC, int_t* nWSR,
-				double* x, double* obj, int_t* status, int_t* nWSRout, double* y
-				);
-void initSB(	double* H, double* g, double* lb, double* ub,
-				int_t *nV, int_t* nWSR,
-				double* x, double* obj, int_t* status, int_t* nWSRout, double* y
-				);
-void initVM(	double* H, double* g, double* A, double* lb, double* ub, double* lbA, double* ubA,
-				int_t *nV, int_t* nC, int_t* nWSR,
-				double* x, double* obj, int_t* status, int_t* nWSRout, double* y
-				);
-
-void hotstart(		double* g, double* lb, double* ub, double* lbA, double* ubA,
-					int_t* nWSR,
-					double* x, double* obj, int_t* status, int_t* nWSRout, double* y
-					);
-void hotstartSB(	double* g, double* lb, double* ub,
-					int_t* nWSR,
-					double* x, double* obj, int_t* status, int_t* nWSRout, double* y
-					);
-void hotstartVM(	double* H, double* g, double* A, double* lb, double* ub, double* lbA, double* ubA,
-					int_t* nWSR,
-					double* x, double* obj, int_t* status, int_t* nWSRout, double* y
+void sci_qpOASES(	real_t* H, real_t* g, real_t* A, real_t* lb, real_t* ub, real_t* lbA, real_t* ubA,
+					int_t *nV, int_t* nC, int_t* nWSR,
+					real_t* x, real_t* obj, int_t* status, int_t* nWSRout, real_t* y
 					);
 
-void cleanupp( );
-void cleanupSB( );
-void cleanupVM( );
+void sci_QProblem_init( real_t* H, real_t* g, real_t* A, real_t* lb, real_t* ub, real_t* lbA, real_t* ubA,
+						int_t *nV, int_t* nC, int_t* nWSR,
+						real_t* x, real_t* obj, int_t* status, int_t* nWSRout, real_t* y
+						);
+void sci_QProblemB_init(	real_t* H, real_t* g, real_t* lb, real_t* ub,
+							int_t *nV, int_t* nWSR,
+							real_t* x, real_t* obj, int_t* status, int_t* nWSRout, real_t* y
+							);
+void sci_SQProblem_init(	real_t* H, real_t* g, real_t* A, real_t* lb, real_t* ub, real_t* lbA, real_t* ubA,
+							int_t *nV, int_t* nC, int_t* nWSR,
+							real_t* x, real_t* obj, int_t* status, int_t* nWSRout, real_t* y
+							);
+
+void sci_QProblem_hotstart(		real_t* g, real_t* lb, real_t* ub, real_t* lbA, real_t* ubA,
+								int_t* nWSR,
+								real_t* x, real_t* obj, int_t* status, int_t* nWSRout, real_t* y
+								);
+void sci_QProblemB_hotstart(	real_t* g, real_t* lb, real_t* ub,
+								int_t* nWSR,
+								real_t* x, real_t* obj, int_t* status, int_t* nWSRout, real_t* y
+								);
+void sci_SQProblem_hotstart(	real_t* H, real_t* g, real_t* A, real_t* lb, real_t* ub, real_t* lbA, real_t* ubA,
+								int_t* nWSR,
+								real_t* x, real_t* obj, int_t* status, int_t* nWSRout, real_t* y
+								);
+
+void sci_QProblem_cleanup( );
+void sci_QProblemB_cleanup( );
+void sci_SQProblem_cleanup( );
 
 
 /* global variables containing dimensions of matrices
@@ -108,9 +111,9 @@ static int_t sqp_rowsA = -1;
 
 
 /*
- *	i n t _ q p O A S E S
+ *	i n t e r f a c e _ q p O A S E S
  */
-int int_qpOASES( char* fname )
+int interface_qpOASES( char* fname )
 {
 	int_t H, H_rows, H_cols;
 	int_t g, g_rows, g_cols;
@@ -167,14 +170,14 @@ int int_qpOASES( char* fname )
 	}
 
 	GetRhsVar( 6,"d", &lbA_rows,&lbA_cols,&lbA);
-	if ( ( lbA_rows != A_rows ) || ( lbA_cols != 1 ) )
+	if ( !( ( ( lbA_rows == A_rows ) && ( lbA_cols == 1 ) ) || ( ( lbA_rows == 0 ) && ( lbA_cols == 0 ) ) ) )
 	{
 		Scierror( 116,"ERROR (qpOASES): Dimension mismatch!\n" );
 		return 0;
 	}
 
 	GetRhsVar( 7,"d", &ubA_rows,&ubA_cols,&ubA);
-	if ( ( ubA_rows != A_rows ) || ( ubA_cols != 1 ) )
+	if ( !( ( ( ubA_rows == A_rows ) && ( ubA_cols == 1 ) ) || ( ( ubA_rows == 0 ) && ( ubA_cols == 0 ) ) ) )
 	{
 		Scierror( 117,"ERROR (qpOASES): Dimension mismatch!\n" );
 		return 0;
@@ -198,34 +201,10 @@ int int_qpOASES( char* fname )
 
 
 	/* call interfaced qpOASES routines with appropriate arguments */
-	if ( ( lb_rows != 0 ) && ( ub_rows != 0 ) )
-	{
-		qpoases(	stk(H),stk(g),stk(A),stk(lb),stk(ub),stk(lbA),stk(ubA),
+	sci_qpOASES(	stk(H),stk(g),stk(A), (lb_rows!=0) ? stk(lb) : 0, (ub_rows!=0) ? stk(ub) : 0, (lbA_rows!=0) ? stk(lbA) : 0, (ubA_rows!=0) ? stk(ubA) : 0,
 					&H_rows,&A_rows,istk(nWSR),
 					stk(x),stk(obj),istk(status),istk(nWSRout),stk(y)
 					);
-	}
-	else if ( ( lb_rows == 0 ) && ( ub_rows != 0 ) )
-	{
-		qpoases(	stk(H),stk(g),stk(A),0,stk(ub),stk(lbA),stk(ubA),
-					&H_rows,&A_rows,istk(nWSR),
-					stk(x),stk(obj),istk(status),istk(nWSRout),stk(y)
-					);
-	}
-	else if ( ( lb_rows != 0 ) && ( ub_rows == 0 ) )
-	{
-		qpoases(	stk(H),stk(g),stk(A),stk(lb),0,stk(lbA),stk(ubA),
-					&H_rows,&A_rows,istk(nWSR),
-					stk(x),stk(obj),istk(status),istk(nWSRout),stk(y)
-					);
-	}
-	else
-	{
-		qpoases(	stk(H),stk(g),stk(A),0,0,stk(lbA),stk(ubA),
-					&H_rows,&A_rows,istk(nWSR),
-					stk(x),stk(obj),istk(status),istk(nWSRout),stk(y)
-					);
-	}
 
 	LhsVar(1) = 9;
 	LhsVar(2) = 10;
@@ -238,9 +217,9 @@ int int_qpOASES( char* fname )
 
 
 /*
- *	i n t _ i n i t
+ *	i n t e r f a c e _ Q P r o b l e m _ i n i t
  */
-int int_init( char* fname )
+int interface_QProblem_init( char* fname )
 {
 	int_t H, H_rows, H_cols;
 	int_t g, g_rows, g_cols;
@@ -297,14 +276,14 @@ int int_init( char* fname )
 	}
 
 	GetRhsVar( 6,"d", &lbA_rows,&lbA_cols,&lbA);
-	if ( ( lbA_rows != A_rows ) || ( lbA_cols != 1 ) )
+	if ( !( ( ( lbA_rows == A_rows ) && ( lbA_cols == 1 ) ) || ( ( lbA_rows == 0 ) && ( lbA_cols == 0 ) ) ) )
 	{
 		Scierror( 216,"ERROR (qpOASES): Dimension mismatch!\n" );
 		return 0;
 	}
 
 	GetRhsVar( 7,"d", &ubA_rows,&ubA_cols,&ubA);
-	if ( ( ubA_rows != A_rows ) || ( ubA_cols != 1 ) )
+	if ( !( ( ( ubA_rows == A_rows ) && ( ubA_cols == 1 ) ) || ( ( ubA_rows == 0 ) && ( ubA_cols == 0 ) ) ) )
 	{
 		Scierror( 217,"ERROR (qpOASES): Dimension mismatch!\n" );
 		return 0;
@@ -332,34 +311,10 @@ int int_init( char* fname )
 
 
 	/* call interfaced qpOASES routines with appropriate arguments */
-	if ( ( lb_rows != 0 ) && ( ub_rows != 0 ) )
-	{
-		init(	stk(H),stk(g),stk(A),stk(lb),stk(ub),stk(lbA),stk(ubA),
-				&H_rows,&A_rows,istk(nWSR),
-				stk(x),stk(obj),istk(status),istk(nWSRout),stk(y)
-				);
-	}
-	else if ( ( lb_rows == 0 ) && ( ub_rows != 0 ) )
-	{
-		init(	stk(H),stk(g),stk(A),0,stk(ub),stk(lbA),stk(ubA),
-				&H_rows,&A_rows,istk(nWSR),
-				stk(x),stk(obj),istk(status),istk(nWSRout),stk(y)
-				);
-	}
-	else if ( ( lb_rows != 0 ) && ( ub_rows == 0 ) )
-	{
-		init(	stk(H),stk(g),stk(A),stk(lb),0,stk(lbA),stk(ubA),
-				&H_rows,&A_rows,istk(nWSR),
-				stk(x),stk(obj),istk(status),istk(nWSRout),stk(y)
-				);
-	}
-	else
-	{
-		init(	stk(H),stk(g),stk(A),0,0,stk(lbA),stk(ubA),
-				&H_rows,&A_rows,istk(nWSR),
-				stk(x),stk(obj),istk(status),istk(nWSRout),stk(y)
-				);
-	}
+	sci_QProblem_init(	stk(H),stk(g),stk(A), (lb_rows!=0) ? stk(lb) : 0, (ub_rows!=0) ? stk(ub) : 0, (lbA_rows!=0) ? stk(lbA) : 0, (ubA_rows!=0) ? stk(ubA) : 0,
+						&H_rows,&A_rows,istk(nWSR),
+						stk(x),stk(obj),istk(status),istk(nWSRout),stk(y)
+						);
 
 	LhsVar(1) = 9;
 	LhsVar(2) = 10;
@@ -372,9 +327,9 @@ int int_init( char* fname )
 
 
 /*
- *	i n t _ i n i t S B
+ *	i n t e r f a c e _ Q P r o b l e m B _ i n i t
  */
-int int_initSB( char* fname )
+int interface_QProblemB_init( char* fname )
 {
 	int_t H, H_rows, H_cols;
 	int_t g, g_rows, g_cols;
@@ -439,34 +394,10 @@ int int_initSB( char* fname )
 
 
 	/* call interfaced qpOASES routines with appropriate arguments */
-	if ( ( lb_rows != 0 ) && ( ub_rows != 0 ) )
-	{
-		initSB(	stk(H),stk(g),stk(lb),stk(ub),
-				&H_rows,istk(nWSR),
-				stk(x),stk(obj),istk(status),istk(nWSRout),stk(y)
-				);
-	}
-	else if ( ( lb_rows == 0 ) && ( ub_rows != 0 ) )
-	{
-		initSB(	stk(H),stk(g),0,stk(ub),
-				&H_rows,istk(nWSR),
-				stk(x),stk(obj),istk(status),istk(nWSRout),stk(y)
-				);
-	}
-	else if ( ( lb_rows != 0 ) && ( ub_rows == 0 ) )
-	{
-		initSB(	stk(H),stk(g),stk(lb),0,
-				&H_rows,istk(nWSR),
-				stk(x),stk(obj),istk(status),istk(nWSRout),stk(y)
-				);
-	}
-	else
-	{
-		initSB(	stk(H),stk(g),0,0,
-				&H_rows,istk(nWSR),
-				stk(x),stk(obj),istk(status),istk(nWSRout),stk(y)
-				);
-	}
+	sci_QProblemB_init( 	stk(H),stk(g), (lb_rows!=0) ? stk(lb) : 0, (ub_rows!=0) ? stk(ub) : 0,
+							&H_rows,istk(nWSR),
+							stk(x),stk(obj),istk(status),istk(nWSRout),stk(y)
+							);
 
 	LhsVar(1) = 9;
 	LhsVar(2) = 10;
@@ -479,9 +410,9 @@ int int_initSB( char* fname )
 
 
 /*
- *	i n t _ i n i t V M
+ *	i n t e r f a c e _ S Q P r o b l e m _ i n i t
  */
-int int_initVM( char* fname )
+int interface_SQProblem_init( char* fname )
 {
 	int_t H, H_rows, H_cols;
 	int_t g, g_rows, g_cols;
@@ -538,14 +469,14 @@ int int_initVM( char* fname )
 	}
 
 	GetRhsVar( 6,"d", &lbA_rows,&lbA_cols,&lbA );
-	if ( ( lbA_rows != A_rows ) || ( lbA_cols != 1 ) )
+	if ( !( ( ( lbA_rows == A_rows ) && ( lbA_cols == 1 ) ) || ( ( lbA_rows == 0 ) && ( lbA_cols == 0 ) ) ) )
 	{
 		Scierror( 236,"ERROR (qpOASES): Dimension mismatch!\n" );
 		return 0;
 	}
 
 	GetRhsVar( 7,"d", &ubA_rows,&ubA_cols,&ubA );
-	if ( ( ubA_rows != A_rows ) || ( ubA_cols != 1 ) )
+	if ( !( ( ( ubA_rows == A_rows ) && ( ubA_cols == 1 ) ) || ( ( ubA_rows == 0 ) && ( ubA_cols == 0 ) ) ) )
 	{
 		Scierror( 237,"ERROR (qpOASES): Dimension mismatch!\n" );
 		return 0;
@@ -573,35 +504,11 @@ int int_initVM( char* fname )
 
 
 	/* call interfaced qpOASES routines with appropriate arguments */
-	if ( ( lb_rows != 0 ) && ( ub_rows != 0 ) )
-	{
-		initVM(	stk(H),stk(g),stk(A),stk(lb),stk(ub),stk(lbA),stk(ubA),
-				&H_rows,&A_rows,istk(nWSR),
-				stk(x),stk(obj),istk(status),istk(nWSRout),stk(y)
-				);
-	}
-	else if ( ( lb_rows == 0 ) && ( ub_rows != 0 ) )
-	{
-		initVM(	stk(H),stk(g),stk(A),0,stk(ub),stk(lbA),stk(ubA),
-				&H_rows,&A_rows,istk(nWSR),
-				stk(x),stk(obj),istk(status),istk(nWSRout),stk(y)
-				);
-	}
-	else if ( ( lb_rows != 0 ) && ( ub_rows == 0 ) )
-	{
-		initVM(	stk(H),stk(g),stk(A),stk(lb),0,stk(lbA),stk(ubA),
-				&H_rows,&A_rows,istk(nWSR),
-				stk(x),stk(obj),istk(status),istk(nWSRout),stk(y)
-				);
-	}
-	else
-	{
-		initVM(	stk(H),stk(g),stk(A),0,0,stk(lbA),stk(ubA),
-				&H_rows,&A_rows,istk(nWSR),
-				stk(x),stk(obj),istk(status),istk(nWSRout),stk(y)
-				);
-	}
-
+	sci_SQProblem_init( 	stk(H),stk(g),stk(A), (lb_rows!=0) ? stk(lb) : 0, (ub_rows!=0) ? stk(ub) : 0, (lbA_rows!=0) ? stk(lbA) : 0, (ubA_rows!=0) ? stk(ubA) : 0,
+							&H_rows,&A_rows,istk(nWSR),
+							stk(x),stk(obj),istk(status),istk(nWSRout),stk(y)
+							);
+	
 	LhsVar(1) = 9;
 	LhsVar(2) = 10;
 	LhsVar(3) = 11;
@@ -613,9 +520,9 @@ int int_initVM( char* fname )
 
 
 /*
- *	i n t _ h o t s t a r t
+ *	i n t e r f a c e _ Q P r o b l e m _ h o t s t a r t
  */
-int int_hotstart( char* fname )
+int interface_QProblem_hotstart( char* fname )
 {
 	int_t g, g_rows, g_cols;
 	int_t lb, lb_rows, lb_cols;
@@ -662,14 +569,14 @@ int int_hotstart( char* fname )
 	}
 
 	GetRhsVar( 4,"d", &lbA_rows,&lbA_cols,&lbA );
-	if ( ( lbA_rows != qp_rowsA ) || ( lbA_cols != 1 ) )
+	if ( !( ( ( lbA_rows == qp_rowsA ) && ( lbA_cols == 1 ) ) || ( ( lbA_rows == 0 ) && ( lbA_cols == 0 ) ) ) )
 	{
 		Scierror( 315,"ERROR (qpOASES): Dimension mismatch!\n" );
 		return 0;
 	}
 
 	GetRhsVar( 5,"d", &ubA_rows,&ubA_cols,&ubA );
-	if ( ( ubA_rows != qp_rowsA ) || ( ubA_cols != 1 ) )
+	if ( !( ( ( ubA_rows == qp_rowsA ) && ( ubA_cols == 1 ) ) || ( ( ubA_rows == 0 ) && ( ubA_cols == 0 ) ) ) )
 	{
 		Scierror( 316,"ERROR (qpOASES): Dimension mismatch!\n" );
 		return 0;
@@ -693,36 +600,11 @@ int int_hotstart( char* fname )
 
 
 	/* call interfaced qpOASES routines with appropriate arguments */
-	if ( ( lb_rows != 0 ) && ( ub_rows != 0 ) )
-	{
-		hotstart(	stk(g),stk(lb),stk(ub),stk(lbA),stk(ubA),
-					istk(nWSR),
-					stk(x),stk(obj),istk(status),istk(nWSRout),stk(y)
-					);
-	}
-	else if ( ( lb_rows == 0 ) && ( ub_rows != 0 ) )
-	{
-		hotstart(	stk(g),0,stk(ub),stk(lbA),stk(ubA),
-					istk(nWSR),
-					stk(x),stk(obj),istk(status),istk(nWSRout),stk(y)
-					);
-	}
-	else if ( ( lb_rows != 0 ) && ( ub_rows == 0 ) )
-	{
-		hotstart(	stk(g),stk(lb),0,stk(lbA),stk(ubA),
-					istk(nWSR),
-					stk(x),stk(obj),istk(status),istk(nWSRout),stk(y)
-					);
-	}
-	else
-	{
-		hotstart(	stk(g),0,0,stk(lbA),stk(ubA),
-					istk(nWSR),
-					stk(x),stk(obj),istk(status),istk(nWSRout),stk(y)
-					);
-	}
-
-
+	sci_QProblem_hotstart( 	stk(g), (lb_rows!=0) ? stk(lb) : 0, (ub_rows!=0) ? stk(ub) : 0, (lbA_rows!=0) ? stk(lbA) : 0, (ubA_rows!=0) ? stk(ubA) : 0,
+							istk(nWSR),
+							stk(x),stk(obj),istk(status),istk(nWSRout),stk(y)
+							);
+	
 	LhsVar(1) = 7;
 	LhsVar(2) = 8;
 	LhsVar(3) = 9;
@@ -734,9 +616,9 @@ int int_hotstart( char* fname )
 
 
 /*
- *	i n t _ h o t s t a r t S B
+ *	i n t e r f a c e _ Q P r o b l e m B _ h o t s t a r t
  */
-int int_hotstartSB( char* fname )
+int interface_QProblemB_hotstart( char* fname )
 {
 	int_t g, g_rows, g_cols;
 	int_t lb, lb_rows, lb_cols;
@@ -754,7 +636,7 @@ int int_hotstartSB( char* fname )
 
 	if ( qpb_rowsH == -1 )
 	{
-		Scierror( 321,"ERROR (qpOASES): Need to call qpOASES_init first!\n" );
+		Scierror( 321,"ERROR (qpOASES): Need to call qpOASES_initSB first!\n" );
 		return 0;
 	}
 
@@ -796,35 +678,10 @@ int int_hotstartSB( char* fname )
 
 
 	/* call interfaced qpOASES routines with appropriate arguments */
-	if ( ( lb_rows != 0 ) && ( ub_rows != 0 ) )
-	{
-		hotstartSB(	stk(g),stk(lb),stk(ub),
-					istk(nWSR),
-					stk(x),stk(obj),istk(status),istk(nWSRout),stk(y)
-					);
-	}
-	else if ( ( lb_rows == 0 ) && ( ub_rows != 0 ) )
-	{
-		hotstartSB(	stk(g),0,stk(ub),
-					istk(nWSR),
-					stk(x),stk(obj),istk(status),istk(nWSRout),stk(y)
-					);
-	}
-	else if ( ( lb_rows != 0 ) && ( ub_rows == 0 ) )
-	{
-		hotstartSB(	stk(g),stk(lb),0,
-					istk(nWSR),
-					stk(x),stk(obj),istk(status),istk(nWSRout),stk(y)
-					);
-	}
-	else
-	{
-		hotstartSB(	stk(g),0,0,
-					istk(nWSR),
-					stk(x),stk(obj),istk(status),istk(nWSRout),stk(y)
-					);
-	}
-
+	sci_QProblemB_hotstart( 	stk(g), (lb_rows!=0) ? stk(lb) : 0, (ub_rows!=0) ? stk(ub) : 0,
+								istk(nWSR),
+								stk(x),stk(obj),istk(status),istk(nWSRout),stk(y)
+								);
 
 	LhsVar(1) = 5;
 	LhsVar(2) = 6;
@@ -837,9 +694,9 @@ int int_hotstartSB( char* fname )
 
 
 /*
- *	i n t _ h o t s t a r t V M
+ *	i n t e r f a c e _ S Q P r o b l e m _ h o t s t a r t
  */
-int int_hotstartVM( char* fname )
+int interface_SQProblem_hotstart( char* fname )
 {
 	int_t H, H_rows, H_cols;
 	int_t g, g_rows, g_cols;
@@ -861,7 +718,7 @@ int int_hotstartVM( char* fname )
 
 	if ( ( sqp_rowsH == -1 ) || ( sqp_rowsA == -1 ) )
 	{
-		Scierror( 331,"ERROR (qpOASES): Need to call qpOASES_init first!\n" );
+		Scierror( 331,"ERROR (qpOASES): Need to call qpOASES_initVM first!\n" );
 		return 0;
 	}
 
@@ -902,14 +759,14 @@ int int_hotstartVM( char* fname )
 	}
 
 	GetRhsVar( 6,"d", &lbA_rows,&lbA_cols,&lbA);
-	if ( ( lbA_rows != A_rows ) || ( lbA_cols != 1 ) )
+	if ( !( ( ( lbA_rows == A_rows ) && ( lbA_cols == 1 ) ) || ( ( lbA_rows == 0 ) && ( lbA_cols == 0 ) ) ) )
 	{
 		Scierror( 336,"ERROR (qpOASES): Dimension mismatch!\n" );
 		return 0;
 	}
 
 	GetRhsVar( 7,"d", &ubA_rows,&ubA_cols,&ubA);
-	if ( ( ubA_rows != A_rows ) || ( ubA_cols != 1 ) )
+	if ( !( ( ( ubA_rows == A_rows ) && ( ubA_cols == 1 ) ) || ( ( ubA_rows == 0 ) && ( ubA_cols == 0 ) ) ) )
 	{
 		Scierror( 337,"ERROR (qpOASES): Dimension mismatch!\n" );
 		return 0;
@@ -940,35 +797,10 @@ int int_hotstartVM( char* fname )
 
 
 	/* call interfaced qpOASES routines with appropriate arguments */
-	if ( ( lb_rows != 0 ) && ( ub_rows != 0 ) )
-	{
-		hotstartVM(	stk(H),stk(g),stk(A),stk(lb),stk(ub),stk(lbA),stk(ubA),
-					istk(nWSR),
-					stk(x),stk(obj),istk(status),istk(nWSRout),stk(y)
-					);
-	}
-	else if ( ( lb_rows == 0 ) && ( ub_rows != 0 ) )
-	{
-		hotstartVM(	stk(H),stk(g),stk(A),0,stk(ub),stk(lbA),stk(ubA),
-					istk(nWSR),
-					stk(x),stk(obj),istk(status),istk(nWSRout),stk(y)
-					);
-	}
-	else if ( ( lb_rows != 0 ) && ( ub_rows == 0 ) )
-	{
-		hotstartVM(	stk(H),stk(g),stk(A),stk(lb),0,stk(lbA),stk(ubA),
-					istk(nWSR),
-					stk(x),stk(obj),istk(status),istk(nWSRout),stk(y)
-					);
-	}
-	else
-	{
-		hotstartVM(	stk(H),stk(g),stk(A),0,0,stk(lbA),stk(ubA),
-					istk(nWSR),
-					stk(x),stk(obj),istk(status),istk(nWSRout),stk(y)
-					);
-	}
-
+	sci_SQProblem_hotstart( 	stk(H),stk(g),stk(A), (lb_rows!=0) ? stk(lb) : 0, (ub_rows!=0) ? stk(ub) : 0, (lbA_rows!=0) ? stk(lbA) : 0, (ubA_rows!=0) ? stk(ubA) : 0,
+								istk(nWSR),
+								stk(x),stk(obj),istk(status),istk(nWSRout),stk(y)
+								);
 
 	LhsVar(1) = 9;
 	LhsVar(2) = 10;
@@ -981,16 +813,16 @@ int int_hotstartVM( char* fname )
 
 
 /*
- *	i n t _ c l e a n u p
+ *	i n t e r f a c e _ Q P r o b l e m _ c l e a n u p
  */
-int int_cleanup( char* fname )
+int interface_QProblem_cleanup( char* fname )
 {
 	const int minlhs = 0, maxlhs = 1, minrhs = 0, maxrhs = 0;
 
 	CheckRhs( minrhs,maxrhs );
 	CheckLhs( minlhs,maxlhs );
 
-	cleanupp( );
+	sci_QProblem_cleanup( );
 	qp_rowsH = -1;
 	qp_rowsA = -1;
 
@@ -999,16 +831,16 @@ int int_cleanup( char* fname )
 
 
 /*
- *	i n t _ c l e a n u p S B
+ *	i n t e r f a c e _ Q P r o b l e m B _ c l e a n u p
  */
-int int_cleanupSB( char* fname )
+int interface_QProblemB_cleanup( char* fname )
 {
 	const int minlhs = 0, maxlhs = 1, minrhs = 0, maxrhs = 0;
 
 	CheckRhs( minrhs,maxrhs );
 	CheckLhs( minlhs,maxlhs );
 
-	cleanupSB( );
+	sci_QProblemB_cleanup( );
 	qpb_rowsH = -1;
 
 	return 0;
@@ -1016,16 +848,16 @@ int int_cleanupSB( char* fname )
 
 
 /*
- *	i n t _ c l e a n u p V M
+ *	i n t e r f a c e _ S Q P r o b l e m _ c l e a n u p
  */
-int int_cleanupVM( char* fname )
+int interface_SQProblem_cleanup( char* fname )
 {
 	const int minlhs = 0, maxlhs = 1, minrhs = 0, maxrhs = 0;
 
 	CheckRhs( minrhs,maxrhs );
 	CheckLhs( minlhs,maxlhs );
 
-	cleanupVM( );
+	sci_SQProblem_cleanup( );
 	sqp_rowsH = -1;
 	sqp_rowsA = -1;
 
@@ -1038,15 +870,15 @@ int int_cleanupVM( char* fname )
  */
 int C2F(qpOASESgateway)( )
 {
-	gate_function function[] = {	int_qpOASES,
-									int_init, int_initSB, int_initVM,
-									int_hotstart, int_hotstartSB, int_hotstartVM,
-									int_cleanup, int_cleanupSB, int_cleanupVM
+	gate_function function[] = {	interface_qpOASES,
+									interface_QProblem_init,     interface_QProblemB_init,     interface_SQProblem_init,
+									interface_QProblem_hotstart, interface_QProblemB_hotstart, interface_SQProblem_hotstart,
+									interface_QProblem_cleanup,  interface_QProblemB_cleanup,  interface_SQProblem_cleanup
 									};
 	char* name[] = {	"qpOASES",
-						"qpOASES_init", "qpOASES_initSB", "qpOASES_initVM",
+						"qpOASES_init",     "qpOASES_initSB",     "qpOASES_initVM",
 						"qpOASES_hotstart", "qpOASES_hotstartSB", "qpOASES_hotstartVM",
-						"qpOASES_cleanup", "qpOASES_cleanupSB", "qpOASES_cleanupVM"
+						"qpOASES_cleanup",  "qpOASES_cleanupSB",  "qpOASES_cleanupVM"
 						};
 
 	Rhs = Max( 0,Rhs );

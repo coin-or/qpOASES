@@ -32,7 +32,7 @@
 
 
 sharedlib = link( './libqpOASESinterface.so' );
-addinter( './libqpOASESinterface.so', 'qpOASESgateway', ["qpOASES","qpOASES_init","qpOASES_initSB","qpOASES_initVM","qpOASES_hotstart","qpOASES_hotstartSB","qpOASES_hotstartVM","qpOASES_cleanup","qpOASES_cleanupSB","qpOASES_cleanupVM"] );
+addinter( './libqpOASESinterface.so', 'qpOASESgateway', ["qpOASES", "qpOASES_init","qpOASES_initSB","qpOASES_initVM", "qpOASES_hotstart","qpOASES_hotstartSB","qpOASES_hotstartVM", "qpOASES_cleanup","qpOASES_cleanupSB","qpOASES_cleanupVM"] );
 
 
 
