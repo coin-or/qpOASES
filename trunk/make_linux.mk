@@ -76,7 +76,7 @@ else
 	MEXEXT = mexa64
 endif
 
-CFLAGS = -std=c90 -Dinline="" -Wno-unused-function -Wall -pedantic -Wshadow -Wfloat-equal -Wconversion -Wsign-conversion -O3 -finline-functions -fPIC -DLINUX -D__NO_COPYRIGHT__
+CFLAGS = -std=c90 -Wno-unused-function -Wall -pedantic -Wshadow -Wfloat-equal -Wconversion -Wsign-conversion -O3 -finline-functions -fPIC -DLINUX -D__NO_COPYRIGHT__
 #          -g -D__DEBUG__ -D__NO_COPYRIGHT__ -D__SUPPRESSANYOUTPUT__ -D__USE_SINGLE_PRECISION__
 
 # libraries to link against when building qpOASES .so files
