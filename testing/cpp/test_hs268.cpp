@@ -62,7 +62,7 @@ int main( int argc, char *argv[] )
 	real_t maxCPUtime; /* seconds */
 	real_t maxStationarity = 0.0, maxFeasibility = 0.0, maxComplementarity = 0.0;
 
-	char OQPproblem[MAX_STRING_LENGTH];
+	char oqpProblem[MAX_STRING_LENGTH];
 	char problem[] = "HS268";
 	returnValue returnvalue;
 
@@ -71,11 +71,11 @@ int main( int argc, char *argv[] )
 	fprintf(stdFile, "%-10s ", problem);
 	fflush(stdFile);
 
-	snprintf(OQPproblem, MAX_STRING_LENGTH, "../testing/cpp/data/problems/%s/", problem);
+	snprintf(oqpProblem, MAX_STRING_LENGTH, "../testing/cpp/data/problems/%s/", problem);
 	maxCPUtime = 100.0;
 	nWSR = 100;
 
-	returnvalue = runOQPbenchmark(	OQPproblem, isSparse, options,
+	returnvalue = runOqpBenchmark(	oqpProblem, isSparse, options,
 									nWSR, maxCPUtime, maxStationarity, maxFeasibility, maxComplementarity 
 									);
 

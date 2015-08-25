@@ -37,7 +37,7 @@
 #include <qpOASES/UnitTesting.hpp>
 
 
-/** Example for qpOASES main function using the OQP interface. */
+/** qpOASES main function defining a unit test. */
 int main( )
 {
 	REFER_NAMESPACE_QPOASES real_t solution[2]       = {0.0f, 0.0f};

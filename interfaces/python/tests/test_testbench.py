@@ -26,7 +26,7 @@ date 2013-2015
 import os
 import numpy as np
 from numpy.testing import *
-from qpoases import py_runOQPbenchmark as runOQPbenchmark
+from qpoases import py_runOqpBenchmark as runOqpBenchmark
 from qpoases import PyQProblem as QProblem
 from qpoases import PyBooleanType as BooleanType
 from qpoases import PyReturnValue as ReturnValue
@@ -150,7 +150,7 @@ def run_benchmarks(benchmarks, options, isSparse, useHotstarts,
         # Run QP benchmark
         returnvalue, maxNWSR, avgNWSR, maxCPUtime, avgCPUtime, \
         maxStationarity, maxFeasibility, maxComplementarity \
-        = runOQPbenchmark(path, isSparse, useHotstarts,
+        = runOqpBenchmark(path, isSparse, useHotstarts,
                           options, nWSR, cpu_time )
 
         if (returnvalue == ReturnValue.SUCCESSFUL_RETURN

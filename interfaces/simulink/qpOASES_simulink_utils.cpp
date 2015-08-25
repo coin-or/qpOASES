@@ -33,6 +33,10 @@
  *
  */
 
+#ifndef __SINGLE_OBJECT__
+#include <qpOASES.hpp>
+#endif
+
 
 USING_NAMESPACE_QPOASES
 
@@ -61,7 +65,7 @@ returnValue removeNaNs( real_t* const data, unsigned int dim )
 
 	for ( i=0; i<dim; ++i )
 		if ( isNaN(data[i]) == BT_TRUE )
-			data[i] = qpOASES::INFTY;
+			data[i] = INFTY;
 
 	return SUCCESSFUL_RETURN;
 }
@@ -79,11 +83,11 @@ returnValue removeInfs( real_t* const data, unsigned int dim )
 
 	for ( i=0; i<dim; ++i )
 	{
-		if ( data[i] < -qpOASES::INFTY )
-			data[i] = -qpOASES::INFTY;
+		if ( data[i] < -INFTY )
+			data[i] = -INFTY;
 
-		if ( data[i] > qpOASES::INFTY )
-			data[i] = qpOASES::INFTY;
+		if ( data[i] > INFTY )
+			data[i] = INFTY;
 	}
 
 	return SUCCESSFUL_RETURN;

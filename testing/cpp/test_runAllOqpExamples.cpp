@@ -82,7 +82,7 @@ int main( )
 		maxFeasibility     = 0.0;
 		maxComplementarity = 0.0;
 
-		if ( runOQPbenchmark(	benchmarkPath[ii/2],
+		if ( runOqpBenchmark(	benchmarkPath[ii/2],
 								isSparse,useHotstarts,
 								options,maxAllowedNWSR,
 								maxNWSR,avgNWSR,maxCPUtime,avgCPUtime,

@@ -55,7 +55,7 @@ int main( )
 	real_t maxStationarity, maxFeasibility, maxComplementarity;
 
 	/* 2) Run benchmark. */
-	if ( runOQPbenchmark(	"./chain80/",
+	if ( runOqpBenchmark(	"./chain80/",
 							isSparse,
 							options,
 							nWSR,

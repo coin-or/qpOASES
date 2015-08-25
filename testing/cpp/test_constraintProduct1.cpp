@@ -144,10 +144,10 @@ int main( )
 	int_t k = 10; //th problem
 	
 		
-	if ( readOQPdimensions(	path, nQP,nV,nC,nEC ) != SUCCESSFUL_RETURN )
+	if ( readOqpDimensions(	path, nQP,nV,nC,nEC ) != SUCCESSFUL_RETURN )
 		return TEST_DATA_NOT_FOUND;
 	
-	readOQPdata(	path, nQP,nV,nC,nEC,
+	readOqpData(	path, nQP,nV,nC,nEC,
 					&H,&g,&A,&lb,&ub,&lbA,&ubA,
 					0,0,0
 					);

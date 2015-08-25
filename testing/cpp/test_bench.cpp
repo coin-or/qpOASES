@@ -90,7 +90,7 @@ int main( int argc, char *argv[] )
 	int_t nfail = 0, npass = 0;
 	int_t nproblems, i;
 	struct dirent **namelist;
-	char resstr[MAX_STRING_LENGTH], OQPproblem[MAX_STRING_LENGTH];
+	char resstr[MAX_STRING_LENGTH], oqpProblem[MAX_STRING_LENGTH];
 	char *problem;
 	returnValue returnvalue;
 
@@ -240,11 +240,11 @@ int main( int argc, char *argv[] )
 		fprintf(stdFile, "%-10s ", problem);
 		fflush(stdFile);
 
-		snprintf(OQPproblem, MAX_STRING_LENGTH, "../testing/cpp/data/problems/%s/", problem);
+		snprintf(oqpProblem, MAX_STRING_LENGTH, "../testing/cpp/data/problems/%s/", problem);
 		maxCPUtime = 300.0;
 		nWSR = 2500;
 
-		returnvalue = runOQPbenchmark(	OQPproblem, isSparse, options,
+		returnvalue = runOqpBenchmark(	oqpProblem, isSparse, options,
 										nWSR, maxCPUtime, maxStationarity, maxFeasibility, maxComplementarity 
 										);
 		if (returnvalue	== SUCCESSFUL_RETURN

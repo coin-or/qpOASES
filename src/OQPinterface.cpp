@@ -44,9 +44,9 @@ BEGIN_NAMESPACE_QPOASES
 
 
 /*
- *	r e a d O Q P d i m e n s i o n s
+ *	r e a d O q p D i m e n s i o n s
  */
-returnValue readOQPdimensions(	const char* path,
+returnValue readOqpDimensions(	const char* path,
 								int_t& nQP, int_t& nV, int_t& nC, int_t& nEC
 								)
 {
@@ -74,9 +74,9 @@ returnValue readOQPdimensions(	const char* path,
 
 
 /*
- *	r e a d O Q P d a t a
+ *	r e a d O q p D a t a
  */
-returnValue readOQPdata(	const char* path,
+returnValue readOqpData(	const char* path,
 							int_t& nQP, int_t& nV, int_t& nC, int_t& nEC,
 							real_t** H, real_t** g, real_t** A, real_t** lb, real_t** ub, real_t** lbA, real_t** ubA,
 							real_t** xOpt, real_t** yOpt, real_t** objOpt
@@ -90,7 +90,7 @@ returnValue readOQPdata(	const char* path,
 
 
 	/* 1) Obtain OQP dimensions. */
-	if ( readOQPdimensions( path, nQP,nV,nC,nEC ) != SUCCESSFUL_RETURN )
+	if ( readOqpDimensions( path, nQP,nV,nC,nEC ) != SUCCESSFUL_RETURN )
 		return THROWERROR( RET_UNABLE_TO_READ_FILE );
 
 
@@ -225,9 +225,9 @@ returnValue readOQPdata(	const char* path,
 
 
 /*
- *	s o l v e O Q P b e n c h m a r k
+ *	s o l v e O q p B e n c h m a r k
  */
-returnValue solveOQPbenchmark(	int_t nQP, int_t nV, int_t nC, int_t nEC,
+returnValue solveOqpBenchmark(	int_t nQP, int_t nV, int_t nC, int_t nEC,
 								const real_t* const _H, const real_t* const g, const real_t* const _A,
 								const real_t* const lb, const real_t* const ub,
 								const real_t* const lbA, const real_t* const ubA,
@@ -240,7 +240,7 @@ returnValue solveOQPbenchmark(	int_t nQP, int_t nV, int_t nC, int_t nEC,
 	real_t avgNWSR = 0.0;
 	real_t avgCPUtime = 0.0;
 
-	returnValue returnvalue = solveOQPbenchmark(	nQP,nV,nC,nEC,
+	returnValue returnvalue = solveOqpBenchmark(	nQP,nV,nC,nEC,
 													_H,g,_A,lb,ub,lbA,ubA,
 													isSparse,BT_TRUE,
 													options,nWSR,
@@ -255,9 +255,9 @@ returnValue solveOQPbenchmark(	int_t nQP, int_t nV, int_t nC, int_t nEC,
 
 
 /*
- *	s o l v e O Q P b e n c h m a r k
+ *	s o l v e O q p B e n c h m a r k
  */
-returnValue solveOQPbenchmark(	int_t nQP, int_t nV, int_t nC, int_t nEC,
+returnValue solveOqpBenchmark(	int_t nQP, int_t nV, int_t nC, int_t nEC,
 								const real_t* const _H, const real_t* const g, const real_t* const _A,
 								const real_t* const lb, const real_t* const ub,
 								const real_t* const lbA, const real_t* const ubA,
@@ -402,9 +402,9 @@ returnValue solveOQPbenchmark(	int_t nQP, int_t nV, int_t nC, int_t nEC,
 
 
 /*
- *	s o l v e O Q P b e n c h m a r k
+ *	s o l v e O q p B e n c h m a r k
  */
-returnValue solveOQPbenchmark(	int_t nQP, int_t nV,
+returnValue solveOqpBenchmark(	int_t nQP, int_t nV,
 								const real_t* const _H, const real_t* const g,
 								const real_t* const lb, const real_t* const ub,
 								BooleanType isSparse, 
@@ -416,7 +416,7 @@ returnValue solveOQPbenchmark(	int_t nQP, int_t nV,
 	real_t avgNWSR = 0.0;
 	real_t avgCPUtime = 0.0;
 
-	returnValue returnvalue = solveOQPbenchmark(	nQP,nV,
+	returnValue returnvalue = solveOqpBenchmark(	nQP,nV,
 													_H,g,lb,ub,
 													isSparse,BT_TRUE,
 													options,nWSR,
@@ -430,9 +430,9 @@ returnValue solveOQPbenchmark(	int_t nQP, int_t nV,
 
 
 /*
- *	s o l v e O Q P b e n c h m a r k
+ *	s o l v e O q p B e n c h m a r k
  */
-returnValue solveOQPbenchmark(	int_t nQP, int_t nV,
+returnValue solveOqpBenchmark(	int_t nQP, int_t nV,
 								const real_t* const _H, const real_t* const g,
 								const real_t* const lb, const real_t* const ub,
 								BooleanType isSparse, BooleanType useHotstarts, 
@@ -564,9 +564,9 @@ returnValue solveOQPbenchmark(	int_t nQP, int_t nV,
 
 
 /*
- *	r u n O Q P b e n c h m a r k
+ *	r u n O q p B e n c h m a r k
  */
-returnValue runOQPbenchmark(	const char* path, BooleanType isSparse, const Options& options,
+returnValue runOqpBenchmark(	const char* path, BooleanType isSparse, const Options& options,
 								int_t& nWSR, real_t& maxCPUtime,
 								real_t& maxStationarity, real_t& maxFeasibility, real_t& maxComplementarity
 								)
@@ -575,7 +575,7 @@ returnValue runOQPbenchmark(	const char* path, BooleanType isSparse, const Optio
 	real_t avgNWSR = 0.0;
 	real_t avgCPUtime = 0.0;
 
-	returnValue returnvalue = runOQPbenchmark(	path,isSparse,BT_TRUE,
+	returnValue returnvalue = runOqpBenchmark(	path,isSparse,BT_TRUE,
 												options,nWSR,
 												maxNWSR,avgNWSR,maxCPUtime,avgCPUtime, 
 												maxStationarity,maxFeasibility,maxComplementarity
@@ -587,9 +587,9 @@ returnValue runOQPbenchmark(	const char* path, BooleanType isSparse, const Optio
 
 
 /*
- *	r u n O Q P b e n c h m a r k
+ *	r u n O q p B e n c h m a r k
  */
-returnValue runOQPbenchmark(	const char* path, BooleanType isSparse, BooleanType useHotstarts, 
+returnValue runOqpBenchmark(	const char* path, BooleanType isSparse, BooleanType useHotstarts, 
 								const Options& options, int_t maxAllowedNWSR,
 								real_t& maxNWSR, real_t& avgNWSR, real_t& maxCPUtime, real_t& avgCPUtime,
 								real_t& maxStationarity, real_t& maxFeasibility, real_t& maxComplementarity
@@ -604,11 +604,11 @@ returnValue runOQPbenchmark(	const char* path, BooleanType isSparse, BooleanType
 
 	/* I) SETUP BENCHMARK: */
 	/* 1) Obtain QP sequence dimensions. */
-	if ( readOQPdimensions( path, nQP,nV,nC,nEC ) != SUCCESSFUL_RETURN )
+	if ( readOqpDimensions( path, nQP,nV,nC,nEC ) != SUCCESSFUL_RETURN )
 		return THROWERROR( RET_BENCHMARK_ABORTED );
 
 	/* 2) Read OQP benchmark data. */
-	if ( readOQPdata(	path,
+	if ( readOqpData(	path,
 						nQP,nV,nC,nEC,
 						&H,&g,&A,&lb,&ub,&lbA,&ubA,
 						0,0,0
@@ -622,7 +622,7 @@ returnValue runOQPbenchmark(	const char* path, BooleanType isSparse, BooleanType
 	/* II) SOLVE BENCHMARK */
 	if ( nC > 0 )
 	{
-		returnvalue = solveOQPbenchmark(	nQP,nV,nC,nEC,
+		returnvalue = solveOqpBenchmark(	nQP,nV,nC,nEC,
 											H,g,A,lb,ub,lbA,ubA,
 											isSparse,useHotstarts,
 											options,maxAllowedNWSR,
@@ -644,7 +644,7 @@ returnValue runOQPbenchmark(	const char* path, BooleanType isSparse, BooleanType
 	}
 	else
 	{
-		returnvalue = solveOQPbenchmark(	nQP,nV,
+		returnvalue = solveOqpBenchmark(	nQP,nV,
 											H,g,lb,ub,
 											isSparse,useHotstarts,
 											options,maxAllowedNWSR,
