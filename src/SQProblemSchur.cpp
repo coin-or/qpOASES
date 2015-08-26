@@ -310,12 +310,17 @@ returnValue SQProblemSchur::copy(	const SQProblemSchur& rhs
 	return SUCCESSFUL_RETURN;
 }
 
+
 /*
  *	s e t u p A u x i l i a r y Q P
  */
-returnValue SQProblemSchur::setupAuxiliaryQP ( SymmetricMatrix *H_new, Matrix *A_new,
-    const real_t *lb_new, const real_t *ub_new, const real_t *lbA_new, const real_t *ubA_new
-)
+returnValue SQProblemSchur::setupAuxiliaryQP(	SymmetricMatrix *H_new,
+												Matrix *A_new,
+												const real_t *lb_new,
+												const real_t *ub_new,
+												const real_t *lbA_new,
+												const real_t *ubA_new
+												)
 {
 	int_t i;
 	int_t nV = getNV( );
@@ -623,6 +628,7 @@ returnValue SQProblemSchur::computeProjectedCholesky( )
 	return SUCCESSFUL_RETURN;
 }
 
+
 /*
  *	c o m p u t e I n i t i a l C h o l e s k y
  */
@@ -630,6 +636,7 @@ returnValue SQProblemSchur::computeInitialCholesky( )
 {
 	return SUCCESSFUL_RETURN;
 }
+
 
 /*
  *	s e t u p T Q f a c t o r i s a t i o n
@@ -639,10 +646,12 @@ returnValue SQProblemSchur::setupTQfactorisation( )
 	return SUCCESSFUL_RETURN;
 }
 
+
 /*
  *	a d d C o n s t r a i n t
  */
-returnValue SQProblemSchur::addConstraint(	int_t number, SubjectToStatus C_status,
+returnValue SQProblemSchur::addConstraint(	int_t number, 
+											SubjectToStatus C_status,
 											BooleanType updateCholesky,
 											BooleanType ensureLI
 											)
@@ -844,6 +853,7 @@ returnValue SQProblemSchur::addConstraint_checkLI( int_t number )
 	return returnvalueCheckLI;
 }
 
+
 /*
  *	a d d C o n s t r a i n t _ c h e c k L I S c h u r
  */
@@ -934,6 +944,7 @@ returnValue SQProblemSchur::addConstraint_checkLISchur( int_t number, real_t* xi
 	}
 	return THROWINFO( returnvalue );
 }
+
 
 /*
  *	a d d C o n s t r a i n t _ e n s u r e L I
@@ -1106,10 +1117,11 @@ farewell:
 /*
  *	a d d B o u n d
  */
-returnValue SQProblemSchur::addBound(	int_t number, SubjectToStatus B_status,
-								BooleanType updateCholesky,
-								BooleanType ensureLI
-								)
+returnValue SQProblemSchur::addBound(	int_t number,
+										SubjectToStatus B_status,
+										BooleanType updateCholesky,
+										BooleanType ensureLI
+										)
 {
 	int_t idxDeleted = -1;
 
@@ -1514,10 +1526,10 @@ farewell:
  *	r e m o v e C o n s t r a i n t
  */
 returnValue SQProblemSchur::removeConstraint(	int_t number,
-										BooleanType updateCholesky,
-										BooleanType allowFlipping,
-										BooleanType ensureNZC
-										)
+												BooleanType updateCholesky,
+												BooleanType allowFlipping,
+												BooleanType ensureNZC
+												)
 {
 	returnValue returnvalue = SUCCESSFUL_RETURN;
 
@@ -1789,10 +1801,10 @@ returnValue SQProblemSchur::removeConstraint(	int_t number,
  *	r e m o v e B o u n d
  */
 returnValue SQProblemSchur::removeBound(	int_t number,
-									BooleanType updateCholesky,
-									BooleanType allowFlipping,
-									BooleanType ensureNZC
-									)
+											BooleanType updateCholesky,
+											BooleanType allowFlipping,
+											BooleanType ensureNZC
+											)
 {
 	returnValue returnvalue = SUCCESSFUL_RETURN;
 	int_t addIdx;
@@ -2150,6 +2162,7 @@ returnValue SQProblemSchur::removeBound(	int_t number,
 	return SUCCESSFUL_RETURN;
 }
 
+
 /*
  *	s e t u p T Q f a c t o r i s a t i o n
  */
@@ -2157,6 +2170,7 @@ returnValue SQProblemSchur::backsolveT( const real_t* const b, BooleanType trans
 {
 	return THROWERROR( RET_UNKNOWN_BUG );
 }
+
 
 /*
  *	b a c k s o l v e R
@@ -2167,12 +2181,18 @@ returnValue SQProblemSchur::backsolveR(	const real_t* const b, BooleanType trans
 }
 
 
+/*
+ *	b a c k s o l v e R
+ */
 returnValue SQProblemSchur::backsolveR(	const real_t* const b, BooleanType transposed, BooleanType removingBound, real_t* const a ) const
 {
 	return THROWERROR( RET_UNKNOWN_BUG );
 }
 
 
+/*
+ *	c a l c D e t S c h u r
+ */
 real_t SQProblemSchur::calcDetSchur( int_t idxDel )
 {
 	if ( nS <= 0 )
@@ -2263,6 +2283,9 @@ real_t SQProblemSchur::calcDetSchur( int_t idxDel )
 }
 
 
+/*
+ *	u p d a t e S c h u r Q R
+ */
 returnValue SQProblemSchur::updateSchurQR( int_t idxDel )
 {
 	int_t i, j;
@@ -2399,6 +2422,9 @@ returnValue SQProblemSchur::updateSchurQR( int_t idxDel )
 }
 
 
+/*
+ *	b a c k s o l v e S c h u r Q R
+ */
 returnValue SQProblemSchur::backsolveSchurQR( int_t dimS, const real_t* const rhs, int_t dimRhs, real_t* const sol )
 {
 	if( dimS < 1 || dimRhs < 1 )

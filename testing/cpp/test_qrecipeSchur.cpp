@@ -23,19 +23,22 @@
 
 
 /**
- *	\file examples/qrecipe.cpp
- *	\author Andreas Potschka
+ *	\file testing/cpp/test_qrecipeSchur.cpp
+ *	\author Dennis Janka
  *	\version 3.2
  *	\date 2007-2015
  *
  *	QRECIPE example from the CUTEr test set with sparse matrices.
+ *	Comparison between nullspace factorization (dense and sparse) and
+ *	Schur complement approach.
  */
 
 
 
 #include <qpOASES.hpp>
+#include <qpOASES/UnitTesting.hpp>
 
-#include "qrecipe_data.hpp"
+#include "test_qrecipe_data.hpp"
 
 
 
@@ -45,11 +48,13 @@ int main( )
 
 	long i;
 	int_t nWSR;
-	real_t err, tic, toc;
+	real_t err1, err2, err3, tic, toc;
 	real_t *x1 = new real_t[180];
 	real_t *y1 = new real_t[271];
 	real_t *x2 = new real_t[180];
 	real_t *y2 = new real_t[271];
+	real_t *x3 = new real_t[180];
+	real_t *y3 = new real_t[271];
 
 	/* create sparse matrices */
 	SymSparseMat *H = new SymSparseMat(180, 180, H_ir, H_jc, H_val);
@@ -74,7 +79,7 @@ int main( )
 
 	fprintf(stdFile, "Solved dense problem in %d iterations, %.3f seconds.\n", (int)nWSR, toc-tic);
 
-	/* solve with sparse matrices */
+	/* solve with sparse matrices (nullspace factorization) */
 	nWSR = 1000;
 	QProblem qrecipeS(180, 91);
 	tic = getCPUtime();
@@ -85,17 +90,55 @@ int main( )
 
 	fprintf(stdFile, "Solved sparse problem in %d iterations, %.3f seconds.\n", (int)nWSR, toc-tic);
 
+	/* solve with sparse matrices (Schur complement) */
+	#ifndef SOLVER_NONE
+	nWSR = 1000;
+	SQProblemSchur qrecipeSchur(180, 91);
+	tic = getCPUtime();
+	qrecipeSchur.init(H, g, A, lb, ub, lbA, ubA, nWSR, 0);
+	toc = getCPUtime();
+	qrecipeSchur.getPrimalSolution(x3);
+	qrecipeSchur.getDualSolution(y3);
+
+	fprintf(stdFile, "Solved sparse problem (Schur complement approach) in %d iterations, %.3f seconds.\n", (int)nWSR, toc-tic);
+	#endif /* SOLVER_NONE */
+
 	/* check distance of solutions */
-	err = 0.0;
+	err1 = 0.0;
+	err2 = 0.0;
+	err3 = 0.0;
 	for (i = 0; i < 180; i++)
-		if (getAbs(x1[i] - x2[i]) > err)
-			err = getAbs(x1[i] - x2[i]);
-	fprintf(stdFile, "Primal error: %9.2e\n", err);
-	err = 0.0;
+		if (getAbs(x1[i] - x2[i]) > err1)
+			err1 = getAbs(x1[i] - x2[i]);
+	for (i = 0; i < 180; i++)
+		if (getAbs(x1[i] - x3[i]) > err2)
+			err2 = getAbs(x1[i] - x3[i]);
+	#ifndef SOLVER_NONE
+	for (i = 0; i < 180; i++)
+		if (getAbs(x2[i] - x3[i]) > err3)
+			err3 = getAbs(x2[i] - x3[i]);
+	#endif /* SOLVER_NONE */
+	fprintf(stdFile, "Primal error (dense and sparse): %9.2e\n", err1);
+	fprintf(stdFile, "Primal error (dense and Schur): %9.2e\n", err2);
+	fprintf(stdFile, "Primal error (sparse and Schur): %9.2e\n", err3);
+
+	err1 = 0.0;
+	err2 = 0.0;
+	err3 = 0.0;
 	for (i = 0; i < 271; i++)
-		if (getAbs(y1[i] - y2[i]) > err)
-			err = getAbs(y1[i] - y2[i]);
-	fprintf(stdFile, "Dual error: %9.2e  (might not be unique)\n", err);
+		if (getAbs(y1[i] - y2[i]) > err1)
+			err1 = getAbs(y1[i] - y2[i]);
+	for (i = 0; i < 271; i++)
+		if (getAbs(y1[i] - y3[i]) > err2)
+			err2 = getAbs(y1[i] - y3[i]);
+	#ifndef SOLVER_NONE
+	for (i = 0; i < 271; i++)
+		if (getAbs(y2[i] - y3[i]) > err3)
+			err3 = getAbs(y2[i] - y3[i]);
+	#endif /* SOLVER_NONE */
+	fprintf(stdFile, "Dual error (dense and sparse): %9.2e  (might not be unique)\n", err1);
+	fprintf(stdFile, "Dual error (dense and Schur): %9.2e  (might not be unique)\n", err2);
+	fprintf(stdFile, "Dual error (sparse and Schur): %9.2e  (might not be unique)\n", err3);
 
 	delete H;
 	delete A;
@@ -104,12 +147,18 @@ int main( )
 	delete Hd;
 	delete Ad;
 
+	delete[] y3;
+	delete[] x3;
 	delete[] y2;
 	delete[] x2;
 	delete[] y1;
 	delete[] x1;
 
-	return 0;
+	QPOASES_TEST_FOR_TOL( err1,1e-13 );
+	QPOASES_TEST_FOR_TOL( err2,1e-13 );
+	QPOASES_TEST_FOR_TOL( err3,1e-13 );
+
+	return TEST_PASSED;
 }
 
 

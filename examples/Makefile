@@ -66,6 +66,15 @@ ${BINDIR}/example4${EXE}: example4.${OBJEXT} example4CP.cpp ${LINK_DEPENDS}
 	@${ECHO} "Creating" $@
 	@${CPP} ${DEF_TARGET} ${CPPFLAGS} $< ${QPOASES_LINK} ${LINK_LIBRARIES}
 
+${BINDIR}/qrecipe${EXE}: qrecipe.${OBJEXT} qrecipe_data.hpp ${LINK_DEPENDS}
+	@${ECHO} "Creating" $@
+	@${CPP} ${DEF_TARGET} ${CPPFLAGS} $< ${QPOASES_LINK} ${LINK_LIBRARIES}
+
+${BINDIR}/qrecipeSchur${EXE}: qrecipeSchur.${OBJEXT} qrecipe_data.hpp ${LINK_DEPENDS}
+	@${ECHO} "Creating" $@
+	@${CPP} ${DEF_TARGET} ${CPPFLAGS} $< ${QPOASES_LINK} ${LINK_LIBRARIES}
+
+
 clean:
 	@${ECHO} "Cleaning up (examples)"
 	@${RM} -f *.${OBJEXT} ${QPOASES_EXES}
@@ -79,6 +88,14 @@ ${LINK_DEPENDS}:
 example4.${OBJEXT}: example4.cpp example4CP.cpp
 	@${ECHO} "Creating" $@
 	@${CPP} ${DEF_TARGET} -c ${IFLAGS} ${CPPFLAGS} $<
+
+qrecipe.${OBJEXT}: qrecipe.cpp qrecipe_data.hpp
+	@${ECHO} "Creating" $@
+	@${CPP} ${DEF_TARGET} ${IFLAGS} ${CPPFLAGS} -c $<
+
+qrecipeSchur.${OBJEXT}: qrecipeSchur.cpp qrecipe_data.hpp
+	@${ECHO} "Creating" $@
+	@${CPP} ${DEF_TARGET} ${IFLAGS} ${CPPFLAGS} -c $<
 
 %.${OBJEXT}: %.cpp
 	@${ECHO} "Creating" $@

@@ -77,6 +77,8 @@ runTest $counter ../bin/test_example4;
 runTest $counter ../bin/test_example5;
 runTest $counter ../bin/test_exampleLP;
 runTest $counter ../bin/test_qrecipe;
+runTest $counter ../bin/test_qrecipeSchur;
+runTest $counter ../bin/test_infeasible1;
 runTest $counter ../bin/test_hs268;
 
 runTest $counter ../bin/test_example6;

@@ -74,6 +74,7 @@ callValgrind $counter ../bin/example4;
 callValgrind $counter ../bin/example5;
 callValgrind $counter ../bin/exampleLP;
 callValgrind $counter ../bin/qrecipe;
+callValgrind $counter ../bin/qrecipeSchur;
 
 # run examples in /testing ...
 callValgrind $counter ../bin/test_matrices;
@@ -81,6 +82,7 @@ callValgrind $counter ../bin/test_matrices2;
 callValgrind $counter ../bin/test_indexlist;
 callValgrind $counter ../bin/test_example6;
 callValgrind $counter ../bin/test_example7;
+callValgrind $counter ../bin/test_infeasible1;
 callValgrind $counter ../bin/test_sebastien1;
 callValgrind $counter ../bin/test_vanBarelsUnboundedQP;
 callValgrind $counter ../bin/test_janick1;

@@ -29,6 +29,7 @@ examples/example5.cpp -text
 examples/exampleLP.cpp -text
 examples/qrecipe.cpp -text
 examples/qrecipeSchur.cpp -text
+examples/qrecipe_data.hpp -text
 include/qpOASES.hpp -text
 include/qpOASES/Bounds.hpp -text
 include/qpOASES/Bounds.ipp -text
@@ -177,12 +178,14 @@ testing/cpp/test_gradientShift.cpp -text
 testing/cpp/test_guessedWS1.cpp -text
 testing/cpp/test_hs268.cpp -text
 testing/cpp/test_indexlist.cpp -text
+testing/cpp/test_infeasible1.cpp -text
 testing/cpp/test_janick1.cpp -text
 testing/cpp/test_janick2.cpp -text
 testing/cpp/test_matrices.cpp -text
 testing/cpp/test_matrices2.cpp -text
 testing/cpp/test_matrices3.cpp -text
 testing/cpp/test_qrecipe.cpp -text
+testing/cpp/test_qrecipeSchur.cpp -text
 testing/cpp/test_qrecipe_data.hpp -text
 testing/cpp/test_runAllOqpExamples.cpp -text
 testing/cpp/test_sebastien1.cpp -text

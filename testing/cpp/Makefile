@@ -55,6 +55,8 @@ QPOASES_TEST_EXES = \
 	${BINDIR}/test_example7${EXE} \
 	${BINDIR}/test_exampleLP${EXE} \
 	${BINDIR}/test_qrecipe${EXE} \
+	${BINDIR}/test_qrecipeSchur${EXE} \
+	${BINDIR}/test_infeasible1${EXE} \
 	${BINDIR}/test_hs268${EXE} \
 	${BINDIR}/test_gradientShift${EXE} \
 	${BINDIR}/test_runAllOqpExamples${EXE} \
@@ -93,6 +95,10 @@ ${BINDIR}/test_qrecipe${EXE}: test_qrecipe.${OBJEXT} test_qrecipe_data.hpp ${LIN
 	@${ECHO} "Creating" $@
 	@${CPP} ${DEF_TARGET} ${CPPFLAGS} $< ${QPOASES_LINK} ${LINK_LIBRARIES}
 
+${BINDIR}/test_qrecipeSchur${EXE}: test_qrecipeSchur.${OBJEXT} test_qrecipe_data.hpp ${LINK_DEPENDS}
+	@${ECHO} "Creating" $@
+	@${CPP} ${DEF_TARGET} ${CPPFLAGS} $< ${QPOASES_LINK} ${LINK_LIBRARIES}
+
 
 clean:
 	@${ECHO} "Cleaning up (testing/cpp)"
@@ -113,6 +119,10 @@ test_matrices3.${OBJEXT}: test_matrices3.cpp test_qrecipe_data.hpp
 	@${CPP} ${DEF_TARGET} ${IFLAGS} ${CPPFLAGS} -c $<
 
 test_qrecipe.${OBJEXT}: test_qrecipe.cpp test_qrecipe_data.hpp
+	@${ECHO} "Creating" $@
+	@${CPP} ${DEF_TARGET} ${IFLAGS} ${CPPFLAGS} -c $<
+
+test_qrecipeSchur.${OBJEXT}: test_qrecipeSchur.cpp test_qrecipe_data.hpp
 	@${ECHO} "Creating" $@
 	@${CPP} ${DEF_TARGET} ${IFLAGS} ${CPPFLAGS} -c $<
 
