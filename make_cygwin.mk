@@ -98,12 +98,12 @@ else
 	MEXEXT = mexw64
 endif
 
-CPPFLAGS = -Wall -pedantic -Wshadow -Wfloat-equal -Wconversion -Wsign-conversion -O3 -finline-functions -DWIN32
+CPPFLAGS = -Wall -pedantic -Wshadow -Wfloat-equal -O3 -Wconversion -Wsign-conversion -finline-functions -DWIN32 -D${DEF_SOLVER} -D__NO_COPYRIGHT__ 
 #          -g -D__DEBUG__ -D__NO_COPYRIGHT__ -D__SUPPRESSANYOUTPUT__ -D__USE_SINGLE_PRECISION__
 
 # libraries to link against when building qpOASES .so files
 LINK_LIBRARIES = ${LIB_LAPACK} ${LIB_BLAS} -lm ${LIB_SOLVER}
-LINK_LIBRARIES_WRAPPER = -lm -lstdc++
+LINK_LIBRARIES_WRAPPER = -lm ${LIB_SOLVER} -lstdc++
 
 # how to link against the qpOASES shared library
 QPOASES_LINK = -L${BINDIR} -Wl,-rpath=${BINDIR} -lqpOASES

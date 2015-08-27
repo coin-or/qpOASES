@@ -36,9 +36,9 @@ include ../../make.mk
 ##	flags
 ##
 
-IFLAGS      =  -I. \
-               -I${IDIR} \
-			   -I${SRCDIR}
+IFLAGS =	-I. \
+		-I${IDIR} \
+		-I${SRCDIR}
 
 QPOASES_WRAPPER_OBJECTS = \
 	${SRCDIR}/SQProblem.${OBJEXT} \

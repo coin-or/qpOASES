@@ -277,7 +277,7 @@ returnValue readFromFile(	real_t* data, int_t nrow, int_t ncol,
 	#ifndef __SUPPRESSANYOUTPUT__
 
 	int_t i, j;
-	double float_data;
+	real_t float_data;
 	FILE* datafile;
 
 	/* 1) Open file. */

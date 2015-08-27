@@ -45,7 +45,7 @@ BEGIN_NAMESPACE_QPOASES
 /** Numerical value of machine precision (min eps, s.t. 1+eps > 1).
  *	Note: this value has to be positive! */
 #ifdef __USE_SINGLE_PRECISION__
-const real_t EPS = 1.193e-07;
+const real_t EPS = 1.193e-07f;
 #else
 const real_t EPS = 2.221e-16;
 #endif /* __USE_SINGLE_PRECISION__ */

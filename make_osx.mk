@@ -108,7 +108,7 @@ CPPFLAGS = ${SDK} -Wall -pedantic -Wshadow -Wfloat-equal -Wconversion -Wsign-con
 
 # libraries to link against when building qpOASES .so files
 LINK_LIBRARIES = ${LIB_LAPACK} ${LIB_BLAS} -lm ${LIB_SOLVER}
-LINK_LIBRARIES_WRAPPER =
+LINK_LIBRARIES_WRAPPER = -lm ${LIB_SOLVER}
 
 # how to link against the qpOASES shared library
 QPOASES_LINK = -L${BINDIR}  -lqpOASES -L${SYSROOT}/usr/lib/System -lgcc_s.10.5 -lcrt1.o
