@@ -117,8 +117,8 @@ int main( int argc, char *argv[] )
 				if ( argv[argc-1][2] == 's' )
 				{
 					expectedNumSolvedProblems  = 44;
-					expectedAvgStationarity    = 2e-10;
-					expectedAvgFeasibility     = 2e-10;
+					expectedAvgStationarity    = 1e-9;
+					expectedAvgFeasibility     = 1e-9;
 					expectedAvgComplementarity = 5e-7;
 				}
 				else

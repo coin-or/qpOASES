@@ -143,8 +143,8 @@ returnValue SparseSolver::clear( )
 /*
  *	c o p y
  */
-returnValue SparseSolver::copy(	const SparseSolver& rhs
-							)
+returnValue SparseSolver::copy( 	const SparseSolver& rhs
+									)
 {
 	return SUCCESSFUL_RETURN;
 }
@@ -489,8 +489,8 @@ returnValue Ma27SparseSolver::clear( )
 /*
  *	c o p y
  */
-returnValue Ma27SparseSolver::copy(	const Ma27SparseSolver& rhs
-							)
+returnValue Ma27SparseSolver::copy( 	const Ma27SparseSolver& rhs
+										)
 {
 	dim = rhs.dim;
 	numNonzeros = rhs.numNonzeros;
@@ -721,12 +721,12 @@ Ma57SparseSolver& Ma57SparseSolver::operator=( const SparseSolver& rhs )
 /*
  *	s e t M a t r i x D a t a
  */
-returnValue Ma57SparseSolver::setMatrixData( int_t dim_,
-						   int_t numNonzeros_,
-						   const int_t* const irn,
-						   const int_t* const jcn,
-						   const real_t* const avals
-						   )
+returnValue Ma57SparseSolver::setMatrixData(	int_t dim_,
+												int_t numNonzeros_,
+												const int_t* const irn,
+												const int_t* const jcn,
+												const real_t* const avals
+												)
 {
 	reset( );
 	dim = dim_;
@@ -866,10 +866,10 @@ returnValue Ma57SparseSolver::factorize( )
 /*
  *	s o l v e
  */
-returnValue Ma57SparseSolver::solve( int_t dim_,
-					   const real_t* const rhs,
-					   real_t* const sol
-					   )
+returnValue Ma57SparseSolver::solve(	int_t dim_,
+										const real_t* const rhs,
+										real_t* const sol
+										)
 {
 	/* consistency check */
 	if ( dim_ != dim )
@@ -997,8 +997,8 @@ returnValue Ma57SparseSolver::clear( )
 /*
  *	c o p y
  */
-returnValue Ma57SparseSolver::copy(	const Ma57SparseSolver& rhs
-							)
+returnValue Ma57SparseSolver::copy( 	const Ma57SparseSolver& rhs
+										)
 {
 	dim = rhs.dim;
 	numNonzeros = rhs.numNonzeros;
@@ -1070,12 +1070,12 @@ returnValue Ma57SparseSolver::copy(	const Ma57SparseSolver& rhs
 
 #ifdef SOLVER_NONE
 
-returnValue DummySparseSolver::setMatrixData( int_t dim, /**< Dimension of the linear system. */
-								   int_t numNonzeros, /**< Number of nonzeros in the matrix. */
-								   const int_t* const airn, /**< Row indices for each matrix entry. */
-								   const int_t* const acjn, /**< Column indices for each matrix entry. */
-								   const real_t* const avals /**< Values for each matrix entry. */
-								   )
+returnValue DummySparseSolver::setMatrixData( 	int_t dim, /**< Dimension of the linear system. */
+												int_t numNonzeros, /**< Number of nonzeros in the matrix. */
+												const int_t* const airn, /**< Row indices for each matrix entry. */
+												const int_t* const acjn, /**< Column indices for each matrix entry. */
+												const real_t* const avals /**< Values for each matrix entry. */
+												)
 {
 	return THROWERROR(RET_NO_SPARSE_SOLVER);
 }
@@ -1085,10 +1085,10 @@ returnValue DummySparseSolver::factorize( )
 	return THROWERROR(RET_NO_SPARSE_SOLVER);
 }
 
-returnValue DummySparseSolver::solve( int_t dim, /**< Dimension of the linear system. */
-				   const real_t* const rhs, /**< Values for the right hand side. */
-				   real_t* const sol /**< Solution of the linear system. */
-				   )
+returnValue DummySparseSolver::solve(	int_t dim, /**< Dimension of the linear system. */
+										const real_t* const rhs, /**< Values for the right hand side. */
+										real_t* const sol /**< Solution of the linear system. */
+										)
 {
 	return THROWERROR(RET_NO_SPARSE_SOLVER);
 }

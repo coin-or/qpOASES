@@ -3074,13 +3074,12 @@ returnValue SQProblemSchur::resetSchurComplement( BooleanType allowInertiaCorrec
 	// Call the linear solver
 	sparseSolver->reset();
 	returnValue retval = sparseSolver->setMatrixData(dim, numNonzeros, irn, jcn, avals);
-	if (retval != SUCCESSFUL_RETURN)
-	{
-	  return THROWERROR(RET_NO_SPARSE_SOLVER);
-	}
 	delete [] jcn;
 	delete [] irn;
 	delete [] avals;
+	
+	if (retval != SUCCESSFUL_RETURN)
+		return THROWERROR(RET_NO_SPARSE_SOLVER);
 
 	// Factorize the matrix for later backsolves
 	retval = sparseSolver->factorize();

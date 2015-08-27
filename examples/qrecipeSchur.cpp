@@ -47,7 +47,7 @@ int main( )
 
 	long i;
 	int_t nWSR;
-	real_t err1, err2, err3, tic, toc;
+	real_t errP1, errP2, errP3, errD1, errD2, errD3, tic, toc;
 	real_t *x1 = new real_t[180];
 	real_t *y1 = new real_t[271];
 	real_t *x2 = new real_t[180];
@@ -101,37 +101,41 @@ int main( )
 	fprintf(stdFile, "Solved sparse problem (Schur complement approach) in %d iterations, %.3f seconds.\n", (int)nWSR, toc-tic);
 
 	/* check distance of solutions */
-	err1 = 0.0;
-	err2 = 0.0;
-	err3 = 0.0;
+	errP1 = 0.0;
+	errP2 = 0.0;
+	errP3 = 0.0;
+	#ifndef SOLVER_NONE
 	for (i = 0; i < 180; i++)
-		if (getAbs(x1[i] - x2[i]) > err1)
-			err1 = getAbs(x1[i] - x2[i]);
+		if (getAbs(x1[i] - x2[i]) > errP1)
+			errP1 = getAbs(x1[i] - x2[i]);
 	for (i = 0; i < 180; i++)
-		if (getAbs(x1[i] - x3[i]) > err2)
-			err2 = getAbs(x1[i] - x3[i]);
+		if (getAbs(x1[i] - x3[i]) > errP2)
+			errP2 = getAbs(x1[i] - x3[i]);
 	for (i = 0; i < 180; i++)
-		if (getAbs(x2[i] - x3[i]) > err3)
-			err3 = getAbs(x2[i] - x3[i]);
-	fprintf(stdFile, "Primal error (dense and sparse): %9.2e\n", err1);
-	fprintf(stdFile, "Primal error (dense and Schur): %9.2e\n", err2);
-	fprintf(stdFile, "Primal error (sparse and Schur): %9.2e\n", err3);
+		if (getAbs(x2[i] - x3[i]) > errP3)
+			errP3 = getAbs(x2[i] - x3[i]);
+	#endif /* SOLVER_NONE */
+	fprintf(stdFile, "Primal error (dense and sparse): %9.2e\n", errP1);
+	fprintf(stdFile, "Primal error (dense and Schur):  %9.2e\n", errP2);
+	fprintf(stdFile, "Primal error (sparse and Schur): %9.2e\n", errP3);
 
-	err1 = 0.0;
-	err2 = 0.0;
-	err3 = 0.0;
+	errD1 = 0.0;
+	errD2 = 0.0;
+	errD3 = 0.0;
 	for (i = 0; i < 271; i++)
-		if (getAbs(y1[i] - y2[i]) > err1)
-			err1 = getAbs(y1[i] - y2[i]);
+		if (getAbs(y1[i] - y2[i]) > errD1)
+			errD1 = getAbs(y1[i] - y2[i]);
+	#ifndef SOLVER_NONE
 	for (i = 0; i < 271; i++)
-		if (getAbs(y1[i] - y3[i]) > err2)
-			err2 = getAbs(y1[i] - y3[i]);
+		if (getAbs(y1[i] - y3[i]) > errD2)
+			errD2 = getAbs(y1[i] - y3[i]);
 	for (i = 0; i < 271; i++)
-		if (getAbs(y2[i] - y3[i]) > err3)
-			err3 = getAbs(y2[i] - y3[i]);
-	fprintf(stdFile, "Dual error (dense and sparse): %9.2e  (might not be unique)\n", err1);
-	fprintf(stdFile, "Dual error (dense and Schur): %9.2e  (might not be unique)\n", err2);
-	fprintf(stdFile, "Dual error (sparse and Schur): %9.2e  (might not be unique)\n", err3);
+		if (getAbs(y2[i] - y3[i]) > errD3)
+			errD3 = getAbs(y2[i] - y3[i]);
+	#endif /* SOLVER_NONE */
+	fprintf(stdFile, "Dual error (dense and sparse): %9.2e  (might not be unique)\n", errD1);
+	fprintf(stdFile, "Dual error (dense and Schur):  %9.2e  (might not be unique)\n", errD2);
+	fprintf(stdFile, "Dual error (sparse and Schur): %9.2e  (might not be unique)\n", errD3);
 
 	delete H;
 	delete A;

@@ -78,8 +78,6 @@ int main( )
 	retVal = example.init( H,g,A,lb,ub,lbA,ubA, nWSR,0 );
 	simpleStatus = getSimpleStatus( retVal,BT_TRUE );
 
-	QPOASES_TEST_FOR_TRUE( simpleStatus == -2 );
-
 
 	/* Get and print solution of second QP. */
 	real_t xOpt[5];
@@ -94,10 +92,8 @@ int main( )
 	
 	getKktViolation( 5,2, H,g,A,lb,ub,lbA,ubA, xOpt,yOpt, stat,feas,cmpl );
 	printf( "stat = %e\nfeas = %e\ncmpl = %e\n", stat,feas,cmpl );
-
-	QPOASES_TEST_FOR_TOL( stat,1e-14 );
-	QPOASES_TEST_FOR_TOL( feas,1e-14 );
-	QPOASES_TEST_FOR_TOL( cmpl,1e-15 );
+	
+	QPOASES_TEST_FOR_TRUE( simpleStatus == -2 );
 
 	return TEST_PASSED;
 }

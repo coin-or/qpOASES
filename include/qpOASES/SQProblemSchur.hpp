@@ -129,22 +129,22 @@ class SQProblemSchur : public SQProblem
 		 *  identity matrix (i.e. HST_IDENTITY), respectively, no memory
 		 *  is allocated for it and a NULL pointer can be passed for it
 		 *  to the init() functions. */
-		SQProblemSchur(	int_t _nV,	  							/**< Number of variables. */
-						int_t _nC,		  						/**< Number of constraints. */
+		SQProblemSchur(	int_t _nV,	  								/**< Number of variables. */
+						int_t _nC,		  							/**< Number of constraints. */
 						HessianType _hessianType = HST_UNKNOWN,	/**< Type of Hessian matrix. */
-						int_t maxSchurUpdates = 75				/**< Maximal number of Schur updates */
-					);
+						int_t maxSchurUpdates = 75					/**< Maximal number of Schur updates */
+						);
 
 		/** Copy constructor (deep copy). */
 		SQProblemSchur(	const SQProblemSchur& rhs		/**< Rhs object. */
-					);
+						);
 
 		/** Destructor. */
 		virtual ~SQProblemSchur( );
 
 		/** Assignment operator (deep copy). */
 		virtual SQProblemSchur& operator=(	const SQProblemSchur& rhs	/**< Rhs object. */
-								);
+											);
 
 		/** Clears all data structures of QProblem except for QP data.
 		 *	\return SUCCESSFUL_RETURN \n
@@ -197,10 +197,10 @@ class SQProblemSchur : public SQProblem
 																				 If Hessian matrix is trivial, a NULL pointer can be passed. */
 												Matrix *A_new,				/**< New constraint matrix. \n
 																				 If QP sequence does not involve constraints, a NULL pointer can be passed. */
-                                                const real_t *lb_new,
-                                                const real_t *ub_new,
-                                                const real_t *lbA_new,
-                                                const real_t *ubA_new
+												const real_t *lb_new,
+												const real_t *ub_new,
+												const real_t *lbA_new,
+												const real_t *ubA_new
 												);
 
 		/** Setup bounds and constraints data structures according to auxiliaryBounds/Constraints.
@@ -243,8 +243,8 @@ class SQProblemSchur : public SQProblem
 					 RET_ENSURELI_FAILED_NOINDEX \n
 					 RET_REMOVE_FROM_ACTIVESET */
 		virtual returnValue addConstraint_ensureLI(	int_t number,				/**< Number of constraint to be added to active set. */
-													SubjectToStatus C_status	/**< Status of new active bound. */
-													);
+														SubjectToStatus C_status	/**< Status of new active bound. */
+														);
 
 		/** Adds a bound to active set.
 		 *	\return SUCCESSFUL_RETURN \n
@@ -300,25 +300,25 @@ class SQProblemSchur : public SQProblem
 
 		/** Solves the system Ta = b or T^Ta = b where T is a reverse upper triangular matrix.
 		 *	 This must not be called for the Schur complement version. */
-		virtual returnValue backsolveT(	const real_t* const b,	/**< Right hand side vector. */
-								BooleanType transposed,	/**< Indicates if the transposed system shall be solved. */
-								real_t* const a 		/**< Output: Solution vector */
-								) const;
+		virtual returnValue backsolveT( 	const real_t* const b,	/**< Right hand side vector. */
+											BooleanType transposed,	/**< Indicates if the transposed system shall be solved. */
+											real_t* const a 		/**< Output: Solution vector */
+											) const;
 
 		/** Solves the system Ra = b or R^Ta = b where R is an upper triangular matrix.
 		 *	This must not be called for the Schur complement version. */
-		virtual returnValue backsolveR(	const real_t* const b,	/**< Right hand side vector. */
-								BooleanType transposed,	/**< Indicates if the transposed system shall be solved. */
-								real_t* const a 		/**< Output: Solution vector */
-								) const;
+		virtual returnValue backsolveR( 	const real_t* const b,	/**< Right hand side vector. */
+											BooleanType transposed,	/**< Indicates if the transposed system shall be solved. */
+											real_t* const a 		/**< Output: Solution vector */
+											) const;
 
 		/** Solves the system Ra = b or R^Ta = b where R is an upper triangular matrix. \n
 		 *	This must not be called for the Schur complement version. */
-		virtual returnValue backsolveR(	const real_t* const b,		/**< Right hand side vector. */
-								BooleanType transposed,		/**< Indicates if the transposed system shall be solved. */
-								BooleanType removingBound,	/**< Indicates if function is called from "removeBound()". */
-								real_t* const a 			/**< Output: Solution vector */
-								) const;
+		virtual returnValue backsolveR( 	const real_t* const b,		/**< Right hand side vector. */
+											BooleanType transposed,		/**< Indicates if the transposed system shall be solved. */
+											BooleanType removingBound,	/**< Indicates if function is called from "removeBound()". */
+											real_t* const a 			/**< Output: Solution vector */
+											) const;
 
 
 		/** Determines step direction of the homotopy path.
@@ -326,30 +326,30 @@ class SQProblemSchur : public SQProblem
 		 			RET_STEPDIRECTION_FAILED_TQ \n
 					RET_STEPDIRECTION_FAILED_CHOLESKY */
 		virtual returnValue determineStepDirection(	const real_t* const delta_g,	/**< Step direction of gradient vector. */
-											const real_t* const delta_lbA,	/**< Step direction of lower constraints' bounds. */
-											const real_t* const delta_ubA,	/**< Step direction of upper constraints' bounds. */
-											const real_t* const delta_lb,	/**< Step direction of lower bounds. */
-											const real_t* const delta_ub,	/**< Step direction of upper bounds. */
-											BooleanType Delta_bC_isZero, 	/**< Indicates if active constraints' bounds are to be shifted. */
-											BooleanType Delta_bB_isZero,	/**< Indicates if active bounds are to be shifted. */
-											real_t* const delta_xFX, 		/**< Output: Primal homotopy step direction of fixed variables. */
-											real_t* const delta_xFR,	 	/**< Output: Primal homotopy step direction of free variables. */
-											real_t* const delta_yAC, 		/**< Output: Dual homotopy step direction of active constraints' multiplier. */
-											real_t* const delta_yFX 		/**< Output: Dual homotopy step direction of fixed variables' multiplier. */
-											);
+														const real_t* const delta_lbA,	/**< Step direction of lower constraints' bounds. */
+														const real_t* const delta_ubA,	/**< Step direction of upper constraints' bounds. */
+														const real_t* const delta_lb,	/**< Step direction of lower bounds. */
+														const real_t* const delta_ub,	/**< Step direction of upper bounds. */
+														BooleanType Delta_bC_isZero, 	/**< Indicates if active constraints' bounds are to be shifted. */
+														BooleanType Delta_bB_isZero,	/**< Indicates if active bounds are to be shifted. */
+														real_t* const delta_xFX, 		/**< Output: Primal homotopy step direction of fixed variables. */
+														real_t* const delta_xFR,	 	/**< Output: Primal homotopy step direction of free variables. */
+														real_t* const delta_yAC, 		/**< Output: Dual homotopy step direction of active constraints' multiplier. */
+														real_t* const delta_yFX 		/**< Output: Dual homotopy step direction of fixed variables' multiplier. */
+														);
 
 		virtual returnValue determineStepDirection2(	const real_t* const delta_g,	/**< Step direction of gradient vector. */
-											const real_t* const delta_lbA,	/**< Step direction of lower constraints' bounds. */
-											const real_t* const delta_ubA,	/**< Step direction of upper constraints' bounds. */
-											const real_t* const delta_lb,	/**< Step direction of lower bounds. */
-											const real_t* const delta_ub,	/**< Step direction of upper bounds. */
-											BooleanType Delta_bC_isZero, 	/**< Indicates if active constraints' bounds are to be shifted. */
-											BooleanType Delta_bB_isZero,	/**< Indicates if active bounds are to be shifted. */
-											real_t* const delta_xFX, 		/**< Output: Primal homotopy step direction of fixed variables. */
-											real_t* const delta_xFR,	 	/**< Output: Primal homotopy step direction of free variables. */
-											real_t* const delta_yAC, 		/**< Output: Dual homotopy step direction of active constraints' multiplier. */
-											real_t* const delta_yFX 		/**< Output: Dual homotopy step direction of fixed variables' multiplier. */
-											);
+														const real_t* const delta_lbA,	/**< Step direction of lower constraints' bounds. */
+														const real_t* const delta_ubA,	/**< Step direction of upper constraints' bounds. */
+														const real_t* const delta_lb,	/**< Step direction of lower bounds. */
+														const real_t* const delta_ub,	/**< Step direction of upper bounds. */
+														BooleanType Delta_bC_isZero, 	/**< Indicates if active constraints' bounds are to be shifted. */
+														BooleanType Delta_bB_isZero,	/**< Indicates if active bounds are to be shifted. */
+														real_t* const delta_xFX, 		/**< Output: Primal homotopy step direction of fixed variables. */
+														real_t* const delta_xFR,	 	/**< Output: Primal homotopy step direction of free variables. */
+														real_t* const delta_yAC, 		/**< Output: Dual homotopy step direction of active constraints' multiplier. */
+														real_t* const delta_yFX 		/**< Output: Dual homotopy step direction of fixed variables' multiplier. */
+														);
 
 	/*
 	 *	PRIVATE MEMBER FUNCTION
@@ -363,7 +363,7 @@ class SQProblemSchur : public SQProblem
 		returnValue addBound_checkLISchur(	int_t number,			/**< Number of bound to be added to active set. */
 											real_t* const xiC, 		/**< Output: Multipliers in linear independence test for active constraints. */
 											real_t* const xiX 		/**< Output: Multipliers in linear independence test for fixed variables. */
-										);
+											);
 
 		/** Checks if new active bound to be added is linearly dependent from
 		 *	from row of the active constraints matrix.  This version computes
@@ -371,9 +371,9 @@ class SQProblemSchur : public SQProblem
 		 *	\return	 RET_LINEARLY_DEPENDENT \n
 		 			 RET_LINEARLY_INDEPENDENT */
 		returnValue addConstraint_checkLISchur(	int_t number,		/**< Number of bound to be added to active set. */
-												real_t* const xiC, 	/**< Output: Multipliers in linear independence test for active constraints. */
-												real_t* const xiX 	/**< Output: Multipliers in linear independence test for fixed variables. */
-												);
+													real_t* const xiC, 	/**< Output: Multipliers in linear independence test for active constraints. */
+													real_t* const xiX 	/**< Output: Multipliers in linear independence test for fixed variables. */
+													);
 
 		/** Compute product of "M" matrix (additional columns in KKT
 			matrix) with vector.  y = alpha * M * x + beta * y */
