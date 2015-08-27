@@ -27,7 +27,7 @@ function [ successFlag ] = runTestAPrioriKnownSeq1( doPrint )
 
 	options = qpOASES_options( 'fast','maxIter',100, 'printLevel',2*doPrint );
 
-    for i=1:nP
+	for i=1:nP
 		%disp(i);
 
 		if ( i == 1 )

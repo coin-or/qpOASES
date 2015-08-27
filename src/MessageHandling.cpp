@@ -254,8 +254,8 @@ MessageHandling::MessageHandling( )
 MessageHandling::MessageHandling( FILE* _outputFile )
 {
 	errorVisibility   = VS_VISIBLE;
-	warningVisibility = VS_VISIBLE;
-	infoVisibility    = VS_VISIBLE;
+	warningVisibility = VS_HIDDEN;
+	infoVisibility    = VS_HIDDEN;
 
 	outputFile = _outputFile;
 	errorCount = 0;
@@ -344,14 +344,13 @@ MessageHandling& MessageHandling::operator=( const MessageHandling& rhs )
 /*
  *	t h r o w E r r o r
  */
-returnValue MessageHandling::throwError(
-	returnValue Enumber,
-	const char* additionaltext,
-	const char* functionname,
-	const char* filename,
-	const unsigned long linenumber,
-	VisibilityStatus localVisibilityStatus
-	)
+returnValue MessageHandling::throwError(	returnValue Enumber,
+											const char* additionaltext,
+											const char* functionname,
+											const char* filename,
+											const unsigned long linenumber,
+											VisibilityStatus localVisibilityStatus
+											)
 {
 	/* consistency check */
 	if ( Enumber <= SUCCESSFUL_RETURN )
@@ -368,14 +367,13 @@ returnValue MessageHandling::throwError(
 /*
  *	t h r o w W a r n i n g
  */
-returnValue MessageHandling::throwWarning(
-	returnValue Wnumber,
-	const char* additionaltext,
-	const char* functionname,
-	const char* filename,
-	const unsigned long linenumber,
-	VisibilityStatus localVisibilityStatus
-  	)
+returnValue MessageHandling::throwWarning(	returnValue Wnumber,
+											const char* additionaltext,
+											const char* functionname,
+											const char* filename,
+											const unsigned long linenumber,
+											VisibilityStatus localVisibilityStatus
+											)
 {
 	/* consistency check */
   	if ( Wnumber <= SUCCESSFUL_RETURN )
@@ -392,14 +390,13 @@ returnValue MessageHandling::throwWarning(
 /*
  *	t h r o w I n f o
  */
-returnValue MessageHandling::throwInfo(
-  	returnValue Inumber,
-	const char* additionaltext,
-  	const char* functionname,
-	const char* filename,
-	const unsigned long linenumber,
-	VisibilityStatus localVisibilityStatus
- 	)
+returnValue MessageHandling::throwInfo(	returnValue Inumber,
+											const char* additionaltext,
+											const char* functionname,
+											const char* filename,
+											const unsigned long linenumber,
+											VisibilityStatus localVisibilityStatus
+											)
 {
 	/* consistency check */
 	if ( Inumber < SUCCESSFUL_RETURN )
@@ -419,8 +416,8 @@ returnValue MessageHandling::throwInfo(
 returnValue MessageHandling::reset( )
 {
 	setErrorVisibilityStatus(   VS_VISIBLE );
-	setWarningVisibilityStatus( VS_VISIBLE );
-	setInfoVisibilityStatus(    VS_VISIBLE );
+	setWarningVisibilityStatus( VS_HIDDEN );
+	setInfoVisibilityStatus(    VS_HIDDEN );
 
 	setOutputFile( stdFile );
 	setErrorCount( 0 );
@@ -461,15 +458,14 @@ returnValue MessageHandling::listAllMessages( )
 /*
  *	t h r o w M e s s a g e
  */
-returnValue MessageHandling::throwMessage(
-	returnValue RETnumber,
-	const char* additionaltext,
-	const char* functionname,
-	const char* filename,
-	const unsigned long linenumber,
-	VisibilityStatus localVisibilityStatus,
-	const char* RETstring
- 	)
+returnValue MessageHandling::throwMessage(	returnValue RETnumber,
+											const char* additionaltext,
+											const char* functionname,
+											const char* filename,
+											const unsigned long linenumber,
+											VisibilityStatus localVisibilityStatus,
+											const char* RETstring
+											)
 {
 	#ifndef __SUPPRESSANYOUTPUT__
 
@@ -609,7 +605,7 @@ const char* MessageHandling::getErrorCodeMessage(	const returnValue _returnValue
 
 /** Global message handler for all qpOASES modules.*/
 #if defined(__DSPACE__) || defined(__XPCTARGET__)
-static MessageHandling globalMessageHandler( stdFile,VS_VISIBLE,VS_VISIBLE,VS_VISIBLE );
+static MessageHandling globalMessageHandler( stdFile,VS_VISIBLE,VS_HIDDEN,VS_HIDDEN );
 #endif
 
 

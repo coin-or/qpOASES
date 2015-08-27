@@ -104,7 +104,7 @@ function [] = make( varargin )
         disp( [ 'INFO (',mfilename '.m): Compiling all files with user-defined compiler flags (''',userFlags,''')...'] );
     end
     
-    
+
     %% call mex compiler
     for ii=1:length(fcnNames)
         

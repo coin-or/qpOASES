@@ -31,13 +31,13 @@ function [ successFlag ] = runAllTests( doPrint )
     
     fprintf( 'Running qpOASES passing an empty Hessian matrix argument... ' )
     successFlag = updateSuccessFlag( successFlag, runEmptyHessianTests( doPrint ) );
-    
+
     fprintf( 'Running alternativeX0 test... ' )
     successFlag = updateSuccessFlag( successFlag, runAlternativeX0Test( 50,300,doPrint,4242 ) );
     
     fprintf( 'Running testAPrioriKnownSeq1... ' )
     successFlag = updateSuccessFlag( successFlag, runTestAPrioriKnownSeq1( doPrint ) );
-    
+        
     fprintf( 'Running testSeq... ' )
     successFlag = updateSuccessFlag( successFlag, runTestSeq( doPrint ) );
     
