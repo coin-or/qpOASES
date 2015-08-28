@@ -837,32 +837,32 @@ returnValue setupHessianMatrix(	const mxArray* prhsH, int_t nV,
 
 	if ( mxIsSparse( prhsH ) != 0 )
 	{
-		mwIndex *oct_ir = mxGetIr( prhsH );
-		mwIndex *oct_jc = mxGetJc( prhsH );
+		mwIndex *mat_ir = mxGetIr( prhsH );
+		mwIndex *mat_jc = mxGetJc( prhsH );
 		double *v = (double*)mxGetPr( prhsH );
 		long nfill = 0;
-		long i, j;
+		mwIndex i, j;
 		BooleanType needInsertDiag;
 
 		/* copy indices to avoid 64/32-bit integer confusion */
 		/* also add explicit zeros on diagonal for regularization strategy */
 		/* copy values, too */
-		*Hir = new sparse_int_t[oct_jc[nV] + nV];
+		*Hir = new sparse_int_t[mat_jc[nV] + nV];
 		*Hjc = new sparse_int_t[nV+1];
-		*Hv = new real_t[oct_jc[nV] + nV];
+		*Hv = new real_t[mat_jc[nV] + nV];
         for (j = 0; j < nV; j++) 
 		{
             needInsertDiag = BT_TRUE;
                 
-            (*Hjc)[j] = (sparse_int_t)(oct_jc[j]) + nfill;
+            (*Hjc)[j] = (sparse_int_t)(mat_jc[j]) + nfill;
             /* fill up to diagonal */
-            for (i = oct_jc[j]; i < oct_jc[j+1]; i++) 
+            for (i = mat_jc[j]; i < mat_jc[j+1]; i++) 
 			{
-                if ( oct_ir[i] == j )
+                if ( mat_ir[i] == j )
                     needInsertDiag = BT_FALSE;
                     
                 /* add zero diagonal element if not present */
-                if ( ( oct_ir[i] > j ) && ( needInsertDiag == BT_TRUE ) )
+                if ( ( mat_ir[i] > j ) && ( needInsertDiag == BT_TRUE ) )
                 {
                     (*Hir)[i + nfill] = (sparse_int_t)j;
                     (*Hv)[i + nfill] = 0.0;
@@ -871,11 +871,11 @@ returnValue setupHessianMatrix(	const mxArray* prhsH, int_t nV,
                     needInsertDiag = BT_FALSE;
                 }
                         
-				(*Hir)[i + nfill] = (sparse_int_t)(oct_ir[i]);
+				(*Hir)[i + nfill] = (sparse_int_t)(mat_ir[i]);
 				(*Hv)[i + nfill] = (real_t)(v[i]);
 			}
 		}
-		(*Hjc)[nV] = (sparse_int_t)(oct_jc[nV]) + nfill;
+		(*Hjc)[nV] = (sparse_int_t)(mat_jc[nV]) + nfill;
 
 		SymSparseMat *sH;
 		*H = sH = new SymSparseMat(nV, nV, *Hir, *Hjc, *Hv);
@@ -908,24 +908,25 @@ returnValue setupConstraintMatrix(	const mxArray* prhsA, int_t nV, int_t nC,
 
 	if ( mxIsSparse( prhsA ) != 0 )
 	{
-		long i;
+		mwIndex i;
+		long j;
 
-		mwIndex *oct_ir = mxGetIr( prhsA );
-		mwIndex *oct_jc = mxGetJc( prhsA );
+		mwIndex *mat_ir = mxGetIr( prhsA );
+		mwIndex *mat_jc = mxGetJc( prhsA );
 		double *v = (double*)mxGetPr( prhsA );
 
 		/* copy indices to avoid 64/32-bit integer confusion */
-		*Air = new sparse_int_t[oct_jc[nV]];
+		*Air = new sparse_int_t[mat_jc[nV]];
 		*Ajc = new sparse_int_t[nV+1];
-		for (i = 0; i < oct_jc[nV]; i++)
-			(*Air)[i] = (sparse_int_t)(oct_ir[i]);
+		for (i = 0; i < mat_jc[nV]; i++)
+			(*Air)[i] = (sparse_int_t)(mat_ir[i]);
 		for (i = 0; i < nV + 1; i++)
-			(*Ajc)[i] = (sparse_int_t)(oct_jc[i]);
-
+			(*Ajc)[i] = (sparse_int_t)(mat_jc[i]);
+		
 		/* copy values, too */
 		*Av = new real_t[(*Ajc)[nV]];
-		for (i = 0; i < (*Ajc)[nV]; i++)
-			(*Av)[i] = (real_t)(v[i]);
+		for (j = 0; j < (*Ajc)[nV]; j++)
+			(*Av)[j] = (real_t)(v[j]);
 
 		*A = new SparseMatrix(nC, nV, *Air, *Ajc, *Av);
 	}

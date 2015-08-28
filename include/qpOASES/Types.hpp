@@ -177,6 +177,15 @@ typedef unsigned int uint_t;
 typedef int fint;
 
 
+/**
+ * Integer type for sparse matrix row/column entries. Make this "int"
+ * for 32 bit entries, and "long" for 64-bit entries on x86_64 platform.
+ *
+ * Most sparse codes still assume 32-bit entries here (HSL, BQPD, ...)
+ */
+typedef int_t sparse_int_t;
+
+
 /** Summarises all possible logical values. */
 enum BooleanType
 {

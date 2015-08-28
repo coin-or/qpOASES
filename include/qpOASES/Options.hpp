@@ -157,9 +157,9 @@ class Options
 		BooleanType enableInertiaCorrection;	/**< Specifies whether the working set should be repaired when negative curvature is discovered during hotstart. */
 
 		BooleanType enableDropInfeasibles;		/**< ... */
-		int_t    dropBoundPriority;				/**< ... */
-        int_t    dropEqConPriority;				/**< ... */
-        int_t    dropIneqConPriority;			/**< ... */
+		int_t dropBoundPriority;				/**< ... */
+        int_t dropEqConPriority;				/**< ... */
+        int_t dropIneqConPriority;				/**< ... */
 };
 
 

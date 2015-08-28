@@ -120,7 +120,7 @@ RET_QP_NOT_SOLVED,								/**< Problems occurred while solving QP with standard 
 RET_QP_SOLVED,									/**< QP successfully solved. */
 RET_UNABLE_TO_SOLVE_QP,							/**< Problems occurred while solving QP. (50) */
 RET_INITIALISATION_STARTED,						/**< Starting problem initialisation... */
-RET_HOTSTART_FAILED,							/**< Unable to perform homotopy due to internal error.*/
+RET_HOTSTART_FAILED,							/**< Unable to perform homotopy due to internal error. */
 RET_HOTSTART_FAILED_TO_INIT,					/**< Unable to initialise problem. */
 RET_HOTSTART_FAILED_AS_QP_NOT_INITIALISED,		/**< Unable to perform homotopy as previous QP is not solved. */
 RET_ITERATION_STARTED,							/**< Iteration... */

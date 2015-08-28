@@ -391,12 +391,12 @@ returnValue MessageHandling::throwWarning(	returnValue Wnumber,
  *	t h r o w I n f o
  */
 returnValue MessageHandling::throwInfo(	returnValue Inumber,
-											const char* additionaltext,
-											const char* functionname,
-											const char* filename,
-											const unsigned long linenumber,
-											VisibilityStatus localVisibilityStatus
-											)
+										const char* additionaltext,
+										const char* functionname,
+										const char* filename,
+										const unsigned long linenumber,
+										VisibilityStatus localVisibilityStatus
+										)
 {
 	/* consistency check */
 	if ( Inumber < SUCCESSFUL_RETURN )

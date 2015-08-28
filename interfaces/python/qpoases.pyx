@@ -217,6 +217,10 @@ cdef class PyReturnValue:
     NO_DIAGONAL_AVAILABLE                 = RET_NO_DIAGONAL_AVAILABLE
     DIAGONAL_NOT_INITIALISED              = RET_DIAGONAL_NOT_INITIALISED
     ENSURELI_DROPPED                      = RET_ENSURELI_DROPPED
+    KKT_MATRIX_SINGULAR                   = RET_KKT_MATRIX_SINGULAR
+    QR_FACTORISATION_FAILED               = RET_QR_FACTORISATION_FAILED
+    INERTIA_CORRECTION_FAILED             = RET_INERTIA_CORRECTION_FAILED
+    NO_SPARSE_SOLVER                      = RET_NO_SPARSE_SOLVER
     SIMPLE_STATUS_P1                      = RET_SIMPLE_STATUS_P1
     SIMPLE_STATUS_P0                      = RET_SIMPLE_STATUS_P0
     SIMPLE_STATUS_M1                      = RET_SIMPLE_STATUS_M1
@@ -855,12 +859,12 @@ cdef class PySolutionAnalysis:
 
 # Wrapped some utility functions for unit testing
 cpdef py_runOqpBenchmark(path,               # Full path of the benchmark files (without trailing slash!).
-                       isSparse,           # Shall convert matrices to sparse format before solution?
-                       useHotstarts,       # Shall QP solution be hotstarted?
-                       PyOptions options,  # QP solver options to be used while solving benchmark problems.
-                       int maxAllowedNWSR, # Maximum number of working set recalculations to be performed.
-                       double maxCPUTime,  # Maximum allowed CPU time for qp solving.
-                       ):
+                         isSparse,           # Shall convert matrices to sparse format before solution?
+                         useHotstarts,       # Shall QP solution be hotstarted?
+                         PyOptions options,  # QP solver options to be used while solving benchmark problems.
+                         int maxAllowedNWSR, # Maximum number of working set recalculations to be performed.
+                         double maxCPUTime,  # Maximum allowed CPU time for qp solving.
+                         ):
     """run a QP benchmark example"""
     maxNWSR            = 0.0 # Output: Maximum number of performed working set recalculations.
     avgNWSR            = 0.0 # Output: Average number of performed working set recalculations.

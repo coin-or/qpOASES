@@ -297,7 +297,6 @@ cdef extern from "qpOASES.hpp" namespace "qpOASES":
         int_t dropBoundPriority
         int_t dropEqConPriority
         int_t dropIneqConPriority
-		BooleanType printResiduals
 
     cdef cppclass QProblemB:
         QProblemB()
