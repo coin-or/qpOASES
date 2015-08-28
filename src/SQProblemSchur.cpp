@@ -2463,12 +2463,13 @@ returnValue SQProblemSchur::backsolveSchurQR( int_t dimS, const real_t* const rh
 }
 
 
-returnValue SQProblemSchur::stepCalcRhs( int_t nFR, int_t nFX, int_t nAC, int_t* FR_idx, int_t* FX_idx, int_t* AC_idx, real_t& rhs_max, const real_t* const delta_g, const real_t* const delta_lbA, const real_t* const delta_ubA,
-												const real_t* const delta_lb, const real_t* const delta_ub,
-												BooleanType Delta_bC_isZero, BooleanType Delta_bB_isZero,
-												real_t* const delta_xFX, real_t* const delta_xFR,
-												real_t* const delta_yAC, real_t* const delta_yFX
-												)
+returnValue SQProblemSchur::stepCalcRhs(	int_t nFR, int_t nFX, int_t nAC, int_t* FR_idx, int_t* FX_idx, int_t* AC_idx, real_t& rhs_max, 
+											const real_t* const delta_g, const real_t* const delta_lbA, const real_t* const delta_ubA,
+											const real_t* const delta_lb, const real_t* const delta_ub,
+											BooleanType Delta_bC_isZero, BooleanType Delta_bB_isZero,
+											real_t* const delta_xFX, real_t* const delta_xFR,
+											real_t* const delta_yAC, real_t* const delta_yFX
+											)
 {
 	int_t i, ii;
 	returnValue retval;
@@ -2895,7 +2896,7 @@ returnValue SQProblemSchur::determineStepDirection2(	const real_t* const delta_g
 	}
 
 	if ( nFR+nAC>0 ) {
-		real_t rhs_max;
+		real_t rhs_max = 0.0;
 		retval = stepCalcRhs( nFR, nFX, nAC, FR_idx, FX_idx, AC_idx, rhs_max, delta_g, delta_lbA, delta_ubA,
 							  delta_lb, delta_ub, Delta_bC_isZero, Delta_bB_isZero, delta_xFX, delta_xFR,
 							  delta_yAC, delta_yFX );

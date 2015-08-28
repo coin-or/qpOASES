@@ -137,6 +137,7 @@ SET(EXAMPLE_NAMES
     example5
     exampleLP
     qrecipe
+	qrecipeSchur
 )
 
 FOREACH(ELEMENT ${EXAMPLE_NAMES})
