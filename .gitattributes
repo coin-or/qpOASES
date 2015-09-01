@@ -110,8 +110,6 @@ interfaces/python/qpoases.pyx -text
 interfaces/python/setup.py -text
 interfaces/python/tests/__init__.py -text
 interfaces/python/tests/test_examples.py -text
-interfaces/python/tests/test_idhessian.py -text
-interfaces/python/tests/test_testbench.py -text
 interfaces/scilab/Makefile -text
 interfaces/scilab/example1.dat -text
 interfaces/scilab/example1a.dat -text

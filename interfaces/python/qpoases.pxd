@@ -30,7 +30,7 @@
 cdef extern from "qpOASES.hpp" namespace "qpOASES":
 
     ctypedef double real_t
-	ctypedef int int_t
+    ctypedef int int_t
 
     cdef enum BooleanType:
 
@@ -233,7 +233,7 @@ cdef extern from "qpOASES.hpp" namespace "qpOASES":
         RET_NO_DIAGONAL_AVAILABLE
         RET_DIAGONAL_NOT_INITIALISED
         RET_ENSURELI_DROPPED
-		RET_KKT_MATRIX_SINGULAR
+        RET_KKT_MATRIX_SINGULAR
         RET_QR_FACTORISATION_FAILED
         RET_INERTIA_CORRECTION_FAILED
         RET_NO_SPARSE_SOLVER
@@ -290,8 +290,8 @@ cdef extern from "qpOASES.hpp" namespace "qpOASES":
         real_t epsLITests
         real_t epsNZCTests
 
-		real_t rcondSMin
-		BooleanType enableInertiaCorrection
+        real_t rcondSMin
+        BooleanType enableInertiaCorrection
 
         BooleanType enableDropInfeasibles
         int_t dropBoundPriority

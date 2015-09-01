@@ -118,29 +118,28 @@ class TestExamples(TestCase):
         assert_almost_equal(xOpt_actual, xOpt_expected, decimal=7)
         assert_almost_equal(objVal_actual, objVal_expected, decimal=7)
 
-
     def test_example1b(self):
-        # Example for qpOASES main function using the QProblemB class.
-        #Setup data of first QP.
-
-        H   = np.array([1.0, 0.0, 0.0, 0.5 ]).reshape((2,2))
-        g   = np.array([1.5, 1.0 ])
-        lb  = np.array([0.5, -2.0])
-        ub  = np.array([5.0, 2.0 ])
+        """Example for qpOASES main function using the QProblemB class."""
+        # Setup data of first QP.
+        H = np.array([1.0, 0.0, 0.0, 0.5]).reshape((2, 2))
+        g = np.array([1.5, 1.0])
+        lb = np.array([0.5, -2.0])
+        ub = np.array([5.0, 2.0])
 
         # Setup data of second QP.
 
-        g_new   = np.array([1.0, 1.5])
-        lb_new  = np.array([0.0, -1.0])
-        ub_new  = np.array([5.0, -0.5])
+        g_new = np.array([1.0, 1.5])
+        lb_new = np.array([0.0, -1.0])
+        ub_new = np.array([5.0, -0.5])
 
         # Setting up QProblemB object.
         qp = QProblemB(2)
 
         options = Options()
-        options.enableFlippingBounds = BooleanType.FALSE
-        options.initialStatusBounds  = SubjectToStatus.INACTIVE
-        options.numRefinementSteps   = 1
+        # options.enableFlippingBounds = BooleanType.FALSE
+        options.initialStatusBounds = SubjectToStatus.INACTIVE
+        options.numRefinementSteps = 1
+        options.enableCholeskyRefactorisation = 1
         options.printLevel = PrintLevel.NONE
         qp.setOptions(options)
 
@@ -148,9 +147,25 @@ class TestExamples(TestCase):
         nWSR = 10
         qp.init(H, g, lb, ub, nWSR)
 
+        xOpt_actual = np.zeros(2)
+        qp.getPrimalSolution(xOpt_actual)
+        xOpt_actual = np.asarray(xOpt_actual, dtype=float)
+        objVal_actual = qp.getObjVal()
+        objVal_actual = np.asarray(objVal_actual, dtype=float)
+        print 'xOpt_actual:', xOpt_actual
+        print 'objVal_actual:', objVal_actual
+
         # Solve second QP.
-        nWSR = 10;
+        nWSR = 10
         qp.hotstart(g_new, lb_new, ub_new, nWSR)
+
+        xOpt_actual = np.zeros(2)
+        qp.getPrimalSolution(xOpt_actual)
+        xOpt_actual = np.asarray(xOpt_actual, dtype=float)
+        objVal_actual = qp.getObjVal()
+        objVal_actual = np.asarray(objVal_actual, dtype=float)
+        print 'xOpt_actual:', xOpt_actual
+        print 'objVal_actual:', objVal_actual
 
         # Get and print solution of second QP.
         xOpt_actual = np.zeros(2)
@@ -164,18 +179,18 @@ class TestExamples(TestCase):
         stdout, stderr = p.communicate()
         stdout = str(stdout).replace('\\n', '\n')
         stdout = stdout.replace("'", '')
-        print(stdout)
 
         # get c++ solution from std
         pattern = re.compile(r'xOpt\s*=\s*\[\s+(?P<xOpt>([0-9., e+-])*)\];')
-        match = pattern.search(stdout)
-        xOpt_expected = match.group('xOpt')
+        match = pattern.findall(stdout)
+        xOpt_expected = match[-1][0]
         xOpt_expected = xOpt_expected.split(",")
         xOpt_expected = np.asarray(xOpt_expected, dtype=float)
 
         pattern = re.compile(r'objVal = (?P<objVal>[0-9-+e.]*)')
-        match = pattern.search(stdout)
-        objVal_expected = match.group('objVal')
+        match = pattern.findall(stdout)
+        print match
+        objVal_expected = match[-1]
         objVal_expected = np.asarray(objVal_expected, dtype=float)
 
         print("xOpt_actual =", xOpt_actual)
@@ -228,12 +243,19 @@ class TestExamples(TestCase):
         qp.init(H, g, A, lb, ub, lbA, ubA, nWSR)
 
         #  ... and analyse it.
-        maxKKTviolation = np.zeros(1)
-        analyser.getMaxKKTviolation(qp, maxKKTviolation)
-        print("maxKKTviolation: %e\n"%maxKKTviolation)
-        actual = np.asarray(maxKKTviolation)
+        maxViol = np.zeros(1)
+        maxStat = np.zeros(1)
+        maxFeas = np.zeros(1)
+        maxCmpl = np.zeros(1)
+        maxViol[0] = analyser.getKktViolation(
+            qp, maxStat, maxFeas, maxCmpl
+        )
+        print("maxViol: %e\n" % maxViol)
+        actual = np.asarray(maxViol)
 
-        pattern = re.compile(r'maxKKTviolation: (?P<maxKKTviolation>[0-9+-e.]*)')
+        pattern = re.compile(
+            r'maxKktViolation: (?P<KktViolation>[0-9+-e.]*)'
+        )
 
         match = pattern.findall(stdout)
         expected = np.asarray(match[0], dtype=float)
@@ -242,27 +264,35 @@ class TestExamples(TestCase):
 
         #  Solve second QP ...
         nWSR = 10
-        qp.hotstart(H_new, g_new, A_new,
-                              lb_new, ub_new,
-                              lbA_new, ubA_new, nWSR)
+        qp.hotstart(
+            H_new, g_new, A_new,
+            lb_new, ub_new,
+            lbA_new, ubA_new,
+            nWSR
+        )
 
         #  ... and analyse it.
-        analyser.getMaxKKTviolation(qp, maxKKTviolation)
-        print("maxKKTviolation: %e\n"%maxKKTviolation)
-        actual = np.asarray(maxKKTviolation)
+        maxViol = np.zeros(1)
+        maxStat = np.zeros(1)
+        maxFeas = np.zeros(1)
+        maxCmpl = np.zeros(1)
+        maxViol[0] = analyser.getKktViolation(
+            qp, maxStat, maxFeas, maxCmpl
+        )
+        print("maxViol: %e\n" % maxViol)
+        actual = np.asarray(maxViol)
 
         expected = np.asarray(match[1], dtype=float)
 
         assert_almost_equal(actual, expected, decimal=7)
 
+        # ------------ VARIANCE-COVARIANCE EVALUATION --------------------
 
-        #  ------------ VARIANCE-COVARIANCE EVALUATION --------------------
-
-        Var             = np.zeros(5*5)
+        Var = np.zeros(5*5)
         Primal_Dual_Var = np.zeros(5*5)
 
-        Var.reshape((5,5))[0,0] = 1.
-        Var.reshape((5,5))[1,1] = 1.
+        Var.reshape((5, 5))[0, 0] = 1.
+        Var.reshape((5, 5))[1, 1] = 1.
 
         #                  (  1   0   0   0   0   )
         #                  (  0   1   0   0   0   )
@@ -270,13 +300,14 @@ class TestExamples(TestCase):
         #                  (  0   0   0   0   0   )
         #                  (  0   0   0   0   0   )
 
-
         analyser.getVarianceCovariance(qp, Var, Primal_Dual_Var)
-        print('Primal_Dual_Var=\n', Primal_Dual_Var.reshape((5,5)))
-        actual = Primal_Dual_Var.reshape((5,5))
+        print('Primal_Dual_Var=\n', Primal_Dual_Var.reshape((5, 5)))
+        actual = Primal_Dual_Var.reshape((5, 5))
 
-        pattern = re.compile(r'Primal_Dual_VAR = (?P<VAR>.*)',
-                             re.DOTALL)
+        pattern = re.compile(
+            r'Primal_Dual_VAR = (?P<VAR>.*)',
+            re.DOTALL
+        )
 
         print(stdout)
         match = pattern.search(stdout)
@@ -287,14 +318,15 @@ class TestExamples(TestCase):
 
         assert_almost_equal(actual, expected, decimal=7)
 
-
     def test_example7(self):
-        H   = np.array([ 0.8514828085899353, -0.15739890933036804, -0.081726007163524628, -0.530426025390625, 0.16773293912410736,
-                        -0.15739890933036804, 1.1552412509918213, 0.57780224084854126, -0.0072606131434440613, 0.010559185408055782,
-                        -0.081726007163524628, 0.57780224084854126, 0.28925251960754395, 5.324830453901086e-006, -3.0256599075073609e-006,
-                        -0.530426025390625, -0.0072606131434440613, 5.324830453901086e-006, 0.35609596967697144, -0.15124998986721039,
-                         0.16773293912410736, 0.010559185408055782, -3.0256599075073609e-006, -0.15124998986721039,
-                         0.15129712224006653], dtype=float).reshape((5, 5))
+        H   = np.array([
+            0.8514828085899353, -0.15739890933036804, -0.081726007163524628, -0.530426025390625, 0.16773293912410736,
+           -0.15739890933036804, 1.1552412509918213, 0.57780224084854126, -0.0072606131434440613, 0.010559185408055782,
+           -0.081726007163524628, 0.57780224084854126, 0.28925251960754395, 5.324830453901086e-006, -3.0256599075073609e-006,
+           -0.530426025390625, -0.0072606131434440613, 5.324830453901086e-006, 0.35609596967697144, -0.15124998986721039,
+            0.16773293912410736, 0.010559185408055782, -3.0256599075073609e-006, -0.15124998986721039, 0.15129712224006653
+            ], dtype=float
+        ).reshape((5, 5))
         g   = np.array([0.30908384919166565, 0.99325823783874512, 0.49822014570236206, -0.26309865713119507, 0.024296050891280174], dtype=float).reshape((5,))
         A   = np.array([1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1], dtype=float).reshape((5, 5))
         lb  = np.array([-0.052359879016876221, -0.052359879016876221, -0.052359879016876221, -0.052359879016876221, -0.052359938621520996], dtype=float).reshape((5,))

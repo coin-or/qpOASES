@@ -107,7 +107,7 @@ returnValue print( const real_t* const v, int_t n, const char* name )
 returnValue print(	const real_t* const v, int_t n, const int_t* const V_idx, const char* name )
 {
 	#ifndef __SUPPRESSANYOUTPUT__
-	
+
 	int_t i;
 	char myPrintfString[MAX_STRING_LENGTH];
 
@@ -138,7 +138,7 @@ returnValue print(	const real_t* const v, int_t n, const int_t* const V_idx, con
 returnValue print( const real_t* const M, int_t nrow, int_t ncol, const char* name )
 {
 	#ifndef __SUPPRESSANYOUTPUT__
-	
+
 	int_t i;
 	char myPrintfString[MAX_STRING_LENGTH];
 
@@ -166,7 +166,7 @@ returnValue print( const real_t* const M, int_t nrow, int_t ncol, const char* na
 returnValue print(	const real_t* const M, int_t nrow, int_t ncol, const int_t* const ROW_idx, const int_t* const COL_idx, const char* name )
 {
 	#ifndef __SUPPRESSANYOUTPUT__
-	
+
 	int_t i;
 	char myPrintfString[MAX_STRING_LENGTH];
 
@@ -194,7 +194,7 @@ returnValue print(	const real_t* const M, int_t nrow, int_t ncol, const int_t* c
 returnValue print( const int_t* const index, int_t n, const char* name )
 {
 	#ifndef __SUPPRESSANYOUTPUT__
-	
+
 	int_t i;
 	char myPrintfString[MAX_STRING_LENGTH];
 
@@ -225,11 +225,11 @@ returnValue print( const int_t* const index, int_t n, const char* name )
 returnValue myPrintf( const char* s )
 {
 	#ifndef __SUPPRESSANYOUTPUT__
-	
-	
+
+
 		if ( s == 0 )
 			return RET_INVALID_ARGUMENTS;
-		
+
 		#ifdef __MATLAB__
 			mexPrintf( s );
 		#else
@@ -312,7 +312,7 @@ returnValue readFromFile(	real_t* data, int_t nrow, int_t ncol,
 	fclose( datafile );
 
 	return SUCCESSFUL_RETURN;
-    
+
 	#else /* __SUPPRESSANYOUTPUT__ */
 
 	return RET_NOT_YET_IMPLEMENTED;
@@ -429,7 +429,7 @@ returnValue writeIntoFile(	const real_t* const data, int_t nrow, int_t ncol,
 	fclose( datafile );
 
 	return SUCCESSFUL_RETURN;
-    
+
 	#else /* __SUPPRESSANYOUTPUT__ */
 
 	return RET_NOT_YET_IMPLEMENTED;
@@ -524,7 +524,7 @@ returnValue writeIntoMatFile(	FILE* const matFile,
 	var.nCols         = nCols; /* number of columns */
 	var.imaginaryPart = 0;     /* no imaginary part */
 	var.nCharName     = (long)(strlen(name))+1; /* matrix name length */
-	
+
 	/* write variable header to mat file */
 	if ( fwrite( &var, sizeof(MatMatrixHeader),1,  matFile ) < 1 )
 		return RET_UNABLE_TO_WRITE_FILE;
@@ -544,7 +544,7 @@ returnValue writeIntoMatFile(	FILE* const matFile,
 		}
 
 	return SUCCESSFUL_RETURN;
-    
+
 	#else /* __SUPPRESSANYOUTPUT__ */
 
 	return RET_NOT_YET_IMPLEMENTED;
@@ -570,7 +570,7 @@ returnValue writeIntoMatFile(	FILE* const matFile,
 
 	returnValue returnvalue = writeIntoMatFile( matFile,realData,nRows,nCols,name );
 	delete[] realData;
-	
+
 	return returnvalue;
 }
 
@@ -590,7 +590,7 @@ real_t getCPUtime( )
 	#elif defined(LINUX) || defined(__LINUX__)
 	struct timeval theclock;
 	gettimeofday( &theclock,0 );
-	current_time = 1.0*theclock.tv_sec + 1.0e-6*theclock.tv_usec;
+	current_time =  1.0*(real_t) theclock.tv_sec + 1.0e-6* (real_t) theclock.tv_usec;
 	#endif
 
 	return current_time;
@@ -666,7 +666,7 @@ returnValue getKktViolation(	int_t nV, int_t nC,
 		/* A'*y term */
 		if ( A != 0 )
 			for (j = 0; j < nC; j++) sum -= A[j*nV+i] * y[nV+j];
-		
+
 		/* update stat */
 		if (getAbs(sum) > stat) stat = getAbs(sum);
 	}
@@ -676,14 +676,14 @@ returnValue getKktViolation(	int_t nV, int_t nC,
 	for (i = 0; i < nV; i++)
 	{
 		if ( lb != 0 )
-			if (lb[i] - x[i] > feas) 
+			if (lb[i] - x[i] > feas)
 				feas = lb[i] - x[i];
 
 		if ( ub != 0 )
-			if (x[i] - ub[i] > feas) 
+			if (x[i] - ub[i] > feas)
 				feas = x[i] - ub[i];
 	}
-	
+
 	/* complementarity */
 	if ( workingSetB == 0 )
 	{
@@ -734,16 +734,16 @@ returnValue getKktViolation(	int_t nV, int_t nC,
 		/* compute sum = (A*x)_i */
 		sum = 0.0;
 		if ( A != 0 )
-			for (j = 0; j < nV; j++) 
+			for (j = 0; j < nV; j++)
 				sum += A[i*nV+j] * x[j];
 
 		/* feasibility */
 		if ( lbA != 0 )
-			if (lbA[i] - sum > feas) 
+			if (lbA[i] - sum > feas)
 				feas = lbA[i] - sum;
 
 		if ( ubA != 0 )
-			if (sum - ubA[i] > feas) 
+			if (sum - ubA[i] > feas)
 				feas = sum - ubA[i];
 
 		/* complementarity */
@@ -754,7 +754,7 @@ returnValue getKktViolation(	int_t nV, int_t nC,
 		{
 			if ( workingSetC == 0 )
 			{
-				if (y[nV+i] > dualActiveTolerance) 
+				if (y[nV+i] > dualActiveTolerance)
 					prod = (sum - lbA[i]) * y[nV+i];
 			}
 			else
@@ -763,7 +763,7 @@ returnValue getKktViolation(	int_t nV, int_t nC,
 					prod = (sum - lbA[i]) * y[nV+i];
 			}
 		}
-		
+
 		/* upper bound */
 		if ( ubA != 0 )
 		{
@@ -845,7 +845,7 @@ returnValue convertSubjectToStatusToString( SubjectToStatus value, char* const s
 		case ST_UNDEFINED:
 			snprintf( string,20,"ST_UNDEFINED" );
 			break;
-			
+
 		case ST_INFEASIBLE_LOWER:
 			snprintf( string,20,"ST_INFEASIBLE_LOWER" );
 			break;
@@ -887,7 +887,7 @@ returnValue convertPrintLevelToString( PrintLevel value, char* const string )
 		case PL_HIGH:
 			snprintf( string,20,"PL_HIGH" );
 			break;
-			
+
 		case PL_TABULAR:
 			snprintf( string,20,"PL_TABULAR" );
 			break;
@@ -946,7 +946,7 @@ int_t getSimpleStatus(	returnValue returnvalue,
 		VisibilityStatus vsInfo = getGlobalMessageHandler( )->getInfoVisibilityStatus( );
 		getGlobalMessageHandler( )->setInfoVisibilityStatus( VS_VISIBLE );
 		getGlobalMessageHandler( )->setErrorCount( -1 );
-		
+
 		int_t retValNumber = (int_t)RET_SIMPLE_STATUS_P0 - simpleStatus;
 		THROWINFO( (returnValue)retValNumber );
 
@@ -1021,7 +1021,7 @@ extern "C" void gdb_printmat(const char *fname, real_t *M, int_t n, int_t m, int
 	FILE *fid;
 
 	fid = fopen(fname, "wt");
-	if (!fid) 
+	if (!fid)
 	{
 		perror("Error opening file: ");
 		return;
@@ -1049,7 +1049,7 @@ void __cxa_pure_virtual( void )
 {
 	/* put your customized implementation here! */
 }
-#endif /* __DSPACE__ || __XPCTARGET__ || __C_WRAPPER__ */ 
+#endif /* __DSPACE__ || __XPCTARGET__ || __C_WRAPPER__ */
 
 
 
