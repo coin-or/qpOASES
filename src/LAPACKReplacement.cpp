@@ -123,7 +123,7 @@ extern "C" void dtrtrs_(	const char *UPLO, const char *TRANS, const char *DIAG,
 							double *A, const unsigned long *LDA, double *B, const unsigned long *LDB, long *INFO
 							)
 {
-	; /* Dummy. If SQProblemSchur is to be used, system LAPACK must be used */
+	INFO[0] = 0xDEADBEEF; /* Dummy. If SQProblemSchur is to be used, system LAPACK must be used */
 }
 
 extern "C" void strtrs_(	const char *UPLO, const char *TRANS, const char *DIAG,
@@ -131,7 +131,7 @@ extern "C" void strtrs_(	const char *UPLO, const char *TRANS, const char *DIAG,
 							float *A, const unsigned long *LDA, float *B, const unsigned long *LDB, long *INFO
 							)
 {
-	; /* Dummy. If SQProblemSchur is to be used, system LAPACK must be used */
+	INFO[0] = 0xDEADBEEF; /* Dummy. If SQProblemSchur is to be used, system LAPACK must be used */
 }
 
 extern "C" void dtrcon_(	const char *NORM, const char *UPLO, const char *DIAG,
@@ -139,7 +139,7 @@ extern "C" void dtrcon_(	const char *NORM, const char *UPLO, const char *DIAG,
 							double *RCOND, double *WORK, const unsigned long *IWORK, long *INFO
 							)
 {
-	; /* Dummy. If SQProblemSchur is to be used, system LAPACK must be used */
+	INFO[0] = 0xDEADBEEF; /* Dummy. If SQProblemSchur is to be used, system LAPACK must be used */
 }
 
 extern "C" void strcon_(	const char *NORM, const char *UPLO, const char *DIAG,
@@ -147,5 +147,6 @@ extern "C" void strcon_(	const char *NORM, const char *UPLO, const char *DIAG,
 							float *RCOND, float *WORK, const unsigned long *IWORK, long *INFO
 							)
 {
-	; /* Dummy. If SQProblemSchur is to be used, system LAPACK must be used */
+	INFO[0] = 0xDEADBEEF; /* Dummy. If SQProblemSchur is to be used, system LAPACK must be used */
 }
+

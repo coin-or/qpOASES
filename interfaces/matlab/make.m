@@ -62,10 +62,10 @@ function [] = make( varargin )
     QPOASESPATH = '../../';
     
     DEBUGFLAGS = ' ';
-    %DEBUGFLAGS = ' -g CXXDEBUGFLAGS=''$CXXDEBUGFLAGS -Wall -pedantic -Wshadow'' ';
+    %DEBUGFLAGS = ' -v -g CXXDEBUGFLAGS=''$CXXDEBUGFLAGS -Wall -pedantic -Wshadow'' ';
 
     IFLAGS = [ '-I. -I',QPOASESPATH,'include',' -I',QPOASESPATH,'src',' ' ];
-    CPPFLAGS = [ IFLAGS, DEBUGFLAGS, '-largeArrayDims -D__cpluplus -D__MATLAB__ -D__SINGLE_OBJECT__',' ' ];
+    CPPFLAGS = [ IFLAGS, DEBUGFLAGS, '-largeArrayDims -D__cpluplus -D__MATLAB__ -D__SINGLE_OBJECT__ -lmwblas',' ' ];
     defaultFlags = '-O -D__NO_COPYRIGHT__ '; %% -D__SUPPRESSANYOUTPUT__
 
     if ( ispc == 0 )
@@ -79,6 +79,18 @@ function [] = make( varargin )
     else
         CPPFLAGS = [ CPPFLAGS, userFlags,' ' ];
     end
+
+	%% determine if MA57 is available for sparse linear algebra
+	isoctave = exist('OCTAVE_VERSION', 'builtin') ~= 0;
+	if isoctave
+		warning('Sparse linear algebra is currently not available for qpOASES in Octave. Passing sparse matrices works but will likely be slow.')
+		SPARSEFLAGS = '';
+	elseif verLessThan('matlab', '7.8')
+		warning('Sparse linear algebra is currently available for qpOASES only for Matlab versions 7.8 and later. Passing sparse matrices works but will likely be slow.')
+		SPARSEFLAGS = '';
+	else
+		SPARSEFLAGS = '-largeArrayDims -D__USE_LONG_INTEGERS__ -D__USE_LONG_FINTS__ -DWITH_SPARSE_LA -DSOLVER_MA57 -lmwma57 -lmwlapack ';
+	end
 
     mexExt = eval('mexext');
     
@@ -108,7 +120,7 @@ function [] = make( varargin )
     %% call mex compiler
     for ii=1:length(fcnNames)
         
-        cmd = [ 'mex -output ', fcnNames{ii}, ' ', CPPFLAGS, [fcnNames{ii},'.cpp'] ];
+        cmd = [ 'mex -output ', fcnNames{ii}, ' ', CPPFLAGS, SPARSEFLAGS, [fcnNames{ii},'.cpp'] ];
         
         if ( exist( [fcnNames{ii},'.',mexExt],'file' ) == 0 )
             

@@ -61,7 +61,8 @@ class QPInstance
 		QPInstance(	uint_t _nV = 0,
 					uint_t _nC = 0,
 					HessianType _hessianType = HST_UNKNOWN,
-					BooleanType _isSimplyBounded = BT_FALSE
+					BooleanType _isSimplyBounded = BT_FALSE,
+					BooleanType _sparseLA = BT_FALSE
 					);
 
 		~QPInstance( );
@@ -76,6 +77,7 @@ class QPInstance
 		SQProblem* sqp;
 		QProblemB* qpb;
 		BooleanType isSimplyBounded;
+		BooleanType sparseLA;
 
 		SymmetricMatrix* H;
 		Matrix* A;

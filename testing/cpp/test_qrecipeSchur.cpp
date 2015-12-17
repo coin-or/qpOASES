@@ -56,6 +56,10 @@ int main( )
 	real_t *x3 = new real_t[180];
 	real_t *y3 = new real_t[271];
 
+	Options options;
+	options.setToDefault();
+	options.enableEqualities = BT_TRUE;
+
 	/* create sparse matrices */
 	SymSparseMat *H = new SymSparseMat(180, 180, H_ir, H_jc, H_val);
 	SparseMatrix *A = new SparseMatrix(91, 180, A_ir, A_jc, A_val);
@@ -71,6 +75,7 @@ int main( )
 	/* solve with dense matrices */
 	nWSR = 1000;
 	QProblem qrecipeD(180, 91);
+	qrecipeD.setOptions(options);
 	tic = getCPUtime();
 	qrecipeD.init(Hd, g, Ad, lb, ub, lbA, ubA, nWSR, 0);
 	toc = getCPUtime();
@@ -82,6 +87,7 @@ int main( )
 	/* solve with sparse matrices (nullspace factorization) */
 	nWSR = 1000;
 	QProblem qrecipeS(180, 91);
+	qrecipeS.setOptions(options);
 	tic = getCPUtime();
 	qrecipeS.init(H, g, A, lb, ub, lbA, ubA, nWSR, 0);
 	toc = getCPUtime();
@@ -94,6 +100,7 @@ int main( )
 	#ifndef SOLVER_NONE
 	nWSR = 1000;
 	SQProblemSchur qrecipeSchur(180, 91);
+	qrecipeSchur.setOptions(options);
 	tic = getCPUtime();
 	qrecipeSchur.init(H, g, A, lb, ub, lbA, ubA, nWSR, 0);
 	toc = getCPUtime();

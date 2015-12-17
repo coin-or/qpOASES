@@ -60,15 +60,20 @@ int_t QProblem_qpOASES(	int_t nV, int_t nC, HessianType hessianType, int_t nP,
 						const double* const x0, Options* options,
 						int_t nOutputs, mxArray* plhs[],
 						const double* const guessedBounds, const double* const guessedConstraints,
-						const double* const _R
+						const double* const _R,
+						BooleanType isSparse
 						)
 {
 	int_t nWSRout;
 	real_t maxCpuTimeOut;
 	
 	/* 1) Setup initial QP. */
-	QProblem QP( nV,nC,hessianType );
-	QP.setOptions( *options );
+	QProblem *QP;
+	if ( isSparse )
+		QP = new SQProblemSchur ( nV,nC,hessianType );
+	else
+		QP = new QProblem ( nV,nC,hessianType );
+	QP->setOptions( *options );
 
 	/* 2) Solve initial QP. */
 	returnValue returnvalue;
@@ -114,7 +119,7 @@ int_t QProblem_qpOASES(	int_t nV, int_t nC, HessianType hessianType, int_t nP,
 	nWSRout = nWSRin;
 	maxCpuTimeOut = (maxCpuTimeIn >= 0.0) ? maxCpuTimeIn : INFTY;
 
-	returnvalue = QP.init(	H,g,A,lb,ub,lbA,ubA,
+	returnvalue = QP->init(	H,g,A,lb,ub,lbA,ubA,
 							nWSRout,&maxCpuTimeOut,
 							x0,0,
 							(guessedBounds != 0) ? &bounds : 0, (guessedConstraints != 0) ? &constraints : 0,
@@ -147,16 +152,17 @@ int_t QProblem_qpOASES(	int_t nV, int_t nC, HessianType hessianType, int_t nP,
 
 			nWSRout = nWSRin;
 			maxCpuTimeOut = (maxCpuTimeIn >= 0.0) ? maxCpuTimeIn : INFTY;
-			returnvalue = QP.hotstart( g_current,lb_current,ub_current,lbA_current,ubA_current, nWSRout,&maxCpuTimeOut );
+			returnvalue = QP->hotstart( g_current,lb_current,ub_current,lbA_current,ubA_current, nWSRout,&maxCpuTimeOut );
 		}
 
 		/* write results into output vectors */
-		obtainOutputs(	k,&QP,returnvalue,nWSRout,maxCpuTimeOut,
+		obtainOutputs(	k,QP,returnvalue,nWSRout,maxCpuTimeOut,
 						nOutputs,plhs,nV,nC );
 	}
 
-	//QP.writeQpDataIntoMatFile( "qpDataMat0.mat" );
+	//QP->writeQpDataIntoMatFile( "qpDataMat0.mat" );
 
+	delete QP;
 	return 0;
 }
 
@@ -277,6 +283,11 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 	/* dimensions */
 	uint_t nV=0, nC=0, nP=0;
 	BooleanType isSimplyBoundedQp = BT_FALSE;
+	#ifdef WITH_SPARSE_LA
+	BooleanType isSparse = BT_TRUE; // This will be set to BT_FALSE later if a dense matrix is encountered.
+	#else
+	BooleanType isSparse = BT_FALSE;
+	#endif
 
 	/* sparse matrix indices and values */
 	sparse_int_t *Hir=0, *Hjc=0, *Air=0, *Ajc=0;
@@ -529,6 +540,12 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 
 	allocateOutputs( nlhs,plhs,nV,nC,nP );
 
+	/* check if QP is sparse */
+	if ( H_idx >= 0 && !mxIsSparse( prhs[H_idx] ) )
+		isSparse = BT_FALSE;
+	if ( nC > 0 && A_idx >= 0 && !mxIsSparse( prhs[A_idx] ) )
+		isSparse = BT_FALSE;
+
 	if ( nC == 0 )
 	{
 		/* Call qpOASES (using QProblemB class). */
@@ -563,7 +580,8 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 							nWSRin,maxCpuTimeIn,
 							x0,&options,
 							nlhs,plhs,
-							guessedBounds,guessedConstraints,R
+							guessedBounds,guessedConstraints,R,
+							isSparse
 							);
 		
 		if (R != 0) delete R;

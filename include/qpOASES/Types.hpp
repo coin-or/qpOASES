@@ -174,7 +174,11 @@ typedef unsigned int uint_t;
 
 
 /** typedef for Fortran INTEGER type. Might be platform dependent! */
+#ifdef __USE_LONG_FINTS__
+typedef long fint;
+#else
 typedef int fint;
+#endif /* __USE_LONG_FINTS__ */
 
 
 /**

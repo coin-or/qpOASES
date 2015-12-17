@@ -781,6 +781,9 @@ returnValue Ma57SparseSolver::factorize( )
 	fint *keep_ma57 = new fint[lkeep_ma57];
 	fint *iwork_ma57 = new fint[5*dim];
 
+	/* Set initial pivot sequence. */
+	for (fint i = 0; i < lkeep_ma57; i++) keep_ma57[i] = i+1;
+
 	fint info_ma57[40];
 	double rinfo_ma57[20];
 

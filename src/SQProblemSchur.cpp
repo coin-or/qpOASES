@@ -2456,6 +2456,8 @@ returnValue SQProblemSchur::backsolveSchurQR( int_t dimS, const real_t* const rh
 	if ( INFO != 0 )
 	{
 		MyPrintf("TRTRS returns INFO = %d\n", INFO);
+		if ( INFO == 0xDEADBEEF )
+			MyPrintf( "If SQProblemSchur is to be used, system LAPACK must be used instead of the qpOASES LAPACK replacement" );
 		return RET_QR_FACTORISATION_FAILED;
 	}
 

@@ -38,8 +38,10 @@
 #include <SubjectTo.cpp>
 #include <Bounds.cpp>
 #include <Constraints.cpp>
+#ifndef __MATLAB__
 #include <BLASReplacement.cpp>
 #include <LAPACKReplacement.cpp>
+#endif
 #include <Matrices.cpp>
 #include <Options.cpp>
 #include <QProblemB.cpp>

@@ -49,23 +49,29 @@ ifeq ($(REPLACE_LINALG), 1)
 	LIB_BLAS =   ${SRCDIR}/BLASReplacement.o
 	LIB_LAPACK = ${SRCDIR}/LAPACKReplacement.o
 else
-	LIB_BLAS =   /usr/lib/libblas.so
-	LIB_LAPACK = /usr/lib/liblapack.so
+	LIB_BLAS =   /usr/lib/libblas.so.3gf
+	LIB_LAPACK = /usr/lib/liblapack.so.3gf
+#	LIB_BLAS = ${MATLAB_LIBDIR}/libmwblas.so
+#	LIB_LAPACK = ${MATLAB_LIBDIR}/libmwlapack.so
 endif
 
 # choice of sparse solver: NONE, MA27, or MA57
 # If choice is not 'NONE', BLAS and LAPACK replacements must not be used
 USE_SOLVER = NONE
+#USE_SOLVER = MA57
 
 ifeq ($(USE_SOLVER), MA57)
-	LIB_SOLVER = /usr/local/lib/libhsl_ma57.a /usr/local/lib/libfakemetis.a
+	LIB_SOLVER = ${MATLAB_LIBDIR}/libmwma57.so
 	DEF_SOLVER = SOLVER_MA57
+	LINKHSL = -Wl,-rpath=${MATLAB_LIBDIR}
 else ifeq ($(USE_SOLVER), MA27)
 	LIB_SOLVER = /usr/local/lib/libhsl_ma27.a
 	DEF_SOLVER = SOLVER_MA27
+	LINKHSL =
 else
 	LIB_SOLVER =
 	DEF_SOLVER = SOLVER_NONE
+	LINKHSL =
 endif
 
 ################################################################################
@@ -101,7 +107,7 @@ endif
 
 
 
-CPPFLAGS = -Wall -pedantic -Wshadow -Wfloat-equal -O3 -Wconversion -Wsign-conversion -finline-functions -fPIC -DLINUX -D${DEF_SOLVER} -D__NO_COPYRIGHT__
+CPPFLAGS = -Wall -pedantic -Wshadow -Wfloat-equal -O3 -Wconversion -Wsign-conversion -finline-functions -fPIC -DLINUX -D__USE_LONG_INTEGERS__ -D__USE_LONG_FINTS__ -D${DEF_SOLVER} -D__NO_COPYRIGHT__
 #          -g -D__DEBUG__ -D__NO_COPYRIGHT__ -D__SUPPRESSANYOUTPUT__ -D__USE_SINGLE_PRECISION__
 
 # libraries to link against when building qpOASES .so files
@@ -109,8 +115,8 @@ LINK_LIBRARIES = ${LIB_LAPACK} ${LIB_BLAS} -lm ${LIB_SOLVER}
 LINK_LIBRARIES_WRAPPER = -lm ${LIB_SOLVER} -lstdc++
 
 # how to link against the qpOASES shared library
-QPOASES_LINK = -L${BINDIR} -Wl,-rpath=${BINDIR} -lqpOASES
-QPOASES_LINK_WRAPPER = -L${BINDIR} -Wl,-rpath=${BINDIR} -lqpOASES_wrapper
+QPOASES_LINK = -L${BINDIR} -Wl,-rpath=${BINDIR} ${LINKHSL} -lqpOASES
+QPOASES_LINK_WRAPPER = -L${BINDIR} -Wl,-rpath=${BINDIR} ${LINKHSL} -lqpOASES_wrapper
 
 # link dependencies when creating executables
 LINK_DEPENDS = ${LIB_LAPACK} ${LIB_BLAS} ${BINDIR}/libqpOASES.${LIBEXT} ${BINDIR}/libqpOASES.${DLLEXT}

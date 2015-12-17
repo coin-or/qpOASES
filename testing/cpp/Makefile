@@ -56,6 +56,7 @@ QPOASES_TEST_EXES = \
 	${BINDIR}/test_exampleLP${EXE} \
 	${BINDIR}/test_qrecipe${EXE} \
 	${BINDIR}/test_qrecipeSchur${EXE} \
+	${BINDIR}/test_smallSchur${EXE} \
 	${BINDIR}/test_infeasible1${EXE} \
 	${BINDIR}/test_hs268${EXE} \
 	${BINDIR}/test_gradientShift${EXE} \
