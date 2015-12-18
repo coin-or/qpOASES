@@ -4,7 +4,8 @@ QPsetDIR = '~/git/QPset/maros';
 files = dir(QPsetDIR);
 
 options = qpOASES_options('default', ...
-	'printLevel', 0, 'maxIter', 1e8);%, 'initialStatusBounds', 0);
+	'printLevel', 0, 'maxIter', 1e8, 'maxCpuTime', 60, ...
+	'initialStatusBounds', 0);
 nQP = 0;
 for i = 1:length(files)
 	clear mex
@@ -13,10 +14,6 @@ for i = 1:length(files)
 		H = sparse(H);
 		A = sparse(A);
 	catch
-		continue
-	end
-
-	if max(size(A)) > 2000
 		continue
 	end
 
@@ -34,7 +31,7 @@ for i = 1:length(files)
 		fprintf('\n%-10s %6s %6s %5s %7s %15s %9s\n', ...
 			'name', 'nvar', 'ncon', 'eflag', 'iter', 'fval', 'time [s]');
 	end
-	fprintf('%-10s %6d %6d %5d %7d %15g %9.3e\n', ...
+	fprintf('%-10s %6d %6d %5d %7d %15g %9g\n', ...
 		files(i).name(1:findstr(files(i).name, '.')-1), ...
 		size(A,2), size(A,1), exitflag, iter, fval, elapsedTime);
 
