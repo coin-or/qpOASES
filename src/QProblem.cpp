@@ -77,7 +77,8 @@ QProblem::QProblem( ) : QProblemB( )
 /*
  *	Q P r o b l e m
  */
-QProblem::QProblem( int_t _nV, int_t _nC, HessianType _hessianType ) : QProblemB( _nV,_hessianType )
+QProblem::QProblem( int_t _nV, int_t _nC, HessianType _hessianType, BooleanType allocDenseMats ) 
+	: QProblemB( _nV,_hessianType,allocDenseMats )
 {
 	int_t i;
 
@@ -122,9 +123,18 @@ QProblem::QProblem( int_t _nV, int_t _nC, HessianType _hessianType ) : QProblemB
 	y = new real_t[_nV+_nC];
 	for( i=0; i<_nV+_nC; ++i ) y[i] = 0.0;
 
-	sizeT = getMin( _nV,_nC );
-	T = new real_t[sizeT*sizeT];
-	Q = new real_t[_nV*_nV];
+	if (allocDenseMats == BT_TRUE)
+	{
+		sizeT = getMin( _nV,_nC );
+		T = new real_t[sizeT*sizeT];
+		Q = new real_t[_nV*_nV];
+	}
+	else
+	{
+		sizeT = 0;
+		T = 0;
+		Q = 0;
+	}
 
 	if ( _nC > 0 )
 	{

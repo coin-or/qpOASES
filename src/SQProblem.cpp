@@ -56,7 +56,8 @@ SQProblem::SQProblem( ) : QProblem( )
 /*
  *	S Q P r o b l e m
  */
-SQProblem::SQProblem( int_t _nV, int_t _nC, HessianType _hessianType ) : QProblem( _nV,_nC,_hessianType )
+SQProblem::SQProblem( int_t _nV, int_t _nC, HessianType _hessianType, BooleanType allocDenseMats ) 
+	: QProblem( _nV,_nC,_hessianType,allocDenseMats )
 {
 }
 

@@ -78,7 +78,8 @@ class QProblemB
 		 *  is allocated for it and a NULL pointer can be passed for it
 		 *  to the init() functions. */
 		QProblemB(	int_t _nV,								/**< Number of variables. */
-					HessianType _hessianType = HST_UNKNOWN	/**< Type of Hessian matrix. */
+					HessianType _hessianType = HST_UNKNOWN,	/**< Type of Hessian matrix. */
+					BooleanType allocDenseMats = BT_TRUE	/**< Enable allocation of dense matrices. */
 					);
 
 		/** Copy constructor (deep copy). */

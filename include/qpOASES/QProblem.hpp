@@ -77,7 +77,8 @@ class QProblem : public QProblemB
 		 *  to the init() functions. */
 		QProblem(	int_t _nV,	  							/**< Number of variables. */
 					int_t _nC,		  						/**< Number of constraints. */
-					HessianType _hessianType = HST_UNKNOWN	/**< Type of Hessian matrix. */
+					HessianType _hessianType = HST_UNKNOWN,	/**< Type of Hessian matrix. */
+					BooleanType allocDenseMats = BT_TRUE	/**< Enable allocation of dense matrices. */
 					);
 
 		/** Copy constructor (deep copy). */

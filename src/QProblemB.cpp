@@ -93,7 +93,7 @@ QProblemB::QProblemB( )
 /*
  *	Q P r o b l e m B
  */
-QProblemB::QProblemB( int_t _nV, HessianType _hessianType )
+QProblemB::QProblemB( int_t _nV, HessianType _hessianType, BooleanType allocDenseMats )
 {
 	int_t i;
 
@@ -125,8 +125,12 @@ QProblemB::QProblemB( int_t _nV, HessianType _hessianType )
 
 	bounds.init( _nV );
 
-	R = new real_t[_nV*_nV];
-	for( i=0; i<_nV*_nV; ++i ) R[i] = 0.0;
+	if ( allocDenseMats == BT_TRUE )
+	{
+		R = new real_t[_nV*_nV];
+		for( i=0; i<_nV*_nV; ++i ) R[i] = 0.0;
+	}
+	else R = 0;
 	haveCholesky = BT_FALSE;
 
 	x = new real_t[_nV];
