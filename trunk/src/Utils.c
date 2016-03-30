@@ -538,7 +538,7 @@ returnValue qpOASES_writeIntoFileI(	const int* const integer, int n,
  *	w r i t e I n t o M a t F i l e
  */
 returnValue qpOASES_writeIntoMatFile(	FILE* const matFile,
-										const double* const data, int nRows, int nCols, const char* name
+										const real_t* const data, int nRows, int nCols, const char* name
 										)
 {
 	/*  Note, this code snippet has been inspired from the document
@@ -547,6 +547,7 @@ returnValue qpOASES_writeIntoMatFile(	FILE* const matFile,
 	#ifndef __SUPPRESSANYOUTPUT__
 
 	int ii, jj;
+	double tmp;
 	MatMatrixHeader var;
 	
 	if ( ( matFile == 0 ) || ( data == 0 ) || ( nRows < 0 ) || ( nCols < 0 ) || ( name == 0 ) )
@@ -568,8 +569,11 @@ returnValue qpOASES_writeIntoMatFile(	FILE* const matFile,
 
 	for ( ii=0; ii<nCols; ++ii )
 		for ( jj=0; jj<nRows; ++jj )
-			if ( fwrite( &(data[jj*nCols+ii]), sizeof(double),1, matFile ) < 1 )
+		{
+			tmp = (double)(data[jj*nCols+ii]);
+			if ( fwrite( &tmp, sizeof(double),1, matFile ) < 1 )
 				return RET_UNABLE_TO_WRITE_FILE;
+		}
 
 	return SUCCESSFUL_RETURN;
 
