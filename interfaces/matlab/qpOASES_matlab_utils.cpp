@@ -59,7 +59,11 @@ QPInstance::QPInstance(	uint_t _nV, uint_t _nC, HessianType _hessianType,
 	}
 	else
 	{
-		sqp = new SQProblemSchur( _nV,_nC,_hessianType );
+		#ifdef SOLVER_MA57
+        sqp = new SQProblemSchur( _nV,_nC,_hessianType );
+        #else
+        sqp = new SQProblem( _nV,_nC,_hessianType );
+        #endif
 		qpb = 0;
 	}
 

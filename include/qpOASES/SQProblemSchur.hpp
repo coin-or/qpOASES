@@ -42,12 +42,20 @@
 #include <qpOASES/SQProblem.hpp>
 #include <qpOASES/SparseSolver.hpp>
 
+
+/*#if defined(__MATLAB__) && defined(WIN32)
+    #define strtrs_ strtrs
+    #define strcon_ strcon
+    #define dtrtrs_ dtrtrs
+    #define dtrcon_ dtrcon
+#endif*/ /* __MATLAB__ && WIN32 */
+
 #ifdef __USE_SINGLE_PRECISION__
 
 	/** Macro for calling level 3 BLAS operation in single precision. */
-	//#define GEQRF sgeqrf_
+	/* #define GEQRF sgeqrf_ */
 	/** Macro for calling level 3 BLAS operation in single precision. */
-	//#define ORMQR sormqr_
+	/* #define ORMQR sormqr_ */
 	/** Macro for calling level 3 BLAS operation in single precision. */
 	#define TRTRS strtrs_
 	/** Macro for calling level 3 BLAS operation in single precision. */
@@ -56,9 +64,9 @@
 #else
 
 	/** Macro for calling level 3 BLAS operation in double precision. */
-	//#define GEQRF dgeqrf_
+	/* #define GEQRF dgeqrf_ */
 	/** Macro for calling level 3 BLAS operation in double precision. */
-	//#define ORMQR dormqr_
+	/* #define ORMQR dormqr_ */
 	/** Macro for calling level 3 BLAS operation in double precision. */
 	#define TRTRS dtrtrs_
 	/** Macro for calling level 3 BLAS operation in double precision. */
@@ -68,20 +76,20 @@
 
 extern "C" {
 	/** Compute a QR factorization of a real M-by-N matrix A in double precision */
-	//void dgeqrf_(	const unsigned long *M, const unsigned long *N, double *A, const unsigned long *LDA,
-					//double *TAU, double *WORK, const unsigned long *LWORK, int *INFO );
+	/* void dgeqrf_(	const unsigned long *M, const unsigned long *N, double *A, const unsigned long *LDA,
+                        double *TAU, double *WORK, const unsigned long *LWORK, int *INFO );*/
 	/** Compute a QR factorization of a real M-by-N matrix A in single precision */
-	//void sgeqrf_(	const unsigned long *M, const unsigned long *N, float *A, const unsigned long *LDA,
-					//float *TAU, float *WORK, const unsigned long *LWORK, int *INFO );
+	/* void sgeqrf_(	const unsigned long *M, const unsigned long *N, float *A, const unsigned long *LDA,
+                        float *TAU, float *WORK, const unsigned long *LWORK, int *INFO );*/
 
 	/** Multiply C with orthogonal matrix Q**T as returned by geqrf (double precision) */
-	//void dormqr_(	const char *SIDE, const char *TRANS, const unsigned long *M, const unsigned long *N, const unsigned long *K,
-					//double *A, const unsigned long *LDA, double *TAU, double *C, const unsigned long *LDC,
-					//double *WORK, const unsigned long *LWORK, int *INFO );
+	/* void dormqr_(	const char *SIDE, const char *TRANS, const unsigned long *M, const unsigned long *N, const unsigned long *K,
+                        double *A, const unsigned long *LDA, double *TAU, double *C, const unsigned long *LDC,
+                        double *WORK, const unsigned long *LWORK, int *INFO );*/
 	/** Multiply C with orthogonal matrix Q**T as returned by geqrf (single precision) */
-	//void sormqr_(	const char *SIDE, const char *TRANS, const unsigned long *M, const unsigned long *N, const unsigned long *K,
-					//float *A, const unsigned long *LDA, float *TAU, float *C, const unsigned long *LDC,
-					//float *WORK, const unsigned long *LWORK, int *INFO );
+	/* void sormqr_(	const char *SIDE, const char *TRANS, const unsigned long *M, const unsigned long *N, const unsigned long *K,
+                        float *A, const unsigned long *LDA, float *TAU, float *C, const unsigned long *LDC,
+                        float *WORK, const unsigned long *LWORK, int *INFO );*/
 
 	/** Solve a triangular system (double precision) */
 	void dtrtrs_(	const char *UPLO, const char *TRANS, const char *DIAG, const unsigned long *N, const unsigned long *NRHS,

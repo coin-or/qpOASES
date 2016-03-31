@@ -42,6 +42,17 @@
 #include <qpOASES/Indexlist.hpp>
 
 
+/*#if defined(__MATLAB__) && defined(WIN32)
+    #define sgemm_ sgemm
+    #define ssyr_ ssyr
+    #define ssyr2_ ssyr2
+    #define spotrf_ spotrf
+    #define dgemm_ dgemm
+    #define dsyr_ dsyr
+    #define dsyr2_ dsyr2
+    #define dpotrf_ dpotrf
+#endif*/ /* __MATLAB__ && WIN32 */
+
 #ifdef __USE_SINGLE_PRECISION__
 
 	/** Macro for calling level 3 BLAS operation in single precision. */

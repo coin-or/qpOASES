@@ -68,10 +68,10 @@ function [] = make( varargin )
     CPPFLAGS = [ IFLAGS, DEBUGFLAGS, '-largeArrayDims -D__cpluplus -D__MATLAB__ -D__SINGLE_OBJECT__ -lmwblas',' ' ];
     defaultFlags = '-O -D__NO_COPYRIGHT__ '; %% -D__SUPPRESSANYOUTPUT__
 
-    if ( ispc == 0 )
-        CPPFLAGS  = [ CPPFLAGS, '-DLINUX ',' ' ]; 
+    if ( ispc() == 0 )
+        CPPFLAGS = [ CPPFLAGS, '-DLINUX -lmwblas',' ' ];
     else
-        CPPFLAGS  = [ CPPFLAGS, '-DWIN32 ',' ' ];
+        CPPFLAGS = [ CPPFLAGS, '-DWIN32',' ' ]; %-L"',matlabroot,filesep,'bin',filesep,computer('arch'), '"
     end
 
     if ( isempty(userFlags) > 0 )
@@ -89,7 +89,11 @@ function [] = make( varargin )
 		warning('Sparse linear algebra is currently available for qpOASES only for Matlab versions 7.8 and later. Passing sparse matrices works but will likely be slow.')
 		SPARSEFLAGS = '';
 	else
-		SPARSEFLAGS = '-largeArrayDims -D__USE_LONG_INTEGERS__ -D__USE_LONG_FINTS__ -DWITH_SPARSE_LA -DSOLVER_MA57 -lmwma57 -lmwlapack ';
+		if ( ispc() == 0 )
+			SPARSEFLAGS = '-largeArrayDims -D__USE_LONG_INTEGERS__ -D__USE_LONG_FINTS__ -DSOLVER_MA57 -lmwma57 ';
+		else
+			SPARSEFLAGS = '-largeArrayDims -D__USE_LONG_INTEGERS__ -D__USE_LONG_FINTS__ ';
+		end
 	end
 
     mexExt = eval('mexext');

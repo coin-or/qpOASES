@@ -347,8 +347,8 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 	int_t x0_idx=-1, auxInput_idx=-1;
 
 	BooleanType isSimplyBoundedQp = BT_FALSE;
-	#ifdef WITH_SPARSE_LA
-	BooleanType isSparse = BT_TRUE; // This will be set to BT_FALSE later if a dense matrix is encountered.
+	#ifdef SOLVER_MA57
+	BooleanType isSparse = BT_TRUE; /* This will be set to BT_FALSE later if a dense matrix is encountered. */
 	#else
 	BooleanType isSparse = BT_FALSE;
 	#endif

@@ -69,8 +69,14 @@ int_t QProblem_qpOASES(	int_t nV, int_t nC, HessianType hessianType, int_t nP,
 	
 	/* 1) Setup initial QP. */
 	QProblem *QP;
-	if ( isSparse )
+	if ( isSparse == BT_TRUE )
+    {
+        #ifdef SOLVER_MA57
 		QP = new SQProblemSchur ( nV,nC,hessianType );
+        #else
+        QP = new QProblem ( nV,nC,hessianType );
+        #endif
+    }
 	else
 		QP = new QProblem ( nV,nC,hessianType );
 	QP->setOptions( *options );
@@ -283,7 +289,7 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 	/* dimensions */
 	uint_t nV=0, nC=0, nP=0;
 	BooleanType isSimplyBoundedQp = BT_FALSE;
-	#ifdef WITH_SPARSE_LA
+	#ifdef SOLVER_MA57
 	BooleanType isSparse = BT_TRUE; // This will be set to BT_FALSE later if a dense matrix is encountered.
 	#else
 	BooleanType isSparse = BT_FALSE;

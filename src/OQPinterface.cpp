@@ -542,8 +542,8 @@ returnValue solveOqpBenchmark(	int_t nQP, int_t nV,
 		getKktViolation( nV, _H,gCur,lbCur,ubCur, x,y, stat,feas,cmpl );
 
 		/* 6) update maximum values. */
-		if ( nWSRcur > maxNWSR )
-			maxNWSR = nWSRcur;
+		if ( ((real_t)nWSRcur) > maxNWSR )
+			maxNWSR = ((real_t)nWSRcur);
 		if (stat > maxStationarity) maxStationarity = stat;
 		if (feas > maxFeasibility) maxFeasibility = feas;
 		if (cmpl > maxComplementarity) maxComplementarity = cmpl;
@@ -551,11 +551,11 @@ returnValue solveOqpBenchmark(	int_t nQP, int_t nV,
 		if ( CPUtimeCur > maxCPUtime )
 			maxCPUtime = CPUtimeCur;
 
-		avgNWSR += nWSRcur;
+		avgNWSR += (real_t)nWSRcur;
 		avgCPUtime += CPUtimeCur;
 	}
-	avgNWSR /= nQP;
-	avgCPUtime /= ((double)nQP);
+	avgNWSR /= ((real_t)nQP);
+	avgCPUtime /= ((real_t)nQP);
 
 	delete H; delete[] y; delete[] x;
 
