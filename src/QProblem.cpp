@@ -1976,7 +1976,7 @@ returnValue QProblem::setupSubjectToType(	const real_t* const lb_new, const real
 	{
 		for( i=0; i<nC; ++i )
 		{
-			if (constraints.getType (i) == ST_DISABLED)
+			if ( constraints.getType(i) == ST_DISABLED )
 				continue;
 
 			if ( ( lbA_new[i] < -INFTY+options.boundTolerance ) && ( ubA_new[i] > INFTY-options.boundTolerance )
@@ -1999,12 +1999,18 @@ returnValue QProblem::setupSubjectToType(	const real_t* const lb_new, const real
 		if ( ( lbA_new == 0 ) && ( ubA_new == 0 ) )
 		{
 			for( i=0; i<nC; ++i )
-				constraints.setType( i,ST_UNBOUNDED );
+			{
+				if ( constraints.getType(i) != ST_DISABLED )
+					constraints.setType( i,ST_UNBOUNDED );
+			}
 		}
 		else
 		{
 			for( i=0; i<nC; ++i )
-				constraints.setType( i,ST_BOUNDED );
+			{
+				if ( constraints.getType(i) != ST_DISABLED )
+					constraints.setType( i,ST_BOUNDED );
+			}
 		}
 	}
 
@@ -2660,6 +2666,9 @@ returnValue QProblem::setupAuxiliaryQPbounds(	const Bounds* const auxiliaryBound
 	/* 1) Setup bound vectors. */
 	for ( i=0; i<nV; ++i )
 	{
+		if ( bounds.getType( i ) == ST_DISABLED )
+			continue;
+
 		switch ( bounds.getStatus( i ) )
 		{
 			case ST_INACTIVE:
@@ -2714,7 +2723,8 @@ returnValue QProblem::setupAuxiliaryQPbounds(	const Bounds* const auxiliaryBound
 				}
 				break;
 
-            case ST_DISABLED:
+            case ST_INFEASIBLE_LOWER:
+			case ST_INFEASIBLE_UPPER:
                 break;
 
 			default:
@@ -2725,6 +2735,9 @@ returnValue QProblem::setupAuxiliaryQPbounds(	const Bounds* const auxiliaryBound
 	/* 2) Setup constraints vectors. */
 	for ( i=0; i<nC; ++i )
 	{
+		if ( constraints.getType( i ) == ST_DISABLED )
+			continue;
+
 		switch ( constraints.getStatus( i ) )
 		{
 			case ST_INACTIVE:
@@ -2779,7 +2792,8 @@ returnValue QProblem::setupAuxiliaryQPbounds(	const Bounds* const auxiliaryBound
 				}
 				break;
 
-            case ST_DISABLED:
+            case ST_INFEASIBLE_LOWER:
+			case ST_INFEASIBLE_UPPER:
                 break;
 
 			default:
