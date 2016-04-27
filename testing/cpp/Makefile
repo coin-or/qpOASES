@@ -68,7 +68,8 @@ QPOASES_TEST_EXES = \
 	${BINDIR}/test_constraintProduct1${EXE} \
 	${BINDIR}/test_constraintProduct2${EXE} \
 	${BINDIR}/test_guessedWS1${EXE} \
-	${BINDIR}/test_externalChol1${EXE}
+	${BINDIR}/test_externalChol1${EXE} \
+	${BINDIR}/test_identitySqproblem${EXE}
 
 
 ##
