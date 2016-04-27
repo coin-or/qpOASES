@@ -46,7 +46,9 @@
 /* Workaround for problem on Matlab 2012b
  * see https://github.com/robotology/codyco-superbuild/issues/84
  * see http://stackoverflow.com/questions/22440523/mex-files-using-xcode-5-1-under-os-x-10-9-with-matlab-2012a/22705789#22705789 */
-/* #include <typeinfo> */
+#ifdef __APPLE__
+	#include <typeinfo>
+#endif 
 
 #include "mex.h"
 #include "matrix.h"
