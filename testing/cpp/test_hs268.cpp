@@ -79,9 +79,11 @@ int main( int argc, char *argv[] )
 									nWSR, maxCPUtime, maxStationarity, maxFeasibility, maxComplementarity 
 									);
 
-	if(returnvalue == SUCCESSFUL_RETURN) {
+	if(returnvalue == RET_UNABLE_TO_READ_BENCHMARK)
+		return TEST_DATA_NOT_FOUND;
+
+	if(returnvalue == SUCCESSFUL_RETURN)
 		npass += 1;
-	}
 
 	QPOASES_TEST_FOR_TRUE( npass >= 1 );
 
@@ -95,7 +97,7 @@ int main( int argc, char *argv[] )
 	QPOASES_TEST_FOR_TOL( maxComplementarity, 1e-14 );
 
 
-	return 0;
+	return TEST_PASSED;
 }
 
 

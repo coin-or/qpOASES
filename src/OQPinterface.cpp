@@ -605,7 +605,7 @@ returnValue runOqpBenchmark(	const char* path, BooleanType isSparse, BooleanType
 	/* I) SETUP BENCHMARK: */
 	/* 1) Obtain QP sequence dimensions. */
 	if ( readOqpDimensions( path, nQP,nV,nC,nEC ) != SUCCESSFUL_RETURN )
-		return THROWERROR( RET_BENCHMARK_ABORTED );
+		return THROWERROR( RET_UNABLE_TO_READ_BENCHMARK );
 
 	/* 2) Read OQP benchmark data. */
 	if ( readOqpData(	path,

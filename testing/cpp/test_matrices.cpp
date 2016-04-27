@@ -255,7 +255,7 @@ int indexDenseSubmatrix()
 	A.free ();	// or delete[] Av;
 
 	QPOASES_TEST_FOR_TOL( err ,1e-13 )
-	QPOASES_TEST_FOR_TOL( errT,1e-14 )
+	QPOASES_TEST_FOR_TOL( errT,2e-14 )
 
 	return TEST_PASSED;
 }

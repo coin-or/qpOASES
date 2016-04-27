@@ -42,7 +42,7 @@ int main(int argc, char** argv)
 		{
 			ub[i] = -lb[i]; //joints lower limits
 		}
-		cpu_time = 1; //maximum amount of cpu time 
+		cpu_time = 1.0; //maximum amount of cpu time 
 		nWSR = 100; 
 
 		/*//linear and angular velocities
@@ -121,7 +121,8 @@ int main(int argc, char** argv)
 		}
 	
 		nWSR = 100; 
-		joints_velocities.hotstart(H,g,A,lb,ub,lbA,ubA, nWSR, &cpu_time);
+		cpu_time = 1.0;
+		joints_velocities.init(H,g,A,lb,ub,lbA,ubA, nWSR, &cpu_time);
 		joints_velocities.getPrimalSolution( xOpt );
 		printf( "\nxOpt = [ %e, %e, %e, %e, %e, %e, %e ];  objVal = %e\n\n", xOpt[0],xOpt[1], xOpt[2],xOpt[3], xOpt[4],xOpt[5], xOpt[6], joints_velocities.getObjVal() );
 		return 0;
