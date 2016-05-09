@@ -713,6 +713,7 @@ void SparseMatrix::free( )
 	doNotFreeMemory( );
 }
 
+
 Matrix *SparseMatrix::duplicate() const
 {
 	long i, length = jc[nCols];
@@ -741,6 +742,15 @@ Matrix *SparseMatrix::duplicate() const
 	return dupl;
 }
 
+
+void SparseMatrix::setVal(const real_t* newVal)
+{
+	long length = jc[nCols]; /* [nCols+1] ?? */
+	for (long index = 0; index < length; ++index)
+	{
+		val[index] = newVal[index];
+	}
+}
 
 
 real_t SparseMatrix::diag(int_t i) const

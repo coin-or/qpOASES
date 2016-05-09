@@ -641,6 +641,14 @@ class SparseMatrix : public virtual Matrix
 		 *	\return Deep-copy of Matrix object */
 		virtual Matrix *duplicate( ) const;
 
+
+		/** Sets value array. 
+		 *	
+		 *	Thanks to Frank Chuang.
+		 */
+		virtual void setVal(	const real_t* newVal	/**< ... */
+								);
+
 		/** Returns i-th diagonal entry.
 		 *	\return i-th diagonal entry (or INFTY if diagonal does not exist)*/
 		virtual real_t diag(	int_t i			/**< Index. */
