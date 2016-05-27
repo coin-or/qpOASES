@@ -89,6 +89,8 @@ int main( )
 	example.printOptions();
 	/*example.printProperties();*/
 
+	/*getGlobalMessageHandler()->listAllMessages();*/
+
 	return 0;
 }
 
