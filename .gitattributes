@@ -14,6 +14,7 @@
 doc/DoxygenLayout.xml -text
 doc/Makefile -text
 doc/doxygen.config -text
+doc/doxygen_chris.config -text
 doc/mainpage.dox -text
 doc/manual.pdf -text svneol=unset#unset
 examples/Makefile -text
