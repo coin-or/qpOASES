@@ -28,12 +28,15 @@ examples/example4.cpp -text
 examples/example4CP.cpp -text
 examples/example5.cpp -text
 examples/exampleLP.cpp -text
+examples/example_chris.cpp -text
 examples/qrecipe.cpp -text
 examples/qrecipeSchur.cpp -text
 examples/qrecipe_data.hpp -text
+examples/testmat_chris.mm -text
 include/qpOASES.hpp -text
 include/qpOASES/Bounds.hpp -text
 include/qpOASES/Bounds.ipp -text
+include/qpOASES/ChrisTemp.hpp -text
 include/qpOASES/Constants.hpp -text
 include/qpOASES/ConstraintProduct.hpp -text
 include/qpOASES/Constraints.hpp -text
@@ -138,6 +141,7 @@ interfaces/simulink/qpOASES_simulink_utils.cpp -text
 /make_windows.mk -text
 src/BLASReplacement.cpp -text
 src/Bounds.cpp -text
+src/ChrisTemp.cpp -text
 src/Constraints.cpp -text
 src/Flipper.cpp -text
 src/Indexlist.cpp -text
