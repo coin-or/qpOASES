@@ -163,6 +163,12 @@ class Matrix
 									int_t type = 2	/**< Norm type, 1: one-norm, 2: Euclidean norm. */
 									) const = 0;
 
+        /** Get the N-norm of all rows
+         *  \return SUCCESSFUL_RETURN */
+        virtual returnValue getRowNorm(  real_t* norm,   /**< Norm of each row. */
+                                         int_t type = 2  /**< Norm type, 1: one-norm, 2: Euclidean norm. */
+                                         ) const = 0;
+
 		/** Retrieve indexed entries of matrix row multiplied by alpha.
 		 *	\return SUCCESSFUL_RETURN */
 		virtual returnValue getRow(	int_t rNum,						/**< Row number. */
@@ -436,6 +442,12 @@ class DenseMatrix : public virtual Matrix
 									int_t type = 2	/**< Norm type, 1: one-norm, 2: Euclidean norm. */
 									) const;
 
+        /** Get the N-norm of all rows
+         *  \return SUCCESSFUL_RETURN */
+        virtual returnValue getRowNorm(  real_t* norm,   /**< Norm of each row. */
+                                         int_t type = 2  /**< Norm type, 1: one-norm, 2: Euclidean norm. */
+                                         ) const;
+
         /** Retrieve indexed entries of matrix row multiplied by alpha.
 		 *  \return SUCCESSFUL_RETURN */
 		virtual returnValue getRow(	int_t rNum,						/**< Row number. */
@@ -673,6 +685,12 @@ class SparseMatrix : public virtual Matrix
 									int_t type = 2	/**< Norm type, 1: one-norm, 2: Euclidean norm. */
 									) const;
 
+        /** Get the N-norm of all rows
+         *  \return SUCCESSFUL_RETURN */
+        virtual returnValue getRowNorm(  real_t* norm,   /**< Norm of each row. */
+                                         int_t type = 2  /**< Norm type, 1: one-norm, 2: Euclidean norm. */
+                                         ) const;
+
 		/** Retrieve indexed entries of matrix row multiplied by alpha. */
 		virtual returnValue getRow(	int_t rNum,						/**< Row number. */
 									const Indexlist* const icols,	/**< Index list specifying columns. */
@@ -852,6 +870,12 @@ class SparseMatrixRow : public virtual Matrix
         virtual real_t getRowNorm(	int_t rNum,		/**< Row number. */
 									int_t type = 2	/**< Norm type, 1: one-norm, 2: Euclidean norm. */
 									) const;
+
+        /** Get the N-norm of all rows
+         *  \return SUCCESSFUL_RETURN */
+        virtual returnValue getRowNorm(  real_t* norm,   /**< Norm of each row. */
+                                         int_t type = 2  /**< Norm type, 1: one-norm, 2: Euclidean norm. */
+                                         ) const;
 
 		/** Retrieve indexed entries of matrix row multiplied by alpha. */
 		virtual returnValue getRow (	int_t rNum,						/**< Row number. */
