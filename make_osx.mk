@@ -38,7 +38,7 @@ SRCDIR = ${TOP}/src
 BINDIR = ${TOP}/bin
 
 # MacOSX SDK
-SYSROOT = /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk
+SYSROOT = /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk
 SDK = -isysroot ${SYSROOT} -stdlib=libc++
 
 # Matlab include directory (ADAPT TO YOUR LOCAL SETTINGS!)
