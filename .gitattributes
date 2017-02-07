@@ -52,6 +52,7 @@ include/qpOASES/QProblem.hpp -text
 include/qpOASES/QProblem.ipp -text
 include/qpOASES/QProblemB.hpp -text
 include/qpOASES/QProblemB.ipp -text
+include/qpOASES/QProblemQore.hpp -text
 include/qpOASES/SQProblem.hpp -text
 include/qpOASES/SQProblem.ipp -text
 include/qpOASES/SQProblemSchur.hpp -text
@@ -153,6 +154,7 @@ src/OQPinterface.cpp -text
 src/Options.cpp -text
 src/QProblem.cpp -text
 src/QProblemB.cpp -text
+src/QProblemQore.cpp -text
 src/SQProblem.cpp -text
 src/SQProblemSchur.cpp -text
 src/SolutionAnalysis.cpp -text

@@ -65,8 +65,10 @@
 
 #include <qpOASES/QProblemB.hpp>
 #include <qpOASES/QProblem.hpp>
+#include <qpOASES/QProblemQore.hpp>
 #include <qpOASES/SQProblem.hpp>
 #include <qpOASES/SQProblemSchur.hpp>
+#include <qpOASES/MatrixConversion.hpp>
 #include <qpOASES/extras/OQPinterface.hpp>
 #include <qpOASES/extras/SolutionAnalysis.hpp>
 

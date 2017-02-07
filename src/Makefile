@@ -39,6 +39,7 @@ IFLAGS      =  -I. \
                -I${IDIR}
 
 QPOASES_OBJECTS = \
+	QProblemQore.${OBJEXT} \
 	SQProblem.${OBJEXT} \
 	QProblem.${OBJEXT} \
 	QProblemB.${OBJEXT} \
@@ -65,6 +66,7 @@ QPOASES_DEPENDS = \
 	${IDIR}/qpOASES/SQProblem.hpp \
 	${IDIR}/qpOASES/QProblem.hpp \
 	${IDIR}/qpOASES/Flipper.hpp \
+	${IDIR}/qpOASES/QProblemQore.hpp \
 	${IDIR}/qpOASES/QProblemB.hpp \
 	${IDIR}/qpOASES/Bounds.hpp \
 	${IDIR}/qpOASES/Constraints.hpp \
