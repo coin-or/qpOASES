@@ -36,7 +36,7 @@ include make.mk
 ##
 
 
-all: src examples
+all: src qore examples
 #src_aw testing
 
 src:
@@ -44,6 +44,9 @@ src:
 
 #src_aw:
 #	@cd $@; ${MAKE} -s 
+
+qore: 
+	@cd $@; ${MAKE} -s 
 
 examples: src
 	@cd $@; ${MAKE} -s
@@ -65,6 +68,7 @@ clean:
 	@cd examples          && ${MAKE} -s clean
 	@cd bin               && ${RM} -f *.* *{EXE}
 	@cd testing/cpp       && ${MAKE} -s clean
+	@cd qore              && ${MAKE} -s clean
 
 #	&& cd src_aw            && ${MAKE} -s clean && cd .. \
 #	&& cd debugging         && ${MAKE} -s clean && cd .. \
