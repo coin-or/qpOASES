@@ -139,6 +139,12 @@ class Matrix
 		/** Returns a deep-copy of the Matrix object.
 		 *	\return Deep-copy of Matrix object */
 		virtual Matrix* duplicate( ) const = 0;
+		
+		/** Get number of matrix rows */
+		virtual int_t getRowNum() const = 0;
+		 
+		/** Get number of matrix columns */
+		virtual int_t getColNum() const = 0;
 
 		/** Returns i-th diagonal entry.
 		 *	\return i-th diagonal entry */
@@ -413,6 +419,12 @@ class DenseMatrix : public virtual Matrix
 		 *	\return Deep-copy of Matrix object */
 		virtual Matrix *duplicate( ) const;
 
+		/** Get number of matrix rows */
+		virtual int_t getRowNum() const;
+		 
+		/** Get number of matrix columns */
+		virtual int_t getColNum() const;
+		
 		/** Returns i-th diagonal entry.
 		 *	\return i-th diagonal entry */
 		virtual real_t diag(	int_t i			/**< Index. */
@@ -641,6 +653,14 @@ class SparseMatrix : public virtual Matrix
 		 *	\return Deep-copy of Matrix object */
 		virtual Matrix *duplicate( ) const;
 
+		/** Get number of matrix rows */
+		virtual int_t getRowNum() const;
+		 
+		/** Get number of matrix columns */
+		virtual int_t getColNum() const;
+		
+		/** Get number of nonzero matrix elements */
+		virtual sparse_int_t getNnz() const;
 
 		/** Sets value array. 
 		 *	
@@ -829,6 +849,15 @@ class SparseMatrixRow : public virtual Matrix
 		 *	\return Deep-copy of Matrix object */
 		virtual Matrix *duplicate( ) const;
 
+		/** Get number of matrix rows */
+		virtual int_t getRowNum() const;
+		 
+		/** Get number of matrix columns */
+		virtual int_t getColNum() const;
+		
+		/** Get number of nonzero matrix elements */
+		virtual sparse_int_t getNnz() const;
+		
 		/** Returns i-th diagonal entry.
 		 *	\return i-th diagonal entry (or INFTY if diagonal does not exist)*/
 		virtual real_t diag(	int_t i			/**< Index. */

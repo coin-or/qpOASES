@@ -129,6 +129,19 @@ Matrix *DenseMatrix::duplicate( ) const
 	return dupl;
 }
 
+
+int_t DenseMatrix::getRowNum() const 
+{
+	return nRows;
+}
+
+
+int_t DenseMatrix::getColNum() const 
+{ 
+	return nCols;
+}
+
+
 real_t DenseMatrix::diag(	int_t i
 							) const
 {
@@ -740,6 +753,24 @@ Matrix *SparseMatrix::duplicate() const
 	dupl->doFreeMemory( );
 
 	return dupl;
+}
+
+
+int_t SparseMatrix::getRowNum() const 
+{
+	return nRows;
+}
+
+
+int_t SparseMatrix::getColNum() const 
+{ 
+	return nCols;
+}
+
+
+sparse_int_t SparseMatrix::getNnz() const 
+{ 
+	return jc[nCols];
 }
 
 
@@ -1465,6 +1496,23 @@ Matrix *SparseMatrixRow::duplicate() const
 	return dupl;
 }
 
+
+int_t SparseMatrixRow::getRowNum() const 
+{
+	return nRows;
+}
+
+
+int_t SparseMatrixRow::getColNum() const 
+{ 
+	return nCols;
+}
+
+
+sparse_int_t SparseMatrixRow::getNnz() const 
+{ 
+	return jr[nRows];
+}
 
 
 real_t SparseMatrixRow::diag(int_t i) const
