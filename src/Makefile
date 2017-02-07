@@ -52,7 +52,8 @@ QPOASES_OBJECTS = \
 	Options.${OBJEXT} \
 	Matrices.${OBJEXT} \
 	MessageHandling.${OBJEXT} \
-	SparseSolver.${OBJEXT}
+	SparseSolver.${OBJEXT} \
+	MatrixConversion.${OBJEXT}
 
 
 QPOASES_EXTRAS_OBJECTS = \
@@ -75,7 +76,8 @@ QPOASES_DEPENDS = \
 	${IDIR}/qpOASES/Options.hpp \
 	${IDIR}/qpOASES/Matrices.hpp \
 	${IDIR}/qpOASES/MessageHandling.hpp \
-	${IDIR}/qpOASES/UnitTesting.hpp
+	${IDIR}/qpOASES/UnitTesting.hpp \
+	${IDIR}/qpOASES/MatrixConversion.hpp 
 
 
 ##

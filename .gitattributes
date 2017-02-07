@@ -28,7 +28,7 @@ examples/example4.cpp -text
 examples/example4CP.cpp -text
 examples/example5.cpp -text
 examples/exampleLP.cpp -text
-examples/example_chris.cpp -text
+examples/example_matrixconversion.cpp -text
 examples/qrecipe.cpp -text
 examples/qrecipeSchur.cpp -text
 examples/qrecipe_data.hpp -text
@@ -36,7 +36,6 @@ examples/testmat_chris.mm -text
 include/qpOASES.hpp -text
 include/qpOASES/Bounds.hpp -text
 include/qpOASES/Bounds.ipp -text
-include/qpOASES/ChrisTemp.hpp -text
 include/qpOASES/Constants.hpp -text
 include/qpOASES/ConstraintProduct.hpp -text
 include/qpOASES/Constraints.hpp -text
@@ -45,6 +44,7 @@ include/qpOASES/Flipper.hpp -text
 include/qpOASES/Indexlist.hpp -text
 include/qpOASES/Indexlist.ipp -text
 include/qpOASES/Matrices.hpp -text
+include/qpOASES/MatrixConversion.hpp -text
 include/qpOASES/MessageHandling.hpp -text
 include/qpOASES/MessageHandling.ipp -text
 include/qpOASES/Options.hpp -text
@@ -141,13 +141,13 @@ interfaces/simulink/qpOASES_simulink_utils.cpp -text
 /make_windows.mk -text
 src/BLASReplacement.cpp -text
 src/Bounds.cpp -text
-src/ChrisTemp.cpp -text
 src/Constraints.cpp -text
 src/Flipper.cpp -text
 src/Indexlist.cpp -text
 src/LAPACKReplacement.cpp -text
 src/Makefile -text
 src/Matrices.cpp -text
+src/MatrixConversion.cpp -text
 src/MessageHandling.cpp -text
 src/OQPinterface.cpp -text
 src/Options.cpp -text

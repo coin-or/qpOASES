@@ -49,7 +49,8 @@ QPOASES_EXES = \
 	${BINDIR}/example5${EXE} \
 	${BINDIR}/exampleLP${EXE} \
 	${BINDIR}/qrecipe${EXE} \
-	${BINDIR}/qrecipeSchur${EXE}
+	${BINDIR}/qrecipeSchur${EXE} \
+	${BINDIR}/example_matrixconversion${EXE}
 
 
 ##
