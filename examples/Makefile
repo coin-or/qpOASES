@@ -40,6 +40,7 @@ IFLAGS      =  -I. \
 
 QPOASES_EXES = \
 	${BINDIR}/example1${EXE} \
+	${BINDIR}/example1qore${EXE} \
 	${BINDIR}/example1a${EXE} \
 	${BINDIR}/example1b${EXE} \
 	${BINDIR}/example2${EXE} \

@@ -21,6 +21,7 @@ examples/Makefile -text
 examples/example1.cpp -text
 examples/example1a.cpp -text
 examples/example1b.cpp -text
+examples/example1qore.cpp -text
 examples/example2.cpp -text
 examples/example3.cpp -text
 examples/example3b.cpp -text
