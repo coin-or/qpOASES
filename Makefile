@@ -46,9 +46,9 @@ src:
 #	@cd $@; ${MAKE} -s 
 
 qore: 
-	@cd $@; ${MAKE} -s 
+	@cd $@; ${MAKE} -s deploy DEPLOY_INCLUDE_DIR=$(IDIR) DEPLOY_LIB_DIR=$(BINDIR)
 
-examples: src
+examples: src qore
 	@cd $@; ${MAKE} -s
 
 doc:
@@ -90,7 +90,7 @@ c_wrapper:
 	@echo Compiling C interface...
 	@cd ./interfaces/c/; ${MAKE} -s
 
-.PHONY : all src examples doc testing debugging clean clobber scilab python phythoninstall c_wrapper
+.PHONY : all src examples qore doc testing debugging clean clobber scilab python phythoninstall c_wrapper
 
 
 ##
