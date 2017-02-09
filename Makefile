@@ -36,10 +36,10 @@ include make.mk
 ##
 
 
-all: src qore examples
+all: src examples
 #src_aw testing
 
-src:
+src: qore
 	@cd $@; ${MAKE} -s 
 
 #src_aw:
