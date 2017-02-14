@@ -31,22 +31,38 @@
  *	around the QORE QP solver.
  */
 
-
+#include <assert.h> 
 #include <qpOASES/QProblemQore.hpp>
 
 
 BEGIN_NAMESPACE_QPOASES
 
-QProblemQore::QProblemQore(	int_t _nV, int_t _nC )
+QProblemQore::QProblemQore ( int_t _nV, int_t _nC ) : pproblem(0)
 {
-	// TODO
+	qp_int rv = QPSOLVER_OK; // return value
+	
+	// Allocate mem and initialize problem structure
+	// 
+	// FIXME QPNew() dynamically allocated memory and may thus fail unpredictably. 
+	// The proper way of dealing with a failed allocation would be to throw an exception,
+	// but exceptions are currently not used in qpOASES. We currently rely on assertions 
+	// instead. A failed allocation thus leads to an immediate program termination!
+	rv = QPNew( &pproblem, _nV, _nC, 1, 1 );
+	assert( rv == QPSOLVER_OK );
+	assert( pproblem != 0 );
+
+	// Set solver parameter to their default values. 
+	rv = QPSetDefault( pproblem);
+	assert( rv == QPSOLVER_OK );
 }
 
 
 /** Destructor. */
 QProblemQore::~QProblemQore( ) 
 {
-	// TODO 
+	assert( pproblem != 0 );
+	QPFree( &pproblem );
+	assert( pproblem == 0 );
 }
 
 
@@ -77,7 +93,7 @@ QProblemQore::init(	const real_t* const _H,
 					int_t& nWSR
 					)
 {
-	// TODO
+	// TODO call QPSetData
 	return SUCCESSFUL_RETURN;
 }	
 
@@ -85,7 +101,9 @@ QProblemQore::init(	const real_t* const _H,
 returnValue 
 QProblemQore::getPrimalSolution( real_t* const xOpt ) const
 {
-	// TODO
+	// TODO 
+	// - call QPOPtimize
+	// - call QPGetDblVector('primalsol)
 	return SUCCESSFUL_RETURN;
 }	
 

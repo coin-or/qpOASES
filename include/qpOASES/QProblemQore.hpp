@@ -43,6 +43,9 @@
 // #include <qpOASES/ConstraintProduct.hpp>
 #include <qpOASES/Matrices.hpp>
 
+extern "C" { 
+	#include <qpsolver.h>
+}
 
 BEGIN_NAMESPACE_QPOASES
 
@@ -125,6 +128,12 @@ class QProblemQore // : public QProblem
 		 *	\return finite value: Optimal objective function value (QP was solved) \n
 		 			+infinity:	  QP was not yet solved */
 		real_t getObjVal( ) const;
+		
+	/*
+	 *	PRIVATE MEMBER VARIABLES
+	 */
+	private:
+		QoreProblem * pproblem;
 };
 
 

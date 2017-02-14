@@ -39,30 +39,28 @@
 /** Example for qpOASES main function using the QProblemQore class. */
 int main( )
 {
-	USING_NAMESPACE_QPOASES
-
 	/* Setup data of QP. */
-	real_t H[2*2] = { 1.0, 0.0, 0.0, 0.5 };
-	real_t A[1*2] = { 1.0, 1.0 };
-	real_t g[2] = { 1.5, 1.0 };
-	real_t lb[2] = { 0.5, -2.0 };
-	real_t ub[2] = { 5.0, 2.0 };
-	real_t lbA[1] = { -1.0 };
-	real_t ubA[1] = { 2.0 };
+	REFER_NAMESPACE_QPOASES real_t H[2*2] = { 1.0, 0.0, 0.0, 0.5 };
+	REFER_NAMESPACE_QPOASES real_t A[1*2] = { 1.0, 1.0 };
+	REFER_NAMESPACE_QPOASES real_t g[2] = { 1.5, 1.0 };
+	REFER_NAMESPACE_QPOASES real_t lb[2] = { 0.5, -2.0 };
+	REFER_NAMESPACE_QPOASES real_t ub[2] = { 5.0, 2.0 };
+	REFER_NAMESPACE_QPOASES real_t lbA[1] = { -1.0 };
+	REFER_NAMESPACE_QPOASES real_t ubA[1] = { 2.0 };
 
 	/* Setting up QProblem object. */
-	QProblemQore example( 2, 1 );
+	REFER_NAMESPACE_QPOASES QProblemQore example( 2, 1 );
 
-	Options options;
+	REFER_NAMESPACE_QPOASES Options options;
 	example.setOptions( options );
 
 	/* Solve QP. */
-	int_t nWSR = 10;
+	REFER_NAMESPACE_QPOASES int_t nWSR = 10;
 	example.init( H, g, A, lb, ub, lbA, ubA, nWSR );
 
 	/* Get and print solution of QP. */
-	real_t xOpt[2] = {1, 2}; // TODO remove init once getXSolution implemented
-	real_t yOpt[2+1] = {3, 4, 5}; // TODO remove init once getXSolution implemented
+	REFER_NAMESPACE_QPOASES real_t xOpt[2] = {1, 2}; // TODO remove init once getXSolution implemented
+	REFER_NAMESPACE_QPOASES real_t yOpt[2+1] = {3, 4, 5}; // TODO remove init once getXSolution implemented
 	example.getPrimalSolution( xOpt );
 	example.getDualSolution( yOpt );
 	printf( "\nxOpt = [ %e, %e ];  yOpt = [ %e, %e, %e ];  objVal = %e\n\n",  xOpt[0], xOpt[1], yOpt[0], yOpt[1], yOpt[2], example.getObjVal() );

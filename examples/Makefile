@@ -38,7 +38,6 @@ include ../make.mk
 IFLAGS      =  -I. \
                -I${IDIR}
 
-# 	${BINDIR}/example1qore${EXE} 
 QPOASES_EXES = \
 	${BINDIR}/example1${EXE} \
 	${BINDIR}/example1a${EXE} \
@@ -51,6 +50,7 @@ QPOASES_EXES = \
 	${BINDIR}/exampleLP${EXE} \
 	${BINDIR}/qrecipe${EXE} \
 	${BINDIR}/qrecipeSchur${EXE} \
+	${BINDIR}/example1qore${EXE} \
 	${BINDIR}/example_matrixconversion${EXE}
 
 

@@ -53,6 +53,7 @@ examples: src qore
 
 doc:
 	@cd $@; ${MAKE} -s 
+	@cd qore; ${MAKE} -s doc
 
 testing: src
 	@cd testing/cpp; ${MAKE} -s
