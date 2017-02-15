@@ -46,7 +46,7 @@ src: qore
 #	@cd $@; ${MAKE} -s 
 
 qore: 
-	@cd $@; ${MAKE} -s deploy DEPLOY_INCLUDE_DIR=$(IDIR) DEPLOY_LIB_DIR=$(BINDIR)
+	@cd $@; ${MAKE} -s deploy DEPLOY_INC_DIR=$(IDIR) DEPLOY_LIB_DIR=$(BINDIR) DEPLOY_BIN_DIR=$(BINDIR)
 
 examples: src qore
 	@cd $@; ${MAKE} -s
