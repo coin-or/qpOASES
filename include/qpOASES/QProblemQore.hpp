@@ -23,7 +23,7 @@
 
 
 /**
- *	\file include/qpOASES/QProblemQore.hpp
+ *	\file QProblemQore.hpp
  *	\author Christian Hoffmann
  *	\date 2016-2017
  *
@@ -38,10 +38,10 @@
 
 
 #include <qpOASES/Options.hpp>
-// #include <qpOASES/QProblemB.hpp>
 // #include <qpOASES/Constraints.hpp>
 // #include <qpOASES/ConstraintProduct.hpp>
 #include <qpOASES/Matrices.hpp>
+#include <qpOASES/QProblemB.hpp> // FIXME overkill, just included for declaration of 'Bounds' type
 
 extern "C" { 
 	#include <qpsolver.h>
@@ -82,6 +82,28 @@ class QProblemQore // : public QProblem
 		returnValue printOptions( ) const;
 
 		
+		/** Initialises a simply bounded QP problem with given QP data and tries to solve it
+		 *	using at most nWSR iterations.
+		 *
+		 *	\return SUCCESSFUL_RETURN \n
+					RET_INIT_FAILED \n
+					RET_INIT_FAILED_CHOLESKY \n
+					RET_INIT_FAILED_HOTSTART \n
+					RET_INIT_FAILED_INFEASIBILITY \n
+					RET_INIT_FAILED_UNBOUNDEDNESS \n
+					RET_MAX_NWSR_REACHED \n
+					RET_INVALID_ARGUMENTS */
+		returnValue init(	const real_t* const _H, 				/**< Hessian matrix (a shallow copy is made). \n
+																		 If Hessian matrix is trivial, a NULL pointer can be passed. */
+							const real_t* const _g,					/**< Gradient vector. */
+							const real_t* const _lb,				/**< Lower bounds (on variables). \n
+																		 If no lower bounds exist, a NULL pointer can be passed. */
+							const real_t* const _ub,				/**< Upper bounds (on variables). \n
+																		 If no upper bounds exist, a NULL pointer can be passed. */
+							int_t& nWSR 							/**< Input: Maximum number of working set recalculations when using initial homotopy. \n
+																		 Output: Number of performed working set recalculations. */
+							);
+
 		/** Initialises a QP problem with given QP data and tries to solve it
 		 *	using at most nWSR iterations. 
 		 *	
@@ -111,6 +133,37 @@ class QProblemQore // : public QProblem
 							);
 
 		
+		/** Solves an initialised QP sequence using the online active set strategy.
+		 *	By default, QP solution is started from previous solution. If a guess
+		 *	for the working set is provided, an initialised homotopy is performed.
+		 *
+		 *  Note: This function internally calls solveQP/solveRegularisedQP
+		 *        for solving an initialised QP!
+		 *
+		 *	\return SUCCESSFUL_RETURN \n
+					RET_MAX_NWSR_REACHED \n
+					RET_HOTSTART_FAILED_AS_QP_NOT_INITIALISED \n
+					RET_HOTSTART_FAILED \n
+					RET_SHIFT_DETERMINATION_FAILED \n
+					RET_STEPDIRECTION_DETERMINATION_FAILED \n
+					RET_STEPLENGTH_DETERMINATION_FAILED \n
+					RET_HOMOTOPY_STEP_FAILED \n
+					RET_HOTSTART_STOPPED_INFEASIBILITY \n
+					RET_HOTSTART_STOPPED_UNBOUNDEDNESS \n
+					RET_SETUP_AUXILIARYQP_FAILED */
+		returnValue hotstart(	const real_t* const g_new,				/**< Gradient of neighbouring QP to be solved. */
+								const real_t* const lb_new,				/**< Lower bounds of neighbouring QP to be solved. \n
+													 						 If no lower bounds exist, a NULL pointer can be passed. */
+								const real_t* const ub_new,				/**< Upper bounds of neighbouring QP to be solved. \n
+													 						 If no upper bounds exist, a NULL pointer can be passed. */
+								int_t& nWSR,							/**< Input: Maximum number of working set recalculations; \n
+																			 Output: Number of performed working set recalculations. */
+								real_t* const cputime = 0,				/**< Input: Maximum CPU time allowed for QP solution. \n
+																			 Output: CPU time spent for QP solution (or to perform nWSR iterations). */
+								const Bounds* const guessedBounds = 0	/**< Optimal working set of bounds for solution (xOpt,yOpt). \n
+																			 (If a null pointer is passed, the previous working set is kept!) */
+								);
+
 		/** Returns the primal solution vector.
 		 *	\return SUCCESSFUL_RETURN \n
 					RET_QP_NOT_SOLVED */
@@ -133,7 +186,9 @@ class QProblemQore // : public QProblem
 	 *	PRIVATE MEMBER VARIABLES
 	 */
 	private:
-		QoreProblem * pproblem;
+		QoreProblem * pproblem; ///< pointer to a QORE QP solver instance
+		int_t nV; ///< number of variables
+		int_t nC; ///< number of constraints
 };
 
 
