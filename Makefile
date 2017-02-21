@@ -66,10 +66,11 @@ debugging:
 
 clean:
 	@cd src               && ${MAKE} -s clean
+	@cd doc               && ${MAKE} -s clean
 	@cd examples          && ${MAKE} -s clean
 	@cd bin               && ${RM} -f *.* *{EXE}
 	@cd testing/cpp       && ${MAKE} -s clean
-	@cd qore              && ${MAKE} -s clean
+	@cd qore              && ${MAKE} -s purge
 
 #	&& cd src_aw            && ${MAKE} -s clean && cd .. \
 #	&& cd debugging         && ${MAKE} -s clean && cd .. \
