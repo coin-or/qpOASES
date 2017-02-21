@@ -43,18 +43,23 @@ LATEX = latex
 ##	targets
 ##
 
-all: doc
+all: doc doc_chris
 
 
-.PHONY: doc
+.PHONY: doc doc_chris
+
 doc:
 	@ echo "Creating doxygen documentation "
 	@ doxygen doxygen.config
 	
 
+doc_chris:
+	@ echo "Creating detailed doxygen documentation "
+	@ doxygen doxygen_chris.config
+
 .PHONY: clean
 clean:
-	@ ${RM} -rf ./html
+	- @ ${RM} -rf ./html ./html_chris
 
 
 .PHONY: clobber
