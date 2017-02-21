@@ -38,6 +38,10 @@ include ../make.mk
 IFLAGS      =  -I. \
                -I${IDIR}
 
+QPOASES_QORE_EXES = \
+	${BINDIR}/example1b_qore${EXE} \
+	${BINDIR}/example1_qore${EXE} \
+
 QPOASES_EXES = \
 	${BINDIR}/example1${EXE} \
 	${BINDIR}/example1a${EXE} \
@@ -50,7 +54,6 @@ QPOASES_EXES = \
 	${BINDIR}/exampleLP${EXE} \
 	${BINDIR}/qrecipe${EXE} \
 	${BINDIR}/qrecipeSchur${EXE} \
-	${BINDIR}/example1qore${EXE} \
 	${BINDIR}/example_matrixconversion${EXE}
 
 
@@ -58,7 +61,7 @@ QPOASES_EXES = \
 ##	targets
 ##
 
-all: ${QPOASES_EXES}
+all: ${QPOASES_EXES} ${QPOASES_QORE_EXES}
 
 ${BINDIR}/%${EXE}: %.${OBJEXT} ${LINK_DEPENDS}
 	@${ECHO} "Creating" $@
@@ -79,7 +82,7 @@ ${BINDIR}/qrecipeSchur${EXE}: qrecipeSchur.${OBJEXT} qrecipe_data.hpp ${LINK_DEP
 
 clean:
 	@${ECHO} "Cleaning up (examples)"
-	@${RM} -f *.${OBJEXT} ${QPOASES_EXES}
+	@${RM} -f *.${OBJEXT} ${QPOASES_EXES} ${QPOASES_QORE_EXES}
 
 clobber: clean
 
