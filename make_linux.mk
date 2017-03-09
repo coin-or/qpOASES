@@ -73,7 +73,7 @@ else
 	DEF_SOLVER = SOLVER_NONE
 	LINKHSL =
 endif
-
+DEF_SOLVER
 ################################################################################
 # do not touch this
 
@@ -106,9 +106,25 @@ else
 endif
 
 
-# FIXME manually switched to debug flags!
+# FIXME manually switched to debug flags! (chris)
 # CPPFLAGS = -Wall -pedantic -Wshadow -Wfloat-equal -O3 -Wconversion -Wsign-conversion -finline-functions -fPIC -DLINUX -D__USE_LONG_INTEGERS__ -D__USE_LONG_FINTS__ -D${DEF_SOLVER} -D__NO_COPYRIGHT__
-CPPFLAGS = -Wall -pedantic -Wshadow -Wfloat-equal -g -Wconversion -Wsign-conversion -finline-functions -fPIC -DLINUX -D__USE_LONG_INTEGERS__ -D__USE_LONG_FINTS__ -D${DEF_SOLVER} -D__NO_COPYRIGHT__ -D__DEBUG__ -D__SUPPRESSANYOUTPUT__
+CPPFLAGS = \
+	-g \
+	-fPIC \
+	-Wall \
+	-Wshadow \
+	-Wfloat-equal \
+	-Wconversion \
+	-Wsign-conversion \
+	-pedantic \
+	-finline-functions \
+	-DLINUX \
+	-D__USE_LONG_INTEGERS__ \
+	-D__USE_LONG_FINTS__ \
+	-D${DEF_SOLVER} \
+	-D__NO_COPYRIGHT__ \
+	-D__DEBUG__ \
+	-D__SUPPRESSANYOUTPUT__
 #          -g -D__DEBUG__ -D__NO_COPYRIGHT__ -D__SUPPRESSANYOUTPUT__ -D__USE_SINGLE_PRECISION__
 
 # libraries to link against when building qpOASES .so files
