@@ -61,7 +61,7 @@ int main( )
 	real_t ubA_new[nc] = { 1.0 };
 
 	/* Setting up QProblem object. */
-	 QProblemQore example( nv, nc );
+	QProblemQore example( nv, nc );
 
 	Options options;
 	example.setOptions( options );
@@ -71,8 +71,8 @@ int main( )
 	example.init( H, g, A, lb, ub, lbA, ubA, nWSR );
 
 	/* Get and print solution of QP. */
-	real_t xOpt[nv];
-	real_t yOpt[nv+nc];
+	real_t xOpt[nv] = {-42,-42};
+	real_t yOpt[nv+nc] = {-42,-42,-42};
 	example.getPrimalSolution( xOpt );
 	example.getDualSolution( yOpt );
 	printf( "\nxOpt = [ %e, %e ];  yOpt = [ %e, %e, %e ];  objVal = %e\n\n",  xOpt[0], xOpt[1], yOpt[0], yOpt[1], yOpt[2], example.getObjVal() );

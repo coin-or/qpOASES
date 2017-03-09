@@ -39,8 +39,8 @@ IFLAGS      =  -I. \
                -I${IDIR}
 
 QPOASES_QORE_EXES = \
-	${BINDIR}/example1b_qore${EXE} \
-	${BINDIR}/example1_qore${EXE} \
+	${BINDIR}/example1b_qore_wrapper${EXE} \
+	${BINDIR}/example1_qore_wrapper${EXE} \
 
 QPOASES_EXES = \
 	${BINDIR}/example1${EXE} \
