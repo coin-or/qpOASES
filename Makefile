@@ -46,7 +46,7 @@ src: qore
 #	@cd $@; ${MAKE} -s 
 
 qore: 
-	@cd $@; ${MAKE} -s deploy DEPLOY_INC_DIR=$(IDIR) DEPLOY_LIB_DIR=$(BINDIR) DEPLOY_BIN_DIR=$(BINDIR)
+	@cd $@; ${MAKE} -s QORE_BIN_DIR=$(BINDIR)/
 
 examples: src qore
 	@cd $@; ${MAKE} -s
@@ -71,7 +71,6 @@ clean:
 	@cd bin               && ${RM} -f *.* *{EXE}
 	@cd testing/cpp       && ${MAKE} -s clean
 	@cd qore              && ${MAKE} -s purge
-
 #	&& cd src_aw            && ${MAKE} -s clean && cd .. \
 #	&& cd debugging         && ${MAKE} -s clean && cd .. \
 
