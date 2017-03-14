@@ -33,7 +33,14 @@
 # user configuration
 
 # include directories, relative
-IDIR =   ${TOP}/include
+IDIR =   ${TOP}/include 
+
+IFLAGS_QORE = -I${TOP}/qore/ \
+	-I${TOP}/qore/SPMATRIX/include \
+	-I${TOP}/qore/QPCORE/include \
+	-I${TOP}/qore/KKTPACK/include \
+	-I${TOP}/qore/QPSOLVER/include
+	
 SRCDIR = ${TOP}/src
 BINDIR = ${TOP}/bin
 
@@ -73,7 +80,7 @@ else
 	DEF_SOLVER = SOLVER_NONE
 	LINKHSL =
 endif
-DEF_SOLVER
+
 ################################################################################
 # do not touch this
 

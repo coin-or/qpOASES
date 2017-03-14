@@ -104,7 +104,7 @@ qrecipeSchur.${OBJEXT}: qrecipeSchur.cpp qrecipe_data.hpp
 
 %.${OBJEXT}: %.cpp
 	@${ECHO} "Creating" $@
-	@${CPP} ${DEF_TARGET} -c ${IFLAGS} ${CPPFLAGS} $<
+	@${CPP} ${DEF_TARGET} -c ${IFLAGS} ${IFLAGS_QORE} ${CPPFLAGS} $<
 
 
 ##
