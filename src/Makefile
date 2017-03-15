@@ -36,10 +36,15 @@ include ../make.mk
 ##
 
 IFLAGS      =  -I. \
-               -I${IDIR}
+               -I${IDIR} \
+               
+IFLAGS_QORE = -I${IDIR_QORE} \
+               -I${IDIR_QORE_SPMATRIX} \
+               -I${IDIR_QORE_QPCORE} \
+               -I${IDIR_QORE_KKTPACK} \
+               -I${IDIR_QORE_QPSOLVER}
 
 QPOASES_OBJECTS = \
-	QProblemQore.${OBJEXT} \
 	SQProblem.${OBJEXT} \
 	QProblem.${OBJEXT} \
 	QProblemB.${OBJEXT} \
@@ -53,9 +58,7 @@ QPOASES_OBJECTS = \
 	Options.${OBJEXT} \
 	Matrices.${OBJEXT} \
 	MessageHandling.${OBJEXT} \
-	SparseSolver.${OBJEXT} \
-	MatrixConversion.${OBJEXT}
-
+	SparseSolver.${OBJEXT}
 
 QPOASES_EXTRAS_OBJECTS = \
 	SolutionAnalysis.${OBJEXT} \
@@ -78,10 +81,20 @@ QPOASES_DEPENDS = \
 	${IDIR}/qpOASES/Options.hpp \
 	${IDIR}/qpOASES/Matrices.hpp \
 	${IDIR}/qpOASES/MessageHandling.hpp \
-	${IDIR}/qpOASES/UnitTesting.hpp \
-	${IDIR}/qpOASES/MatrixConversion.hpp 
+	${IDIR}/qpOASES/UnitTesting.hpp
+	
+QPOASES_QORE_OBJECTS = \
+	QProblemQore.${OBJEXT} \
+	MatrixConversion.${OBJEXT}
 
-
+QPOASES_QORE_DEPENDS = \
+	${IDIR}/qpOASES/QProblemQore.hpp \
+	${IDIR}/qpOASES/MatrixConversion.hpp \
+	${IDIR}/qpOASES/Matrices.hpp \
+	${IDIR_QORE_SPMATRIX}/matrixconversion.h \
+	${IDIR_QORE_QPSOLVER}/qpsolver.h \
+	${IDIR_QORE}/qp_types.h
+	
 ##
 ##	targets
 ##
@@ -89,24 +102,31 @@ QPOASES_DEPENDS = \
 all: ${LINK_DEPENDS}
 
 
-${BINDIR}/libqpOASES.${LIBEXT}: ${QPOASES_OBJECTS} ${QPOASES_EXTRAS_OBJECTS}
+${BINDIR}/libqpOASES.${LIBEXT}: ${QPOASES_OBJECTS} ${QPOASES_EXTRAS_OBJECTS} ${QPOASES_QORE_OBJECTS}
 	@${ECHO} "Creating static lib" $@
 	@${AR} r $@ $^
 
-${BINDIR}/libqpOASES.${DLLEXT}: ${QPOASES_OBJECTS} ${QPOASES_EXTRAS_OBJECTS}
+${BINDIR}/libqpOASES.${DLLEXT}: ${QPOASES_OBJECTS} ${QPOASES_EXTRAS_OBJECTS} ${QPOASES_QORE_OBJECTS}
 	@${ECHO} "Creating shared lib" $@
 	@${CPP} ${DEF_TARGET} ${SHARED} $^ ${LINK_LIBRARIES}
+
+QProblemQore.o: QProblemQore.cpp ${QPOASES_QORE_DEPENDS}
+	${ECHO} "Creating" $@
+	${CPP} ${DEF_TARGET} -c ${IFLAGS} ${IFLAGS_QORE} ${CPPFLAGS} $<
+
+MatrixConversion.o: MatrixConversion.cpp ${QPOASES_QORE_DEPENDS}
+	${ECHO} "Creating" $@
+	${CPP} ${DEF_TARGET} -c ${IFLAGS} ${IFLAGS_QORE} ${CPPFLAGS} $<
+
+%.${OBJEXT}: %.cpp ${QPOASES_DEPENDS}
+	${ECHO} "Creating" $@
+	${CPP} ${DEF_TARGET} -c ${IFLAGS} ${CPPFLAGS} $<
 
 clean:
 	@${ECHO} "Cleaning up (src)"
 	@${RM} -f *.${OBJEXT} *.${LIBEXT} *.${DLLEXT}
 
 clobber: clean
-
-
-%.${OBJEXT}: %.cpp ${QPOASES_DEPENDS}
-	@${ECHO} "Creating" $@
-	@${CPP} ${DEF_TARGET} -c ${IFLAGS} ${CPPFLAGS} $<
 
 
 ##

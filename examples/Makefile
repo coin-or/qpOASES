@@ -36,12 +36,13 @@ include ../make.mk
 ##
 
 IFLAGS      =  -I. \
-               -I${IDIR}
-
-QPOASES_QORE_EXES = \
-	${BINDIR}/example1b_qore_wrapper${EXE} \
-	${BINDIR}/example1_qore_wrapper${EXE} \
-
+               -I${IDIR} \
+               -I${IDIR_QORE} \
+               -I${IDIR_QORE_SPMATRIX} \
+               -I${IDIR_QORE_QPCORE} \
+               -I${IDIR_QORE_KKTPACK} \
+               -I${IDIR_QORE_QPSOLVER}
+               
 QPOASES_EXES = \
 	${BINDIR}/example1${EXE} \
 	${BINDIR}/example1a${EXE} \
@@ -54,6 +55,10 @@ QPOASES_EXES = \
 	${BINDIR}/exampleLP${EXE} \
 	${BINDIR}/qrecipe${EXE} \
 	${BINDIR}/qrecipeSchur${EXE} \
+
+QPOASES_QORE_EXES = \
+	${BINDIR}/example1b_qore_wrapper${EXE} \
+	${BINDIR}/example1_qore_wrapper${EXE} \
 	${BINDIR}/example_matrixconversion${EXE}
 
 
@@ -88,7 +93,7 @@ clobber: clean
 
 
 ${LINK_DEPENDS}:
-	@cd ..; ${MAKE} -s src
+	@cd ..; ${MAKE} -s src qore
 
 example4.${OBJEXT}: example4.cpp example4CP.cpp
 	@${ECHO} "Creating" $@
@@ -104,7 +109,7 @@ qrecipeSchur.${OBJEXT}: qrecipeSchur.cpp qrecipe_data.hpp
 
 %.${OBJEXT}: %.cpp
 	@${ECHO} "Creating" $@
-	@${CPP} ${DEF_TARGET} -c ${IFLAGS} ${IFLAGS_QORE} ${CPPFLAGS} $<
+	@${CPP} ${DEF_TARGET} -c ${IFLAGS} ${CPPFLAGS} $<
 
 
 ##

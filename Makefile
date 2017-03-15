@@ -45,11 +45,11 @@ src: qore
 #src_aw:
 #	@cd $@; ${MAKE} -s 
 
-qore: 
-	@cd $@; ${MAKE} -s QORE_BIN_DIR=$(BINDIR)/
-
 examples: src qore
 	@cd $@; ${MAKE} -s
+
+qore: 
+	@cd $@; ${MAKE} -s QORE_BIN_DIR=$(BINDIR)/
 
 doc:
 	@cd $@; ${MAKE} -s 
@@ -70,7 +70,7 @@ clean:
 	@cd examples          && ${MAKE} -s clean
 	@cd bin               && ${RM} -f *.* *{EXE}
 	@cd testing/cpp       && ${MAKE} -s clean
-	@cd qore              && ${MAKE} -s purge
+	@cd qore              && ${MAKE} -s QORE_BIN_DIR=$(BINDIR)/ purge 
 #	&& cd src_aw            && ${MAKE} -s clean && cd .. \
 #	&& cd debugging         && ${MAKE} -s clean && cd .. \
 

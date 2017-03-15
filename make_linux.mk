@@ -33,16 +33,16 @@
 # user configuration
 
 # include directories, relative
-IDIR =   ${TOP}/include 
+IDIR =   ${TOP}/include
+IDIR_QORE = ${TOP}/qore
+IDIR_QORE_SPMATRIX = ${TOP}/qore/SPMATRIX/include
+IDIR_QORE_QPCORE = ${TOP}/qore/QPCORE/include
+IDIR_QORE_KKTPACK = ${TOP}/qore/KKTPACK/include
+IDIR_QORE_QPSOLVER = ${TOP}/qore/QPSOLVER/include
 
-IFLAGS_QORE = -I${TOP}/qore/ \
-	-I${TOP}/qore/SPMATRIX/include \
-	-I${TOP}/qore/QPCORE/include \
-	-I${TOP}/qore/KKTPACK/include \
-	-I${TOP}/qore/QPSOLVER/include
-	
 SRCDIR = ${TOP}/src
 BINDIR = ${TOP}/bin
+
 
 # Matlab include directory (ADAPT TO YOUR LOCAL SETTINGS!)
 #MATLAB_IDIR   = ${HOME}/Programs/matlab/extern/include/
