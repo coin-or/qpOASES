@@ -43,7 +43,7 @@ extern "C" {
 
 BEGIN_NAMESPACE_QPOASES
 
-/// \todo Internally cally QORE's QPNew(), which dynamically allocates memory 
+/// \todo Internally calls QORE's QPNew(), which dynamically allocates memory 
 /// and may thus fail unpredictably.  The proper way of dealing with a failed 
 /// allocation in the constructor would be to throw an exception, but 
 /// exceptions are currently not used in qpOASES. We currently rely on 

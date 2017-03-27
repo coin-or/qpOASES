@@ -54,7 +54,7 @@ QPOASES_EXES = \
 	${BINDIR}/example5${EXE} \
 	${BINDIR}/exampleLP${EXE} \
 	${BINDIR}/qrecipe${EXE} \
-	${BINDIR}/qrecipeSchur${EXE} \
+	${BINDIR}/qrecipeSchur${EXE}
 
 QPOASES_QORE_EXES = \
 	${BINDIR}/example1b_qore_wrapper${EXE} \
@@ -83,7 +83,6 @@ ${BINDIR}/qrecipe${EXE}: qrecipe.${OBJEXT} qrecipe_data.hpp ${LINK_DEPENDS}
 ${BINDIR}/qrecipeSchur${EXE}: qrecipeSchur.${OBJEXT} qrecipe_data.hpp ${LINK_DEPENDS}
 	@${ECHO} "Creating" $@
 	@${CPP} ${DEF_TARGET} ${CPPFLAGS} $< ${QPOASES_LINK} ${LINK_LIBRARIES}
-
 
 clean:
 	@${ECHO} "Cleaning up (examples)"

@@ -64,8 +64,12 @@ QPOASES_EXTRAS_OBJECTS = \
 	SolutionAnalysis.${OBJEXT} \
 	OQPinterface.${OBJEXT}
 
+QPOASES_OBJECTS_QORE = \
+	QProblemQore.${OBJEXT} \
+
 QPOASES_DEPENDS = \
 	${IDIR}/qpOASES.hpp \
+	${IDIR}/qpOASES/QProblemQore.hpp \
 	${IDIR}/qpOASES/SQProblem.hpp \
 	${IDIR}/qpOASES/QProblem.hpp \
 	${IDIR}/qpOASES/Flipper.hpp \

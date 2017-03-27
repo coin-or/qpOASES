@@ -43,23 +43,30 @@ IDIR_QORE_QPSOLVER = ${TOP}/qore/QPSOLVER/include
 SRCDIR = ${TOP}/src
 BINDIR = ${TOP}/bin
 
-
 # Matlab include directory (ADAPT TO YOUR LOCAL SETTINGS!)
 #MATLAB_IDIR   = ${HOME}/Programs/matlab/extern/include/
 MATLAB_IDIR   = /usr/local/matlab/extern/include/
 MATLAB_LIBDIR = /usr/local/matlab/bin/glnxa64/
 
 # system or replacement BLAS/LAPACK
-REPLACE_LINALG = 1
+# 
+# ATTENTION: the QORE-Wrapper QProblemQore and any examples using it
+# (exampleXXX_qore_wrapper) REQUIRE the system LAPACK, since 
+# LAPACKReplacement.cpp does not implement  certain routines requires by QORE, 
+# particularly trcon_().
+REPLACE_LINALG = 0
+
 
 ifeq ($(REPLACE_LINALG), 1)
 	LIB_BLAS =   ${SRCDIR}/BLASReplacement.o
 	LIB_LAPACK = ${SRCDIR}/LAPACKReplacement.o
 else
-	LIB_BLAS =   /usr/lib/libblas.so.3gf
-	LIB_LAPACK = /usr/lib/liblapack.so.3gf
-#	LIB_BLAS = ${MATLAB_LIBDIR}/libmwblas.so
-#	LIB_LAPACK = ${MATLAB_LIBDIR}/libmwlapack.so
+	LIB_BLAS =   /usr/lib/libblas.so
+	LIB_LAPACK = /usr/lib/liblapack.so
+# 	LIB_BLAS =   /usr/lib/libblas.so.3gf
+# 	LIB_LAPACK = /usr/lib/liblapack.so.3gf
+# 	LIB_BLAS = ${MATLAB_LIBDIR}/libmwblas.so
+# 	LIB_LAPACK = ${MATLAB_LIBDIR}/libmwlapack.so
 endif
 
 # choice of sparse solver: NONE, MA27, or MA57
