@@ -24,11 +24,12 @@
 
 /**
  *	\file examples/example1b.cpp
- *	\author Hans Joachim Ferreau
+ *	\example examples/example1b.cpp
+ *	\brief Example of solving a simple bound-constrained QP with qpOASES using 
+ *	the QProblem class.
+ *	\author Hans Joachim Ferreau, Christian Hoffmann
  *	\version 3.2
- *	\date 2007-2015
- *
- *	Very simple example for testing qpOASES using the QProblemB class.
+ *	\date 2007-2017
  */
 
 
@@ -41,20 +42,24 @@ int main( )
 	USING_NAMESPACE_QPOASES
 
 	/* Setup data of first QP. */
-	real_t H[2*2] = { 1.0, 0.0, 0.0, 0.5 };
-	real_t g[2] = { 1.5, 1.0 };
-	real_t lb[2] = { 0.5, -2.0 };
-	real_t ub[2] = { 5.0, 2.0 };
+	int_t const nv = 2; // number of variables
+	int_t const nc = 0; // number of constraints
+
+	real_t H[nv*nv] = { 1.0, 0.0, 0.0, 0.5 };
+	real_t g[nv] = { 1.5, 1.0 };
+	real_t lb[nv] = { 0.5, -2.0 };
+	real_t ub[nv] = { 5.0, 2.0 };
 
 	/* Setup data of second QP. */
-	real_t g_new[2] = { 1.0, 1.5 };
-	real_t lb_new[2] = { 0.0, -1.0 };
-	real_t ub_new[2] = { 5.0, -0.5 };
+	real_t g_new[nv] = { 1.0, 1.5 };
+	real_t lb_new[nv] = { 0.0, -1.0 };
+	real_t ub_new[nv] = { 5.0, -0.5 };
 
-
+	
 	/* Setting up QProblemB object. */
 	QProblemB example( 2 );
 
+	/* Setting up QP solver options. */
 	Options options;
 	//options.enableFlippingBounds = BT_FALSE;
 	options.initialStatusBounds = ST_INACTIVE;

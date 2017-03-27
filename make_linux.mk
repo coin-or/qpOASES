@@ -33,7 +33,7 @@
 # user configuration
 
 # include directories, relative
-IDIR =   ${TOP}/include
+IDIR =  ${TOP}/include
 IDIR_QORE = ${TOP}/qore
 IDIR_QORE_SPMATRIX = ${TOP}/qore/SPMATRIX/include
 IDIR_QORE_QPCORE = ${TOP}/qore/QPCORE/include

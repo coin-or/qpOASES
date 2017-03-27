@@ -164,6 +164,93 @@ class QProblemQore // : public QProblem
 																			 (If a null pointer is passed, the previous working set is kept!) */
 								);
 
+		
+		/** Initialises a QP problem with given QP data and tries to solve it
+		 *	using at most nWSR iterations. Depending on the parameter constellation it: \n
+		 *	1. 0,    0,    0    : starts with xOpt = 0, yOpt = 0 and gB/gC empty (or all implicit equality bounds), \n
+		 *	2. xOpt, 0,    0    : starts with xOpt, yOpt = 0 and obtain gB/gC by "clipping", \n
+		 *	3. 0,    yOpt, 0    : starts with xOpt = 0, yOpt and obtain gB/gC from yOpt != 0, \n
+		 *	4. 0,    0,    gB/gC: starts with xOpt = 0, yOpt = 0 and gB/gC, \n
+		 *	5. xOpt, yOpt, 0    : starts with xOpt, yOpt and obtain gB/gC from yOpt != 0, \n
+		 *	6. xOpt, 0,    gB/gC: starts with xOpt, yOpt = 0 and gB/gC, \n
+		 *	7. xOpt, yOpt, gB/gC: starts with xOpt, yOpt and gB/gC (assume them to be consistent!)
+		 *
+		 *  Note: This function internally calls solveInitialQP for initialisation!
+		 *
+		  *	\return SUCCESSFUL_RETURN \n
+					RET_INIT_FAILED \n
+					RET_INIT_FAILED_CHOLESKY \n
+					RET_INIT_FAILED_TQ \n
+					RET_INIT_FAILED_HOTSTART \n
+					RET_INIT_FAILED_INFEASIBILITY \n
+					RET_INIT_FAILED_UNBOUNDEDNESS \n
+					RET_MAX_NWSR_REACHED \n
+					RET_INVALID_ARGUMENTS */
+		returnValue init(	SymmetricMatrix *_H,							/**< Hessian matrix (a shallow copy is made). */
+							const real_t* const _g, 						/**< Gradient vector. */
+							Matrix *_A,  									/**< Constraint matrix (a shallow copy is made). */
+							const real_t* const _lb,						/**< Lower bound vector (on variables). \n
+																				 If no lower bounds exist, a NULL pointer can be passed. */
+							const real_t* const _ub,						/**< Upper bound vector (on variables). \n
+																				 If no upper bounds exist, a NULL pointer can be passed. */
+							const real_t* const _lbA,						/**< Lower constraints' bound vector. \n
+																				 If no lower constraints' bounds exist, a NULL pointer can be passed. */
+							const real_t* const _ubA,						/**< Upper constraints' bound vector. \n
+																				 If no lower constraints' bounds exist, a NULL pointer can be passed. */
+							int_t& nWSR,									/**< Input: Maximum number of working set recalculations when using initial homotopy.
+																				 Output: Number of performed working set recalculations. */
+							real_t* const cputime = 0,						/**< Input: Maximum CPU time allowed for QP initialisation. \n
+																				 Output: CPU time spent for QP initialisation (if pointer passed). */
+							const real_t* const xOpt = 0,					/**< Optimal primal solution vector. \n
+																				 (If a null pointer is passed, the old primal solution is kept!) */
+							const real_t* const yOpt = 0,					/**< Optimal dual solution vector. \n
+																				 (If a null pointer is passed, the old dual solution is kept!) */
+							const Bounds* const guessedBounds = 0,			/**< Optimal working set of bounds for solution (xOpt,yOpt). \n
+																				 (If a null pointer is passed, all bounds are assumed inactive!) */
+							const Constraints* const guessedConstraints = 0,/**< Optimal working set of constraints for solution (xOpt,yOpt). \n
+																				 (If a null pointer is passed, all constraints are assumed inactive!) */
+							const real_t* const _R = 0						/**< Pre-computed (upper triangular) Cholesky factor of Hessian matrix.
+																			 	 The Cholesky factor must be stored in a real_t array of size nV*nV
+																				 in row-major format. Note: Only used if xOpt/yOpt and gB are NULL! \n
+																				 (If a null pointer is passed, Cholesky decomposition is computed internally!) */
+							);
+		
+		/** Solves an initialised QP sequence using the online active set strategy.
+		 *	By default, QP solution is started from previous solution. If a guess
+		 *	for the working set is provided, an initialised homotopy is performed.
+		 *
+		 *  Note: This function internally calls solveQP/solveRegularisedQP
+		 *        for solving an initialised QP!
+		 *
+		 *	\return SUCCESSFUL_RETURN \n
+		 			RET_MAX_NWSR_REACHED \n
+		 			RET_HOTSTART_FAILED_AS_QP_NOT_INITIALISED \n
+					RET_HOTSTART_FAILED \n
+					RET_SHIFT_DETERMINATION_FAILED \n
+					RET_STEPDIRECTION_DETERMINATION_FAILED \n
+					RET_STEPLENGTH_DETERMINATION_FAILED \n
+					RET_HOMOTOPY_STEP_FAILED \n
+					RET_HOTSTART_STOPPED_INFEASIBILITY \n
+					RET_HOTSTART_STOPPED_UNBOUNDEDNESS */
+		returnValue hotstart(	const real_t* const g_new,						/**< Gradient of neighbouring QP to be solved. */
+								const real_t* const lb_new,						/**< Lower bounds of neighbouring QP to be solved. \n
+													 							 	 If no lower bounds exist, a NULL pointer can be passed. */
+								const real_t* const ub_new,						/**< Upper bounds of neighbouring QP to be solved. \n
+													 							 	 If no upper bounds exist, a NULL pointer can be passed. */
+								const real_t* const lbA_new,					/**< Lower constraints' bounds of neighbouring QP to be solved. \n
+													 							 	 If no lower constraints' bounds exist, a NULL pointer can be passed. */
+								const real_t* const ubA_new,					/**< Upper constraints' bounds of neighbouring QP to be solved. \n
+													 							 	 If no upper constraints' bounds exist, a NULL pointer can be passed. */
+								int_t& nWSR,									/**< Input: Maximum number of working set recalculations; \n
+																			 		 Output: Number of performed working set recalculations. */
+								real_t* const cputime = 0,						/**< Input: Maximum CPU time allowed for QP solution. \n
+																				 	 Output: CPU time spent for QP solution (or to perform nWSR iterations). */
+								const Bounds* const guessedBounds = 0,			/**< Optimal working set of bounds for solution (xOpt,yOpt). \n
+																					 (If a null pointer is passed, the previous working set of bounds is kept!) */
+								const Constraints* const guessedConstraints = 0	/**< Optimal working set of constraints for solution (xOpt,yOpt). \n
+																					 (If a null pointer is passed, the previous working set of constraints is kept!) */
+								);
+
 		/** Returns the primal solution vector.
 		 *	\return SUCCESSFUL_RETURN \n
 					RET_QP_NOT_SOLVED */

@@ -2,7 +2,7 @@
  *	This file is part of qpOASES.
  *
  *	qpOASES -- An Implementation of the Online Active Set Strategy.
- *	Copyright (C) 2007-2015 by Hans Joachim Ferreau, Andreas Potschka,
+ *	Copyright (C) 2007-2015 by Hans Joachim Ferreau, Andreas Potschka, 
  *	Christian Kirches et al. All rights reserved.
  *
  *	qpOASES is free software; you can redistribute it and/or
@@ -10,26 +10,26 @@
  *	License as published by the Free Software Foundation; either
  *	version 2.1 of the License, or (at your option) any later version.
  *
- *	qpOASES is distributed in the hope that it will be useful,
+ *	qpOASES is distributed in the hope that it will be useful, 
  *	but WITHOUT ANY WARRANTY; without even the implied warranty of
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *	See the GNU Lesser General Public License for more details.
  *
  *	You should have received a copy of the GNU Lesser General Public
  *	License along with qpOASES; if not, write to the Free Software
- *	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ *	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *
  */
 
 
 /**
- *	\file examples/example1_qore.cpp
- *	\example example1_qore
- *	\brief Example for the qpOASES main function using the QProblemQore class.
+ *	\file examples/example1_qore_wrapper.cpp
+ *	\example example1_qore_wrapper.cpp
+ *	\brief Example of solving a very simple QP with qpOASES using the 
+ *	QProblemQore class. The QP is mathematically identical to that in 
+ *	'example1'.
  *	\author Christian Hoffmann
  *	\date 2016-2017
- *
- *	Variant of example1 using the QProblemQore class instead of QProblem.
  */
 
 
@@ -41,10 +41,10 @@ int main( )
 {
 	USING_NAMESPACE_QPOASES
 
+	/* Setup data of QP. */
 	int_t const nv = 2; // number of variables
 	int_t const nc = 1; // number of constraints
 	
-	/* Setup data of QP. */
 	real_t H[nv*nv] = { 1.0, 0.0, 0.0, 0.5 };
 	real_t A[nc*nv] = { 1.0, 1.0 };
 	real_t g[nv] = { 1.5, 1.0 };
@@ -60,32 +60,34 @@ int main( )
 	real_t lbA_new[nc] = { -2.0 };
 	real_t ubA_new[nc] = { 1.0 };
 
+	
 	/* Setting up QProblem object. */
 	QProblemQore example( nv, nc );
 
 	Options options;
-	example.setOptions( options );
+	example.setOptions( options ); // has no effect, only for compatibility with QProblem
 
 	/* Solve first QP. */
-	int_t nWSR = 10;
+	int_t nWSR = 10; // is ignored, only for compatibility with QProblem
 	example.init( H, g, A, lb, ub, lbA, ubA, nWSR );
 
 	/* Get and print solution of QP. */
-	real_t xOpt[nv] = {-42,-42};
-	real_t yOpt[nv+nc] = {-42,-42,-42};
+	real_t xOpt[nv];
+	real_t yOpt[nv+nc];
 	example.getPrimalSolution( xOpt );
 	example.getDualSolution( yOpt );
-	printf( "\nxOpt = [ %e, %e ];  yOpt = [ %e, %e, %e ];  objVal = %e\n\n",  xOpt[0], xOpt[1], yOpt[0], yOpt[1], yOpt[2], example.getObjVal() );
+	printf( "\nxOpt = [ %e, %e ]; yOpt = [ %e, %e, %e ]; objVal = %e\n\n", 
+			xOpt[0], xOpt[1], yOpt[0], yOpt[1], yOpt[2], example.getObjVal() );
 	
 	/* Solve second QP. */
-// 	nWSR = 10;
-// 	example.hotstart( g_new, lb_new, ub_new, lbA_new, ubA_new, nWSR );
+	nWSR = 10; // is ignored, only for compatibility with QProblem
+	example.hotstart( g_new, lb_new, ub_new, lbA_new, ubA_new, nWSR );
 
 	/* Get and print solution of second QP. */
-// 	example.getPrimalSolution( xOpt );
-// 	example.getDualSolution( yOpt );
-// 	printf( "\nxOpt = [ %e, %e ];  yOpt = [ %e, %e, %e ];  objVal = %e\n\n", 
-// 			xOpt[0],xOpt[1],yOpt[0],yOpt[1],yOpt[2],example.getObjVal() );
+	example.getPrimalSolution( xOpt );
+	example.getDualSolution( yOpt );
+	printf( "\nxOpt = [ %e, %e ]; yOpt = [ %e, %e, %e ]; objVal = %e\n\n", 
+			xOpt[0], xOpt[1], yOpt[0], yOpt[1], yOpt[2], example.getObjVal() );
 
 	example.printOptions();
 	/*example.printProperties();*/

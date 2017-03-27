@@ -24,11 +24,13 @@
 
 
 /**
- *	\file examples/example1b_qore.cpp
+ *	\file examples/example1b_qore_wrapper.cpp
+ *	\example example1b_qore_wrapper.cpp
+ *	\brief Example of solving a simple bound-constrained QP with qpOASES using 
+ *	the QProblemQore class. The QP is mathematically identical to that in 
+ *	'example1b'.
  *	\author Christian Hoffmann
  *	\date 2016-2017
- *
- *	Variant of example1b using the QProblemQore class instead of QProblemB.
  */
 
 
@@ -40,10 +42,10 @@ int main( )
 {
 	USING_NAMESPACE_QPOASES
 
+	/* Setup data of first QP. */
 	int_t const nv = 2; // number of variables
 	int_t const nc = 0; // number of constraints
 	
-	/* Setup data of first QP. */
 	real_t H[nv*nv] = { 1.0, 0.0, 0.0, 0.5 };
 	real_t g[nv] = { 1.5, 1.0 };
 	real_t lb[nv] = { 0.5, -2.0 };
@@ -54,30 +56,32 @@ int main( )
 	real_t lb_new[nv] = { 0.0, -1.0 };
 	real_t ub_new[nv] = { 5.0, -0.5 };
 
+	
 	/* Setting up QProblemB object. */
 	QProblemQore example( nv, nc );
 
+	/* Setting up QP solver options */
 	Options options;
 	//options.enableFlippingBounds = BT_FALSE;
-// 	options.initialStatusBounds = ST_INACTIVE;
-// 	options.numRefinementSteps = 1;
-// 	options.enableCholeskyRefactorisation = 1;
-	example.setOptions( options );
+	options.initialStatusBounds = ST_INACTIVE;
+	options.numRefinementSteps = 1;
+	options.enableCholeskyRefactorisation = 1;
+	example.setOptions( options ); // has no effect, only for compatibility with QProblem(B)
 
+	
 	/* Solve first QP. */
-	int_t nWSR = 10;
+	int_t nWSR = 10; // is ignored, only for compatibility with QProblem(B)
 	example.init( H, g, lb, ub, nWSR );
 
 	/* Get and print solution of first QP. */
 	real_t xOpt[2];
 	example.getPrimalSolution( xOpt );
-	printf( "\nxOpt = [ %e, %e ]\n\n", xOpt[0], xOpt[1] );
-// 	printf( "\nxOpt = [ %e, %e ];  objVal = %e\n\n", xOpt[0], xOpt[1], example.getObjVal() );
+	printf( "\nxOpt = [ %e, %e ];  objVal = %e\n\n", xOpt[0], xOpt[1], example.getObjVal() );
 	
 	/* Solve second QP. */
-	nWSR = 10;
+	nWSR = 10; // is ignored, only for compatibility with QProblem(B)
 	example.hotstart( g_new, lb_new, ub_new, nWSR, 0 );
-	printf( "\nnWSR = %d\n\n", nWSR );
+// 	printf( "\nnWSR = %d\n\n", nWSR );
 
 	/* Get and print solution of second QP. */
 	example.getPrimalSolution( xOpt );

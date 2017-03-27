@@ -222,7 +222,45 @@ QProblemQore::hotstart(	const real_t* const _g_new,
 
 
 returnValue 
-QProblemQore::getPrimalSolution( real_t* const xOpt ) const
+QProblemQore::hotstart(	const real_t* const _g_new,
+			const real_t* const _lb_new, const real_t* const _ub_new,
+			const real_t* const _lbA_new, const real_t* const _ubA_new,
+			int_t&, real_t* const, const Bounds* const, const Constraints* const 
+) 
+{
+	// check preconditions
+	assert( _g_new != 0 );
+	assert( _lb_new != 0 );
+	assert( _ub_new != 0 );
+	assert( _lbA_new != 0 );
+	assert( _ubA_new != 0 );
+
+	// check invariants
+	assert( pproblem != 0 );
+	assert( nV > 0 );
+	assert( nC >= 0 );
+
+	// create (nV+nC) arrays of bounds to variables AND constraints: [x ; A'*x]
+	real_t * const lb = (real_t *) malloc( sizeof(real_t)*(nV+nC) ); // lower bounds
+	assert( lb != 0 );
+	memcpy( lb, _lb_new, nV*sizeof(real_t) );
+	memcpy( lb+nV, _lbA_new, nC*sizeof(real_t) );
+	real_t * const ub = (real_t *) malloc( sizeof(real_t)*(nV+nC) ); // upper bounds
+	assert( ub != 0 );
+	memcpy( ub, _ub_new, nV*sizeof(real_t) );
+	memcpy( ub+nV, _ubA_new, nC*sizeof(real_t) );
+
+	qp_int const rv = QPOptimize( pproblem, lb, ub, _g_new, 0, 0 );
+	assert( rv == QPSOLVER_OK );
+	
+	/// \todo check postconditions
+	return SUCCESSFUL_RETURN;
+}
+
+
+returnValue 
+QProblemQore::getPrimalSolution( real_t* const xOpt ) 
+const
 {
 	/// \todo check preconditions
 
@@ -236,7 +274,8 @@ QProblemQore::getPrimalSolution( real_t* const xOpt ) const
 
 
 returnValue 
-QProblemQore::getDualSolution( real_t* const yOpt ) const
+QProblemQore::getDualSolution( real_t* const yOpt ) 
+const
 {
 	/// \todo check preconditions
 
@@ -250,7 +289,8 @@ QProblemQore::getDualSolution( real_t* const yOpt ) const
 
 
 real_t 
-QProblemQore::getObjVal( ) const
+QProblemQore::getObjVal( ) 
+const
 {
 	/// \todo implement
 	return NAN;
