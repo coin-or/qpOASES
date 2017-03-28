@@ -40,7 +40,7 @@
 
 #include <qpOASES/Options.hpp>
 #include <qpOASES/Matrices.hpp>
-#include <qpOASES/QProblemB.hpp> // FIXME overkill, just included for declaration of 'Bounds' type
+#include <qpOASES/QProblemB.hpp> // required only for declaration of 'Bounds'
 
 extern "C" { 
 	#include <qpsolver.h>
@@ -94,32 +94,41 @@ class QProblemQore
 
 
 		/** \brief Initialises a bound-constrained QP and tries to solve it.
-		 *  \pre `_H != 0`
-		 *  \pre `_g != 0`
-		 *  \pre `_lb != 0`
-		 *  \pre `_ub != 0`
+		 *  \pre `H != 0`
+		 *  \pre `g != 0`
+		 *  \pre `lb != 0`
+		 *  \pre `ub != 0`
+		 *  \note Arguments 5 to 10 are ignored. They are accepted only to ensure 
+		 *  compatibility with the corresponding method of QProblem(B).
 		 *  \attention Only minimalistic error handling implemented. On success, the method returns
 		 *  SUCCESSFUL_RETURN. If any error occurrs in the method itself or in underlying QORE 
-		 *  imeplementation, execution is terminated due to a violated assertion (in debug mode) 
+		 *  implementation, execution is terminated due to a violated assertion (in debug mode) 
 		 *  or continues, possibly causing undefined behavior (in release mode).
 		 *	\return SUCCESSFUL_RETURN
 		 */
-		returnValue init(	const real_t* const _H, 	/**< Hessian matrix (a deep copy is made). \n
-															 If Hessian matrix is trivial, a NULL pointer can be passed. */
-							const real_t* const _g,		/**< Gradient vector. */
-							const real_t* const _lb,	/**< Lower bounds (on variables). \n
-															 If no lower bounds exist, a NULL pointer can be passed. */
-							const real_t* const _ub,	/**< Upper bounds (on variables). \n
-															 If no upper bounds exist, a NULL pointer can be passed. */
-							int_t& nWSR 				/**< ignored, implemented only for compatibility with QProblem and QProblemB */
+		returnValue init(	const real_t* const H, 				/**< Hessian matrix (a deep copy is made). \n
+																	If Hessian matrix is trivial, a NULL pointer can be passed. */
+							const real_t* const g,				/**< Gradient vector. */
+							const real_t* const lb,				/**< Lower bounds (on variables). \n
+																	If no lower bounds exist, a NULL pointer can be passed. */
+							const real_t* const ub,				/**< Upper bounds (on variables). \n
+																	If no upper bounds exist, a NULL pointer can be passed. */
+							int_t &,	 						/**< ignored, implemented only for compatibility with QProblem and QProblemB */
+				 			real_t * const = 0,					/**< ignored, implemented only for compatibility with QProblem and QProblemB */
+							const real_t * const = 0,			/**< ignored, implemented only for compatibility with QProblem and QProblemB */
+							const real_t * const = 0,			/**< ignored, implemented only for compatibility with QProblem and QProblemB */
+							const Bounds * const = 0,			/**< ignored, implemented only for compatibility with QProblem and QProblemB */
+							const real_t * const _R = 0			/**< ignored, implemented only for compatibility with QProblem and QProblemB */
 							);
 
 		
 		/** \brief Solves an initialised bound-constrained QP sequence using the online active set strategy.
 		 *	The QP solution is started from previous solution, if available.
+		 *  \note Arguments 4 to 6 are ignored. They are accepted only to ensure 
+		 *  compatibility with the corresponding method of QProblem(B).
 		 *  \attention Only minimalistic error handling implemented. On success, the method returns
 		 *  SUCCESSFUL_RETURN. If any error occurrs in the method itself or in underlying QORE 
-		 *  imeplementation, execution is terminated due to a violated assertion (in debug mode) 
+		 *  implementation, execution is terminated due to a violated assertion (in debug mode) 
 		 *  or continues, possibly causing undefined behavior (in release mode).
 		 *	\return SUCCESSFUL_RETURN 
 		 */
@@ -128,9 +137,9 @@ class QProblemQore
 													 						 If no lower bounds exist, a NULL pointer can be passed. */
 								const real_t* const ub_new,				/**< Upper bounds of neighbouring QP to be solved. \n
 													 						 If no upper bounds exist, a NULL pointer can be passed. */
-								int_t& nWSR,							/**< ignored, implemented only for compatibility with QProblem and QProblemB */
-								real_t* const cputime = 0,				/**< ignored, implemented only for compatibility with QProblem and QProblemB */
-								const Bounds* const guessedBounds = 0	/**< ignored, implemented only for compatibility with QProblem and QProblemB */
+								int_t &,								/**< ignored, implemented only for compatibility with QProblem and QProblemB */
+								real_t * const = 0,						/**< ignored, implemented only for compatibility with QProblem and QProblemB */
+								const Bounds * const = 0				/**< ignored, implemented only for compatibility with QProblem and QProblemB */
 								);
 
 		
@@ -142,33 +151,42 @@ class QProblemQore
 		 *  \pre `_ub != 0`
 		 *  \pre `_lbA != 0`
 		 *  \pre `_ubA != 0`
+		 *  \note Arguments 8 to 14 are ignored. They are accepted only to ensure 
+		 *  compatibility with the corresponding method of QProblem(B).
 		 *  \attention Only minimalistic error handling implemented. On success, the method returns
 		 *  SUCCESSFUL_RETURN. If any error occurrs in the method itself or in underlying QORE 
-		 *  imeplementation, execution is terminated due to a violated assertion (in debug mode) 
+		 *  implementation, execution is terminated due to a violated assertion (in debug mode) 
 		 *  or continues, possibly causing undefined behavior (in release mode).
 		 *  \return SUCCESSFUL_RETURN 
 		 */
-		returnValue init(	const real_t* const _H,		/**< Hessian matrix (a deep copy is made). */
-							const real_t* const _g,		/**< Gradient vector. */
-							const real_t* const _A,		/**< Constraint matrix (a deep copy is made). */
-							const real_t* const _lb,	/**< Lower bound vector (on variables). \n
-															 If no lower bounds exist, a NULL pointer can be passed. */
-							const real_t* const _ub,	/**< Upper bound vector (on variables). \n
-															 If no upper bounds exist, a NULL pointer can be passed. */
-							const real_t* const _lbA,	/**< Lower constraints' bound vector. \n
-															 If no lower constraints' bounds exist, a NULL pointer can be passed. */
-							const real_t* const _ubA,	/**< Upper constraints' bound vector. \n
-															 If no lower constraints' bounds exist, a NULL pointer can be passed. */
-							int_t& nWSR					/**< Input: Maximum number of working set recalculations when using initial homotopy.
-															 Output: Number of performed working set recalculations. */
+		returnValue init(	const real_t* const _H,							/**< Hessian matrix (a deep copy is made). */
+							const real_t* const _g,							/**< Gradient vector. */
+							const real_t* const _A,							/**< Constraint matrix (a deep copy is made). */
+							const real_t* const _lb,						/**< Lower bound vector (on variables). \n
+																				If no lower bounds exist, a NULL pointer can be passed. */
+							const real_t* const _ub,						/**< Upper bound vector (on variables). \n
+																				If no upper bounds exist, a NULL pointer can be passed. */
+							const real_t* const _lbA,						/**< Lower constraints' bound vector. \n
+																				If no lower constraints' bounds exist, a NULL pointer can be passed. */
+							const real_t* const _ubA,						/**< Upper constraints' bound vector. \n
+																				If no lower constraints' bounds exist, a NULL pointer can be passed. */
+							int_t& ,										/**< ignored, implemented only for compatibility with QProblem and QProblemB */
+							real_t* const  = 0,								/**< ignored, implemented only for compatibility with QProblem and QProblemB */
+							const real_t* const = 0,						/**< ignored, implemented only for compatibility with QProblem and QProblemB */
+							const real_t* const = 0,						/**< ignored, implemented only for compatibility with QProblem and QProblemB */
+							const Bounds* const = 0,						/**< ignored, implemented only for compatibility with QProblem and QProblemB */
+							const Constraints* const  = 0,					/**< ignored, implemented only for compatibility with QProblem and QProblemB */
+							const real_t* const = 0							/**< ignored, implemented only for compatibility with QProblem and QProblemB */
 							);
 
 		
 		/** \brief Solves an initialised QP sequence using the online active set strategy.
 		 *	The QP solution is started from previous solution, if available.
+		 *  \note Arguments 6 to 9 are ignored. They are accepted only to ensure 
+		 *  compatibility with the corresponding method of QProblem(B).
 		 *  \attention Only minimalistic error handling implemented. On success, the method returns
 		 *  SUCCESSFUL_RETURN. If any error occurrs in the method itself or in underlying QORE 
-		 *  imeplementation, execution is terminated due to a violated assertion (in debug mode) 
+		 *  implementation, execution is terminated due to a violated assertion (in debug mode) 
 		 *  or continues, possibly causing undefined behavior (in release mode).
 		 *	\return SUCCESSFUL_RETURN 
 		 */
@@ -181,21 +199,17 @@ class QProblemQore
 													 							 	 If no lower constraints' bounds exist, a NULL pointer can be passed. */
 								const real_t* const ubA_new,					/**< Upper constraints' bounds of neighbouring QP to be solved. \n
 													 							 	 If no upper constraints' bounds exist, a NULL pointer can be passed. */
-								int_t& nWSR,									/**< Input: Maximum number of working set recalculations; \n
-																			 		 Output: Number of performed working set recalculations. */
-								real_t* const cputime = 0,						/**< Input: Maximum CPU time allowed for QP solution. \n
-																				 	 Output: CPU time spent for QP solution (or to perform nWSR iterations). */
-								const Bounds* const guessedBounds = 0,			/**< Optimal working set of bounds for solution (xOpt,yOpt). \n
-																					 (If a null pointer is passed, the previous working set of bounds is kept!) */
-								const Constraints* const guessedConstraints = 0	/**< Optimal working set of constraints for solution (xOpt,yOpt). \n
-																					 (If a null pointer is passed, the previous working set of constraints is kept!) */
+								int_t &,										/**< ignored, implemented only for compatibility with QProblem and QProblemB */
+								real_t* const = 0,								/**< ignored, implemented only for compatibility with QProblem and QProblemB */
+								const Bounds* const = 0,						/**< ignored, implemented only for compatibility with QProblem and QProblemB */
+								const Constraints* const = 0					/**< ignored, implemented only for compatibility with QProblem and QProblemB */
 								);
 
 		
 		/** \brief Returns the primal solution vector (deep copy).
 		 *  \attention Only minimalistic error handling implemented. On success, the method returns
 		 *  SUCCESSFUL_RETURN. If any error occurrs in the method itself or in underlying QORE 
-		 *  imeplementation, execution is terminated due to a violated assertion (in debug mode) 
+		 *  implementation, execution is terminated due to a violated assertion (in debug mode) 
 		 *  or continues, possibly causing undefined behavior (in release mode).
 		 *	\return SUCCESSFUL_RETURN 
 		 */
@@ -206,7 +220,7 @@ class QProblemQore
 		/** \brief Returns the dual solution vector (deep copy).
 		 *  \attention Only minimalistic error handling implemented. On success, the method returns
 		 *  SUCCESSFUL_RETURN. If any error occurrs in the method itself or in underlying QORE 
-		 *  imeplementation, execution is terminated due to a violated assertion (in debug mode) 
+		 *  implementation, execution is terminated due to a violated assertion (in debug mode) 
 		 *  or continues, possibly causing undefined behavior (in release mode).
 		 *	\return SUCCESSFUL_RETURN
 		 */

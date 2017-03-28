@@ -85,12 +85,13 @@ QProblemQore::printOptions( ) const
 
 
 returnValue 
-QProblemQore::init(	const real_t* const _H,
-					const real_t* const _g,
-					const real_t* const _lb,
-					const real_t* const _ub,
-					int_t& nWSR
-){
+QProblemQore::init(	const real_t* const _H, const real_t* const _g,
+					const real_t* const _lb, const real_t* const _ub,
+					int_t &, real_t* const, const real_t * const,
+					const real_t * const, const Bounds * const,
+					const real_t * const _R
+)
+{
 	// check preconditions
 	assert( _H != 0 );
 	assert( _g != 0 );
@@ -132,11 +133,8 @@ QProblemQore::init(	const real_t* const _H,
 
 returnValue 
 QProblemQore::hotstart(	const real_t* const _g_new,
-						const real_t* const _lb_new,
-						const real_t* const _ub_new,
-						int_t & nWSR,
-						real_t* const,
-						const Bounds* const
+						const real_t* const _lb_new, const real_t* const _ub_new,
+						int_t & nWSR, real_t * const, const Bounds * const
 ) {
 	/// \todo check preconditions
 	
@@ -149,14 +147,13 @@ QProblemQore::hotstart(	const real_t* const _g_new,
 
 
 returnValue 
-QProblemQore::init(	const real_t* const _H,
-					const real_t* const _g,
+QProblemQore::init(	const real_t* const _H, const real_t* const _g,
 					const real_t* const _A,
-					const real_t* const _lb,
-					const real_t* const _ub,
-					const real_t* const _lbA,
-					const real_t* const _ubA,
-					int_t& 
+					const real_t* const _lb, const real_t* const _ub,
+					const real_t* const _lbA, const real_t* const _ubA,
+					int_t&, real_t* const, const real_t* const, 
+					const real_t* const, const Bounds* const, 
+					const Constraints* const, const real_t* const
 ){
 	// check preconditions
 	assert( _H != 0 );
