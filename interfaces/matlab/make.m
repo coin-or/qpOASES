@@ -40,7 +40,7 @@ function [] = make( varargin )
 %%	Filename:  interfaces/matlab/make.m
 %%	Author:    Hans Joachim Ferreau, Andreas Potschka, Christian Kirches
 %%	Version:   3.2
-%%	Date:      2007-2015
+%%	Date:      2007-2017
 %%
 
        
@@ -65,13 +65,13 @@ function [] = make( varargin )
     %DEBUGFLAGS = ' -v -g CXXDEBUGFLAGS=''$CXXDEBUGFLAGS -Wall -pedantic -Wshadow'' ';
 
     IFLAGS = [ '-I. -I',QPOASESPATH,'include',' -I',QPOASESPATH,'src',' ' ];
-    CPPFLAGS = [ IFLAGS, DEBUGFLAGS, '-largeArrayDims -D__cpluplus -D__MATLAB__ -D__SINGLE_OBJECT__ -lmwblas',' ' ];
+    CPPFLAGS = [ IFLAGS, DEBUGFLAGS, '-largeArrayDims -D__cpluplus -D__MATLAB__ -D__SINGLE_OBJECT__',' ' ];
     defaultFlags = '-O -D__NO_COPYRIGHT__ '; %% -D__SUPPRESSANYOUTPUT__
 
     if ( ispc() == 0 )
         CPPFLAGS = [ CPPFLAGS, '-DLINUX -lmwblas',' ' ];
     else
-        CPPFLAGS = [ CPPFLAGS, '-DWIN32',' ' ]; %-L"',matlabroot,filesep,'bin',filesep,computer('arch'), '"
+        CPPFLAGS = [ CPPFLAGS, '-DWIN32',' ' ];
     end
 
     if ( isempty(userFlags) > 0 )
@@ -235,7 +235,7 @@ function [ ] = printCopyrightNotice( )
 
     disp( ' ' );
     disp( 'qpOASES -- An Implementation of the Online Active Set Strategy.' );
-    disp( 'Copyright (C) 2007-2015 by Hans Joachim Ferreau, Andreas Potschka,' );
+    disp( 'Copyright (C) 2007-2017 by Hans Joachim Ferreau, Andreas Potschka,' );
     disp( 'Christian Kirches et al. All rights reserved.' );
     disp( ' ' );
     disp( 'qpOASES is distributed under the terms of the' );
