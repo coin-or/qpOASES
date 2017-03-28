@@ -54,8 +54,8 @@ CP       = cp
 ##	flags
 ##
 
-CFLAGS   = -I$(PATH_QPOASES_INC) -I$(PATH_QPOASES_SRC) -Wall -pedantic -Wshadow -O3 -finline-functions -fPIC
-CPPFLAGS = -I$(PATH_QPOASES_INC) -I$(PATH_QPOASES_SRC) -Wall -pedantic -Wshadow -O3 -finline-functions -fPIC -DLINUX -D__SCILAB__ -D__SINGLE_OBJECT__ 
+CFLAGS   = -I$(PATH_QPOASES_INC) -I$(PATH_QPOASES_SRC) -Wall -pedantic -Wshadow -O3 -fPIC
+CPPFLAGS = -I$(PATH_QPOASES_INC) -I$(PATH_QPOASES_SRC) -Wall -pedantic -Wshadow -O3 -fPIC -DLINUX -D__SCILAB__ -D__SINGLE_OBJECT__ 
 LDFLAGS  = -shared
 LIBEXT   = .so
 
