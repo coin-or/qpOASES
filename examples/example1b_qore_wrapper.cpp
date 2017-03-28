@@ -33,7 +33,7 @@
  *	\date 2016-2017
  */
 
-
+#include <stdlib.h>
 #include <qpOASES.hpp>
 
 

@@ -43,12 +43,6 @@ extern "C" {
 
 BEGIN_NAMESPACE_QPOASES
 
-/// \todo Internally calls QORE's QPNew(), which dynamically allocates memory 
-/// and may thus fail unpredictably.  The proper way of dealing with a failed 
-/// allocation in the constructor would be to throw an exception, but 
-/// exceptions are currently not used in qpOASES. We currently rely on 
-/// assertions instead. A failed allocation thus leads to an immediate program 
-/// termination!
 QProblemQore::QProblemQore ( int_t _nV, int_t _nC ) : pproblem(0), nV(_nV), nC(_nC)
 {
 	// check preconditions 
@@ -57,21 +51,27 @@ QProblemQore::QProblemQore ( int_t _nV, int_t _nC ) : pproblem(0), nV(_nV), nC(_
 	
 	qp_int const rv = QPNew( &pproblem, _nV, _nC, 0, 0 );
 	assert( rv == QPSOLVER_OK );
-	assert( pproblem != 0 );
 	
-	/// \todo check postconditions
+	// check invariants
+	assert( nV >= 1 );
+	assert( nC >= 0 );
+	assert( pproblem != 0 );
 }
 
 
 QProblemQore::~QProblemQore( ) 
 {
+	// check invariants
+	assert( nV >= 1 );
+	assert( nC >= 0 );
+	assert( pproblem != 0 );
+
 	QPFree( &pproblem );
-	assert( pproblem == 0 );
 }
 
 
 returnValue 
-QProblemQore::setOptions( const Options & _options )
+QProblemQore::setOptions( const Options & )
 {
 	return SUCCESSFUL_RETURN;
 }
@@ -92,17 +92,17 @@ QProblemQore::init(	const real_t* const _H, const real_t* const _g,
 					const real_t * const _R
 )
 {
+	// check invariants
+	assert( pproblem != 0 );
+	assert( nV > 0 );
+	assert( nC >= 0 );
+
 	// check preconditions
 	assert( _H != 0 );
 	assert( _g != 0 );
 	assert( _lb != 0 );
 	assert( _ub != 0 );
 	
-	// check invariants
-	assert( pproblem != 0 );
-	assert( nV > 0 );
-	assert( nC >= 0 );
-
 	// convert Hessian matrix to csr format
 	qp_int * Hri = 0;
 	qp_int * Hcp = 0;
@@ -125,8 +125,11 @@ QProblemQore::init(	const real_t* const _H, const real_t* const _g,
 	rv = QPOptimize( pproblem, _lb, _ub, _g, 0, 0 );
 	assert( rv == QPSOLVER_OK );
 
-	/// \todo check postconditions
-	
+	// check invariants
+	assert( pproblem != 0 );
+	assert( nV > 0 );
+	assert( nC >= 0 );
+
 	return SUCCESSFUL_RETURN;
 }
 
@@ -136,12 +139,25 @@ QProblemQore::hotstart(	const real_t* const _g_new,
 						const real_t* const _lb_new, const real_t* const _ub_new,
 						int_t & nWSR, real_t * const, const Bounds * const
 ) {
-	/// \todo check preconditions
+	// check invariants
+	assert( pproblem != 0 );
+	assert( nV > 0 );
+	assert( nC >= 0 );
+
+	// check preconditions
+	assert( _g_new != 0 );
+	assert( _lb_new != 0 );
+	assert( _ub_new != 0 );
+	
 	
 	qp_int const rv = QPOptimize( pproblem, _lb_new, _ub_new, _g_new, 0, 0 );
 	assert( rv == QPSOLVER_OK );
 	
-	/// \todo check postconditions
+	// check invariants
+	assert( pproblem != 0 );
+	assert( nV > 0 );
+	assert( nC >= 0 );
+
 	return SUCCESSFUL_RETURN;
 }
 
@@ -155,6 +171,11 @@ QProblemQore::init(	const real_t* const _H, const real_t* const _g,
 					const real_t* const, const Bounds* const, 
 					const Constraints* const, const real_t* const
 ){
+	// check invariants
+	assert( pproblem != 0 );
+	assert( nV > 0 );
+	assert( nC >= 0 );
+
 	// check preconditions
 	assert( _H != 0 );
 	assert( _g != 0 );
@@ -164,11 +185,6 @@ QProblemQore::init(	const real_t* const _H, const real_t* const _g,
 	assert( _lbA != 0 );
 	assert( _ubA != 0 );
 
-	// check invariants
-	assert( pproblem != 0 );
-	assert( nV > 0 );
-	assert( nC >= 0 );
-
 	// convert Hessian matrix to csr format
 	qp_int * Hcp = 0;
 	qp_int * Hri = 0;
@@ -176,8 +192,6 @@ QProblemQore::init(	const real_t* const _H, const real_t* const _g,
 	matrix_dense_to_csc( nV, nV, _H, &Hcp, &Hri, &Hnz );
 
     // convert constraint matrix to csc format and transpose (as required by QORE)
-	// TODO with matrix_dense_to_csc_trans() we get a valgrind hit, yet none 
-	// with matrix_dense_to_csc()... error in the former?
 	qp_int * Atcp = 0;
 	qp_int * Atri = 0;
 	real_t * Atnz = 0;
@@ -215,8 +229,11 @@ QProblemQore::init(	const real_t* const _H, const real_t* const _g,
 	free(lb);
 	free(ub);
 	
-	/// \todo check postconditions
-	
+	// check invariants
+	assert( pproblem != 0 );
+	assert( nV > 0 );
+	assert( nC >= 0 );
+
 	return SUCCESSFUL_RETURN;
 }	
 
@@ -228,17 +245,17 @@ QProblemQore::hotstart(	const real_t* const _g_new,
 			int_t&, real_t* const, const Bounds* const, const Constraints* const 
 ) 
 {
+	// check invariants
+	assert( pproblem != 0 );
+	assert( nV > 0 );
+	assert( nC >= 0 );
+
 	// check preconditions
 	assert( _g_new != 0 );
 	assert( _lb_new != 0 );
 	assert( _ub_new != 0 );
 	assert( _lbA_new != 0 );
 	assert( _ubA_new != 0 );
-
-	// check invariants
-	assert( pproblem != 0 );
-	assert( nV > 0 );
-	assert( nC >= 0 );
 
 	// create (nV+nC) arrays of bounds to variables AND constraints: [x ; A'*x]
 	real_t * const lb = (real_t *) malloc( sizeof(real_t)*(nV+nC) ); // lower bounds
@@ -253,7 +270,14 @@ QProblemQore::hotstart(	const real_t* const _g_new,
 	qp_int const rv = QPOptimize( pproblem, lb, ub, _g_new, 0, 0 );
 	assert( rv == QPSOLVER_OK );
 	
-	/// \todo check postconditions
+	free(lb);
+	free(ub);
+	
+	// check invariants
+	assert( pproblem != 0 );
+	assert( nV > 0 );
+	assert( nC >= 0 );
+
 	return SUCCESSFUL_RETURN;
 }
 
@@ -262,12 +286,19 @@ returnValue
 QProblemQore::getPrimalSolution( real_t* const xOpt ) 
 const
 {
-	/// \todo check preconditions
+	// check invariants
+	assert( pproblem != 0 );
+	assert( nV > 0 );
+	assert( nC >= 0 );
 
+	// check preconditions
+	assert( xOpt != 0 );
+	
 	qp_int rv = QPGetDblVector( pproblem, "primalsol", xOpt );
 	assert( rv == QPSOLVER_OK );
 
-	/// \todo check postconditions
+	// check postconditions
+	assert( xOpt != 0 );
 
 	return SUCCESSFUL_RETURN;
 }	
@@ -277,12 +308,19 @@ returnValue
 QProblemQore::getDualSolution( real_t* const yOpt ) 
 const
 {
-	/// \todo check preconditions
+	// check invariants
+	assert( pproblem != 0 );
+	assert( nV > 0 );
+	assert( nC >= 0 );
+
+	// check preconditions
+	assert( yOpt != 0 );
 
 	qp_int rv = QPGetDblVector( pproblem, "dualsol", yOpt );
 	assert( rv == QPSOLVER_OK );
 
-	/// \todo check postconditions
+	// check postconditions
+	assert( yOpt != 0 );
 
 	return SUCCESSFUL_RETURN;
 }	
