@@ -52,7 +52,7 @@ BEGIN_NAMESPACE_QPOASES
 QProblemQore::QProblemQore ( int_t _nV, int_t _nC ) : pproblem(0), nV(_nV), nC(_nC)
 {
 	// check preconditions 
-	assert( _nV > 1 );
+	assert( _nV >= 1 );
 	assert( _nC >= 0 );
 	
 	qp_int const rv = QPNew( &pproblem, _nV, _nC, 0, 0 );
@@ -73,7 +73,6 @@ QProblemQore::~QProblemQore( )
 returnValue 
 QProblemQore::setOptions( const Options & _options )
 {
-	/// \todo implement
 	return SUCCESSFUL_RETURN;
 }
 
@@ -81,7 +80,6 @@ QProblemQore::setOptions( const Options & _options )
 returnValue 
 QProblemQore::printOptions( ) const
 {
-	/// \todo implement
 	return SUCCESSFUL_RETURN;
 }	
 
@@ -99,6 +97,11 @@ QProblemQore::init(	const real_t* const _H,
 	assert( _lb != 0 );
 	assert( _ub != 0 );
 	
+	// check invariants
+	assert( pproblem != 0 );
+	assert( nV > 0 );
+	assert( nC >= 0 );
+
 	// convert Hessian matrix to csr format
 	qp_int * Hri = 0;
 	qp_int * Hcp = 0;
@@ -123,6 +126,24 @@ QProblemQore::init(	const real_t* const _H,
 
 	/// \todo check postconditions
 	
+	return SUCCESSFUL_RETURN;
+}
+
+
+returnValue 
+QProblemQore::hotstart(	const real_t* const _g_new,
+						const real_t* const _lb_new,
+						const real_t* const _ub_new,
+						int_t & nWSR,
+						real_t* const,
+						const Bounds* const
+) {
+	/// \todo check preconditions
+	
+	qp_int const rv = QPOptimize( pproblem, _lb_new, _ub_new, _g_new, 0, 0 );
+	assert( rv == QPSOLVER_OK );
+	
+	/// \todo check postconditions
 	return SUCCESSFUL_RETURN;
 }
 
@@ -205,24 +226,6 @@ QProblemQore::init(	const real_t* const _H,
 
 returnValue 
 QProblemQore::hotstart(	const real_t* const _g_new,
-						const real_t* const _lb_new,
-						const real_t* const _ub_new,
-						int_t & nWSR,
-						real_t* const cputime,
-						const Bounds* const guessedBounds
-) {
-	/// \todo check preconditions
-	
-	qp_int const rv = QPOptimize( pproblem, _lb_new, _ub_new, _g_new, 0, 0 );
-	assert( rv == QPSOLVER_OK );
-	
-	/// \todo check postconditions
-	return SUCCESSFUL_RETURN;
-}
-
-
-returnValue 
-QProblemQore::hotstart(	const real_t* const _g_new,
 			const real_t* const _lb_new, const real_t* const _ub_new,
 			const real_t* const _lbA_new, const real_t* const _ubA_new,
 			int_t&, real_t* const, const Bounds* const, const Constraints* const 
@@ -292,7 +295,6 @@ real_t
 QProblemQore::getObjVal( ) 
 const
 {
-	/// \todo implement
 	return NAN;
 }	
 

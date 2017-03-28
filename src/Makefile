@@ -38,12 +38,6 @@ include ../make.mk
 IFLAGS      =  -I. \
                -I${IDIR} \
                
-IFLAGS_QORE = -I${IDIR_QORE} \
-               -I${IDIR_QORE_SPMATRIX} \
-               -I${IDIR_QORE_QPCORE} \
-               -I${IDIR_QORE_KKTPACK} \
-               -I${IDIR_QORE_QPSOLVER}
-
 QPOASES_OBJECTS = \
 	SQProblem.${OBJEXT} \
 	QProblem.${OBJEXT} \
@@ -87,6 +81,12 @@ QPOASES_DEPENDS = \
 	${IDIR}/qpOASES/MessageHandling.hpp \
 	${IDIR}/qpOASES/UnitTesting.hpp
 	
+IFLAGS_QORE = -I${IDIR_QORE} \
+               -I${IDIR_QORE_SPMATRIX} \
+               -I${IDIR_QORE_QPCORE} \
+               -I${IDIR_QORE_KKTPACK} \
+               -I${IDIR_QORE_QPSOLVER}
+
 QPOASES_QORE_OBJECTS = \
 	QProblemQore.${OBJEXT} \
 	MatrixConversion.${OBJEXT}

@@ -27,6 +27,7 @@
  *	\author Hans Joachim Ferreau, Andreas Potschka, Christian Kirches
  *	\version 3.2
  *	\date 2007-2015
+ *	\todo Make QORE-related headers available also in non-default compilation modes
  */
 
 
@@ -65,11 +66,12 @@
 
 #include <qpOASES/QProblemB.hpp>
 #include <qpOASES/QProblem.hpp>
-#include <qpOASES/QProblemQore.hpp>
 #include <qpOASES/SQProblem.hpp>
 #include <qpOASES/SQProblemSchur.hpp>
-#include <qpOASES/MatrixConversion.hpp>
 #include <qpOASES/extras/OQPinterface.hpp>
 #include <qpOASES/extras/SolutionAnalysis.hpp>
+
+#include <qpOASES/MatrixConversion.hpp>
+#include <qpOASES/QProblemQore.hpp>
 
 #endif

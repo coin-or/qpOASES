@@ -27,7 +27,9 @@
  *	\author Christian Hoffmann
  *	\date 2016--2017
  *
- *	Function interfaces for converting between matrices in different formats.
+ *	\brief Declaration of global functions for conversion between matrices in different formats -- EXPERIMENTAL.
+ *	\attention UNDER CONSTRUCTION, not tested yet
+ *	
  */
 
 
@@ -38,9 +40,9 @@
 #include <qpOASES/Matrices.hpp>
 
 // FIXME temporary (chris)
-extern "C" {
-	#include <spmatrix.h>
-}
+// extern "C" {
+// 	#include <spmatrix.h>
+// }
 
 
 BEGIN_NAMESPACE_QPOASES
@@ -49,6 +51,7 @@ BEGIN_NAMESPACE_QPOASES
 /// Converts a sparse matrix in COO format (A) to CSR format (B).
 /// \author Christian Hoffmann
 /// \date 2016
+/// \attention UNDER CONSTRUCTION, not tested yet
 /// 
 /// Input row and column indices are not assumed to be ordered.
 /// Duplicate entries are carried over to the CSR represention.
@@ -74,6 +77,7 @@ void coo_to_csr(
 /// Converts a sparse matrix in COO format (A) to dense column-major format (B).
 /// \author Christian Hoffmann
 /// \date 2016
+/// \attention UNDER CONSTRUCTION, not tested yet
 /// 
 /// Input row and column indices are not assumed to be ordered.
 /// Duplicate entries overwrite predecessors.
@@ -92,6 +96,7 @@ void coo_to_dense(
 /// Converts a sparse matrix in CSR format (A) to dense column-major format (B).
 /// \author Christian Hoffmann
 /// \date 2016
+/// \attention UNDER CONSTRUCTION, not tested yet
 /// 
 /// The output array Bx must be preallocated.
 void csr_to_dense( 
@@ -108,6 +113,7 @@ void csr_to_dense(
 /**	\brief Convert sparse QORE matrix to sparse qpOASES matrix (deep copy).
  * 	\author Christian Hoffmann
  * 	\date 2016
+ * 	\attention UNDER CONSTRUCTION, not tested yet
  */
 // SparseMatrix fromQoreMatrix(
 // 	spmatrix const & /**< sparse matrix in QORE format */
@@ -117,6 +123,7 @@ void csr_to_dense(
 /**	\brief Convert sparse qpOASES matrix to sparse QORE matrix (deep copy).
  * 	\author Christian Hoffmann
  * 	\date 2016
+ * 	\attention UNDER CONSTRUCTION, not tested yet
  */
 // spmatrix * fromQpoasesMatrix(
 // 	Matrix const & /**< sparse matrix in qpOASES format */

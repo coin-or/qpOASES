@@ -137,7 +137,7 @@ SET(EXAMPLE_NAMES
     example5
     exampleLP
     qrecipe
-    qrecipeSchur
+	qrecipeSchur
 )
 
 FOREACH(ELEMENT ${EXAMPLE_NAMES})
@@ -145,18 +145,6 @@ FOREACH(ELEMENT ${EXAMPLE_NAMES})
     TARGET_LINK_LIBRARIES(${ELEMENT} qpOASES)
 ENDFOREACH(ELEMENT ${EXAMPLE_NAMES})
 
-
-############################################################
-######################### chris-temp #######################
-############################################################
-
-# SET( QORE_PATH "~/Science/QORE/Debug" )
-# FIND_LIBRARY(SPMATRIX spmatrix.a PATHS "${QORE_PATH}/lib64" )
-# add_library( mylib SHARED IMPORTED )
-
-# compile devel executables
-ADD_EXECUTABLE(example_chris examples/example_chris.cpp)
-TARGET_LINK_LIBRARIES(example_chris /home/chris/Science/QORE/Debug/lib64/libspmatrix.a qpOASES)
 
 ##
 ##   end of file
