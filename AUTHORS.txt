@@ -58,6 +58,7 @@ but have helped making qpOASES even more useful by testing, reporting
 bugs or proposing algorithmic improvements (in alphabetical order):
 
     Eckhard Arnold
+    Joris Gillis
     Boris Houska
     D. Kwame Minde Kufoalor
     Aude Perrin
