@@ -40,6 +40,7 @@ include/qpOASES/Constraints.ipp -text
 include/qpOASES/Flipper.hpp -text
 include/qpOASES/Indexlist.hpp -text
 include/qpOASES/Indexlist.ipp -text
+include/qpOASES/LapackBlasDeclarations.hpp -text
 include/qpOASES/Matrices.hpp -text
 include/qpOASES/MessageHandling.hpp -text
 include/qpOASES/MessageHandling.ipp -text

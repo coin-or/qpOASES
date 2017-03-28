@@ -34,6 +34,8 @@
 
 
 #include <qpOASES/QProblemB.hpp>
+#include <qpOASES/LapackBlasDeclarations.hpp>
+
 
 BEGIN_NAMESPACE_QPOASES
 

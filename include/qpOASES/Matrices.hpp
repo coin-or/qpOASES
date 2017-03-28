@@ -42,17 +42,6 @@
 #include <qpOASES/Indexlist.hpp>
 
 
-/*#if defined(__MATLAB__) && defined(WIN32)
-    #define sgemm_ sgemm
-    #define ssyr_ ssyr
-    #define ssyr2_ ssyr2
-    #define spotrf_ spotrf
-    #define dgemm_ dgemm
-    #define dsyr_ dsyr
-    #define dsyr2_ dsyr2
-    #define dpotrf_ dpotrf
-#endif*/ /* __MATLAB__ && WIN32 */
-
 #ifdef __USE_SINGLE_PRECISION__
 
 	/** Macro for calling level 3 BLAS operation in single precision. */
@@ -77,37 +66,6 @@
 
 #endif /* __USE_SINGLE_PRECISION__ */
 
-
-extern "C"
-{
-	/** Performs one of the matrix-matrix operation in double precision. */
-	void dgemm_ ( const char*, const char*, const unsigned long*, const unsigned long*, const unsigned long*,
-			const double*, const double*, const unsigned long*, const double*, const unsigned long*,
-			const double*, double*, const unsigned long* );
-	/** Performs one of the matrix-matrix operation in single precision. */
-	void sgemm_ ( const char*, const char*, const unsigned long*, const unsigned long*, const unsigned long*,
-			const float*, const float*, const unsigned long*, const float*, const unsigned long*,
-			const float*, float*, const unsigned long* );
-
-	/** Performs a symmetric rank 1 operation in double precision. */
-	void dsyr_ ( const char *, const unsigned long *, const double *, const double *,
-				 const unsigned long *, double *, const unsigned long *);
-	/** Performs a symmetric rank 1 operation in single precision. */
-	void ssyr_ ( const char *, const unsigned long *, const float *, const float *,
-				 const unsigned long *, float *, const unsigned long *);
-
-	/** Performs a symmetric rank 2 operation in double precision. */
-	void dsyr2_ ( const char *, const unsigned long *, const double *, const double *,
-				  const unsigned long *, const double *, const unsigned long *, double *, const unsigned long *);
-	/** Performs a symmetric rank 2 operation in single precision. */
-	void ssyr2_ ( const char *, const unsigned long *, const float *, const float *,
-				  const unsigned long *, const float *, const unsigned long *, float *, const unsigned long *);
-
-	/** Calculates the Cholesky factorization of a real symmetric positive definite matrix in double precision. */
-	void dpotrf_ ( const char *, const unsigned long *, double *, const unsigned long *, long * );
-	/** Calculates the Cholesky factorization of a real symmetric positive definite matrix in single precision. */
-	void spotrf_ ( const char *, const unsigned long *, float *, const unsigned long *, long * );
-}
 
 
 BEGIN_NAMESPACE_QPOASES
