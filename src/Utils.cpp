@@ -660,7 +660,7 @@ returnValue getKktViolation(	int_t nV, int_t nC,
 		else
 		{
 			if ( hasIdentityHessian == BT_TRUE )
-				for (j = 0; j < nV; j++) sum += x[j];
+				sum += x[i];
 		}
 
 		/* A'*y term */
