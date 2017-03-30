@@ -2,8 +2,8 @@
  *	This file is part of qpOASES.
  *
  *	qpOASES -- An Implementation of the Online Active Set Strategy.
- *
- *	Copyright (C) 2012 by Andreas Waechter. All rights reserved.
+ *	Copyright (C) 2007-2017 by Hans Joachim Ferreau, Andreas Potschka,
+ *	Christian Kirches et al. All rights reserved.
  *
  *	qpOASES is free software; you can redistribute it and/or
  *	modify it under the terms of the GNU Lesser General Public
@@ -60,18 +60,18 @@ class SparseSolver
 
 		/** Copy constructor (deep copy). */
 		SparseSolver(	const SparseSolver& rhs		/**< Rhs object. */
-					);
+						);
 
 		/** Destructor. */
 		virtual ~SparseSolver( );
 
 		/** Assignment operator (deep copy). */
 		virtual SparseSolver& operator=(	const SparseSolver& rhs	/**< Rhs object. */
-								);
+											);
 
 		/** Set new matrix data.  The matrix is to be provided
-		    in the Harwell-Boeing format.  Only the lower
-		    triangular part should be set. */
+			in the Harwell-Boeing format.  Only the lower
+			triangular part should be set. */
 		virtual returnValue setMatrixData( int_t dim,					/**< Dimension of the linear system. */
 										   int_t numNonzeros,			/**< Number of nonzeros in the matrix. */
 										   const int_t* const airn,		/**< Row indices for each matrix entry. */
@@ -140,18 +140,18 @@ class Ma27SparseSolver: public SparseSolver
 
 		/** Copy constructor (deep copy). */
 		Ma27SparseSolver(	const Ma27SparseSolver& rhs		/**< Rhs object. */
-					);
+							);
 
 		/** Destructor. */
 		virtual ~Ma27SparseSolver( );
 
 		/** Assignment operator (deep copy). */
 		virtual Ma27SparseSolver& operator=(	const SparseSolver& rhs	/**< Rhs object. */
-								);
+												);
 
 		/** Set new matrix data.  The matrix is to be provided
-		    in the Harwell-Boeing format.  Only the lower
-		    triangular part should be set. */
+			in the Harwell-Boeing format.  Only the lower
+			triangular part should be set. */
 		virtual returnValue setMatrixData( int_t dim,					/**< Dimension of the linear system. */
 										   int_t numNonzeros,			/**< Number of nonzeros in the matrix. */
 										   const int_t* const airn,		/**< Row indices for each matrix entry. */
@@ -198,40 +198,40 @@ class Ma27SparseSolver: public SparseSolver
 	 *	PRIVATE MEMBER VARIABLES
 	 */
 	private:
-		fint dim; /**< Dimension of the current linear system. */
+		fint_t dim; /**< Dimension of the current linear system. */
 
-		fint numNonzeros; /**< Number of nonzeros in the current linear system. */
+		fint_t numNonzeros; /**< Number of nonzeros in the current linear system. */
 
-		fint la_ma27; /**< size of a_ma27 (LA in MA27) */
+		fint_t la_ma27; /**< size of a_ma27 (LA in MA27) */
 
 		double* a_ma27; /**< matrix/factor for MA27 (A in MA27).  If have_factorization is false, it contains the matrix entries (and has length numNonzeros), otherwise the factor (and has length la_ma27). */
 
-		fint* irn_ma27; /**< Row entries of matrix (IRN in MA27) */
+		fint_t* irn_ma27; /**< Row entries of matrix (IRN in MA27) */
 
-		fint* jcn_ma27; /**< Column entries of matrix (JCN in MA27) */
+		fint_t* jcn_ma27; /**< Column entries of matrix (JCN in MA27) */
 
-		fint icntl_ma27[30];  /**< integer control values (ICNRL in MA27) */
+		fint_t icntl_ma27[30];  /**< integer control values (ICNRL in MA27) */
 
 		double cntl_ma27[5];  /**< real control values (CNRL in MA27) */
 
-		fint liw_ma27;  /**< length of integer work space (LIW in MA27) */
+		fint_t liw_ma27;  /**< length of integer work space (LIW in MA27) */
 
-		fint* iw_ma27; /**< integer work space (IW in MA27) */
+		fint_t* iw_ma27; /**< integer work space (IW in MA27) */
 
-		fint* ikeep_ma27;  /**< IKEEP in MA27 */
+		fint_t* ikeep_ma27;  /**< IKEEP in MA27 */
 
-		fint nsteps_ma27;  /**< NSTEPS in MA27 */
+		fint_t nsteps_ma27;  /**< NSTEPS in MA27 */
 
-		fint maxfrt_ma27;  /**< MAXFRT in MA27 */
+		fint_t maxfrt_ma27;  /**< MAXFRT in MA27 */
 
 		bool have_factorization; /**< flag indicating whether factorization for current matrix has already been computed */
 
-		fint neig;	/**< number of negative eigenvalues */
+		fint_t neig;	/**< number of negative eigenvalues */
 
-		fint rank;	/**< rank of matrix */
+		fint_t rank;	/**< rank of matrix */
 };
 
-#endif // SOLVER_MA27
+#endif /* SOLVER_MA27 */
 
 
 #ifdef SOLVER_MA57
@@ -254,18 +254,18 @@ class Ma57SparseSolver: public SparseSolver
 
 		/** Copy constructor (deep copy). */
 		Ma57SparseSolver(	const Ma57SparseSolver& rhs		/**< Rhs object. */
-					);
+							);
 
 		/** Destructor. */
 		virtual ~Ma57SparseSolver( );
 
 		/** Assignment operator (deep copy). */
 		virtual Ma57SparseSolver& operator=(	const SparseSolver& rhs	/**< Rhs object. */
-								);
+												);
 
 		/** Set new matrix data.  The matrix is to be provided
-		    in the Harwell-Boeing format.  Only the lower
-		    triangular part should be set. */
+			in the Harwell-Boeing format.  Only the lower
+			triangular part should be set. */
 		virtual returnValue setMatrixData( int_t dim,					/**< Dimension of the linear system. */
 										   int_t numNonzeros,			/**< Number of nonzeros in the matrix. */
 										   const int_t* const airn,		/**< Row indices for each matrix entry. */
@@ -292,7 +292,8 @@ class Ma57SparseSolver: public SparseSolver
 		virtual int_t getRank( );
 
 		/** Returns the zero pivots in case the matrix is rank deficient */
-		virtual returnValue getZeroPivots( int_t *&zeroPivots );
+		virtual returnValue getZeroPivots(  int_t* &zeroPivots  /**< ... */
+											);
 	/*
 	 *	PROTECTED MEMBER FUNCTIONS
 	 */
@@ -314,38 +315,38 @@ class Ma57SparseSolver: public SparseSolver
 	 *	PRIVATE MEMBER VARIABLES
 	 */
 	private:
-		fint dim;				/**< Dimension of the current linear system. */
+		fint_t dim;				/**< Dimension of the current linear system. */
 
-		fint numNonzeros;		/**< Number of nonzeros in the current linear system. */
+		fint_t numNonzeros;		/**< Number of nonzeros in the current linear system. */
 
 		double* a_ma57;			/**< matrix for MA57 (A in MA57) */
 
-		fint* irn_ma57;			/**< Row entries of matrix (IRN in MA57) */
+		fint_t* irn_ma57;			/**< Row entries of matrix (IRN in MA57) */
 
-		fint* jcn_ma57;			/**< Column entries of matrix (JCN in MA57) */
+		fint_t* jcn_ma57;			/**< Column entries of matrix (JCN in MA57) */
 
-		fint icntl_ma57[30];	/**< integer control values (ICNRL in MA57) */
+		fint_t icntl_ma57[30];	/**< integer control values (ICNRL in MA57) */
 
 		double cntl_ma57[5];	/**< real control values (CNRL in MA57) */
 
 		double* fact_ma57;		/**< array for storing the factors */
 
-		fint lfact_ma57;		/**< length of fact_ma57 */
+		fint_t lfact_ma57;		/**< length of fact_ma57 */
 
-		fint* ifact_ma57;		/**< indexing information about the factors */
+		fint_t* ifact_ma57;		/**< indexing information about the factors */
 
-		fint lifact_ma57;		/**< length of ifact_ma57 */
+		fint_t lifact_ma57;		/**< length of ifact_ma57 */
 
 		bool have_factorization;/**< flag indicating whether factorization for current matrix has already been computed */
 
-		fint neig;				/**< number of negative eigenvalues */
+		fint_t neig;				/**< number of negative eigenvalues */
 
-		fint rank;				/**< rank of matrix */
+		fint_t rank;				/**< rank of matrix */
 
-		fint* pivots;			/**< sequence of pivots used in factorization */
+		fint_t* pivots;			/**< sequence of pivots used in factorization */
 };
 
-#endif // SOLVER_MA57
+#endif /* SOLVER_MA57 */
 
 
 #ifdef SOLVER_NONE
@@ -364,8 +365,8 @@ class DummySparseSolver: public SparseSolver
 	 */
 	public:
 		/** Set new matrix data.  The matrix is to be provided
-		    in the Harwell-Boeing format.  Only the lower
-		    triangular part should be set. */
+			in the Harwell-Boeing format.  Only the lower
+			triangular part should be set. */
 		virtual returnValue setMatrixData(	int_t dim,					/**< Dimension of the linear system. */
 											int_t numNonzeros,			/**< Number of nonzeros in the matrix. */
 											const int_t* const airn,	/**< Row indices for each matrix entry. */
@@ -383,7 +384,7 @@ class DummySparseSolver: public SparseSolver
 									);
 };
 
-#endif // SOLVER_NONE
+#endif /* SOLVER_NONE */
 
 
 END_NAMESPACE_QPOASES

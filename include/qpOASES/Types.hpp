@@ -152,8 +152,17 @@
 #define SOLVER_NONE
 #endif
 
-BEGIN_NAMESPACE_QPOASES
 
+/**
+ * Defined integer type for calling BLAS/LAPACK. Should usually be
+ * "(unsigned) int", currently set to "(unsigned) long" for backwards
+ * compatibility. This will change in a future release.
+ */
+typedef long la_int_t;
+typedef unsigned long la_uint_t;
+
+
+BEGIN_NAMESPACE_QPOASES
 
 /** Defines real_t for facilitating switching between double and float. */
 #ifdef __USE_SINGLE_PRECISION__
@@ -173,11 +182,11 @@ typedef unsigned int uint_t;
 #endif /* __USE_LONG_INTEGERS__ */
 
 
-/** typedef for Fortran INTEGER type. Might be platform dependent! */
+/** Defines FORTRAN integer type. Might be platform dependent! */
 #ifdef __USE_LONG_FINTS__
-typedef long fint;
+typedef long fint_t;
 #else
-typedef int fint;
+typedef int fint_t;
 #endif /* __USE_LONG_FINTS__ */
 
 

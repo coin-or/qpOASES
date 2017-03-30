@@ -34,7 +34,7 @@
 
 
 #include <qpOASES/QProblemB.hpp>
-#include <qpOASES/LapackBlasDeclarations.hpp>
+#include <qpOASES/LapackBlasReplacement.hpp>
 
 
 BEGIN_NAMESPACE_QPOASES
@@ -1412,8 +1412,8 @@ returnValue QProblemB::computeCholesky( )
 					H->getCol (FR_idx[j], bounds.getFree (), 1.0, &(R[j*nV]) );
 
 				/* R'*R = H */
-				long info = 0;
-				unsigned long _nFR = (unsigned long)nFR, _nV = (unsigned long)nV;
+				la_int_t info = 0;
+				la_uint_t _nFR = (la_uint_t)nFR, _nV = (la_uint_t)nV;
 
 				POTRF( "U", &_nFR, R, &_nV, &info );
 

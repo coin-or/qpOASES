@@ -34,7 +34,7 @@
 
 
 #include <qpOASES/QProblem.hpp>
-#include <qpOASES/LapackBlasDeclarations.hpp>
+#include <qpOASES/LapackBlasReplacement.hpp>
 
 
 BEGIN_NAMESPACE_QPOASES
@@ -161,8 +161,8 @@ QProblem::QProblem( int_t _nV, int_t _nC, HessianType _hessianType, BooleanType 
 	{
 		tempB = new real_t[_nC];			/* nAC */
 		delta_xFRy = new real_t[_nC];		/* nAC */
-		delta_yAC_TMP = new real_t[_nC];    /* nAC */
-		tempC = new real_t[_nC];            /* nAC */
+		delta_yAC_TMP = new real_t[_nC];	/* nAC */
+		tempC = new real_t[_nC];			/* nAC */
 	}
 	else
 	{
@@ -2103,8 +2103,8 @@ returnValue QProblem::computeProjectedCholesky( )
 	}
 
 	/* R'*R = Z'*H*Z */
-	long info = 0;
-	unsigned long _nZ = (unsigned long)nZ, _nV = (unsigned long)nV;
+	la_int_t info = 0;
+	la_uint_t _nZ = (la_uint_t)nZ, _nV = (la_uint_t)nV;
 
 	POTRF( "U", &_nZ, R, &_nV, &info );
 

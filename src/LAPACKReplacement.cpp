@@ -35,14 +35,14 @@
 #include <qpOASES/Utils.hpp>
 
 
-extern "C" void dpotrf_(	const char *uplo, const unsigned long *_n, double *a,
-							const unsigned long *_lda, long *info
+extern "C" void dpotrf_(	const char* uplo, const la_uint_t* _n, double* a,
+							const la_uint_t* _lda, la_int_t* info
 							)
 {
 	double sum;
-	long i, j, k;
-	long n = (long)(*_n);
-	long lda = (long)(*_lda);
+	la_int_t i, j, k;
+	la_int_t n = (la_int_t)(*_n);
+	la_int_t lda = (la_int_t)(*_lda);
 
 	for( i=0; i<n; ++i )
 	{
@@ -58,7 +58,7 @@ extern "C" void dpotrf_(	const char *uplo, const unsigned long *_n, double *a,
 		{
 			a[0] = sum; /* tunnel negative diagonal element to caller */
 			if (info != 0)
-				*info = (long)i+1;
+				*info = (la_int_t)i+1;
 			return;
 		}
 
@@ -77,14 +77,14 @@ extern "C" void dpotrf_(	const char *uplo, const unsigned long *_n, double *a,
 }
 
 
-extern "C" void spotrf_(	const char *uplo, const unsigned long *_n, float *a,
-							const unsigned long *_lda, long *info
+extern "C" void spotrf_(	const char* uplo, const la_uint_t* _n, float* a,
+							const la_uint_t* _lda, la_int_t* info
 							)
 {
 	float sum;
-	long i, j, k;
-	long n = (long)(*_n);
-	long lda = (long)(*_lda);
+	la_int_t i, j, k;
+	la_int_t n = (la_int_t)(*_n);
+	la_int_t lda = (la_int_t)(*_lda);
 
 	for( i=0; i<n; ++i )
 	{
@@ -100,7 +100,7 @@ extern "C" void spotrf_(	const char *uplo, const unsigned long *_n, float *a,
 		{
 			a[0] = sum; /* tunnel negative diagonal element to caller */
 			if (info != 0)
-				*info = (long)i+1;
+				*info = (la_int_t)i+1;
 			return;
 		}
 
@@ -118,35 +118,35 @@ extern "C" void spotrf_(	const char *uplo, const unsigned long *_n, float *a,
 		*info = 0;
 }
 
-extern "C" void dtrtrs_(	const char *UPLO, const char *TRANS, const char *DIAG,
-							const unsigned long *N, const unsigned long *NRHS,
-							double *A, const unsigned long *LDA, double *B, const unsigned long *LDB, long *INFO
+extern "C" void dtrtrs_(	const char* UPLO, const char* TRANS, const char* DIAG,
+							const la_uint_t* N, const la_uint_t* NRHS,
+							double* A, const la_uint_t* LDA, double* B, const la_uint_t* LDB, la_int_t* INFO
 							)
 {
-	INFO[0] = ((long)0xDEADBEEF); /* Dummy. If SQProblemSchur is to be used, system LAPACK must be used */
+	INFO[0] = ((la_int_t)0xDEADBEEF); /* Dummy. If SQProblemSchur is to be used, system LAPACK must be used */
 }
 
-extern "C" void strtrs_(	const char *UPLO, const char *TRANS, const char *DIAG,
-							const unsigned long *N, const unsigned long *NRHS,
-							float *A, const unsigned long *LDA, float *B, const unsigned long *LDB, long *INFO
+extern "C" void strtrs_(	const char* UPLO, const char* TRANS, const char* DIAG,
+							const la_uint_t* N, const la_uint_t* NRHS,
+							float* A, const la_uint_t* LDA, float* B, const la_uint_t* LDB, la_int_t* INFO
 							)
 {
-	INFO[0] = ((long)0xDEADBEEF); /* Dummy. If SQProblemSchur is to be used, system LAPACK must be used */
+	INFO[0] = ((la_int_t)0xDEADBEEF); /* Dummy. If SQProblemSchur is to be used, system LAPACK must be used */
 }
 
-extern "C" void dtrcon_(	const char *NORM, const char *UPLO, const char *DIAG,
-							const unsigned long *N, double *A, const unsigned long *LDA,
-							double *RCOND, double *WORK, const unsigned long *IWORK, long *INFO
+extern "C" void dtrcon_(	const char* NORM, const char* UPLO, const char* DIAG,
+							const la_uint_t* N, double* A, const la_uint_t*LDA,
+							double* RCOND, double* WORK, const la_uint_t* IWORK, la_int_t* INFO
 							)
 {
-	INFO[0] = ((long)0xDEADBEEF); /* Dummy. If SQProblemSchur is to be used, system LAPACK must be used */
+	INFO[0] = ((la_int_t)0xDEADBEEF); /* Dummy. If SQProblemSchur is to be used, system LAPACK must be used */
 }
 
-extern "C" void strcon_(	const char *NORM, const char *UPLO, const char *DIAG,
-							const unsigned long *N, float *A, const unsigned long *LDA,
-							float *RCOND, float *WORK, const unsigned long *IWORK, long *INFO
+extern "C" void strcon_(	const char* NORM, const char* UPLO, const char* DIAG,
+							const la_uint_t* N, float* A, const la_uint_t* LDA,
+							float* RCOND, float* WORK, const la_uint_t* IWORK, la_int_t* INFO
 							)
 {
-	INFO[0] = ((long)0xDEADBEEF); /* Dummy. If SQProblemSchur is to be used, system LAPACK must be used */
+	INFO[0] = ((la_int_t)0xDEADBEEF); /* Dummy. If SQProblemSchur is to be used, system LAPACK must be used */
 }
 

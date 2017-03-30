@@ -23,7 +23,7 @@
 
 
 /**
- *	\file include/qpOASES/LapackBlasDeclarations.hpp
+ *	\file include/qpOASES/LapackBlasReplacement.hpp
  *	\author Andreas Potschka, Hans Joachim Ferreau, Christian Kirches
  *	\version 3.2
  *	\date 2009-2017
@@ -33,39 +33,39 @@
 
 
 
-#ifndef QPOASES_LAPACKBLASDECLARATIONS_HPP
-#define QPOASES_LAPACKBLASDECLARATIONS_HPP
+#ifndef QPOASES_LAPACKBLASREPLACEMENT_HPP
+#define QPOASES_LAPACKBLASREPLACEMENT_HPP
 
 
 extern "C"
 {
 	/** Performs one of the matrix-matrix operation in double precision. */
-	void dgemm_(	const char*, const char*, const unsigned long*, const unsigned long*, const unsigned long*,
-					const double*, const double*, const unsigned long*, const double*, const unsigned long*,
-					const double*, double*, const unsigned long* );
+	void dgemm_(	const char*, const char*, const la_uint_t*, const la_uint_t*, const la_uint_t*,
+					const double*, const double*, const la_uint_t*, const double*, const la_uint_t*,
+					const double*, double*, const la_uint_t* );
 	/** Performs one of the matrix-matrix operation in single precision. */
-	void sgemm_(	const char*, const char*, const unsigned long*, const unsigned long*, const unsigned long*,
-					const float*, const float*, const unsigned long*, const float*, const unsigned long*,
-					const float*, float*, const unsigned long* );
+	void sgemm_(	const char*, const char*, const la_uint_t*, const la_uint_t*, const la_uint_t*,
+					const float*, const float*, const la_uint_t*, const float*, const la_uint_t*,
+					const float*, float*, const la_uint_t* );
 
 	/** Performs a symmetric rank 1 operation in double precision. */
-	void dsyr_(		const char *, const unsigned long *, const double *, const double *,
-					const unsigned long *, double *, const unsigned long *);
+	void dsyr_(		const char*, const la_uint_t*, const double*, const double*,
+					const la_uint_t*, double*, const la_uint_t* );
 	/** Performs a symmetric rank 1 operation in single precision. */
-	void ssyr_(		const char *, const unsigned long *, const float *, const float *,
-					const unsigned long *, float *, const unsigned long *);
+	void ssyr_(		const char*, const la_uint_t*, const float*, const float*,
+					const la_uint_t*, float*, const la_uint_t* );
 
 	/** Performs a symmetric rank 2 operation in double precision. */
-	void dsyr2_(	const char *, const unsigned long *, const double *, const double *,
-					const unsigned long *, const double *, const unsigned long *, double *, const unsigned long *);
+	void dsyr2_(	const char*, const la_uint_t*, const double*, const double*,
+					const la_uint_t*, const double*, const la_uint_t*, double*, const la_uint_t*);
 	/** Performs a symmetric rank 2 operation in single precision. */
-	void ssyr2_(	const char *, const unsigned long *, const float *, const float *,
-					const unsigned long *, const float *, const unsigned long *, float *, const unsigned long *);
+	void ssyr2_(	const char*, const la_uint_t*, const float*, const float*,
+					const la_uint_t*, const float*, const la_uint_t*, float*, const la_uint_t*);
 
 	/** Calculates the Cholesky factorization of a real symmetric positive definite matrix in double precision. */
-	void dpotrf_(	const char *, const unsigned long *, double *, const unsigned long *, long * );
+	void dpotrf_(	const char*, const la_uint_t*, double*, const la_uint_t*, la_int_t* );
 	/** Calculates the Cholesky factorization of a real symmetric positive definite matrix in single precision. */
-	void spotrf_(	const char *, const unsigned long *, float *, const unsigned long *, long * );
+	void spotrf_(	const char*, const la_uint_t*, float*, const la_uint_t*, la_int_t* );
 }
 
-#endif	/* QPOASES_LAPACKBLASDECLARATIONS_HPP */
+#endif	/* QPOASES_LAPACKBLASREPLACEMENT_HPP */

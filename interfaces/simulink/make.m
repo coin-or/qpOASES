@@ -46,7 +46,7 @@ function [] = make( varargin )
        
     %% consistency check
     if ( exist( [pwd, '/make.m'],'file' ) == 0 )
-        error( ['ERROR (',mfilename '.m): Run this make script directly within the directory', ...
+        error( ['ERROR (',mfilename '.m): Run this make script directly within the directory ', ...
                 '<qpOASES-inst-dir>/interfaces/simulink, please.'] );
     end
 
