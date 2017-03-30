@@ -42,32 +42,6 @@
 #include <qpOASES/Indexlist.hpp>
 
 
-#ifdef __USE_SINGLE_PRECISION__
-
-	/** Macro for calling level 3 BLAS operation in single precision. */
-	#define GEMM sgemm_
-	/** Macro for calling level 3 BLAS operation in single precision. */
-	#define SYR ssyr_
-	/** Macro for calling level 3 BLAS operation in single precision. */
-	#define SYR2 ssyr2_
-	/** Macro for calling level 3 BLAS operation in single precision. */
-	#define POTRF spotrf_
-
-#else
-
-	/** Macro for calling level 3 BLAS operation in double precision. */
-	#define GEMM dgemm_
-	/** Macro for calling level 3 BLAS operation in double precision. */
-	#define SYR  dsyr_
-	/** Macro for calling level 3 BLAS operation in double precision. */
-	#define SYR2 dsyr2_
-	/** Macro for calling level 3 BLAS operation in double precision. */
-	#define POTRF dpotrf_
-
-#endif /* __USE_SINGLE_PRECISION__ */
-
-
-
 BEGIN_NAMESPACE_QPOASES
 
 

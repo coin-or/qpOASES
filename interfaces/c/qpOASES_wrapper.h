@@ -39,6 +39,14 @@
 
 #ifndef QPOASES_TYPES_HPP
 
+	/**
+	 * Defined integer type for calling BLAS/LAPACK. Should usually be
+	 * "(unsigned) int", currently set to "(unsigned) long" for backwards
+	 * compatibility. This will change in a future release.
+	 */
+	typedef long la_int_t;
+	typedef unsigned long la_uint_t;
+
 	/** Defines real_t for facilitating switching between double and float. */
 	#ifdef __USE_SINGLE_PRECISION__
 	typedef float real_t;
@@ -54,6 +62,21 @@
 	typedef int int_t;
 	typedef unsigned int uint_t;
 	#endif /* __USE_LONG_INTEGERS__ */
+
+	/** Defines FORTRAN integer type. Might be platform dependent! */
+	#ifdef __USE_LONG_FINTS__
+	typedef long fint_t;
+	#else
+	typedef int fint_t;
+	#endif /* __USE_LONG_FINTS__ */
+
+	/**
+	 * Integer type for sparse matrix row/column entries. Make this "int"
+	 * for 32 bit entries, and "long" for 64-bit entries on x86_64 platform.
+	 *
+	 * Most sparse codes still assume 32-bit entries here (HSL, BQPD, ...)
+	 */
+	typedef int_t sparse_int_t;
 
 	/* dummy definitions, not used when calling from C */
 	#define QProblemBClass int_t
