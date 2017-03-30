@@ -2678,8 +2678,8 @@ returnValue QProblem::setupAuxiliaryQPbounds(	const Bounds* const auxiliaryBound
 	/* 1) Setup bound vectors. */
 	for ( i=0; i<nV; ++i )
 	{
-		if ( bounds.getType( i ) == ST_DISABLED )
-			continue;
+		/*if ( bounds.getType( i ) == ST_DISABLED )
+			continue;*/
 
 		switch ( bounds.getStatus( i ) )
 		{
@@ -2747,8 +2747,8 @@ returnValue QProblem::setupAuxiliaryQPbounds(	const Bounds* const auxiliaryBound
 	/* 2) Setup constraints vectors. */
 	for ( i=0; i<nC; ++i )
 	{
-		if ( constraints.getType( i ) == ST_DISABLED )
-			continue;
+		/*if ( constraints.getType( i ) == ST_DISABLED )
+			continue;*/
 
 		switch ( constraints.getStatus( i ) )
 		{

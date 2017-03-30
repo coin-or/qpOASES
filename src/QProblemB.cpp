@@ -2917,8 +2917,8 @@ returnValue QProblemB::setupAuxiliaryQPbounds( BooleanType useRelaxation )
 	/* Setup bound vectors. */
 	for ( i=0; i<nV; ++i )
 	{
-		if ( bounds.getType( i ) == ST_DISABLED )
-			continue;
+		/*if ( bounds.getType( i ) == ST_DISABLED )
+			continue;*/
 
 		switch ( bounds.getStatus( i ) )
 		{
