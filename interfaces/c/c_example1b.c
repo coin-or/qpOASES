@@ -70,8 +70,8 @@ int main( )
 	/* Solve first QP. */
 	nWSR = 10;
 	QProblemB_init(	H,g,lb,ub,
-					&nWSR,0,&options,
-					xOpt,yOpt,&obj,&status
+					(int_t* const)&nWSR,0,&options,
+					xOpt,yOpt,&obj,(int_t* const)&status
 					);
 
 	/* Print solution of first QP. */	
@@ -82,8 +82,8 @@ int main( )
 	/* Solve second QP. */
 	nWSR = 10;
 	QProblemB_hotstart(	g_new,lb_new,ub_new,
-						&nWSR,0,
-						xOpt,yOpt,&obj,&status
+						(int_t* const)&nWSR,0,
+						xOpt,yOpt,&obj,(int_t* const)&status
 						);
 
 	/* Print solution of first QP. */	
