@@ -52,9 +52,9 @@ int sumOfSquares()
 	real_t *bv = new real_t[N];
 	real_t c;
 
-	for (i = 0; i < N; i++) av[i] = i+1.0;
-	for (i = 0; i < N; i++) aTv[i] = i+1.0;
-	for (i = 0; i < N; i++) bv[i] = i+1.0;
+	for (i = 0; i < N; i++) av[i] = (real_t)i+1.0;
+	for (i = 0; i < N; i++) aTv[i] = (real_t)i+1.0;
+	for (i = 0; i < N; i++) bv[i] = (real_t)i+1.0;
 
 	DenseMatrix a(1, N, N, av);
 	DenseMatrix aT(N, 1, 1, aTv);
@@ -797,8 +797,8 @@ int symmetry()
 	Indexlist *cols = new Indexlist(6);
 
 	for (i = 0; i < 36; i++) Hv[i] = 0.0;
-	for (i = 0; i < 6; i++) Hv[i*7] = 1.0 - 0.1 * i;
-	for (i = 0; i < 5; i++) Hv[i*7+1] = Hv[i*7+6] = -0.1 * (i+1);
+	for (i = 0; i < 6; i++) Hv[i*7] = 1.0 - 0.1 * (real_t)i;
+	for (i = 0; i < 5; i++) Hv[i*7+1] = Hv[i*7+6] = -0.1 * ((real_t)i+1.0);
 
 	Hd = new SymDenseMat(6, 6, 6, Hv);	// deep-copy from Hv
 	Hs = new SymSparseMat(6, 6, 6, Hv);	// deep-copy from Hv
@@ -816,7 +816,7 @@ int symmetry()
 	cols->addNumber(0);
 	cols->addNumber(4);
 	cols->addNumber(1);
-	for (i = 0; i < 18; i++) Z[i] = 0.1 * (i+1);
+	for (i = 0; i < 18; i++) Z[i] = 0.1 * ((real_t)i+1.0);
 
 	fprintf (stdFile, "\n");
 	for (i = 0; i < 6; ++i)

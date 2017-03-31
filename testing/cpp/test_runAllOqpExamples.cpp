@@ -113,8 +113,8 @@ int main( )
 		printf( "\n" );
 
 		QPOASES_TEST_FOR_TOL( maxStationarity,    1e-9  );
-		QPOASES_TEST_FOR_TOL( maxFeasibility,     1e-11 );
-		QPOASES_TEST_FOR_TOL( maxComplementarity, 1e-10 );
+		QPOASES_TEST_FOR_TOL( maxFeasibility,     2e-11 );
+		QPOASES_TEST_FOR_TOL( maxComplementarity, 2e-10 );
 		
 		switch( ii )
 		{

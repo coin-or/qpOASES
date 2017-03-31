@@ -275,9 +275,9 @@ int main( int argc, char *argv[] )
 	}
 	if (scannedDir) free(namelist);
 
-	avgStationarity    /= npass;
-	avgFeasibility     /= npass;
-	avgComplementarity /= npass;
+	avgStationarity    /= (real_t)npass;
+	avgFeasibility     /= (real_t)npass;
+	avgComplementarity /= (real_t)npass;
 
 
 	/* 4) Print results. */
