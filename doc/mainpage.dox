@@ -6,7 +6,7 @@
  *	\section sec_copyright Copyright
  *
  *	qpOASES -- An Implementation of the Online Active Set Strategy. \n
- *	Copyright (C) 2007-2015 by Hans Joachim Ferreau, Andreas Potschka,
+ *	Copyright (C) 2007-2017 by Hans Joachim Ferreau, Andreas Potschka,
  *	Christian Kirches et al. All rights reserved.
  *
  *	qpOASES is free software; you can redistribute it and/or
@@ -119,7 +119,7 @@
  *	  author = {H.J. Ferreau and A. Potschka and C. Kirches},
  *	  title = {{qpOASES} webpage},
  *	  howpublished = {http://www.qpOASES.org/},
- *	  year = {2007--2015},
+ *	  year = {2007--2017},
  *	  keywords = {qpOASES, model predictive control, parametric quadratic programming, online active set strategy}
  *	}
  *	\endcode

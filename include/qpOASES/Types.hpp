@@ -2,7 +2,7 @@
  *	This file is part of qpOASES.
  *
  *	qpOASES -- An Implementation of the Online Active Set Strategy.
- *	Copyright (C) 2007-2015 by Hans Joachim Ferreau, Andreas Potschka,
+ *	Copyright (C) 2007-2017 by Hans Joachim Ferreau, Andreas Potschka,
  *	Christian Kirches et al. All rights reserved.
  *
  *	qpOASES is free software; you can redistribute it and/or
@@ -26,7 +26,7 @@
  *	\file include/qpOASES/Types.hpp
  *	\author Hans Joachim Ferreau, Andreas Potschka, Christian Kirches
  *	\version 3.2
- *	\date 2007-2015
+ *	\date 2007-2017
  *
  *	Declaration of all non-built-in types (except for classes).
  */
@@ -297,7 +297,7 @@ enum SchurUpdateType
  *
  *	\author Hans Joachim Ferreau
  *	\version 3.2
- *	\date 2013-2015
+ *	\date 2013-2017
  */
 struct TabularOutput {
 	int_t idxAddB;		/**< Index of bound that has been added to working set. */
@@ -324,7 +324,7 @@ struct TabularOutput {
  *
  *	\author Hans Joachim Ferreau
  *	\version 3.2
- *	\date 2013-2015
+ *	\date 2013-2017
  */
 typedef struct {
 	long numericFormat;		/**< Flag indicating numerical format. */

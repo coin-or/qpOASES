@@ -4,7 +4,7 @@
 ##	This file is part of qpOASES.
 ##
 ##	qpOASES -- An Implementation of the Online Active Set Strategy.
-##	Copyright (C) 2007-2015 by Hans Joachim Ferreau, Andreas Potschka,
+##	Copyright (C) 2007-2017 by Hans Joachim Ferreau, Andreas Potschka,
 ##	Christian Kirches et al. All rights reserved.
 ##
 ##	qpOASES is free software; you can redistribute it and/or
@@ -28,7 +28,7 @@
 ##	Filename:  testing/matlab/data/fetch_matlab_data
 ##	Author:    Hans Joachim Ferreau
 ##	Version:   3.2
-##	Date:      2014-2015
+##	Date:      2014-2017
 
 
 svn export https://projects.coin-or.org/svn/qpOASES/misc/testingdata/matlab . --force

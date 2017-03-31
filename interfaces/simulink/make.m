@@ -11,14 +11,14 @@ function [] = make( varargin )
 %type  make 'opt'      to compile all interfaces using the 
 %                      given compiler options.
 %
-%Copyright (C) 2013-2015 by Hans Joachim Ferreau, Andreas Potschka,
+%Copyright (C) 2013-2017 by Hans Joachim Ferreau, Andreas Potschka,
 %Christian Kirches et al. All rights reserved.
 
 %%
 %%	This file is part of qpOASES.
 %%
 %%	qpOASES -- An Implementation of the Online Active Set Strategy.
-%%	Copyright (C) 2007-2015 by Hans Joachim Ferreau, Andreas Potschka,
+%%	Copyright (C) 2007-2017 by Hans Joachim Ferreau, Andreas Potschka,
 %%	Christian Kirches et al. All rights reserved.
 %%
 %%	qpOASES is free software; you can redistribute it and/or
@@ -40,7 +40,7 @@ function [] = make( varargin )
 %%	Filename:  interfaces/simulink/make.m
 %%	Author:    Hans Joachim Ferreau, Andreas Potschka, Christian Kirches
 %%	Version:   3.2
-%%	Date:      2007-2015
+%%	Date:      2007-2017
 %%
 
        
@@ -220,7 +220,7 @@ function [ ] = printCopyrightNotice( )
 
     disp( ' ' );
     disp( 'qpOASES -- An Implementation of the Online Active Set Strategy.' );
-    disp( 'Copyright (C) 2007-2015 by Hans Joachim Ferreau, Andreas Potschka,' );
+    disp( 'Copyright (C) 2007-2017 by Hans Joachim Ferreau, Andreas Potschka,' );
     disp( 'Christian Kirches et al. All rights reserved.' );
     disp( ' ' );
     disp( 'qpOASES is distributed under the terms of the' );
