@@ -2,7 +2,7 @@
  *	This file is part of qpOASES.
  *
  *	qpOASES -- An Implementation of the Online Active Set Strategy.
- *	Copyright (C) 2007-2015 by Hans Joachim Ferreau, Andreas Potschka,
+ *	Copyright (C) 2007-2017 by Hans Joachim Ferreau, Andreas Potschka,
  *	Christian Kirches et al. All rights reserved.
  *
  *	qpOASES is free software; you can redistribute it and/or
@@ -26,7 +26,7 @@
  *	\file include/qpOASES_e/ConstraintProduct.h
  *	\author Hans Joachim Ferreau, Andreas Potschka, Christian Kirches (thanks to D. Kwame Minde Kufoalor)
  *	\version 3.1embedded
- *	\date 2009-2015
+ *	\date 2009-2017
  *
  *	Declaration of the ConstraintProduct interface which allows to specify a
  *	user-defined function for evaluating the constraint product at the 
@@ -52,7 +52,7 @@ BEGIN_NAMESPACE_QPOASES
  *
  *	\author Hans Joachim Ferreau (thanks to Kwame Minde Kufoalor)
  *	\version 3.1embedded
- *	\date 2009-2015
+ *	\date 2009-2017
  */
 typedef int(*ConstraintProduct)( int, const real_t* const, real_t* const );
 

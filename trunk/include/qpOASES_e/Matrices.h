@@ -2,7 +2,7 @@
  *	This file is part of qpOASES.
  *
  *	qpOASES -- An Implementation of the Online Active Set Strategy.
- *	Copyright (C) 2007-2015 by Hans Joachim Ferreau, Andreas Potschka,
+ *	Copyright (C) 2007-2017 by Hans Joachim Ferreau, Andreas Potschka,
  *	Christian Kirches et al. All rights reserved.
  *
  *	qpOASES is free software; you can redistribute it and/or
@@ -26,7 +26,7 @@
  *	\file include/qpOASES_e/Matrices.h
  *	\author Hans Joachim Ferreau, Andreas Potschka, Christian Kirches
  *	\version 3.1embedded
- *	\date 2009-2015
+ *	\date 2009-2017
  *
  *  Various matrix classes: Abstract base matrix class, dense and sparse matrices,
  *  including symmetry exploiting specializations.
@@ -104,7 +104,7 @@ BEGIN_NAMESPACE_QPOASES
  *
  *	\author Andreas Potschka, Christian Kirches, Hans Joachim Ferreau
  *	\version 3.1embedded
- *	\date 2011-2015
+ *	\date 2011-2017
  */
 typedef struct
 {

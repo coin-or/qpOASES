@@ -1,5 +1,5 @@
 %qpOASES -- An Implementation of the Online Active Set Strategy.
-%Copyright (C) 2007-2015 by Hans Joachim Ferreau, Andreas Potschka,
+%Copyright (C) 2007-2017 by Hans Joachim Ferreau, Andreas Potschka,
 %Christian Kirches et al. All rights reserved.
 %
 %qpOASES is distributed under the terms of the

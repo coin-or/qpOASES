@@ -721,7 +721,7 @@ Model {
     }
     Annotation {
       Name		      "This file is part of qpOASES.\n\nqpOASES -- An Implementation of the Online Active Set Strategy.\nC"
-      "opyright (C) 2007-2015 by Hans Joachim Ferreau, Andreas Potschka, Christian Kirches et al.\nAll rights reserved."
+      "opyright (C) 2007-2017 by Hans Joachim Ferreau, Andreas Potschka, Christian Kirches et al.\nAll rights reserved."
       Position		      [608, 108]
     }
   }
