@@ -1471,7 +1471,7 @@ returnValue QProblemB_obtainAuxiliaryWorkingSet(	QProblemB* _THIS, const real_t*
 			}
 		}
 
-		if ( ( xOpt == 0 ) && ( yOpt != 0 ) )
+		if ( yOpt != 0 )
 		{
 			/* Obtain initial working set in accordance to sign of dual solution vector. */
 			for( i=0; i<nV; ++i )
@@ -2820,7 +2820,8 @@ returnValue QProblemB_setupAuxiliaryQPbounds( QProblemB* _THIS, BooleanType useR
 				}
 				break;
 
-            case ST_DISABLED:
+            case ST_INFEASIBLE_LOWER:
+			case ST_INFEASIBLE_UPPER:
                 break;
                 
 			default:

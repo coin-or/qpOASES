@@ -2898,12 +2898,18 @@ returnValue QProblem_setupSubjectToTypeNew(	QProblem* _THIS,
 		if ( ( lbA_new == 0 ) && ( ubA_new == 0 ) )
 		{
 			for( i=0; i<nC; ++i )
-				Constraints_setType( &(_THIS->constraints),i,ST_UNBOUNDED );
+			{
+				if ( Constraints_getType(&(_THIS->constraints),i) != ST_DISABLED )
+					Constraints_setType( &(_THIS->constraints),i,ST_UNBOUNDED );
+			}
 		}
 		else
 		{
 			for( i=0; i<nC; ++i )
-				Constraints_setType( &(_THIS->constraints),i,ST_BOUNDED );
+			{
+				if ( Constraints_getType(&(_THIS->constraints),i) != ST_DISABLED )
+					Constraints_setType( &(_THIS->constraints),i,ST_BOUNDED );
+			}
 		}
 	}
 
@@ -3123,7 +3129,7 @@ returnValue QProblem_obtainAuxiliaryWorkingSet(	QProblem* _THIS,
 		}
 
 		/* Obtain initial working set in accordance to sign of dual solution vector. */
-		if ( ( xOpt == 0 ) && ( yOpt != 0 ) )
+		if ( yOpt != 0 )
 		{
 			for( i=0; i<nC; ++i )
 			{
@@ -3554,7 +3560,8 @@ returnValue QProblem_setupAuxiliaryQPbounds(	QProblem* _THIS,
 				}
 				break;
 
-            case ST_DISABLED:
+            case ST_INFEASIBLE_LOWER:
+			case ST_INFEASIBLE_UPPER:
                 break;
                 
 			default:
@@ -3619,7 +3626,8 @@ returnValue QProblem_setupAuxiliaryQPbounds(	QProblem* _THIS,
 				}
 				break;
 
-            case ST_DISABLED:
+            case ST_INFEASIBLE_LOWER:
+			case ST_INFEASIBLE_UPPER:
                 break;
                 
 			default:
