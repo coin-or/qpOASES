@@ -2,7 +2,7 @@
  *	This file is part of qpOASES.
  *
  *	qpOASES -- An Implementation of the Online Active Set Strategy.
- *	Copyright (C) 2007-2015 by Hans Joachim Ferreau, Andreas Potschka,
+ *	Copyright (C) 2007-2017 by Hans Joachim Ferreau, Andreas Potschka,
  *	Christian Kirches et al. All rights reserved.
  *
  *	qpOASES is free software; you can redistribute it and/or
@@ -26,7 +26,7 @@
  *	\file include/qpOASES/QProblem.ipp
  *	\author Hans Joachim Ferreau, Andreas Potschka, Christian Kirches
  *	\version 3.2
- *	\date 2007-2015
+ *	\date 2007-2017
  *
  *	Implementation of inlined member functions of the QProblem class which
  *	is able to use the newly developed online active set strategy for
@@ -127,14 +127,14 @@ inline returnValue QProblem::setA( Matrix *A_new )
 
 	A->times(1, 1.0, x, nV, 0.0, Ax, nC);
 
+	A->getRowNorm(tempC);
+
 	for( j=0; j<nC; ++j )
 	{
 		Ax_u[j] = ubA[j] - Ax[j];
 		Ax_l[j] = Ax[j] - lbA[j];
-		/* AW: TODO: Takes too much time - could be implemented differently
 		// (ckirches) disable constraints with empty rows	
-		*/
-		if ( isZero( A->getRowNorm (j) ) == BT_TRUE )
+		if ( isZero( tempC[j] ) == BT_TRUE )
 			constraints.setType ( j, ST_DISABLED );
 	}
 

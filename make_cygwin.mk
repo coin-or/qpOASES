@@ -2,7 +2,7 @@
 ##	This file is part of qpOASES.
 ##
 ##	qpOASES -- An Implementation of the Online Active Set Strategy.
-##	Copyright (C) 2007-2015 by Hans Joachim Ferreau, Andreas Potschka,
+##	Copyright (C) 2007-2017 by Hans Joachim Ferreau, Andreas Potschka,
 ##	Christian Kirches et al. All rights reserved.
 ##
 ##	qpOASES is free software; you can redistribute it and/or
@@ -26,7 +26,7 @@
 ##	Filename:  make_cygwin.mk
 ##	Author:    Hans Joachim Ferreau, Andreas Potschka, Christian Kirches
 ##	Version:   3.2
-##	Date:      2007-2015
+##	Date:      2007-2017
 ##
 
 ################################################################################
@@ -98,7 +98,7 @@ else
 	MEXEXT = mexw64
 endif
 
-CPPFLAGS = -Wall -pedantic -Wshadow -Wfloat-equal -O3 -Wconversion -Wsign-conversion -finline-functions -DWIN32 -D${DEF_SOLVER} -D__NO_COPYRIGHT__ 
+CPPFLAGS = -Wall -pedantic -Wshadow -Wfloat-equal -O3 -Wconversion -Wsign-conversion -DWIN32 -D${DEF_SOLVER} -D__NO_COPYRIGHT__ 
 #          -g -D__DEBUG__ -D__NO_COPYRIGHT__ -D__SUPPRESSANYOUTPUT__ -D__USE_SINGLE_PRECISION__
 
 # libraries to link against when building qpOASES .so files

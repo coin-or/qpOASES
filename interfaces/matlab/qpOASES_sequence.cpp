@@ -2,7 +2,7 @@
  *	This file is part of qpOASES.
  *
  *	qpOASES -- An Implementation of the Online Active Set Strategy.
- *	Copyright (C) 2007-2015 by Hans Joachim Ferreau, Andreas Potschka,
+ *	Copyright (C) 2007-2017 by Hans Joachim Ferreau, Andreas Potschka,
  *	Christian Kirches et al. All rights reserved.
  *
  *	qpOASES is free software; you can redistribute it and/or
@@ -26,7 +26,7 @@
  *	\file interfaces/matlab/qpOASES_sequence.cpp
  *	\author Hans Joachim Ferreau, Christian Kirches, Andreas Potschka, Alexander Buchner
  *	\version 3.2
- *	\date 2007-2015
+ *	\date 2007-2017
  *
  *	Interface for Matlab(R) that enables to call qpOASES as a MEX function
  *  (variant for solving QP sequences).
@@ -347,6 +347,11 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 	int_t x0_idx=-1, auxInput_idx=-1;
 
 	BooleanType isSimplyBoundedQp = BT_FALSE;
+	#ifdef SOLVER_MA57
+	BooleanType isSparse = BT_TRUE; /* This will be set to BT_FALSE later if a dense matrix is encountered. */
+	#else
+	BooleanType isSparse = BT_FALSE;
+	#endif
 
 	Options options;
 	options.printLevel = PL_LOW;
@@ -609,9 +614,15 @@ void mexFunction( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 			R = new real_t[nV*nV];
 			convertFortranToC( R_for, nV,nV, R );
 		}
+
+		/* check if QP is sparse */
+		if ( H_idx >= 0 && !mxIsSparse( prhs[H_idx] ) )
+			isSparse = BT_FALSE;
+		if ( nC > 0 && A_idx >= 0 && !mxIsSparse( prhs[A_idx] ) )
+			isSparse = BT_FALSE;
 		
 		/* allocate instance */
-		handle = allocateQPInstance( nV,nC,hessianType, isSimplyBoundedQp,&options );	
+		handle = allocateQPInstance( nV,nC,hessianType, isSimplyBoundedQp, isSparse, &options );	
 		globalQP = getQPInstance( handle );
 
 		/* make a deep-copy of the user-specified Hessian matrix (possibly sparse) */

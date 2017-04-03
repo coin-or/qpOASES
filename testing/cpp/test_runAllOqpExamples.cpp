@@ -2,7 +2,7 @@
  *	This file is part of qpOASES.
  *
  *	qpOASES -- An Implementation of the Online Active Set Strategy.
- *	Copyright (C) 2007-2015 by Hans Joachim Ferreau, Andreas Potschka,
+ *	Copyright (C) 2007-2017 by Hans Joachim Ferreau, Andreas Potschka,
  *	Christian Kirches et al. All rights reserved.
  *
  *	qpOASES is free software; you can redistribute it and/or
@@ -26,7 +26,7 @@
  *	\file testing/cpp/test_runAllOqpExamples.cpp
  *	\author Hans Joachim Ferreau
  *	\version 3.2
- *	\date 2013-2015
+ *	\date 2013-2017
  *
  *	Use qpOASES for solving all QP sequences of the Online QP Benchmark 
  *	Collection. In order to run it, you have to download all examples
@@ -113,8 +113,8 @@ int main( )
 		printf( "\n" );
 
 		QPOASES_TEST_FOR_TOL( maxStationarity,    1e-9  );
-		QPOASES_TEST_FOR_TOL( maxFeasibility,     1e-11 );
-		QPOASES_TEST_FOR_TOL( maxComplementarity, 1e-10 );
+		QPOASES_TEST_FOR_TOL( maxFeasibility,     2e-11 );
+		QPOASES_TEST_FOR_TOL( maxComplementarity, 2e-10 );
 		
 		switch( ii )
 		{

@@ -2,7 +2,7 @@
  *	This file is part of qpOASES.
  *
  *	qpOASES -- An Implementation of the Online Active Set Strategy.
- *	Copyright (C) 2007-2015 by Hans Joachim Ferreau, Andreas Potschka,
+ *	Copyright (C) 2007-2017 by Hans Joachim Ferreau, Andreas Potschka,
  *	Christian Kirches et al. All rights reserved.
  *
  *	qpOASES is free software; you can redistribute it and/or
@@ -26,7 +26,7 @@
  *	\file testing/cpp/test_matrices.cpp
  *	\author Andreas Potschka, Christian Kirches, Hans Joachim Ferreau
  *	\version 3.2
- *	\date 2010-2015
+ *	\date 2010-2017
  *
  *	Unit test for Matrix classes.
  */
@@ -52,9 +52,9 @@ int sumOfSquares()
 	real_t *bv = new real_t[N];
 	real_t c;
 
-	for (i = 0; i < N; i++) av[i] = i+1.0;
-	for (i = 0; i < N; i++) aTv[i] = i+1.0;
-	for (i = 0; i < N; i++) bv[i] = i+1.0;
+	for (i = 0; i < N; i++) av[i] = (real_t)i+1.0;
+	for (i = 0; i < N; i++) aTv[i] = (real_t)i+1.0;
+	for (i = 0; i < N; i++) bv[i] = (real_t)i+1.0;
 
 	DenseMatrix a(1, N, N, av);
 	DenseMatrix aT(N, 1, 1, aTv);
@@ -255,7 +255,7 @@ int indexDenseSubmatrix()
 	A.free ();	// or delete[] Av;
 
 	QPOASES_TEST_FOR_TOL( err ,1e-13 )
-	QPOASES_TEST_FOR_TOL( errT,1e-14 )
+	QPOASES_TEST_FOR_TOL( errT,2e-14 )
 
 	return TEST_PASSED;
 }
@@ -797,8 +797,8 @@ int symmetry()
 	Indexlist *cols = new Indexlist(6);
 
 	for (i = 0; i < 36; i++) Hv[i] = 0.0;
-	for (i = 0; i < 6; i++) Hv[i*7] = 1.0 - 0.1 * i;
-	for (i = 0; i < 5; i++) Hv[i*7+1] = Hv[i*7+6] = -0.1 * (i+1);
+	for (i = 0; i < 6; i++) Hv[i*7] = 1.0 - 0.1 * (real_t)i;
+	for (i = 0; i < 5; i++) Hv[i*7+1] = Hv[i*7+6] = -0.1 * ((real_t)i+1.0);
 
 	Hd = new SymDenseMat(6, 6, 6, Hv);	// deep-copy from Hv
 	Hs = new SymSparseMat(6, 6, 6, Hv);	// deep-copy from Hv
@@ -816,7 +816,7 @@ int symmetry()
 	cols->addNumber(0);
 	cols->addNumber(4);
 	cols->addNumber(1);
-	for (i = 0; i < 18; i++) Z[i] = 0.1 * (i+1);
+	for (i = 0; i < 18; i++) Z[i] = 0.1 * ((real_t)i+1.0);
 
 	fprintf (stdFile, "\n");
 	for (i = 0; i < 6; ++i)

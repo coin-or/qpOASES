@@ -2,7 +2,7 @@
  *	This file is part of qpOASES.
  *
  *	qpOASES -- An Implementation of the Online Active Set Strategy.
- *	Copyright (C) 2007-2015 by Hans Joachim Ferreau, Andreas Potschka,
+ *	Copyright (C) 2007-2017 by Hans Joachim Ferreau, Andreas Potschka,
  *	Christian Kirches et al. All rights reserved.
  *
  *	qpOASES is free software; you can redistribute it and/or
@@ -26,7 +26,7 @@
  *	\file src/QProblem.cpp
  *	\author Hans Joachim Ferreau, Andreas Potschka, Christian Kirches
  *	\version 3.2
- *	\date 2007-2015
+ *	\date 2007-2017
  *
  *	Implementation of the QProblem class which is able to use the newly
  *	developed online active set strategy for parametric quadratic programming.
@@ -34,6 +34,7 @@
 
 
 #include <qpOASES/QProblem.hpp>
+#include <qpOASES/LapackBlasReplacement.hpp>
 
 
 BEGIN_NAMESPACE_QPOASES
@@ -71,13 +72,15 @@ QProblem::QProblem( ) : QProblemB( )
 	delta_xFRz = 0;
 	tempB = 0;
 	delta_yAC_TMP = 0;
+	tempC = 0;
 }
 
 
 /*
  *	Q P r o b l e m
  */
-QProblem::QProblem( int_t _nV, int_t _nC, HessianType _hessianType ) : QProblemB( _nV,_hessianType )
+QProblem::QProblem( int_t _nV, int_t _nC, HessianType _hessianType, BooleanType allocDenseMats ) 
+	: QProblemB( _nV,_hessianType,allocDenseMats )
 {
 	int_t i;
 
@@ -122,9 +125,18 @@ QProblem::QProblem( int_t _nV, int_t _nC, HessianType _hessianType ) : QProblemB
 	y = new real_t[_nV+_nC];
 	for( i=0; i<_nV+_nC; ++i ) y[i] = 0.0;
 
-	sizeT = getMin( _nV,_nC );
-	T = new real_t[sizeT*sizeT];
-	Q = new real_t[_nV*_nV];
+	if (allocDenseMats == BT_TRUE)
+	{
+		sizeT = getMin( _nV,_nC );
+		T = new real_t[sizeT*sizeT];
+		Q = new real_t[_nV*_nV];
+	}
+	else
+	{
+		sizeT = 0;
+		T = 0;
+		Q = 0;
+	}
 
 	if ( _nC > 0 )
 	{
@@ -149,13 +161,15 @@ QProblem::QProblem( int_t _nV, int_t _nC, HessianType _hessianType ) : QProblemB
 	{
 		tempB = new real_t[_nC];			/* nAC */
 		delta_xFRy = new real_t[_nC];		/* nAC */
-		delta_yAC_TMP = new real_t[_nC];   /* nAC */
+		delta_yAC_TMP = new real_t[_nC];	/* nAC */
+		tempC = new real_t[_nC];			/* nAC */
 	}
 	else
 	{
 		tempB = 0;
 		delta_xFRy = 0;
 		delta_yAC_TMP = 0;
+		tempC = 0;
 	}
 
 	flipper.init( (uint_t)_nV,(uint_t)_nC );
@@ -1151,6 +1165,12 @@ returnValue QProblem::clear( )
 		delta_yAC_TMP = 0;
 	}
 
+	if ( tempC != 0 )
+	{
+		delete[] tempC;
+		tempC = 0;
+	}
+
 	return SUCCESSFUL_RETURN;
 }
 
@@ -1259,13 +1279,15 @@ returnValue QProblem::copy(	const QProblem& rhs
 	{
 		delta_xFRy = new real_t[_nC];		/* nAC */
 		tempB = new real_t[_nC];			/* nAC */
-		delta_yAC_TMP = new real_t[_nC];   /* nAC */
+		delta_yAC_TMP = new real_t[_nC];    /* nAC */
+		tempC = new real_t[_nC];            /* nAC */
 	}
 	else
 	{
 		delta_xFRy = 0;
 		tempB = 0;
 		delta_yAC_TMP = 0;
+		tempC = 0;
 	}
 
 	return SUCCESSFUL_RETURN;
@@ -1966,7 +1988,7 @@ returnValue QProblem::setupSubjectToType(	const real_t* const lb_new, const real
 	{
 		for( i=0; i<nC; ++i )
 		{
-			if (constraints.getType (i) == ST_DISABLED)
+			if ( constraints.getType(i) == ST_DISABLED )
 				continue;
 
 			if ( ( lbA_new[i] < -INFTY+options.boundTolerance ) && ( ubA_new[i] > INFTY-options.boundTolerance )
@@ -1989,12 +2011,18 @@ returnValue QProblem::setupSubjectToType(	const real_t* const lb_new, const real
 		if ( ( lbA_new == 0 ) && ( ubA_new == 0 ) )
 		{
 			for( i=0; i<nC; ++i )
-				constraints.setType( i,ST_UNBOUNDED );
+			{
+				if ( constraints.getType(i) != ST_DISABLED )
+					constraints.setType( i,ST_UNBOUNDED );
+			}
 		}
 		else
 		{
 			for( i=0; i<nC; ++i )
-				constraints.setType( i,ST_BOUNDED );
+			{
+				if ( constraints.getType(i) != ST_DISABLED )
+					constraints.setType( i,ST_BOUNDED );
+			}
 		}
 	}
 
@@ -2075,8 +2103,8 @@ returnValue QProblem::computeProjectedCholesky( )
 	}
 
 	/* R'*R = Z'*H*Z */
-	long info = 0;
-	unsigned long _nZ = (unsigned long)nZ, _nV = (unsigned long)nV;
+	la_int_t info = 0;
+	la_uint_t _nZ = (la_uint_t)nZ, _nV = (la_uint_t)nV;
 
 	POTRF( "U", &_nZ, R, &_nV, &info );
 
@@ -2254,7 +2282,7 @@ returnValue QProblem::obtainAuxiliaryWorkingSet(	const real_t* const xOpt, const
 		}
 
 		/* Obtain initial working set in accordance to sign of dual solution vector. */
-		if ( ( xOpt == 0 ) && ( yOpt != 0 ) )
+		if ( yOpt != 0 )
 		{
 			for( i=0; i<nC; ++i )
 			{
@@ -2704,7 +2732,8 @@ returnValue QProblem::setupAuxiliaryQPbounds(	const Bounds* const auxiliaryBound
 				}
 				break;
 
-            case ST_DISABLED:
+            case ST_INFEASIBLE_LOWER:
+			case ST_INFEASIBLE_UPPER:
                 break;
 
 			default:
@@ -2769,7 +2798,8 @@ returnValue QProblem::setupAuxiliaryQPbounds(	const Bounds* const auxiliaryBound
 				}
 				break;
 
-            case ST_DISABLED:
+            case ST_INFEASIBLE_LOWER:
+			case ST_INFEASIBLE_UPPER:
                 break;
 
 			default:

@@ -2,7 +2,7 @@
  *	This file is part of qpOASES.
  *
  *	qpOASES -- An Implementation of the Online Active Set Strategy.
- *	Copyright (C) 2007-2015 by Hans Joachim Ferreau, Andreas Potschka,
+ *	Copyright (C) 2007-2017 by Hans Joachim Ferreau, Andreas Potschka,
  *	Christian Kirches et al. All rights reserved.
  *
  *	qpOASES is free software; you can redistribute it and/or
@@ -26,7 +26,7 @@
  *	\file include/qpOASES/QProblemB.hpp
  *	\author Hans Joachim Ferreau, Andreas Potschka, Christian Kirches
  *	\version 3.2
- *	\date 2007-2015
+ *	\date 2007-2017
  *
  *	Declaration of the QProblemB class which is able to use the newly
  *	developed online active set strategy for parametric quadratic programming
@@ -58,7 +58,7 @@ class SolutionAnalysis;
  *
  *	\author Hans Joachim Ferreau, Andreas Potschka, Christian Kirches
  *	\version 3.2
- *	\date 2007-2015
+ *	\date 2007-2017
  */
 class QProblemB
 {
@@ -78,7 +78,8 @@ class QProblemB
 		 *  is allocated for it and a NULL pointer can be passed for it
 		 *  to the init() functions. */
 		QProblemB(	int_t _nV,								/**< Number of variables. */
-					HessianType _hessianType = HST_UNKNOWN	/**< Type of Hessian matrix. */
+					HessianType _hessianType = HST_UNKNOWN,	/**< Type of Hessian matrix. */
+					BooleanType allocDenseMats = BT_TRUE	/**< Enable allocation of dense matrices. */
 					);
 
 		/** Copy constructor (deep copy). */

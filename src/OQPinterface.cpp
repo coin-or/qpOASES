@@ -2,7 +2,7 @@
  *	This file is part of qpOASES.
  *
  *	qpOASES -- An Implementation of the Online Active Set Strategy.
- *	Copyright (C) 2007-2015 by Hans Joachim Ferreau, Andreas Potschka,
+ *	Copyright (C) 2007-2017 by Hans Joachim Ferreau, Andreas Potschka,
  *	Christian Kirches et al. All rights reserved.
  *
  *	qpOASES is free software; you can redistribute it and/or
@@ -26,7 +26,7 @@
  *	\file src/OQPinterface.cpp
  *	\author Hans Joachim Ferreau
  *	\version 3.2
- *	\date 2008-2015
+ *	\date 2008-2017
  *
  *	Implementation of an interface comprising several utility functions
  *	for solving test problems from the Online QP Benchmark Collection
@@ -542,8 +542,8 @@ returnValue solveOqpBenchmark(	int_t nQP, int_t nV,
 		getKktViolation( nV, _H,gCur,lbCur,ubCur, x,y, stat,feas,cmpl );
 
 		/* 6) update maximum values. */
-		if ( nWSRcur > maxNWSR )
-			maxNWSR = nWSRcur;
+		if ( ((real_t)nWSRcur) > maxNWSR )
+			maxNWSR = ((real_t)nWSRcur);
 		if (stat > maxStationarity) maxStationarity = stat;
 		if (feas > maxFeasibility) maxFeasibility = feas;
 		if (cmpl > maxComplementarity) maxComplementarity = cmpl;
@@ -551,11 +551,11 @@ returnValue solveOqpBenchmark(	int_t nQP, int_t nV,
 		if ( CPUtimeCur > maxCPUtime )
 			maxCPUtime = CPUtimeCur;
 
-		avgNWSR += nWSRcur;
+		avgNWSR += (real_t)nWSRcur;
 		avgCPUtime += CPUtimeCur;
 	}
-	avgNWSR /= nQP;
-	avgCPUtime /= ((double)nQP);
+	avgNWSR /= ((real_t)nQP);
+	avgCPUtime /= ((real_t)nQP);
 
 	delete H; delete[] y; delete[] x;
 
@@ -605,7 +605,7 @@ returnValue runOqpBenchmark(	const char* path, BooleanType isSparse, BooleanType
 	/* I) SETUP BENCHMARK: */
 	/* 1) Obtain QP sequence dimensions. */
 	if ( readOqpDimensions( path, nQP,nV,nC,nEC ) != SUCCESSFUL_RETURN )
-		return THROWERROR( RET_BENCHMARK_ABORTED );
+		return THROWERROR( RET_UNABLE_TO_READ_BENCHMARK );
 
 	/* 2) Read OQP benchmark data. */
 	if ( readOqpData(	path,

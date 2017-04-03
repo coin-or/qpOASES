@@ -2,7 +2,7 @@
  *	This file is part of qpOASES.
  *
  *	qpOASES -- An Implementation of the Online Active Set Strategy.
- *	Copyright (C) 2007-2015 by Hans Joachim Ferreau, Andreas Potschka,
+ *	Copyright (C) 2007-2017 by Hans Joachim Ferreau, Andreas Potschka,
  *	Christian Kirches et al. All rights reserved.
  *
  *	qpOASES is free software; you can redistribute it and/or
@@ -26,7 +26,7 @@
  *	\file interfaces/matlab/qpOASES_matlab_utils.hpp
  *	\author Hans Joachim Ferreau, Alexander Buchner
  *	\version 3.2
- *	\date 2007-2015
+ *	\date 2007-2017
  *
  *	Collects utility functions for Interface to Matlab(R) that
  *	enables to call qpOASES as a MEX function.
@@ -42,6 +42,13 @@
 	#define myMexErrMsgTxt mexErrMsgTxt
 #endif
 
+
+/* Workaround for problem on Matlab 2012b
+ * see https://github.com/robotology/codyco-superbuild/issues/84
+ * see http://stackoverflow.com/questions/22440523/mex-files-using-xcode-5-1-under-os-x-10-9-with-matlab-2012a/22705789#22705789 */
+#ifdef __APPLE__
+	#include <typeinfo>
+#endif 
 
 #include "mex.h"
 #include "matrix.h"
@@ -61,7 +68,8 @@ class QPInstance
 		QPInstance(	uint_t _nV = 0,
 					uint_t _nC = 0,
 					HessianType _hessianType = HST_UNKNOWN,
-					BooleanType _isSimplyBounded = BT_FALSE
+					BooleanType _isSimplyBounded = BT_FALSE,
+					BooleanType _sparseLA = BT_FALSE
 					);
 
 		~QPInstance( );
@@ -76,6 +84,7 @@ class QPInstance
 		SQProblem* sqp;
 		QProblemB* qpb;
 		BooleanType isSimplyBounded;
+		BooleanType sparseLA;
 
 		SymmetricMatrix* H;
 		Matrix* A;

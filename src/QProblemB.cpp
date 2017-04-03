@@ -2,7 +2,7 @@
  *	This file is part of qpOASES.
  *
  *	qpOASES -- An Implementation of the Online Active Set Strategy.
- *	Copyright (C) 2007-2015 by Hans Joachim Ferreau, Andreas Potschka,
+ *	Copyright (C) 2007-2017 by Hans Joachim Ferreau, Andreas Potschka,
  *	Christian Kirches et al. All rights reserved.
  *
  *	qpOASES is free software; you can redistribute it and/or
@@ -26,7 +26,7 @@
  *	\file src/QProblemB.cpp
  *	\author Hans Joachim Ferreau, Andreas Potschka, Christian Kirches
  *	\version 3.2
- *	\date 2007-2015
+ *	\date 2007-2017
  *
  *	Implementation of the QProblemB class which is able to use the newly
  *	developed online active set strategy for parametric quadratic programming.
@@ -34,6 +34,8 @@
 
 
 #include <qpOASES/QProblemB.hpp>
+#include <qpOASES/LapackBlasReplacement.hpp>
+
 
 BEGIN_NAMESPACE_QPOASES
 
@@ -93,7 +95,7 @@ QProblemB::QProblemB( )
 /*
  *	Q P r o b l e m B
  */
-QProblemB::QProblemB( int_t _nV, HessianType _hessianType )
+QProblemB::QProblemB( int_t _nV, HessianType _hessianType, BooleanType allocDenseMats )
 {
 	int_t i;
 
@@ -125,8 +127,12 @@ QProblemB::QProblemB( int_t _nV, HessianType _hessianType )
 
 	bounds.init( _nV );
 
-	R = new real_t[_nV*_nV];
-	for( i=0; i<_nV*_nV; ++i ) R[i] = 0.0;
+	if ( allocDenseMats == BT_TRUE )
+	{
+		R = new real_t[_nV*_nV];
+		for( i=0; i<_nV*_nV; ++i ) R[i] = 0.0;
+	}
+	else R = 0;
 	haveCholesky = BT_FALSE;
 
 	x = new real_t[_nV];
@@ -1406,8 +1412,8 @@ returnValue QProblemB::computeCholesky( )
 					H->getCol (FR_idx[j], bounds.getFree (), 1.0, &(R[j*nV]) );
 
 				/* R'*R = H */
-				long info = 0;
-				unsigned long _nFR = (unsigned long)nFR, _nV = (unsigned long)nV;
+				la_int_t info = 0;
+				la_uint_t _nFR = (la_uint_t)nFR, _nV = (la_uint_t)nV;
 
 				POTRF( "U", &_nFR, R, &_nV, &info );
 
@@ -1541,7 +1547,7 @@ returnValue QProblemB::obtainAuxiliaryWorkingSet(	const real_t* const xOpt, cons
 			}
 		}
 
-		if ( ( xOpt == 0 ) && ( yOpt != 0 ) )
+		if ( yOpt != 0 )
 		{
 			/* Obtain initial working set in accordance to sign of dual solution vector. */
 			for( i=0; i<nV; ++i )
@@ -2955,7 +2961,8 @@ returnValue QProblemB::setupAuxiliaryQPbounds( BooleanType useRelaxation )
 				}
 				break;
 
-            case ST_DISABLED:
+            case ST_INFEASIBLE_LOWER:
+			case ST_INFEASIBLE_UPPER:
                 break;
 
 			default:

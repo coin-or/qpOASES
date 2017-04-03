@@ -26,7 +26,7 @@
  *	\file src/SQProblemSchur.cpp
  *	\author Andreas Waechter and Dennis Janka, based on QProblem.cpp by Hans Joachim Ferreau, Andreas Potschka, Christian Kirches
  *	\version 3.2
- *	\date 2012-2015
+ *	\date 2012-2017
  *
  *	Implementation of the SQProblemSchur class which is able to use the newly
  *	developed online active set strategy for parametric quadratic programming.
@@ -96,14 +96,9 @@ SQProblemSchur::SQProblemSchur( ) : SQProblem( )
 /*
  *	Q P r o b l e m
  */
-SQProblemSchur::SQProblemSchur( int_t _nV, int_t _nC, HessianType _hessianType, int_t maxSchurUpdates ) : SQProblem( _nV,_nC,_hessianType )
+SQProblemSchur::SQProblemSchur( int_t _nV, int_t _nC, HessianType _hessianType, int_t maxSchurUpdates ) 
+	: SQProblem( _nV,_nC,_hessianType, BT_FALSE )
 {
-	/* We use the variables Q and R to store the QR factorization of S.
-	 * T is not required. */
-	delete [] R; R = 0;
-	delete [] Q; Q = 0;
-	delete [] T; T = 0;
-
 	/* The interface to the sparse linear solver.  In the long run,
 	   different linear solvers might be optionally chosen. */
 #ifdef SOLVER_MA57
@@ -2456,6 +2451,8 @@ returnValue SQProblemSchur::backsolveSchurQR( int_t dimS, const real_t* const rh
 	if ( INFO != 0 )
 	{
 		MyPrintf("TRTRS returns INFO = %d\n", INFO);
+		if ( INFO == ((long)0xDEADBEEF) )
+			MyPrintf( "If SQProblemSchur is to be used, system LAPACK must be used instead of the qpOASES LAPACK replacement" );
 		return RET_QR_FACTORISATION_FAILED;
 	}
 

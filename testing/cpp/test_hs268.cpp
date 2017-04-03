@@ -2,7 +2,7 @@
  *	This file is part of qpOASES.
  *
  *	qpOASES -- An Implementation of the Online Active Set Strategy.
- *	Copyright (C) 2007-2015 by Hans Joachim Ferreau, Andreas Potschka,
+ *	Copyright (C) 2007-2017 by Hans Joachim Ferreau, Andreas Potschka,
  *	Christian Kirches et al. All rights reserved.
  *
  *	qpOASES is free software; you can redistribute it and/or
@@ -26,7 +26,7 @@
  *	\file testing/cpp/test_hs268.cpp
  *	\author Andreas Potschka, Christian Kirches, Hans Joachim Ferreau
  *	\version 3.2
- *	\date 2010-2015
+ *	\date 2010-2017
  *
  *	Unit test running all benchmark examples stored in problems directory.
  */
@@ -79,9 +79,11 @@ int main( int argc, char *argv[] )
 									nWSR, maxCPUtime, maxStationarity, maxFeasibility, maxComplementarity 
 									);
 
-	if(returnvalue == SUCCESSFUL_RETURN) {
+	if(returnvalue == RET_UNABLE_TO_READ_BENCHMARK)
+		return TEST_DATA_NOT_FOUND;
+
+	if(returnvalue == SUCCESSFUL_RETURN)
 		npass += 1;
-	}
 
 	QPOASES_TEST_FOR_TRUE( npass >= 1 );
 
@@ -95,7 +97,7 @@ int main( int argc, char *argv[] )
 	QPOASES_TEST_FOR_TOL( maxComplementarity, 1e-14 );
 
 
-	return 0;
+	return TEST_PASSED;
 }
 
 

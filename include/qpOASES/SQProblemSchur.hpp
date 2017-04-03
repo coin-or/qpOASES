@@ -26,7 +26,7 @@
  *	\file include/qpOASES/SQProblemSchur.hpp
  *	\author Andreas Waechter and Dennis Janka, based on QProblem.hpp by Hans Joachim Ferreau, Andreas Potschka, Christian Kirches
  *	\version 3.2
- *	\date 2012-2015
+ *	\date 2012-2017
  *
  *	Declaration of the SQProblemSchur class which is able to use the newly
  *	developed online active set strategy for parametric quadratic programming
@@ -41,62 +41,8 @@
 
 #include <qpOASES/SQProblem.hpp>
 #include <qpOASES/SparseSolver.hpp>
+#include <qpOASES/LapackBlasReplacement.hpp>
 
-#ifdef __USE_SINGLE_PRECISION__
-
-	/** Macro for calling level 3 BLAS operation in single precision. */
-	//#define GEQRF sgeqrf_
-	/** Macro for calling level 3 BLAS operation in single precision. */
-	//#define ORMQR sormqr_
-	/** Macro for calling level 3 BLAS operation in single precision. */
-	#define TRTRS strtrs_
-	/** Macro for calling level 3 BLAS operation in single precision. */
-	#define TRCON strcon_
-
-#else
-
-	/** Macro for calling level 3 BLAS operation in double precision. */
-	//#define GEQRF dgeqrf_
-	/** Macro for calling level 3 BLAS operation in double precision. */
-	//#define ORMQR dormqr_
-	/** Macro for calling level 3 BLAS operation in double precision. */
-	#define TRTRS dtrtrs_
-	/** Macro for calling level 3 BLAS operation in double precision. */
-	#define TRCON dtrcon_
-
-#endif /* __USE_SINGLE_PRECISION__ */
-
-extern "C" {
-	/** Compute a QR factorization of a real M-by-N matrix A in double precision */
-	//void dgeqrf_(	const unsigned long *M, const unsigned long *N, double *A, const unsigned long *LDA,
-					//double *TAU, double *WORK, const unsigned long *LWORK, int *INFO );
-	/** Compute a QR factorization of a real M-by-N matrix A in single precision */
-	//void sgeqrf_(	const unsigned long *M, const unsigned long *N, float *A, const unsigned long *LDA,
-					//float *TAU, float *WORK, const unsigned long *LWORK, int *INFO );
-
-	/** Multiply C with orthogonal matrix Q**T as returned by geqrf (double precision) */
-	//void dormqr_(	const char *SIDE, const char *TRANS, const unsigned long *M, const unsigned long *N, const unsigned long *K,
-					//double *A, const unsigned long *LDA, double *TAU, double *C, const unsigned long *LDC,
-					//double *WORK, const unsigned long *LWORK, int *INFO );
-	/** Multiply C with orthogonal matrix Q**T as returned by geqrf (single precision) */
-	//void sormqr_(	const char *SIDE, const char *TRANS, const unsigned long *M, const unsigned long *N, const unsigned long *K,
-					//float *A, const unsigned long *LDA, float *TAU, float *C, const unsigned long *LDC,
-					//float *WORK, const unsigned long *LWORK, int *INFO );
-
-	/** Solve a triangular system (double precision) */
-	void dtrtrs_(	const char *UPLO, const char *TRANS, const char *DIAG, const unsigned long *N, const unsigned long *NRHS,
-					double *A, const unsigned long *LDA, double *B, const unsigned long *LDB, long *INFO );
-	/** Solve a triangular system (single precision) */
-	void strtrs_(	const char *UPLO, const char *TRANS, const char *DIAG, const unsigned long *N, const unsigned long *NRHS,
-					float *A, const unsigned long *LDA, float *B, const unsigned long *LDB, long *INFO );
-
-	/** Estimate the reciprocal of the condition number of a triangular matrix in double precision */
-	void dtrcon_(	const char *NORM, const char *UPLO, const char *DIAG, const unsigned long *N, double *A, const unsigned long *LDA,
-					double *RCOND, double *WORK, const unsigned long *IWORK, long *INFO );
-	/** Estimate the reciprocal of the condition number of a triangular matrix in single precision */
-	void strcon_(	const char *NORM, const char *UPLO, const char *DIAG, const unsigned long *N, float *A, const unsigned long *LDA,
-					float *RCOND, float *WORK, const unsigned long *IWORK, long *INFO );
-}
 
 BEGIN_NAMESPACE_QPOASES
 
@@ -110,7 +56,7 @@ BEGIN_NAMESPACE_QPOASES
  *
  *	\author Andreas Waechter, Dennis Janka
  *	\version 3.2
- *	\date 2012-2015
+ *	\date 2012-2017
  */
 class SQProblemSchur : public SQProblem
 {
@@ -129,10 +75,10 @@ class SQProblemSchur : public SQProblem
 		 *  identity matrix (i.e. HST_IDENTITY), respectively, no memory
 		 *  is allocated for it and a NULL pointer can be passed for it
 		 *  to the init() functions. */
-		SQProblemSchur(	int_t _nV,	  								/**< Number of variables. */
-						int_t _nC,		  							/**< Number of constraints. */
+		SQProblemSchur(	int_t _nV,	  							/**< Number of variables. */
+						int_t _nC,		  						/**< Number of constraints. */
 						HessianType _hessianType = HST_UNKNOWN,	/**< Type of Hessian matrix. */
-						int_t maxSchurUpdates = 75					/**< Maximal number of Schur updates */
+						int_t maxSchurUpdates = 75				/**< Maximal number of Schur updates */
 						);
 
 		/** Copy constructor (deep copy). */
@@ -407,32 +353,37 @@ class SQProblemSchur : public SQProblem
 		/** If the KKT matrix is declared singular during refactorization, remove linearly dependent constraints or add bounds */
 		returnValue repairSingularWorkingSet( );
 
-		returnValue stepCalcRhs( int_t nFR, int_t nFX, int_t nAC, int_t* FR_idx, int_t* FX_idx, int_t* AC_idx, real_t& rhs_max, const real_t* const delta_g,
-								const real_t* const delta_lbA, const real_t* const delta_ubA,
-								const real_t* const delta_lb, const real_t* const delta_ub,
-								BooleanType Delta_bC_isZero, BooleanType Delta_bB_isZero,
-								real_t* const delta_xFX, real_t* const delta_xFR,
-								real_t* const delta_yAC, real_t* const delta_yFX
-								 );
+		returnValue stepCalcRhs(	int_t nFR, int_t nFX, int_t nAC, int_t* FR_idx, int_t* FX_idx, int_t* AC_idx, real_t& rhs_max, const real_t* const delta_g,
+									const real_t* const delta_lbA, const real_t* const delta_ubA,
+									const real_t* const delta_lb, const real_t* const delta_ub,
+									BooleanType Delta_bC_isZero, BooleanType Delta_bB_isZero,
+									real_t* const delta_xFX, real_t* const delta_xFR,
+									real_t* const delta_yAC, real_t* const delta_yFX
+									);
 
 		returnValue stepCalcReorder(int_t nFR, int_t nAC, int_t* FR_idx, int_t* AC_idx, int_t nFRStart, int_t nACStart,
 									int_t* FR_idxStart, int_t* AC_idxStart, int_t* FR_iSort, int_t* FR_iSortStart,
-									int_t* AC_iSort, int_t* AC_iSortStart, real_t* rhs);
+									int_t* AC_iSort, int_t* AC_iSortStart, real_t* rhs
+									);
 
 		returnValue stepCalcBacksolveSchur( int_t nFR, int_t nFX, int_t nAC, int_t* FR_idx, int_t* FX_idx, int_t* AC_idx,
-											int_t dim, real_t* rhs, real_t* sol );
+											int_t dim, real_t* rhs, real_t* sol
+											);
 
 		returnValue stepCalcReorder2(	int_t nFR, int_t nAC, int_t* FR_idx, int_t* AC_idx, int_t nFRStart, int_t nACStart,
 										int_t* FR_idxStart, int_t* AC_idxStart, int_t* FR_iSort, int_t* FR_iSortStart,
-										int_t* AC_iSort, int_t* AC_iSortStart, real_t* sol, real_t* const delta_xFR, real_t* const delta_yAC);
+										int_t* AC_iSort, int_t* AC_iSortStart, real_t* sol, real_t* const delta_xFR, real_t* const delta_yAC
+										);
 
 		returnValue stepCalcResid(	int_t nFR, int_t nFX, int_t nAC, int_t* FR_idx, int_t* FX_idx, int_t* AC_idx,
 									BooleanType Delta_bC_isZero, real_t* const delta_xFX, real_t* const delta_xFR,
 									real_t* const delta_yAC, const real_t* const delta_g,
-									const real_t* const delta_lbA, const real_t* const delta_ubA, real_t& rnrm);
+									const real_t* const delta_lbA, const real_t* const delta_ubA, real_t& rnrm
+									);
 
 		returnValue stepCalcDeltayFx(	int_t nFR, int_t nFX, int_t nAC, int_t* FX_idx, const real_t* const delta_g,
-										real_t* const delta_xFX, real_t* const delta_xFR, real_t* const delta_yAC, real_t* const delta_yFX);
+										real_t* const delta_xFX, real_t* const delta_xFR, real_t* const delta_yAC, real_t* const delta_yFX
+										);
 
 	/*
 	 *	PROTECTED MEMBER VARIABLES

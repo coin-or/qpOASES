@@ -2,7 +2,7 @@
  *	This file is part of qpOASES.
  *
  *	qpOASES -- An Implementation of the Online Active Set Strategy.
- *	Copyright (C) 2007-2015 by Hans Joachim Ferreau, Andreas Potschka,
+ *	Copyright (C) 2007-2017 by Hans Joachim Ferreau, Andreas Potschka,
  *	Christian Kirches et al. All rights reserved.
  *
  *	qpOASES is free software; you can redistribute it and/or
@@ -26,7 +26,7 @@
  *	\file src/BLASReplacement.cpp
  *	\author Hans Joachim Ferreau, Andreas Potschka, Christian Kirches
  *	\version 3.2
- *	\date 2007-2015
+ *	\date 2007-2017
  *
  *	BLAS Level 3 replacement routines.
  */
@@ -35,13 +35,13 @@
 #include <qpOASES/Utils.hpp>
 
 
-extern "C" void dgemm_(	const char *TRANSA, const char *TRANSB,
-						const unsigned long *M, const unsigned long *N, const unsigned long *K,
-						const double *ALPHA, const double *A, const unsigned long *LDA, const double *B, const unsigned long *LDB,
-						const double *BETA, double *C, const unsigned long *LDC
+extern "C" void dgemm_(	const char* TRANSA, const char* TRANSB,
+						const la_uint_t* M, const la_uint_t* N, const la_uint_t* K,
+						const double* ALPHA, const double* A, const la_uint_t* LDA, const double* B, const la_uint_t* LDB,
+						const double* BETA, double* C, const la_uint_t* LDC
 						)
 {
-	unsigned long i, j, k;
+	la_uint_t i, j, k;
 
 	if ( REFER_NAMESPACE_QPOASES isZero(*BETA) == REFER_NAMESPACE_QPOASES BT_TRUE )
 		for (k = 0; k < *N; k++)
@@ -90,13 +90,13 @@ extern "C" void dgemm_(	const char *TRANSA, const char *TRANSB,
 						C[j+(*LDC)*k] += *ALPHA * A[i+(*LDA)*j] * B[i+(*LDB)*k];
 }
 
-extern "C" void sgemm_(	const char *TRANSA, const char *TRANSB,
-						const unsigned long *M, const unsigned long *N, const unsigned long *K,
-						const float *ALPHA, const float *A, const unsigned long *LDA, const float *B, const unsigned long *LDB,
-						const float *BETA, float *C, const unsigned long *LDC
+extern "C" void sgemm_(	const char* TRANSA, const char* TRANSB,
+						const la_uint_t* M, const la_uint_t* N, const la_uint_t* K,
+						const float* ALPHA, const float* A, const la_uint_t* LDA, const float* B, const la_uint_t* LDB,
+						const float* BETA, float* C, const la_uint_t* LDC
 						)
 {
-	unsigned long i, j, k;
+	la_uint_t i, j, k;
 
 	if ( REFER_NAMESPACE_QPOASES isZero(*BETA) == REFER_NAMESPACE_QPOASES BT_TRUE )
 		for (k = 0; k < *N; k++)

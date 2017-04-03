@@ -2,7 +2,7 @@
  *	This file is part of qpOASES.
  *
  *	qpOASES -- An Implementation of the Online Active Set Strategy.
- *	Copyright (C) 2007-2015 by Hans Joachim Ferreau, Andreas Potschka,
+ *	Copyright (C) 2007-2017 by Hans Joachim Ferreau, Andreas Potschka,
  *	Christian Kirches et al. All rights reserved.
  *
  *	qpOASES is free software; you can redistribute it and/or
@@ -26,7 +26,7 @@
  *	\file interfaces/c/c_example1a.c
  *	\author Hans Joachim Ferreau
  *	\version 3.2
- *	\date 2014-2015
+ *	\date 2014-2017
  *
  *	Very simple example for testing qpOASES (using SQProblem class through C interface).
  */
@@ -73,8 +73,8 @@ int main( )
 	/* Solve first QP. */
 	nWSR = 10;
 	SQProblem_init(	H,g,A,lb,ub,lbA,ubA,
-					&nWSR,0,&options,
-					xOpt,yOpt,&obj,&status
+					(int_t* const)&nWSR,0,&options,
+					xOpt,yOpt,&obj,(int_t* const)&status
 					);
 
 	/* Print solution of first QP. */	
@@ -85,8 +85,8 @@ int main( )
 	/* Solve second QP. */
 	nWSR = 10;
 	SQProblem_hotstart(	H_new,g_new,A_new,lb_new,ub_new,lbA_new,ubA_new,
-						&nWSR,0,
-						xOpt,yOpt,&obj,&status
+						(int_t* const)&nWSR,0,
+						xOpt,yOpt,&obj,(int_t* const)&status
 						);
 
 	/* Print solution of first QP. */	

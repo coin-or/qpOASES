@@ -2,7 +2,7 @@
  *	This file is part of qpOASES.
  *
  *	qpOASES -- An Implementation of the Online Active Set Strategy.
- *	Copyright (C) 2007-2015 by Hans Joachim Ferreau, Andreas Potschka,
+ *	Copyright (C) 2007-2017 by Hans Joachim Ferreau, Andreas Potschka,
  *	Christian Kirches et al. All rights reserved.
  *
  *	qpOASES is free software; you can redistribute it and/or
@@ -26,7 +26,7 @@
  *	\file interfaces/matlab/qpOASES_matlab_utils.cpp
  *	\author Hans Joachim Ferreau, Alexander Buchner
  *	\version 3.2
- *	\date 2007-2015
+ *	\date 2007-2017
  *
  *	Collects utility functions for Interface to Matlab(R) that
  *	enables to call qpOASES as a MEX function.
@@ -36,8 +36,9 @@
 
 
 QPInstance::QPInstance(	uint_t _nV, uint_t _nC, HessianType _hessianType,
-						BooleanType _isSimplyBounded
+						BooleanType _isSimplyBounded, BooleanType _sparseLA
 						)
+	: sparseLA(_sparseLA)
 {
 	handle = s_nexthandle++;
 
@@ -46,14 +47,23 @@ QPInstance::QPInstance(	uint_t _nV, uint_t _nC, HessianType _hessianType,
 	else
 		isSimplyBounded = _isSimplyBounded;
 	
-	if ( isSimplyBounded == BT_TRUE )
+	if ( isSimplyBounded == BT_TRUE && sparseLA == BT_FALSE )
 	{
 		sqp = 0;
 		qpb = new QProblemB( _nV,_hessianType );
 	}
-	else
+	else if ( sparseLA == BT_FALSE )
 	{
 		sqp = new SQProblem( _nV,_nC,_hessianType );
+		qpb = 0;
+	}
+	else
+	{
+		#ifdef SOLVER_MA57
+        sqp = new SQProblemSchur( _nV,_nC,_hessianType );
+        #else
+        sqp = new SQProblem( _nV,_nC,_hessianType );
+        #endif
 		qpb = 0;
 	}
 
@@ -179,10 +189,10 @@ bool mxIsScalar( const mxArray *pm )
  *	a l l o c a t e Q P r o b l e m I n s t a n c e
  */
 int_t allocateQPInstance(	int_t nV, int_t nC, HessianType hessianType,
-							BooleanType isSimplyBounded, const Options* options
+							BooleanType isSimplyBounded, BooleanType isSparse, const Options* options
 							)
 {
-	QPInstance* inst = new QPInstance( nV,nC,hessianType, isSimplyBounded );
+	QPInstance* inst = new QPInstance( nV,nC,hessianType, isSimplyBounded, isSparse );
 
 	if ( ( inst->sqp != 0 ) && ( options != 0 ) )
 		inst->sqp->setOptions( *options );

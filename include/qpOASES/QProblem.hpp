@@ -2,7 +2,7 @@
  *	This file is part of qpOASES.
  *
  *	qpOASES -- An Implementation of the Online Active Set Strategy.
- *	Copyright (C) 2007-2015 by Hans Joachim Ferreau, Andreas Potschka,
+ *	Copyright (C) 2007-2017 by Hans Joachim Ferreau, Andreas Potschka,
  *	Christian Kirches et al. All rights reserved.
  *
  *	qpOASES is free software; you can redistribute it and/or
@@ -26,7 +26,7 @@
  *	\file include/qpOASES/QProblem.hpp
  *	\author Hans Joachim Ferreau, Andreas Potschka, Christian Kirches
  *	\version 3.2
- *	\date 2007-2015
+ *	\date 2007-2017
  *
  *	Declaration of the QProblem class which is able to use the newly
  *	developed online active set strategy for parametric quadratic programming.
@@ -56,7 +56,7 @@ BEGIN_NAMESPACE_QPOASES
  *
  *	\author Hans Joachim Ferreau, Andreas Potschka, Christian Kirches
  *	\version 3.2
- *	\date 2007-2015
+ *	\date 2007-2017
  */
 class QProblem : public QProblemB
 {
@@ -77,7 +77,8 @@ class QProblem : public QProblemB
 		 *  to the init() functions. */
 		QProblem(	int_t _nV,	  							/**< Number of variables. */
 					int_t _nC,		  						/**< Number of constraints. */
-					HessianType _hessianType = HST_UNKNOWN	/**< Type of Hessian matrix. */
+					HessianType _hessianType = HST_UNKNOWN,	/**< Type of Hessian matrix. */
+					BooleanType allocDenseMats = BT_TRUE	/**< Enable allocation of dense matrices. */
 					);
 
 		/** Copy constructor (deep copy). */
@@ -1064,6 +1065,8 @@ class QProblem : public QProblemB
 		real_t* delta_xFRy;						/**< Temporary for determineStepDirection. */
 		real_t* delta_xFRz;						/**< Temporary for determineStepDirection. */
 		real_t* delta_yAC_TMP;					/**< Temporary for determineStepDirection. */
+
+		real_t* tempC;                          /**< Temporary for constraint types. */
 };
 
 

@@ -2,7 +2,7 @@
 ##     This file is part of qpOASES.
 ##
 ##     qpOASES -- An Implementation of the Online Active Set Strategy.
-##     Copyright (C) 2007-2015 by Hans Joachim Ferreau, Andreas Potschka,
+##     Copyright (C) 2007-2017 by Hans Joachim Ferreau, Andreas Potschka,
 ##     Christian Kirches et al. All rights reserved.
 ##
 ##     qpOASES is free software; you can redistribute it and/or
@@ -26,7 +26,7 @@
 ##     Filename:  CMakeLists.txt
 ##     Author:    Hans Joachim Ferreau (thanks to Milan Vukov)
 ##     Version:   3.2
-##     Date:      2007-2015
+##     Date:      2007-2017
 ##
 
 cmake_minimum_required(VERSION 2.6)
@@ -53,6 +53,9 @@ IF( NOT CMAKE_BUILD_TYPE )
         FORCE
         )
 ENDIF( NOT CMAKE_BUILD_TYPE )
+
+
+option(QPOASES_BUILD_EXAMPLES "Build examples." ON)
 
 
 ############################################################
@@ -125,26 +128,28 @@ INSTALL(DIRECTORY include/qpOASES
 ############################################################
 ######################### examples #########################
 ############################################################
-# compile qpOASES examples
-SET(EXAMPLE_NAMES
-    example1
-    example1a
-    example1b
-    example2
-    example3
-    example3b
-    example4
-    example5
-    exampleLP
-    qrecipe
-	qrecipeSchur
-)
 
-FOREACH(ELEMENT ${EXAMPLE_NAMES})
-    ADD_EXECUTABLE(${ELEMENT} examples/${ELEMENT}.cpp)
-    TARGET_LINK_LIBRARIES(${ELEMENT} qpOASES)
-ENDFOREACH(ELEMENT ${EXAMPLE_NAMES})
+if (QPOASES_BUILD_EXAMPLES)
+    # compile qpOASES examples
+    SET(EXAMPLE_NAMES
+        example1
+        example1a
+        example1b
+        example2
+        example3
+        example3b
+        example4
+        example5
+        exampleLP
+        qrecipe
+        qrecipeSchur
+    )
 
+    FOREACH(ELEMENT ${EXAMPLE_NAMES})
+        ADD_EXECUTABLE(${ELEMENT} examples/${ELEMENT}.cpp)
+        TARGET_LINK_LIBRARIES(${ELEMENT} qpOASES)
+    ENDFOREACH(ELEMENT ${EXAMPLE_NAMES})
+endif(QPOASES_BUILD_EXAMPLES)
 
 ##
 ##   end of file

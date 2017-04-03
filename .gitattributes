@@ -40,6 +40,7 @@ include/qpOASES/Constraints.ipp -text
 include/qpOASES/Flipper.hpp -text
 include/qpOASES/Indexlist.hpp -text
 include/qpOASES/Indexlist.ipp -text
+include/qpOASES/LapackBlasReplacement.hpp -text
 include/qpOASES/Matrices.hpp -text
 include/qpOASES/MessageHandling.hpp -text
 include/qpOASES/MessageHandling.ipp -text
@@ -85,6 +86,8 @@ interfaces/matlab/qpOASES_matlab_utils.hpp -text
 interfaces/matlab/qpOASES_options.m -text
 interfaces/matlab/qpOASES_sequence.cpp -text
 interfaces/matlab/qpOASES_sequence.m -text
+interfaces/matlab/testQPset.m -text
+interfaces/matlab/testSchur.m -text
 interfaces/octave/clean -text
 interfaces/octave/clean.sh -text
 interfaces/octave/example1.mat -text
@@ -175,6 +178,7 @@ testing/cpp/test_externalChol1.cpp -text
 testing/cpp/test_gradientShift.cpp -text
 testing/cpp/test_guessedWS1.cpp -text
 testing/cpp/test_hs268.cpp -text
+testing/cpp/test_identitySqproblem.cpp -text
 testing/cpp/test_indexlist.cpp -text
 testing/cpp/test_infeasible1.cpp -text
 testing/cpp/test_janick1.cpp -text
@@ -187,6 +191,7 @@ testing/cpp/test_qrecipeSchur.cpp -text
 testing/cpp/test_qrecipe_data.hpp -text
 testing/cpp/test_runAllOqpExamples.cpp -text
 testing/cpp/test_sebastien1.cpp -text
+testing/cpp/test_smallSchur.cpp -text
 testing/cpp/test_vanBarelsUnboundedQP.cpp -text
 testing/matlab/auxFiles/generateExample.m -text
 testing/matlab/auxFiles/generateRandomQp.m -text

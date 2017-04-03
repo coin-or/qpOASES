@@ -2,7 +2,7 @@
 ##  This file is part of qpOASES.
 ##
 ##  qpOASES -- An Implementation of the Online Active Set Strategy.
-##  Copyright (C) 2007-2015 by Hans Joachim Ferreau, Andreas Potschka,
+##  Copyright (C) 2007-2017 by Hans Joachim Ferreau, Andreas Potschka,
 ##  Christian Kirches et al. All rights reserved.
 ##
 ##  qpOASES is free software; you can redistribute it and/or
@@ -24,7 +24,7 @@
 ##    Filename:  qpoases.pxd
 ##    Author:    Sebastian F. Walter, Manuel Kudruss
 ##    Version:   3.2
-##    Date:      2013-2015
+##    Date:      2013-2017
 ##
 
 cdef extern from "qpOASES.hpp" namespace "qpOASES":
@@ -444,9 +444,9 @@ cdef extern from "qpOASES/extras/SolutionAnalysis.hpp" namespace "qpOASES":
         SolutionAnalysis(const SolutionAnalysis&)
         # ~SolutionAnalysis()
         # SolutionAnalysis& operator=(const SolutionAnalysis&)
-        returnValue getKktViolation(const QProblem*,  const real_t*, const real_t*, const real_t*)
-        returnValue getKktViolation(const QProblemB*, const real_t*, const real_t*, const real_t*)
-        returnValue getKktViolation(const SQProblem*, const real_t*, const real_t*, const real_t*)
+        real_t getKktViolation(const QProblem*,  const real_t*, const real_t*, const real_t*)
+        real_t getKktViolation(const QProblemB*, const real_t*, const real_t*, const real_t*)
+        real_t getKktViolation(const SQProblem*, const real_t*, const real_t*, const real_t*)
         returnValue getVarianceCovariance(QProblem*, real_t*, real_t*)
         returnValue getVarianceCovariance(QProblemB*, real_t*, real_t*)
         returnValue getVarianceCovariance(SQProblem*, real_t*, real_t*)

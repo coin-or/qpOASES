@@ -11,14 +11,14 @@ function [] = make( varargin )
 %type  make 'opt'      to compile all interfaces using the 
 %                      given compiler options.
 %
-%Copyright (C) 2013-2015 by Hans Joachim Ferreau, Andreas Potschka,
+%Copyright (C) 2013-2017 by Hans Joachim Ferreau, Andreas Potschka,
 %Christian Kirches et al. All rights reserved.
 
 %%
 %%	This file is part of qpOASES.
 %%
 %%	qpOASES -- An Implementation of the Online Active Set Strategy.
-%%	Copyright (C) 2007-2015 by Hans Joachim Ferreau, Andreas Potschka,
+%%	Copyright (C) 2007-2017 by Hans Joachim Ferreau, Andreas Potschka,
 %%	Christian Kirches et al. All rights reserved.
 %%
 %%	qpOASES is free software; you can redistribute it and/or
@@ -40,13 +40,13 @@ function [] = make( varargin )
 %%	Filename:  interfaces/matlab/make.m
 %%	Author:    Hans Joachim Ferreau, Andreas Potschka, Christian Kirches
 %%	Version:   3.2
-%%	Date:      2007-2015
+%%	Date:      2007-2017
 %%
 
        
     %% consistency check
     if ( exist( [pwd, '/make.m'],'file' ) == 0 )
-        error( ['ERROR (',mfilename '.m): Run this make script directly within the directory', ...
+        error( ['ERROR (',mfilename '.m): Run this make script directly within the directory ', ...
                 '<qpOASES-inst-dir>/interfaces/matlab, please.'] );
     end
 
@@ -62,16 +62,16 @@ function [] = make( varargin )
     QPOASESPATH = '../../';
     
     DEBUGFLAGS = ' ';
-    %DEBUGFLAGS = ' -g CXXDEBUGFLAGS=''$CXXDEBUGFLAGS -Wall -pedantic -Wshadow'' ';
+    %DEBUGFLAGS = ' -v -g CXXDEBUGFLAGS=''$CXXDEBUGFLAGS -Wall -pedantic -Wshadow'' ';
 
     IFLAGS = [ '-I. -I',QPOASESPATH,'include',' -I',QPOASESPATH,'src',' ' ];
     CPPFLAGS = [ IFLAGS, DEBUGFLAGS, '-largeArrayDims -D__cpluplus -D__MATLAB__ -D__SINGLE_OBJECT__',' ' ];
     defaultFlags = '-O -D__NO_COPYRIGHT__ '; %% -D__SUPPRESSANYOUTPUT__
 
-    if ( ispc == 0 )
-        CPPFLAGS  = [ CPPFLAGS, '-DLINUX ',' ' ]; 
+    if ( ispc() == 0 )
+        CPPFLAGS = [ CPPFLAGS, '-DLINUX -lmwblas',' ' ];
     else
-        CPPFLAGS  = [ CPPFLAGS, '-DWIN32 ',' ' ];
+        CPPFLAGS = [ CPPFLAGS, '-DWIN32',' ' ];
     end
 
     if ( isempty(userFlags) > 0 )
@@ -79,6 +79,22 @@ function [] = make( varargin )
     else
         CPPFLAGS = [ CPPFLAGS, userFlags,' ' ];
     end
+
+	%% determine if MA57 is available for sparse linear algebra
+	isoctave = exist('OCTAVE_VERSION', 'builtin') ~= 0;
+	if isoctave
+		warning('Sparse linear algebra is currently not available for qpOASES in Octave. Passing sparse matrices works but will likely be slow.')
+		SPARSEFLAGS = '';
+	elseif verLessThan('matlab', '7.8')
+		warning('Sparse linear algebra is currently available for qpOASES only for Matlab versions 7.8 and later. Passing sparse matrices works but will likely be slow.')
+		SPARSEFLAGS = '';
+	else
+		if ( ispc() == 0 )
+			SPARSEFLAGS = '-largeArrayDims -D__USE_LONG_INTEGERS__ -D__USE_LONG_FINTS__ -DSOLVER_MA57 -lmwma57 ';
+		else
+			SPARSEFLAGS = '-largeArrayDims -D__USE_LONG_INTEGERS__ -D__USE_LONG_FINTS__ ';
+		end
+	end
 
     mexExt = eval('mexext');
     
@@ -108,7 +124,7 @@ function [] = make( varargin )
     %% call mex compiler
     for ii=1:length(fcnNames)
         
-        cmd = [ 'mex -output ', fcnNames{ii}, ' ', CPPFLAGS, [fcnNames{ii},'.cpp'] ];
+        cmd = [ 'mex -output ', fcnNames{ii}, ' ', CPPFLAGS, SPARSEFLAGS, [fcnNames{ii},'.cpp'] ];
         
         if ( exist( [fcnNames{ii},'.',mexExt],'file' ) == 0 )
             
@@ -219,7 +235,7 @@ function [ ] = printCopyrightNotice( )
 
     disp( ' ' );
     disp( 'qpOASES -- An Implementation of the Online Active Set Strategy.' );
-    disp( 'Copyright (C) 2007-2015 by Hans Joachim Ferreau, Andreas Potschka,' );
+    disp( 'Copyright (C) 2007-2017 by Hans Joachim Ferreau, Andreas Potschka,' );
     disp( 'Christian Kirches et al. All rights reserved.' );
     disp( ' ' );
     disp( 'qpOASES is distributed under the terms of the' );

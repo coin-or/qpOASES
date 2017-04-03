@@ -2,7 +2,7 @@
 ##	This file is part of qpOASES.
 ##
 ##	qpOASES -- An Implementation of the Online Active Set Strategy.
-##	Copyright (C) 2007-2015 by Hans Joachim Ferreau, Andreas Potschka,
+##	Copyright (C) 2007-2017 by Hans Joachim Ferreau, Andreas Potschka,
 ##	Christian Kirches et al. All rights reserved.
 ##
 ##	qpOASES is free software; you can redistribute it and/or
@@ -26,7 +26,7 @@
 ##	Filename:  interfaces/scilab/Makefile
 ##	Author:    Holger Diedam, Hans Joachim Ferreau
 ##	Version:   3.2
-##	Date:      2007-2015
+##	Date:      2007-2017
 ##
 
 
@@ -54,8 +54,8 @@ CP       = cp
 ##	flags
 ##
 
-CFLAGS   = -I$(PATH_QPOASES_INC) -I$(PATH_QPOASES_SRC) -Wall -pedantic -Wshadow -O3 -finline-functions -fPIC
-CPPFLAGS = -I$(PATH_QPOASES_INC) -I$(PATH_QPOASES_SRC) -Wall -pedantic -Wshadow -O3 -finline-functions -fPIC -DLINUX -D__SCILAB__ -D__SINGLE_OBJECT__ 
+CFLAGS   = -I$(PATH_QPOASES_INC) -I$(PATH_QPOASES_SRC) -Wall -pedantic -Wshadow -O3 -fPIC
+CPPFLAGS = -I$(PATH_QPOASES_INC) -I$(PATH_QPOASES_SRC) -Wall -pedantic -Wshadow -O3 -fPIC -DLINUX -D__SCILAB__ -D__SINGLE_OBJECT__ 
 LDFLAGS  = -shared
 LIBEXT   = .so
 
