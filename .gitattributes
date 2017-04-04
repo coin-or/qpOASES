@@ -47,6 +47,14 @@ binaries/3.2.0/matlab/qpOASES_sequence.mexa64 -text
 binaries/3.2.0/matlab/qpOASES_sequence.mexmaci64 -text
 binaries/3.2.0/matlab/qpOASES_sequence.mexw32 -text
 binaries/3.2.0/matlab/qpOASES_sequence.mexw64 -text
+binaries/3.2.1/matlab/qpOASES.m -text
+binaries/3.2.1/matlab/qpOASES.mexw32 -text
+binaries/3.2.1/matlab/qpOASES.mexw64 -text
+binaries/3.2.1/matlab/qpOASES_auxInput.m -text
+binaries/3.2.1/matlab/qpOASES_options.m -text
+binaries/3.2.1/matlab/qpOASES_sequence.m -text
+binaries/3.2.1/matlab/qpOASES_sequence.mexw32 -text
+binaries/3.2.1/matlab/qpOASES_sequence.mexw64 -text
 testingdata/cpp/oqp/chain80/H.oqp -text
 testingdata/cpp/oqp/chain80/dims.oqp -text
 testingdata/cpp/oqp/chain80/g.oqp -text
