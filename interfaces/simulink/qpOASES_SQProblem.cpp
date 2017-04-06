@@ -62,6 +62,7 @@ extern "C" {
 
 static void mdlInitializeSizes (SimStruct *S)   /* Init sizes array */
 {
+	int ii;
 	int nU = NCONTROLINPUTS;
 
 	/* Specify the number of continuous and discrete states */
@@ -107,13 +108,11 @@ static void mdlInitializeSizes (SimStruct *S)   /* Init sizes array */
 	ssSetOutputPortVectorDimension(S, 3, 1 );   /* iter */
 
 	/* Specify the direct feedthrough status */
-	ssSetInputPortDirectFeedThrough(S, 0, 1);
-	ssSetInputPortDirectFeedThrough(S, 1, 1);
-	ssSetInputPortDirectFeedThrough(S, 2, 1);
-	ssSetInputPortDirectFeedThrough(S, 3, 1);
-	ssSetInputPortDirectFeedThrough(S, 4, 1);
-	ssSetInputPortDirectFeedThrough(S, 5, 1);
-	ssSetInputPortDirectFeedThrough(S, 6, 1);
+	for( ii=0; ii<7; ++ii ) 
+	{
+		ssSetInputPortDirectFeedThrough(S, ii, 1);
+		//ssSetInputPortRequiredContiguous(S, ii, 1);
+	}
 
 	/* One sample time */
 	ssSetNumSampleTimes(S, 1);
@@ -310,7 +309,7 @@ static void mdlOutputs(SimStruct *S, int_T tid)
 {
 	USING_NAMESPACE_QPOASES
 
-	int i;
+	int ii;
 	int nV, nC;
 	returnValue status;
 
@@ -356,37 +355,37 @@ static void mdlOutputs(SimStruct *S, int_T tid)
 	if ( H != 0 )
 	{
 		/* no conversion from FORTRAN to C as Hessian is symmetric! */
-		for ( i=0; i<nV*nV; ++i )
-			H[i] = (*in_H)[i];
+		for ( ii=0; ii<nV*nV; ++ii )
+			H[ii] = (*in_H)[ii];
 	}
 
 	convertFortranToC( *in_A,nV,nC, A );
 
-	for ( i=0; i<nV; ++i )
-		g[i] = (*in_g)[i];
+	for ( ii=0; ii<nV; ++ii )
+		g[ii] = (*in_g)[ii];
 
 	if ( lb != 0 )
 	{
-		for ( i=0; i<nV; ++i )
-			lb[i] = (*in_lb)[i];
+		for ( ii=0; ii<nV; ++ii )
+			lb[ii] = (*in_lb)[ii];
 	}
 
 	if ( ub != 0 )
 	{
-		for ( i=0; i<nV; ++i )
-			ub[i] = (*in_ub)[i];
+		for ( ii=0; ii<nV; ++ii )
+			ub[ii] = (*in_ub)[ii];
 	}
 
 	if ( lbA != 0 )
 	{
-		for ( i=0; i<nC; ++i )
-			lbA[i] = (*in_lbA)[i];
+		for ( ii=0; ii<nC; ++ii )
+			lbA[ii] = (*in_lbA)[ii];
 	}
 
 	if ( ubA != 0 )
 	{
-		for ( i=0; i<nC; ++i )
-			ubA[i] = (*in_ubA)[i];
+		for ( ii=0; ii<nC; ++ii )
+			ubA[ii] = (*in_ubA)[ii];
 	}
 
 	xOpt = new real_t[nV];
@@ -422,8 +421,8 @@ static void mdlOutputs(SimStruct *S, int_T tid)
 	out_status = ssGetOutputPortRealSignal(S, 2);
 	out_nWSR   = ssGetOutputPortRealSignal(S, 3);
 
-	for ( i=0; i<nU; ++i )
-		out_uOpt[i] = (real_T)(xOpt[i]);
+	for ( ii=0; ii<nU; ++ii )
+		out_uOpt[ii] = (real_T)(xOpt[ii]);
 
 	out_objVal[0] = (real_T)(problem->getObjVal( ));
 	out_status[0] = (real_t)(getSimpleStatus( status ));
@@ -442,7 +441,7 @@ static void mdlTerminate(SimStruct *S)
 {
 	USING_NAMESPACE_QPOASES
 
-	int i;
+	int ii;
 
 	/* reset global message handler */
 	getGlobalMessageHandler( )->reset( );
@@ -450,10 +449,10 @@ static void mdlTerminate(SimStruct *S)
 	if ( ssGetPWork(S)[0] != 0 )
 		delete ((SQProblem*)(ssGetPWork(S)[0]));
 
-	for ( i=1; i<8; ++i )
+	for ( ii=1; ii<8; ++ii )
 	{
-		if ( ssGetPWork(S)[i] != 0 )
-			free( ssGetPWork(S)[i] );
+		if ( ssGetPWork(S)[ii] != 0 )
+			free( ssGetPWork(S)[ii] );
 	}
 }
 
