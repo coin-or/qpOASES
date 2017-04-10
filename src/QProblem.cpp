@@ -6256,8 +6256,6 @@ returnValue QProblem::printIteration( 	int_t iter,
 }
 
 
-inline real_t abs (real_t x) { return (x>0)?x:-x; }
-
 /*
  * d r o p I n f e a s i b l e s
  */
