@@ -37,45 +37,54 @@
 #define QPOASES_LAPACKBLASREPLACEMENT_HPP
 
 
+#ifdef __AVOID_LA_NAMING_CONFLICTS__
+
+	#define SGEMM  qpOASES_sgemm
+	#define DGEMM  qpOASES_gemm
+	#define SPOTRF qpOASES_spotrf
+	#define DPOTRF qpOASES_dpotrf
+	#define STRTRS qpOASES_strtrs
+	#define DTRTRS qpOASES_dtrtrs
+	#define STRCON qpOASES_strcon
+	#define DTRCON qpOASES_dtrcon
+
+#else
+
+	#define SGEMM  sgemm_
+	#define DGEMM  gemm_
+	#define SPOTRF spotrf_
+	#define DPOTRF dpotrf_
+	#define STRTRS strtrs_
+	#define DTRTRS dtrtrs_
+	#define STRCON strcon_
+	#define DTRCON dtrcon_
+
+#endif
+
+
 #ifdef __USE_SINGLE_PRECISION__
 
 	/** Macro for calling level 3 BLAS operation in single precision. */
-	#define GEMM sgemm_
+	#define GEMM SGEMM
 	/** Macro for calling level 3 BLAS operation in single precision. */
-	#define SYR ssyr_
-	/** Macro for calling level 3 BLAS operation in single precision. */
-	#define SYR2 ssyr2_
-	/** Macro for calling level 3 BLAS operation in single precision. */
-	#define POTRF spotrf_
+	#define POTRF SPOTRF
 
 	/** Macro for calling level 3 BLAS operation in single precision. */
-	/* #define GEQRF sgeqrf_ */
-	/** Macro for calling level 3 BLAS operation in single precision. */
-	/* #define ORMQR sormqr_ */
-	/** Macro for calling level 3 BLAS operation in single precision. */
-	#define TRTRS strtrs_
+	#define TRTRS STRTRS
 	/** Macro for calling level 3 BLAS operation in single precision. */
 	#define TRCON strcon_
 
 #else
 
 	/** Macro for calling level 3 BLAS operation in double precision. */
-	#define GEMM dgemm_
+	#define GEMM DGEMM
 	/** Macro for calling level 3 BLAS operation in double precision. */
-	#define SYR  dsyr_
-	/** Macro for calling level 3 BLAS operation in double precision. */
-	#define SYR2 dsyr2_
-	/** Macro for calling level 3 BLAS operation in double precision. */
-	#define POTRF dpotrf_
+	#define POTRF DPOTRF
 
 	/** Macro for calling level 3 BLAS operation in double precision. */
-	/* #define GEQRF dgeqrf_ */
+	#define TRTRS DTRTRS
 	/** Macro for calling level 3 BLAS operation in double precision. */
-	/* #define ORMQR dormqr_ */
-	/** Macro for calling level 3 BLAS operation in double precision. */
-	#define TRTRS dtrtrs_
-	/** Macro for calling level 3 BLAS operation in double precision. */
-	#define TRCON dtrcon_
+	#define TRCON DTRCON
 
 #endif /* __USE_SINGLE_PRECISION__ */
 
@@ -83,63 +92,37 @@
 extern "C"
 {
 	/** Performs one of the matrix-matrix operation in double precision. */
-	void dgemm_(	const char*, const char*, const la_uint_t*, const la_uint_t*, const la_uint_t*,
+	void DGEMM(		const char*, const char*, const la_uint_t*, const la_uint_t*, const la_uint_t*,
 					const double*, const double*, const la_uint_t*, const double*, const la_uint_t*,
 					const double*, double*, const la_uint_t* );
 	/** Performs one of the matrix-matrix operation in single precision. */
-	void sgemm_(	const char*, const char*, const la_uint_t*, const la_uint_t*, const la_uint_t*,
+	void SGEMM(		const char*, const char*, const la_uint_t*, const la_uint_t*, const la_uint_t*,
 					const float*, const float*, const la_uint_t*, const float*, const la_uint_t*,
 					const float*, float*, const la_uint_t* );
 
-	/** Performs a symmetric rank 1 operation in double precision. */
-	void dsyr_(		const char*, const la_uint_t*, const double*, const double*,
-					const la_uint_t*, double*, const la_uint_t* );
-	/** Performs a symmetric rank 1 operation in single precision. */
-	void ssyr_(		const char*, const la_uint_t*, const float*, const float*,
-					const la_uint_t*, float*, const la_uint_t* );
-
-	/** Performs a symmetric rank 2 operation in double precision. */
-	void dsyr2_(	const char*, const la_uint_t*, const double*, const double*,
-					const la_uint_t*, const double*, const la_uint_t*, double*, const la_uint_t*);
-	/** Performs a symmetric rank 2 operation in single precision. */
-	void ssyr2_(	const char*, const la_uint_t*, const float*, const float*,
-					const la_uint_t*, const float*, const la_uint_t*, float*, const la_uint_t*);
-
 	/** Calculates the Cholesky factorization of a real symmetric positive definite matrix in double precision. */
-	void dpotrf_(	const char*, const la_uint_t*, double*, const la_uint_t*, la_int_t* );
+	void DPOTRF(	const char*, const la_uint_t*, double*, const la_uint_t*, la_int_t* );
 	/** Calculates the Cholesky factorization of a real symmetric positive definite matrix in single precision. */
-	void spotrf_(	const char*, const la_uint_t*, float*, const la_uint_t*, la_int_t* );
-
-
-	/** Computes a QR factorization of a real M-by-N matrix A in double precision */
-	/* void dgeqrf_(	const la_uint_t* M, const la_uint_t* N, double* A, const la_uint_t* LDA,
-						double* TAU, double* WORK, const la_uint_t* LWORK, int *INFO );*/
-	/** Computes a QR factorization of a real M-by-N matrix A in single precision */
-	/* void sgeqrf_(	const la_uint_t* M, const la_uint_t* N, float* A, const la_uint_t* LDA,
-						float* TAU, float* WORK, const la_uint_t* LWORK, int *INFO );*/
-
-	/** Multiplies C with orthogonal matrix Q**T as returned by geqrf (double precision) */
-	/* void dormqr_(	const char* SIDE, const char* TRANS, const la_uint_t* M, const la_uint_t* N, const la_uint_t* K,
-						double* A, const la_uint_t* LDA, double* TAU, double* C, const la_uint_t* LDC,
-						double* WORK, const la_uint_t* LWORK, int *INFO );*/
-	/** Multiplies C with orthogonal matrix Q**T as returned by geqrf (single precision) */
-	/* void sormqr_(	const char* SIDE, const char* TRANS, const la_uint_t* M, const la_uint_t* N, const la_uint_t* K,
-						float* A, const la_uint_t* LDA, float* TAU, float* C, const la_uint_t* LDC,
-						float* WORK, const la_uint_t* LWORK, int *INFO );*/
+	void SPOTRF(	const char*, const la_uint_t*, float*, const la_uint_t*, la_int_t* );
 
 	/** Solves a triangular system (double precision) */
-	void dtrtrs_(	const char* UPLO, const char* TRANS, const char* DIAG, const la_uint_t* N, const la_uint_t* NRHS,
+	void DTRTRS(	const char* UPLO, const char* TRANS, const char* DIAG, const la_uint_t* N, const la_uint_t* NRHS,
 					double* A, const la_uint_t* LDA, double* B, const la_uint_t* LDB, la_int_t* INFO );
 	/** Solves a triangular system (single precision) */
-	void strtrs_(	const char* UPLO, const char* TRANS, const char* DIAG, const la_uint_t* N, const la_uint_t* NRHS,
+	void STRTRS(	const char* UPLO, const char* TRANS, const char* DIAG, const la_uint_t* N, const la_uint_t* NRHS,
 					float* A, const la_uint_t* LDA, float* B, const la_uint_t* LDB, la_int_t* INFO );
 
 	/** Estimate the reciprocal of the condition number of a triangular matrix in double precision */
-	void dtrcon_(	const char* NORM, const char* UPLO, const char* DIAG, const la_uint_t* N, double* A, const la_uint_t* LDA,
+	void DTRCON(	const char* NORM, const char* UPLO, const char* DIAG, const la_uint_t* N, double* A, const la_uint_t* LDA,
 					double* RCOND, double* WORK, const la_uint_t* IWORK, la_int_t* INFO );
 	/** Estimate the reciprocal of the condition number of a triangular matrix in single precision */
-	void strcon_(	const char* NORM, const char* UPLO, const char* DIAG, const la_uint_t* N, float* A, const la_uint_t* LDA,
+	void STRCON(	const char* NORM, const char* UPLO, const char* DIAG, const la_uint_t* N, float* A, const la_uint_t* LDA,
 					float* RCOND, float* WORK, const la_uint_t* IWORK, la_int_t* INFO );
 }
 
 #endif	/* QPOASES_LAPACKBLASREPLACEMENT_HPP */
+
+
+/*
+ *	end of file
+ */

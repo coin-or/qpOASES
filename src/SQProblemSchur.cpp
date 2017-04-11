@@ -35,6 +35,7 @@
  */
 
 #include <qpOASES/SQProblemSchur.hpp>
+#include <qpOASES/LapackBlasReplacement.hpp>
 
 
 #ifndef __MATLAB__

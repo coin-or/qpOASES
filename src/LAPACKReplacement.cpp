@@ -33,11 +33,12 @@
 
 
 #include <qpOASES/Utils.hpp>
+#include <qpOASES/LapackBlasReplacement.hpp>
 
 
-extern "C" void dpotrf_(	const char* uplo, const la_uint_t* _n, double* a,
-							const la_uint_t* _lda, la_int_t* info
-							)
+extern "C" void DPOTRF(	const char* uplo, const la_uint_t* _n, double* a,
+						const la_uint_t* _lda, la_int_t* info
+						)
 {
 	double sum;
 	la_int_t i, j, k;
@@ -77,9 +78,9 @@ extern "C" void dpotrf_(	const char* uplo, const la_uint_t* _n, double* a,
 }
 
 
-extern "C" void spotrf_(	const char* uplo, const la_uint_t* _n, float* a,
-							const la_uint_t* _lda, la_int_t* info
-							)
+extern "C" void SPOTRF(	const char* uplo, const la_uint_t* _n, float* a,
+						const la_uint_t* _lda, la_int_t* info
+						)
 {
 	float sum;
 	la_int_t i, j, k;
@@ -118,35 +119,41 @@ extern "C" void spotrf_(	const char* uplo, const la_uint_t* _n, float* a,
 		*info = 0;
 }
 
-extern "C" void dtrtrs_(	const char* UPLO, const char* TRANS, const char* DIAG,
-							const la_uint_t* N, const la_uint_t* NRHS,
-							double* A, const la_uint_t* LDA, double* B, const la_uint_t* LDB, la_int_t* INFO
-							)
+
+extern "C" void DTRTRS(	const char* UPLO, const char* TRANS, const char* DIAG,
+						const la_uint_t* N, const la_uint_t* NRHS,
+						double* A, const la_uint_t* LDA, double* B, const la_uint_t* LDB, la_int_t* INFO
+						)
 {
 	INFO[0] = ((la_int_t)0xDEADBEEF); /* Dummy. If SQProblemSchur is to be used, system LAPACK must be used */
 }
 
-extern "C" void strtrs_(	const char* UPLO, const char* TRANS, const char* DIAG,
-							const la_uint_t* N, const la_uint_t* NRHS,
-							float* A, const la_uint_t* LDA, float* B, const la_uint_t* LDB, la_int_t* INFO
-							)
+extern "C" void STRTRS(	const char* UPLO, const char* TRANS, const char* DIAG,
+						const la_uint_t* N, const la_uint_t* NRHS,
+						float* A, const la_uint_t* LDA, float* B, const la_uint_t* LDB, la_int_t* INFO
+						)
 {
 	INFO[0] = ((la_int_t)0xDEADBEEF); /* Dummy. If SQProblemSchur is to be used, system LAPACK must be used */
 }
 
-extern "C" void dtrcon_(	const char* NORM, const char* UPLO, const char* DIAG,
-							const la_uint_t* N, double* A, const la_uint_t*LDA,
-							double* RCOND, double* WORK, const la_uint_t* IWORK, la_int_t* INFO
-							)
+
+extern "C" void DTRCON(	const char* NORM, const char* UPLO, const char* DIAG,
+						const la_uint_t* N, double* A, const la_uint_t*LDA,
+						double* RCOND, double* WORK, const la_uint_t* IWORK, la_int_t* INFO
+						)
 {
 	INFO[0] = ((la_int_t)0xDEADBEEF); /* Dummy. If SQProblemSchur is to be used, system LAPACK must be used */
 }
 
-extern "C" void strcon_(	const char* NORM, const char* UPLO, const char* DIAG,
-							const la_uint_t* N, float* A, const la_uint_t* LDA,
-							float* RCOND, float* WORK, const la_uint_t* IWORK, la_int_t* INFO
-							)
+extern "C" void STRCON(	const char* NORM, const char* UPLO, const char* DIAG,
+						const la_uint_t* N, float* A, const la_uint_t* LDA,
+						float* RCOND, float* WORK, const la_uint_t* IWORK, la_int_t* INFO
+						)
 {
 	INFO[0] = ((la_int_t)0xDEADBEEF); /* Dummy. If SQProblemSchur is to be used, system LAPACK must be used */
 }
 
+
+/*
+ *	end of file
+ */

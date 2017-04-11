@@ -41,7 +41,6 @@
 
 #include <qpOASES/SQProblem.hpp>
 #include <qpOASES/SparseSolver.hpp>
-#include <qpOASES/LapackBlasReplacement.hpp>
 
 
 BEGIN_NAMESPACE_QPOASES

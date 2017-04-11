@@ -33,9 +33,10 @@
 
 
 #include <qpOASES/Utils.hpp>
+#include <qpOASES/LapackBlasReplacement.hpp>
 
 
-extern "C" void dgemm_(	const char* TRANSA, const char* TRANSB,
+extern "C" void DGEMM(	const char* TRANSA, const char* TRANSB,
 						const la_uint_t* M, const la_uint_t* N, const la_uint_t* K,
 						const double* ALPHA, const double* A, const la_uint_t* LDA, const double* B, const la_uint_t* LDB,
 						const double* BETA, double* C, const la_uint_t* LDC
@@ -90,7 +91,7 @@ extern "C" void dgemm_(	const char* TRANSA, const char* TRANSB,
 						C[j+(*LDC)*k] += *ALPHA * A[i+(*LDA)*j] * B[i+(*LDB)*k];
 }
 
-extern "C" void sgemm_(	const char* TRANSA, const char* TRANSB,
+extern "C" void SGEMM(	const char* TRANSA, const char* TRANSB,
 						const la_uint_t* M, const la_uint_t* N, const la_uint_t* K,
 						const float* ALPHA, const float* A, const la_uint_t* LDA, const float* B, const la_uint_t* LDB,
 						const float* BETA, float* C, const la_uint_t* LDC
@@ -144,3 +145,8 @@ extern "C" void sgemm_(	const char* TRANSA, const char* TRANSB,
 					for (i = 0; i < *K; i++)
 						C[j+(*LDC)*k] += *ALPHA * A[i+(*LDA)*j] * B[i+(*LDB)*k];
 }
+
+
+/*
+ *	end of file
+ */
