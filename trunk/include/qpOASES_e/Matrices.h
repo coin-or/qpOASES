@@ -37,58 +37,54 @@
 #ifndef QPOASES_MATRICES_H
 #define QPOASES_MATRICES_H
 
+
+#ifdef __AVOID_LA_NAMING_CONFLICTS__
+
+	#define SGEMM  qpOASES_sgemm
+	#define DGEMM  qpOASES_gemm
+	#define SPOTRF qpOASES_spotrf
+	#define DPOTRF qpOASES_dpotrf
+
+#else
+
+	#define SGEMM  sgemm_
+	#define DGEMM  gemm_
+	#define SPOTRF spotrf_
+	#define DPOTRF dpotrf_
+
+#endif
+
+
 #ifdef __USE_SINGLE_PRECISION__
 
 	/** Macro for calling level 3 BLAS operation in single precision. */
-	#define GEMM sgemm_
+	#define GEMM  SGEMM
 	/** Macro for calling level 3 BLAS operation in single precision. */
-	#define SYR ssyr_
-	/** Macro for calling level 3 BLAS operation in single precision. */
-	#define SYR2 ssyr2_
-	/** Macro for calling level 3 BLAS operation in single precision. */
-	#define POTRF spotrf_
+	#define POTRF SPOTRF
 
 #else
 
 	/** Macro for calling level 3 BLAS operation in double precision. */
-	#define GEMM dgemm_
+	#define GEMM  DGEMM
 	/** Macro for calling level 3 BLAS operation in double precision. */
-	#define SYR  dsyr_
-	/** Macro for calling level 3 BLAS operation in double precision. */
-	#define SYR2 dsyr2_
-	/** Macro for calling level 3 BLAS operation in double precision. */
-	#define POTRF dpotrf_
+	#define POTRF DPOTRF
 
 #endif /* __USE_SINGLE_PRECISION__ */
 
 
 	/** Performs one of the matrix-matrix operation in double precision. */
-	void dgemm_ ( const char*, const char*, const unsigned long*, const unsigned long*, const unsigned long*,
-			const double*, const double*, const unsigned long*, const double*, const unsigned long*,
-			const double*, double*, const unsigned long* );
+	void DGEMM(		const char*, const char*, const unsigned long*, const unsigned long*, const unsigned long*,
+					const double*, const double*, const unsigned long*, const double*, const unsigned long*,
+					const double*, double*, const unsigned long* );
 	/** Performs one of the matrix-matrix operation in single precision. */
-	void sgemm_ ( const char*, const char*, const unsigned long*, const unsigned long*, const unsigned long*,
-			const float*, const float*, const unsigned long*, const float*, const unsigned long*,
-			const float*, float*, const unsigned long* );
-
-	/** Performs a symmetric rank 1 operation in double precision. */
-	void dsyr_ ( const char *, const unsigned long *, const double *, const double *,
-				 const unsigned long *, double *, const unsigned long *);
-	/** Performs a symmetric rank 1 operation in single precision. */
-	void ssyr_ ( const char *, const unsigned long *, const float *, const float *,
-				 const unsigned long *, float *, const unsigned long *);
-
-	/** Performs a symmetric rank 2 operation in double precision. */
-	void dsyr2_ ( const char *, const unsigned long *, const double *, const double *,
-				  const unsigned long *, const double *, const unsigned long *, double *, const unsigned long *);
-	/** Performs a symmetric rank 2 operation in single precision. */
-	void ssyr2_ ( const char *, const unsigned long *, const float *, const float *,
-				  const unsigned long *, const float *, const unsigned long *, float *, const unsigned long *);
+	void SGEMM (	const char*, const char*, const unsigned long*, const unsigned long*, const unsigned long*,
+					const float*, const float*, const unsigned long*, const float*, const unsigned long*,
+					const float*, float*, const unsigned long* );
 
 	/** Calculates the Cholesky factorization of a real symmetric positive definite matrix in double precision. */
-	void dpotrf_ ( const char *, const unsigned long *, double *, const unsigned long *, long * );
+	void DPOTRF(	const char*, const unsigned long*, double*, const unsigned long*, long* );
 	/** Calculates the Cholesky factorization of a real symmetric positive definite matrix in single precision. */
-	void spotrf_ ( const char *, const unsigned long *, float *, const unsigned long *, long * );
+	void SPOTRF(	const char*, const unsigned long*, float*, const unsigned long*, long* );
 
 
 #include <qpOASES_e/Indexlist.h>
@@ -273,3 +269,8 @@ END_NAMESPACE_QPOASES
 
 
 #endif	/* QPOASES_MATRICES_H */
+
+
+/*
+ *	end of file
+ */

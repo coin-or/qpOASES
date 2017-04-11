@@ -528,11 +528,11 @@ returnValue DenseMatrix_bilinear(	DenseMatrix* _THIS,
 }
 
 
-void dgemm_(	const char *TRANSA, const char *TRANSB,
-				const unsigned long *M, const unsigned long *N, const unsigned long *K,
-				const double *ALPHA, const double *A, const unsigned long *LDA, const double *B, const unsigned long *LDB,
-				const double *BETA, double *C, const unsigned long *LDC
-				)
+void DGEMM(	const char* TRANSA, const char* TRANSB,
+			const unsigned long* M, const unsigned long* N, const unsigned long* K,
+			const double* ALPHA, const double* A, const unsigned long* LDA, const double* B, const unsigned long* LDB,
+			const double* BETA, double* C, const unsigned long* LDC
+			)
 {
 	unsigned int i, j, k;
 
@@ -583,11 +583,11 @@ void dgemm_(	const char *TRANSA, const char *TRANSB,
 						C[j+(*LDC)*k] += *ALPHA * A[i+(*LDA)*j] * B[i+(*LDB)*k];
 }
 
-void sgemm_(	const char *TRANSA, const char *TRANSB,
-				const unsigned long *M, const unsigned long *N, const unsigned long *K,
-				const float *ALPHA, const float *A, const unsigned long *LDA, const float *B, const unsigned long *LDB,
-				const float *BETA, float *C, const unsigned long *LDC
-				)
+void SGEMM(	const char* TRANSA, const char* TRANSB,
+			const unsigned long* M, const unsigned long* N, const unsigned long* K,
+			const float* ALPHA, const float* A, const unsigned long* LDA, const float* B, const unsigned long* LDB,
+			const float* BETA, float* C, const unsigned long* LDC
+			)
 {
 	unsigned int i, j, k;
 
@@ -640,8 +640,8 @@ void sgemm_(	const char *TRANSA, const char *TRANSB,
 
 
 
-void dpotrf_(	const char *uplo, const unsigned long *_n, double *a,
-				const unsigned long *_lda, long *info
+void DPOTRF(	const char* uplo, const unsigned long* _n, double* a,
+				const unsigned long* _lda, long* info
 				)
 {
 	double sum;
@@ -682,8 +682,8 @@ void dpotrf_(	const char *uplo, const unsigned long *_n, double *a,
 }
 
 
-void spotrf_(	const char *uplo, const unsigned long *_n, float *a,
-				const unsigned long *_lda, long *info
+void SPOTRF(	const char* uplo, const unsigned long* _n, float* a,
+				const unsigned long* _lda, long* info
 				)
 {
 	float sum;
