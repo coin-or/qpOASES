@@ -61,6 +61,7 @@ QPOASES_EXTRAS_OBJECTS = \
 
 QPOASES_DEPENDS = \
 	${IDIR}/qpOASES.hpp \
+	${IDIR}/qpOASES/LapackBlasReplacement.hpp \
 	${IDIR}/qpOASES/SQProblem.hpp \
 	${IDIR}/qpOASES/QProblem.hpp \
 	${IDIR}/qpOASES/Flipper.hpp \
