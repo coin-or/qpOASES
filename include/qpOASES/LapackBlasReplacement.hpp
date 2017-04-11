@@ -65,7 +65,7 @@
 #ifdef __USE_SINGLE_PRECISION__
 
 	/** Macro for calling level 3 BLAS operation in single precision. */
-	#define GEMM SGEMM
+	#define GEMM  SGEMM
 	/** Macro for calling level 3 BLAS operation in single precision. */
 	#define POTRF SPOTRF
 
@@ -77,7 +77,7 @@
 #else
 
 	/** Macro for calling level 3 BLAS operation in double precision. */
-	#define GEMM DGEMM
+	#define GEMM  DGEMM
 	/** Macro for calling level 3 BLAS operation in double precision. */
 	#define POTRF DPOTRF
 
