@@ -26,8 +26,8 @@ VERSION HISTORY
 ===============
 
 
-3.2 (released on 1st September 2015, last updated on 3rd April 2017):
----------------------------------------------------------------------
+3.2 (released on 1st September 2015, last updated on 26th April 2017):
+----------------------------------------------------------------------
 
 + Addition of SQProblemSchur class implementing Schur complement approach
   for sparse QP problems
