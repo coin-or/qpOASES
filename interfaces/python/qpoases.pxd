@@ -22,7 +22,7 @@
 
 ##
 ##    Filename:  qpoases.pxd
-##    Author:    Sebastian F. Walter, Manuel Kudruss
+##    Author:    Sebastian F. Walter, Manuel Kudruss (thanks to Felix Lenders)
 ##    Version:   3.2
 ##    Date:      2013-2017
 ##
@@ -30,7 +30,7 @@
 cdef extern from "qpOASES.hpp" namespace "qpOASES":
 
     ctypedef double real_t
-    ctypedef int int_t
+    ctypedef long int_t
 
     cdef enum BooleanType:
 
@@ -300,7 +300,7 @@ cdef extern from "qpOASES.hpp" namespace "qpOASES":
 
     cdef cppclass QProblemB:
         QProblemB()
-        QProblemB(int_t, HessianType)
+        QProblemB(int_t, HessianType, BooleanType)
 
         QProblemB(const QProblemB&)
 
@@ -339,7 +339,7 @@ cdef extern from "qpOASES.hpp" namespace "qpOASES":
 
     cdef cppclass QProblem:
         QProblem()
-        QProblem(int_t, int_t, HessianType)
+        QProblem(int_t, int_t, HessianType, BooleanType)
 
         QProblem(const QProblem&)
 
@@ -388,7 +388,7 @@ cdef extern from "qpOASES.hpp" namespace "qpOASES":
 
     cdef cppclass SQProblem:
         SQProblem()
-        SQProblem(int_t, int_t, HessianType)
+        SQProblem(int_t, int_t, HessianType, BooleanType)
 
         SQProblem(const QProblem&)
 
@@ -476,7 +476,7 @@ cdef extern from "qpOASES/extras/OQPinterface.hpp" namespace "qpOASES":
                                 BooleanType isSparse,       # Shall convert matrices to sparse format before solution?
                                 BooleanType useHotstarts,   # Shall QP solution be hotstarted?
                                 const Options& options,     # QP solver options to be used while solving benchmark problems.
-                                int maxAllowedNWSR,         # Maximum number of working set recalculations to be performed.
+                                int_t maxAllowedNWSR,       # Maximum number of working set recalculations to be performed.
                                 real_t& maxNWSR,            # Output: Maximum number of performed working set recalculations.
                                 real_t& avgNWSR,            # Output: Average number of performed working set recalculations.
                                 real_t& maxCPUtime,         # Output: Maximum CPU time required for solving each QP.
