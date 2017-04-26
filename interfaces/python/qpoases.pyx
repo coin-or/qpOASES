@@ -20,12 +20,12 @@
 ##  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 ##
 
-## author of this file: Sebastian F. Walter
+## authors of this file: Sebastian F. Walter (thanks to Felix Lenders)
 
 """
 Python interface to qpOASES
 using Cython
-:author: Sebastian F. Walter, Manuel Kudruss
+:author: Sebastian F. Walter, Manuel Kudruss (thanks to Felix Lenders)
 """
 
 import warnings
@@ -385,9 +385,9 @@ cdef class PyOptions:
 
 cdef class PyQProblemB:
     cdef QProblemB *thisptr      # hold a C++ instance which we're wrapping
-    def __cinit__(self, int nV):
+    def __cinit__(self, long nV):
         # FIXME: allow other HessianTypes!
-        self.thisptr = new QProblemB(nV, HST_UNKNOWN)
+        self.thisptr = new QProblemB(nV, HST_UNKNOWN, BT_TRUE)
     def __dealloc__(self):
         del self.thisptr
 
@@ -404,9 +404,9 @@ cdef class PyQProblemB:
         cdef np.ndarray cput_tmp
 
         # enable nWSR as return value in argument list
-        if isinstance(nWSR, int):
+        if isinstance(nWSR, long) or isinstance(nWSR, int):
             deprecation_warning_nWSR()
-            nWSR_tmp = np.array([nWSR], dtype=int)
+            nWSR_tmp = np.array([nWSR], dtype=long)
         else:
             nWSR_tmp = nWSR
 
@@ -423,7 +423,7 @@ cdef class PyQProblemB:
                     <double*> g.data,
                     <double*> lb.data,
                     <double*> ub.data,
-                    <int&>    nWSR_tmp.data[0],
+                    <int_t&>  nWSR_tmp.data[0],
                     <double*> &cput_tmp.data[0]
                     )
 
@@ -432,7 +432,7 @@ cdef class PyQProblemB:
                     <double*> g.data,
                     <double*> lb.data,
                     <double*> ub.data,
-                    <int&> nWSR_tmp.data[0]
+                    <int_t&>  nWSR_tmp.data[0]
                     )
 
     def hotstart(self,
@@ -447,9 +447,9 @@ cdef class PyQProblemB:
         cdef np.ndarray cput_tmp
 
         # enable nWSR as return value in argument list
-        if isinstance(nWSR, int):
+        if isinstance(nWSR, long) or isinstance(nWSR, int):
             deprecation_warning_nWSR()
-            nWSR_tmp = np.array([nWSR], dtype=int)
+            nWSR_tmp = np.array([nWSR], dtype=long)
         else:
             nWSR_tmp = nWSR#np.asarray(nWSR, dtype=int)
 
@@ -465,7 +465,7 @@ cdef class PyQProblemB:
                     <double*> g.data,
                     <double*> lb.data,
                     <double*> ub.data,
-                    <int&>    nWSR_tmp.data[0],
+                    <int_t&>  nWSR_tmp.data[0],
                     <double*> &cput_tmp.data[0]
                 )
 
@@ -473,7 +473,7 @@ cdef class PyQProblemB:
                     <double*> g.data,
                     <double*> lb.data,
                     <double*> ub.data,
-                    <int&>    nWSR_tmp.data[0]
+                    <int_t&>  nWSR_tmp.data[0]
             )
 
     def getPrimalSolution(self, np.ndarray[np.double_t, ndim=1] xOpt):
@@ -501,8 +501,8 @@ cdef class PyQProblemB:
 
 cdef class PyQProblem:
     cdef QProblem *thisptr      # hold a C++ instance which we're wrapping
-    def __cinit__(self, int nV, int nC):
-        self.thisptr = new QProblem(nV, nC, HST_UNKNOWN)
+    def __cinit__(self, long nV, long nC):
+        self.thisptr = new QProblem(nV, nC, HST_UNKNOWN, BT_TRUE)
     def __dealloc__(self):
         del self.thisptr
 
@@ -522,9 +522,9 @@ cdef class PyQProblem:
         cdef np.ndarray cput_tmp
 
         # enable nWSR as return value in argument list
-        if isinstance(nWSR, int):
+        if isinstance(nWSR, long) or isinstance(nWSR, int):
             deprecation_warning_nWSR()
-            nWSR_tmp = np.array([nWSR], dtype=int)
+            nWSR_tmp = np.array([nWSR], dtype=long)
         else:
             nWSR_tmp = nWSR
 
@@ -544,7 +544,7 @@ cdef class PyQProblem:
                     <double*> ub.data,
                     <double*> lbA.data,
                     <double*> ubA.data,
-                    <int&>    nWSR_tmp.data[0],
+                    <int_t&>  nWSR_tmp.data[0],
                     <double*> &cput_tmp.data[0]
                 )
 
@@ -556,7 +556,7 @@ cdef class PyQProblem:
                     <double*> ub.data,
                     <double*> lbA.data,
                     <double*> ubA.data,
-                    <int&>    nWSR_tmp.data[0]
+                    <int_t&>  nWSR_tmp.data[0]
                 )
 
     cpdef hotstart(self,
@@ -574,9 +574,9 @@ cdef class PyQProblem:
         cdef np.ndarray cput_tmp
 
         # enable nWSR as return value in argument list
-        if isinstance(nWSR, int):
+        if isinstance(nWSR, long) or isinstance(nWSR, int):
             deprecation_warning_nWSR()
-            nWSR_tmp = np.array([nWSR], dtype=int)
+            nWSR_tmp = np.array([nWSR], dtype=long)
         else:
             nWSR_tmp = nWSR
 
@@ -594,7 +594,7 @@ cdef class PyQProblem:
                     <double*> ub.data,
                     <double*> lbA.data,
                     <double*> ubA.data,
-                    <int&>    nWSR_tmp.data[0],
+                    <int_t&>  nWSR_tmp.data[0],
                     <double*> &cput_tmp.data[0]
                 )
 
@@ -604,7 +604,7 @@ cdef class PyQProblem:
                     <double*> ub.data,
                     <double*> lbA.data,
                     <double*> ubA.data,
-                    <int&>    nWSR_tmp.data[0]
+                    <int_t&>  nWSR_tmp.data[0]
                 )
 
     cpdef getPrimalSolution(self, np.ndarray[np.double_t, ndim=1] xOpt):
@@ -624,8 +624,8 @@ cdef class PyQProblem:
 
 cdef class PySQProblem:
     cdef SQProblem *thisptr      # hold a C++ instance which we're wrapping
-    def __cinit__(self, int nV, int nC):
-        self.thisptr = new SQProblem(nV, nC, HST_UNKNOWN)
+    def __cinit__(self, long nV, long nC):
+        self.thisptr = new SQProblem(nV, nC, HST_UNKNOWN, BT_TRUE)
     def __dealloc__(self):
         del self.thisptr
 
@@ -645,11 +645,11 @@ cdef class PySQProblem:
         cdef np.ndarray cput_tmp
 
         # enable nWSR as return value in argument list
-        if isinstance(nWSR, int):
+        if isinstance(nWSR, long) or isinstance(nWSR, int):
             deprecation_warning_nWSR()
-            nWSR_tmp = np.array([nWSR], dtype=int)
+            nWSR_tmp = np.array([nWSR], dtype=long)
         else:
-            nWSR_tmp = np.asarray(nWSR, dtype=int)
+            nWSR_tmp = np.asarray(nWSR, dtype=long)
 
         if cputime > 1.e-16:
             # enable cputime as return value in argument list
@@ -667,7 +667,7 @@ cdef class PySQProblem:
                         <double*> ub.data,
                         <double*> lbA.data,
                         <double*> ubA.data,
-                        <int&>    nWSR_tmp.data[0],
+                        <int_t&>  nWSR_tmp.data[0],
                         <double*> &cput_tmp.data[0]
                 )
 
@@ -679,7 +679,7 @@ cdef class PySQProblem:
                     <double*> ub.data,
                     <double*> lbA.data,
                     <double*> ubA.data,
-                    <int&>    nWSR_tmp.data[0],
+                    <int_t&>  nWSR_tmp.data[0],
         )
 
     cpdef hotstart(self,
@@ -698,9 +698,9 @@ cdef class PySQProblem:
         cdef np.ndarray cput_tmp
 
         # enable nWSR as return value in argument list
-        if isinstance(nWSR, int):
+        if isinstance(nWSR, long) or isinstance(nWSR, int):
             deprecation_warning_nWSR()
-            nWSR_tmp = np.array([nWSR], dtype=int)
+            nWSR_tmp = np.array([nWSR], dtype=long)
         else:
             nWSR_tmp = nWSR
 
@@ -720,7 +720,7 @@ cdef class PySQProblem:
                     <double*> ub.data,
                     <double*> lbA.data,
                     <double*> ubA.data,
-                    <int&>    nWSR_tmp.data[0],
+                    <int_t&>  nWSR_tmp.data[0],
                     <double*> &cput_tmp.data[0]
             )
 
@@ -732,7 +732,7 @@ cdef class PySQProblem:
                     <double*> ub.data,
                     <double*> lbA.data,
                     <double*> ubA.data,
-                    <int&>    nWSR_tmp.data[0],
+                    <int_t&>  nWSR_tmp.data[0],
         )
 
     cpdef getPrimalSolution(self, np.ndarray[np.double_t, ndim=1] xOpt):
@@ -862,7 +862,7 @@ cpdef py_runOqpBenchmark(path,               # Full path of the benchmark files 
                          isSparse,           # Shall convert matrices to sparse format before solution?
                          useHotstarts,       # Shall QP solution be hotstarted?
                          PyOptions options,  # QP solver options to be used while solving benchmark problems.
-                         int maxAllowedNWSR, # Maximum number of working set recalculations to be performed.
+                         long maxAllowedNWSR, # Maximum number of working set recalculations to be performed.
                          double maxCPUTime,  # Maximum allowed CPU time for qp solving.
                          ):
     """run a QP benchmark example"""
@@ -894,8 +894,8 @@ cpdef py_runOqpBenchmark(path,               # Full path of the benchmark files 
            maxStationarity, maxFeasibility, maxComplementarity
 
 """
-def py_getKktViolation(int nV,                              # Number of variables.
-                       int nC,                              # Number of constraints.
+def py_getKktViolation(long nV,                             # Number of variables.
+                       long nC,                             # Number of constraints.
                        np.ndarray[np.double_t, ndim=2] H,   # Hessian matrix.
                        np.ndarray[np.double_t, ndim=1] g,   # Sequence of gradient vectors.
                        np.ndarray[np.double_t, ndim=2] A,   # Constraint matrix.

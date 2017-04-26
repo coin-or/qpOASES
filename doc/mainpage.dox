@@ -116,7 +116,7 @@
  *
  *	<li>Reference to the <b>webpage</b>:
  *	\code
- *	 @MISC{qpOASES2014,
+ *	 @MISC{qpOASES2017,
  *	  author = {H.J. Ferreau and A. Potschka and C. Kirches},
  *	  title = {{qpOASES} webpage},
  *	  howpublished = {http://www.qpOASES.org/},
