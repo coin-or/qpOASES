@@ -2,10 +2,15 @@ pyqpOASES: a Python interface to qpOASES
 
 :Author: Sebastian F. Walter, Manuel Kudruss
 
+Known to work with
+------------------
+
+* python2.7
+* qpOASES 3.2 (rev 259)
+
 
 Installation
 ------------
-
 
 Requirements:
 

@@ -23,6 +23,8 @@
 ## Example adapted from examples/example2.cpp.
 ## author of this file: Sebastian F. Walter
 
+import os
+import sys
 import numpy as np
 from qpoases import PySQProblem as SQProblem
 from qpoases import PySolutionAnalysis as SolutionAnalysis

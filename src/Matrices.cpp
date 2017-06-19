@@ -850,6 +850,8 @@ returnValue SparseMatrix::getRowNorm( real_t* norm, int_t type ) const
 			break;
 		case 1:
 			for ( j=0; j < nCols; ++j ) {
+				// FIXME please add guarding or fix indent for "for loop" to
+				//       remove compile warnings
 				for (i = jc[j]; i < jc[j+1]; i++);
 				  norm[ir[i]] += getAbs( val[i] );
 			}

@@ -3382,11 +3382,13 @@ returnValue QProblemB::changeActiveSet( int_t BC_idx, SubjectToStatus BC_status 
 		/* Add one variable to active set. */
 		default:
 			#ifndef __SUPPRESSANYOUTPUT__
-			if ( BC_status == ST_LOWER )
+			if ( BC_status == ST_LOWER ) {
 				snprintf( messageString,MAX_STRING_LENGTH,"lower bound no. %d.",(int)BC_idx );
-			else
+			}
+			else {
 				snprintf( messageString,MAX_STRING_LENGTH,"upper bound no. %d.",(int)BC_idx );
-				getGlobalMessageHandler( )->throwInfo( RET_ADD_TO_ACTIVESET,messageString,__FUNC__,__FILE__,__LINE__,VS_VISIBLE );
+			}
+			getGlobalMessageHandler( )->throwInfo( RET_ADD_TO_ACTIVESET,messageString,__FUNC__,__FILE__,__LINE__,VS_VISIBLE );
 			#endif
 
 			if ( addBound( BC_idx,BC_status,BT_TRUE ) != SUCCESSFUL_RETURN )

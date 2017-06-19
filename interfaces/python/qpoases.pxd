@@ -30,6 +30,9 @@
 cdef extern from "qpOASES.hpp" namespace "qpOASES":
 
     ctypedef double real_t
+    # NOTE we use long type for integers to be compatible with the C/C++
+    #      interface in all cases, i.e, either __USE_LONG_INTEGERS__ is defined
+    #      or not.
     ctypedef long int_t
 
     cdef enum BooleanType:
@@ -298,6 +301,15 @@ cdef extern from "qpOASES.hpp" namespace "qpOASES":
         int_t dropEqConPriority
         int_t dropIneqConPriority
 
+
+    cdef cppclass Bounds:
+        Bounds()
+
+
+    cdef cppclass Constraints:
+        Constraints()
+
+
     cdef cppclass QProblemB:
         QProblemB()
         QProblemB(int_t, HessianType, BooleanType)
@@ -410,6 +422,22 @@ cdef extern from "qpOASES.hpp" namespace "qpOASES":
                          real_t*,
                          int_t&,
                          real_t*)
+
+        returnValue init(real_t* _H,
+                         real_t* _g,
+                         real_t* _A,
+                         real_t* _lb,
+                         real_t* _ub,
+                         real_t* _lbA,
+                         real_t* _ubA,
+                         int_t& nWSR,
+                         real_t* cputime,
+                         real_t* xOpt,
+                         real_t* yOpt,
+                         Bounds* guessedBounds,
+                         Constraints* guessedConstraints,
+                         real_t* _R)
+
 
         returnValue hotstart(real_t*,
                              real_t*,

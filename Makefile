@@ -12,7 +12,7 @@
 ##
 ##	qpOASES is distributed in the hope that it will be useful,
 ##	but WITHOUT ANY WARRANTY; without even the implied warranty of
-##	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+##	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 ##	See the GNU Lesser General Public License for more details.
 ##
 ##	You should have received a copy of the GNU Lesser General Public
@@ -40,16 +40,16 @@ all: src examples
 #src_aw testing
 
 src:
-	@cd $@; ${MAKE} -s 
+	@cd $@; ${MAKE} -s
 
 #src_aw:
-#	@cd $@; ${MAKE} -s 
+#	@cd $@; ${MAKE} -s
 
 examples: src
 	@cd $@; ${MAKE} -s
 
 doc:
-	@cd $@; ${MAKE} -s 
+	@cd $@; ${MAKE} -s
 
 testing: src
 	@cd testing/cpp; ${MAKE} -s
@@ -58,7 +58,7 @@ test: testing
 	@cd testing/cpp; ${MAKE} -s runTests
 
 debugging:
-	@cd $@; ${MAKE} -s 
+	@cd $@; ${MAKE} -s
 
 clean:
 	@cd src               && ${MAKE} -s clean

@@ -387,7 +387,8 @@ cdef class PyQProblemB:
     cdef QProblemB *thisptr      # hold a C++ instance which we're wrapping
     def __cinit__(self, long nV):
         # FIXME: allow other HessianTypes!
-        self.thisptr = new QProblemB(nV, HST_UNKNOWN, BT_TRUE)
+        self.thisptr = new QProblemB(<int_t> nV, HST_UNKNOWN, BT_FALSE)
+
     def __dealloc__(self):
         del self.thisptr
 
@@ -419,20 +420,20 @@ cdef class PyQProblemB:
                 cput_tmp = cputime
 
             return self.thisptr.init(
-                    <double*> H.data,
-                    <double*> g.data,
-                    <double*> lb.data,
-                    <double*> ub.data,
+                    <real_t*> H.data,
+                    <real_t*> g.data,
+                    <real_t*> lb.data,
+                    <real_t*> ub.data,
                     <int_t&>  nWSR_tmp.data[0],
-                    <double*> &cput_tmp.data[0]
+                    <real_t*> &cput_tmp.data[0]
                     )
 
         return self.thisptr.init(
-                    <double*> H.data,
-                    <double*> g.data,
-                    <double*> lb.data,
-                    <double*> ub.data,
-                    <int_t&>  nWSR_tmp.data[0]
+                    <real_t*> H.data,
+                    <real_t*> g.data,
+                    <real_t*> lb.data,
+                    <real_t*> ub.data,
+                    <int_t&> nWSR_tmp.data[0]
                     )
 
     def hotstart(self,
@@ -462,25 +463,25 @@ cdef class PyQProblemB:
                 cput_tmp = cputime#np.asarray(cputime, dtype=float)
 
             return self.thisptr.hotstart(
-                    <double*> g.data,
-                    <double*> lb.data,
-                    <double*> ub.data,
+                    <real_t*> g.data,
+                    <real_t*> lb.data,
+                    <real_t*> ub.data,
                     <int_t&>  nWSR_tmp.data[0],
-                    <double*> &cput_tmp.data[0]
+                    <real_t*> &cput_tmp.data[0]
                 )
 
         return self.thisptr.hotstart(
-                    <double*> g.data,
-                    <double*> lb.data,
-                    <double*> ub.data,
-                    <int_t&>  nWSR_tmp.data[0]
+                    <real_t*> g.data,
+                    <real_t*> lb.data,
+                    <real_t*> ub.data,
+                    <int_t&>    nWSR_tmp.data[0]
             )
 
     def getPrimalSolution(self, np.ndarray[np.double_t, ndim=1] xOpt):
-        return self.thisptr.getPrimalSolution(<double*> xOpt.data)
+        return self.thisptr.getPrimalSolution(<real_t*> xOpt.data)
 
     def getDualSolution(self, np.ndarray[np.double_t, ndim=1] yOpt):
-        return self.thisptr.getDualSolution(<double*> yOpt.data)
+        return self.thisptr.getDualSolution(<real_t*> yOpt.data)
 
     def getObjVal(self):
         return self.thisptr.getObjVal()
@@ -501,8 +502,10 @@ cdef class PyQProblemB:
 
 cdef class PyQProblem:
     cdef QProblem *thisptr      # hold a C++ instance which we're wrapping
+
     def __cinit__(self, long nV, long nC):
-        self.thisptr = new QProblem(nV, nC, HST_UNKNOWN, BT_TRUE)
+        self.thisptr = new QProblem(nV, nC, HST_UNKNOWN, BT_FALSE)
+
     def __dealloc__(self):
         del self.thisptr
 
@@ -537,25 +540,25 @@ cdef class PyQProblem:
                 cput_tmp = cputime
 
             return self.thisptr.init(
-                    <double*> H.data,
-                    <double*> g.data,
-                    <double*> A.data,
-                    <double*> lb.data,
-                    <double*> ub.data,
-                    <double*> lbA.data,
-                    <double*> ubA.data,
+                    <real_t*> H.data,
+                    <real_t*> g.data,
+                    <real_t*> A.data,
+                    <real_t*> lb.data,
+                    <real_t*> ub.data,
+                    <real_t*> lbA.data,
+                    <real_t*> ubA.data,
                     <int_t&>  nWSR_tmp.data[0],
-                    <double*> &cput_tmp.data[0]
+                    <real_t*> &cput_tmp.data[0]
                 )
 
         return self.thisptr.init(
-                    <double*> H.data,
-                    <double*> g.data,
-                    <double*> A.data,
-                    <double*> lb.data,
-                    <double*> ub.data,
-                    <double*> lbA.data,
-                    <double*> ubA.data,
+                    <real_t*> H.data,
+                    <real_t*> g.data,
+                    <real_t*> A.data,
+                    <real_t*> lb.data,
+                    <real_t*> ub.data,
+                    <real_t*> lbA.data,
+                    <real_t*> ubA.data,
                     <int_t&>  nWSR_tmp.data[0]
                 )
 
@@ -568,7 +571,6 @@ cdef class PyQProblem:
              nWSR,
              cputime=0.0
         ):
-
         # FIXME: add asserts
         cdef np.ndarray nWSR_tmp
         cdef np.ndarray cput_tmp
@@ -589,29 +591,29 @@ cdef class PyQProblem:
                 cput_tmp = cputime
 
             return self.thisptr.hotstart(
-                    <double*> g.data,
-                    <double*> lb.data,
-                    <double*> ub.data,
-                    <double*> lbA.data,
-                    <double*> ubA.data,
+                    <real_t*> g.data,
+                    <real_t*> lb.data,
+                    <real_t*> ub.data,
+                    <real_t*> lbA.data,
+                    <real_t*> ubA.data,
                     <int_t&>  nWSR_tmp.data[0],
-                    <double*> &cput_tmp.data[0]
+                    <real_t*> &cput_tmp.data[0]
                 )
 
         return self.thisptr.hotstart(
-                    <double*> g.data,
-                    <double*> lb.data,
-                    <double*> ub.data,
-                    <double*> lbA.data,
-                    <double*> ubA.data,
+                    <real_t*> g.data,
+                    <real_t*> lb.data,
+                    <real_t*> ub.data,
+                    <real_t*> lbA.data,
+                    <real_t*> ubA.data,
                     <int_t&>  nWSR_tmp.data[0]
                 )
 
     cpdef getPrimalSolution(self, np.ndarray[np.double_t, ndim=1] xOpt):
-        return self.thisptr.getPrimalSolution(<double*> xOpt.data)
+        return self.thisptr.getPrimalSolution(<real_t*> xOpt.data)
 
     cpdef getDualSolution(self, np.ndarray[np.double_t, ndim=1] yOpt):
-        return self.thisptr.getDualSolution(<double*> yOpt.data)
+        return self.thisptr.getDualSolution(<real_t*> yOpt.data)
 
     cpdef getObjVal(self):
         return self.thisptr.getObjVal()
@@ -622,10 +624,13 @@ cdef class PyQProblem:
     cpdef setOptions(self, PyOptions options):
         self.thisptr.setOptions(deref(options.thisptr))
 
+
 cdef class PySQProblem:
     cdef SQProblem *thisptr      # hold a C++ instance which we're wrapping
+
     def __cinit__(self, long nV, long nC):
-        self.thisptr = new SQProblem(nV, nC, HST_UNKNOWN, BT_TRUE)
+        self.thisptr = new SQProblem(nV, nC, HST_UNKNOWN, BT_FALSE)
+
     def __dealloc__(self):
         del self.thisptr
 
@@ -638,11 +643,13 @@ cdef class PySQProblem:
              np.ndarray[np.double_t, ndim=1] lbA,
              np.ndarray[np.double_t, ndim=1] ubA,
              nWSR,
-             cputime=0.0):
-
+             cputime=0.0
+    ):
         # FIXME: add asserts
-        cdef np.ndarray nWSR_tmp
-        cdef np.ndarray cput_tmp
+        cpdef np.ndarray nWSR_tmp
+        cpdef np.ndarray cput_tmp
+        # nWSR_tmp = np.zeros(1, dtype=long)
+        # cput_tmp = np.zeros(1, dtype=float)
 
         # enable nWSR as return value in argument list
         if isinstance(nWSR, long) or isinstance(nWSR, int):
@@ -658,29 +665,30 @@ cdef class PySQProblem:
                 cput_tmp = np.array([cputime], dtype=float)
             else:
                 cput_tmp = cputime
+            # print "cput_tmp: ", cput_tmp
 
             return self.thisptr.init(
-                        <double*> H.data,
-                        <double*> g.data,
-                        <double*> A.data,
-                        <double*> lb.data,
-                        <double*> ub.data,
-                        <double*> lbA.data,
-                        <double*> ubA.data,
+                        <real_t*> H.data,
+                        <real_t*> g.data,
+                        <real_t*> A.data,
+                        <real_t*> lb.data,
+                        <real_t*> ub.data,
+                        <real_t*> lbA.data,
+                        <real_t*> ubA.data,
                         <int_t&>  nWSR_tmp.data[0],
-                        <double*> &cput_tmp.data[0]
+                        <real_t*> &cput_tmp.data[0]
                 )
 
         return self.thisptr.init(
-                    <double*> H.data,
-                    <double*> g.data,
-                    <double*> A.data,
-                    <double*> lb.data,
-                    <double*> ub.data,
-                    <double*> lbA.data,
-                    <double*> ubA.data,
+                    <real_t*> H.data,
+                    <real_t*> g.data,
+                    <real_t*> A.data,
+                    <real_t*> lb.data,
+                    <real_t*> ub.data,
+                    <real_t*> lbA.data,
+                    <real_t*> ubA.data,
                     <int_t&>  nWSR_tmp.data[0],
-        )
+                )
 
     cpdef hotstart(self,
              np.ndarray[np.double_t, ndim=2] H,
@@ -713,33 +721,33 @@ cdef class PySQProblem:
                 cput_tmp = cputime
 
             return self.thisptr.hotstart(
-                    <double*> H.data,
-                    <double*> g.data,
-                    <double*> A.data,
-                    <double*> lb.data,
-                    <double*> ub.data,
-                    <double*> lbA.data,
-                    <double*> ubA.data,
+                    <real_t*> H.data,
+                    <real_t*> g.data,
+                    <real_t*> A.data,
+                    <real_t*> lb.data,
+                    <real_t*> ub.data,
+                    <real_t*> lbA.data,
+                    <real_t*> ubA.data,
                     <int_t&>  nWSR_tmp.data[0],
-                    <double*> &cput_tmp.data[0]
+                    <real_t*> &cput_tmp.data[0]
             )
 
         return self.thisptr.hotstart(
-                    <double*> H.data,
-                    <double*> g.data,
-                    <double*> A.data,
-                    <double*> lb.data,
-                    <double*> ub.data,
-                    <double*> lbA.data,
-                    <double*> ubA.data,
+                    <real_t*> H.data,
+                    <real_t*> g.data,
+                    <real_t*> A.data,
+                    <real_t*> lb.data,
+                    <real_t*> ub.data,
+                    <real_t*> lbA.data,
+                    <real_t*> ubA.data,
                     <int_t&>  nWSR_tmp.data[0],
         )
 
     cpdef getPrimalSolution(self, np.ndarray[np.double_t, ndim=1] xOpt):
-        return self.thisptr.getPrimalSolution(<double*> xOpt.data)
+        return self.thisptr.getPrimalSolution(<real_t*> xOpt.data)
 
     cpdef getDualSolution(self, np.ndarray[np.double_t, ndim=1] yOpt):
-        return self.thisptr.getDualSolution(<double*> yOpt.data)
+        return self.thisptr.getDualSolution(<real_t*> yOpt.data)
 
     cpdef getObjVal(self):
         return self.thisptr.getObjVal()
@@ -838,24 +846,24 @@ cdef class PySolutionAnalysis:
                               np.ndarray[np.double_t, ndim=1] g_b_bA_VAR,
                               np.ndarray[np.double_t, ndim=1] Primal_Dual_VAR ):
         return self.thisptr.getVarianceCovariance(qp.thisptr,
-                                                  <double*> g_b_bA_VAR.data,
-                                                  <double*> Primal_Dual_VAR.data)
+                                                  <real_t*> g_b_bA_VAR.data,
+                                                  <real_t*> Primal_Dual_VAR.data)
 
     cpdef _getVarianceCovariance_QProblem(self,
                               PyQProblem qp,
                               np.ndarray[np.double_t, ndim=1] g_b_bA_VAR,
                               np.ndarray[np.double_t, ndim=1] Primal_Dual_VAR ):
         return self.thisptr.getVarianceCovariance(qp.thisptr,
-                                                  <double*> g_b_bA_VAR.data,
-                                                  <double*> Primal_Dual_VAR.data)
+                                                  <real_t*> g_b_bA_VAR.data,
+                                                  <real_t*> Primal_Dual_VAR.data)
 
     cpdef _getVarianceCovariance_SQProblem(self,
                               PySQProblem qp,
                               np.ndarray[np.double_t, ndim=1] g_b_bA_VAR,
                               np.ndarray[np.double_t, ndim=1] Primal_Dual_VAR ):
         return self.thisptr.getVarianceCovariance(qp.thisptr,
-                                                  <double*> g_b_bA_VAR.data,
-                                                  <double*> Primal_Dual_VAR.data)
+                                                  <real_t*> g_b_bA_VAR.data,
+                                                  <real_t*> Primal_Dual_VAR.data)
 
 # Wrapped some utility functions for unit testing
 cpdef py_runOqpBenchmark(path,               # Full path of the benchmark files (without trailing slash!).
@@ -873,25 +881,6 @@ cpdef py_runOqpBenchmark(path,               # Full path of the benchmark files 
     maxStationarity    = 0.0 # Output: Maximum residual of stationarity condition.
     maxFeasibility     = 0.0 # Output: Maximum residual of primal feasibility condition.
     maxComplementarity = 0.0 # Output: Maximum residual of complementarity condition.
-
-    maxCPUtime = maxCPUTime
-
-    p = path.encode()
-    returnValue = runOqpBenchmark(p,
-                                  isSparse,
-                                  useHotstarts,
-                                  deref(options.thisptr),
-                                  maxAllowedNWSR,
-                                  maxNWSR,
-                                  avgNWSR,
-                                  maxCPUtime,
-                                  avgCPUtime,
-                                  maxStationarity,
-                                  maxFeasibility,
-                                  maxComplementarity)
-
-    return returnValue, maxNWSR, avgNWSR, maxCPUtime, avgCPUtime, \
-           maxStationarity, maxFeasibility, maxComplementarity
 
 """
 def py_getKktViolation(long nV,                             # Number of variables.
@@ -911,19 +900,19 @@ def py_getKktViolation(long nV,                             # Number of variable
     cmpl = 0.0 # Maximum value of complementarity residual.
     getKktViolation(nV,
                     nC,
-                    <double*> H.data,
-                    <double*> g.data,
-                    <double*> A.data,
-                    <double*> lb.data,
-                    <double*> ub.data,
-                    <double*> lbA.data,
-                    <double*> ubA.data,
-                    <double*> x.data,
-                    <double*> y.data,
+                    <real_t*> H.data,
+                    <real_t*> g.data,
+                    <real_t*> A.data,
+                    <real_t*> lb.data,
+                    <real_t*> ub.data,
+                    <real_t*> lbA.data,
+                    <real_t*> ubA.data,
+                    <real_t*> x.data,
+                    <real_t*> y.data,
                     stat,
                     feas,
                     cmpl
                     )
     return stat, feas, cmpl
-    """
+"""
 

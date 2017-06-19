@@ -56,7 +56,7 @@ SQProblem::SQProblem( ) : QProblem( )
 /*
  *	S Q P r o b l e m
  */
-SQProblem::SQProblem( int_t _nV, int_t _nC, HessianType _hessianType, BooleanType allocDenseMats ) 
+SQProblem::SQProblem( int_t _nV, int_t _nC, HessianType _hessianType, BooleanType allocDenseMats )
 	: QProblem( _nV,_nC,_hessianType,allocDenseMats )
 {
 }
@@ -114,13 +114,15 @@ returnValue SQProblem::hotstart(	SymmetricMatrix *H_new, const real_t* const g_n
 	real_t starttime = 0.0;
 	real_t auxTime = 0.0;
 
-    if ( cputime != 0 )
-        starttime = getCPUtime( );
+	if ( cputime != 0 ) {
+		starttime = getCPUtime( );
+	}
 
 
 	/* I) UPDATE QP MATRICES AND VECTORS */
-	if ( setupNewAuxiliaryQP( H_new,A_new,lb_new,ub_new,lbA_new,ubA_new ) != SUCCESSFUL_RETURN )
+	if ( setupNewAuxiliaryQP( H_new,A_new,lb_new,ub_new,lbA_new,ubA_new ) != SUCCESSFUL_RETURN ) {
 		return THROWERROR( RET_SETUP_AUXILIARYQP_FAILED );
+	}
 
 
 	/* II) PERFORM USUAL HOMOTOPY */
@@ -136,9 +138,10 @@ returnValue SQProblem::hotstart(	SymmetricMatrix *H_new, const real_t* const g_n
 													nWSR,cputime,
 													guessedBounds,guessedConstraints
 													);
-	
-	if ( cputime != 0 )
+
+	if ( cputime != 0 ) {
 		*cputime += auxTime;
+	}
 
 	return returnvalue;
 }
@@ -163,8 +166,9 @@ returnValue SQProblem::hotstart(	const real_t* const H_new, const real_t* const 
 
 	/* start runtime measurement */
 	real_t starttime = 0.0;
-    if ( cputime != 0 )
-        starttime = getCPUtime( );
+	if ( cputime != 0 ) {
+		starttime = getCPUtime( );
+	}
 
 
 	/* I) UPDATE QP MATRICES AND VECTORS */
@@ -175,8 +179,9 @@ returnValue SQProblem::hotstart(	const real_t* const H_new, const real_t* const 
 	/* II) PERFORM USUAL HOMOTOPY */
 
 	/* Allow only remaining CPU time for usual hotstart. */
-	if ( cputime != 0 )
+	if ( cputime != 0 ) {
 		*cputime -= getCPUtime( ) - starttime;
+	}
 
 	returnValue returnvalue = QProblem::hotstart(	g_new,lb_new,ub_new,lbA_new,ubA_new,
 													nWSR,cputime,
