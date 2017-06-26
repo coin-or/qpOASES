@@ -2,7 +2,7 @@
 ##	This file is part of qpOASES.
 ##
 ##	qpOASES -- An Implementation of the Online Active Set Strategy.
-##	Copyright (C) 2007-2017 by Hans Joachim Ferreau, Andreas Potschka,
+##	Copyright (C) 2007-2015 by Hans Joachim Ferreau, Andreas Potschka,
 ##	Christian Kirches et al. All rights reserved.
 ##
 ##	qpOASES is free software; you can redistribute it and/or
@@ -26,7 +26,7 @@
 ##	Filename:  src/Makefile
 ##	Author:    Hans Joachim Ferreau, Andreas Potschka, Christian Kirches
 ##	Version:   3.2
-##	Date:      2007-2017
+##	Date:      2007-2015
 ##
 
 include ../make.mk
@@ -36,7 +36,8 @@ include ../make.mk
 ##
 
 IFLAGS      =  -I. \
-               -I${IDIR}
+               -I${IDIR} \
+               -I${PRESOLVER_IDIR}
 
 QPOASES_OBJECTS = \
 	SQProblem.${OBJEXT} \
@@ -52,7 +53,9 @@ QPOASES_OBJECTS = \
 	Options.${OBJEXT} \
 	Matrices.${OBJEXT} \
 	MessageHandling.${OBJEXT} \
-	SparseSolver.${OBJEXT}
+	SparseSolver.${OBJEXT} \
+	Presolver.${OBJEXT} \
+	PresolverOptions.${OBJEXT}
 
 
 QPOASES_EXTRAS_OBJECTS = \
@@ -61,7 +64,6 @@ QPOASES_EXTRAS_OBJECTS = \
 
 QPOASES_DEPENDS = \
 	${IDIR}/qpOASES.hpp \
-	${IDIR}/qpOASES/LapackBlasReplacement.hpp \
 	${IDIR}/qpOASES/SQProblem.hpp \
 	${IDIR}/qpOASES/QProblem.hpp \
 	${IDIR}/qpOASES/Flipper.hpp \
@@ -76,7 +78,9 @@ QPOASES_DEPENDS = \
 	${IDIR}/qpOASES/Options.hpp \
 	${IDIR}/qpOASES/Matrices.hpp \
 	${IDIR}/qpOASES/MessageHandling.hpp \
-	${IDIR}/qpOASES/UnitTesting.hpp
+	${IDIR}/qpOASES/UnitTesting.hpp \
+	${IDIR}/qpOASES/Presolver.hpp \
+	${IDIR}/qpOASES/PresolverOptions.hpp
 
 
 ##

@@ -2,7 +2,7 @@
 ##	This file is part of qpOASES.
 ##
 ##	qpOASES -- An Implementation of the Online Active Set Strategy.
-##	Copyright (C) 2007-2017 by Hans Joachim Ferreau, Andreas Potschka,
+##	Copyright (C) 2007-2015 by Hans Joachim Ferreau, Andreas Potschka,
 ##	Christian Kirches et al. All rights reserved.
 ##
 ##	qpOASES is free software; you can redistribute it and/or
@@ -12,7 +12,7 @@
 ##
 ##	qpOASES is distributed in the hope that it will be useful,
 ##	but WITHOUT ANY WARRANTY; without even the implied warranty of
-##	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+##	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
 ##	See the GNU Lesser General Public License for more details.
 ##
 ##	You should have received a copy of the GNU Lesser General Public
@@ -26,42 +26,48 @@
 ##	Filename:  Makefile
 ##	Author:    Hans Joachim Ferreau
 ##	Version:   3.2
-##	Date:      2007-2017
+##	Date:      2007-2015
 ##
 
 include make.mk
+
+export CFLAGS = $(CPPFLAGS)
 
 ##
 ##	targets
 ##
 
 
-all: src examples
+all: qpPresolver src examples
 #src_aw testing
 
-src:
+qpPresolver:
 	@cd $@; ${MAKE} -s
 
-#src_aw:
-#	@cd $@; ${MAKE} -s
+src:
+	@cd $@; ${MAKE} -s 
 
-examples: src
+#src_aw:
+#	@cd $@; ${MAKE} -s 
+
+examples: qpPresolver src
 	@cd $@; ${MAKE} -s
 
 doc:
-	@cd $@; ${MAKE} -s
+	@cd $@; ${MAKE} -s 
 
-testing: src
+testing: qpPresolver src
 	@cd testing/cpp; ${MAKE} -s
 
 test: testing
 	@cd testing/cpp; ${MAKE} -s runTests
 
 debugging:
-	@cd $@; ${MAKE} -s
+	@cd $@; ${MAKE} -s 
 
 clean:
 	@cd src               && ${MAKE} -s clean
+	@cd qpPresolver       && ${MAKE} -s purge
 	@cd examples          && ${MAKE} -s clean
 	@cd bin               && ${RM} -f *.* *{EXE}
 	@cd testing/cpp       && ${MAKE} -s clean
@@ -86,7 +92,7 @@ c_wrapper:
 	@echo Compiling C interface...
 	@cd ./interfaces/c/; ${MAKE} -s
 
-.PHONY : all src examples doc testing debugging clean clobber scilab python phythoninstall c_wrapper
+.PHONY : all qpPresolver src examples doc testing debugging clean clobber scilab python phythoninstall c_wrapper
 
 
 ##

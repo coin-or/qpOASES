@@ -2,7 +2,7 @@
 ##	This file is part of qpOASES.
 ##
 ##	qpOASES -- An Implementation of the Online Active Set Strategy.
-##	Copyright (C) 2007-2017 by Hans Joachim Ferreau, Andreas Potschka,
+##	Copyright (C) 2007-2015 by Hans Joachim Ferreau, Andreas Potschka,
 ##	Christian Kirches et al. All rights reserved.
 ##
 ##	qpOASES is free software; you can redistribute it and/or
@@ -26,7 +26,7 @@
 ##	Filename:  examples/Makefile
 ##	Author:    Hans Joachim Ferreau
 ##	Version:   3.2
-##	Date:      2007-2017
+##	Date:      2007-2015
 ##
 
 include ../make.mk
@@ -36,7 +36,8 @@ include ../make.mk
 ##
 
 IFLAGS      =  -I. \
-               -I${IDIR}
+               -I${IDIR} \
+               -I${PRESOLVER_IDIR}
 
 QPOASES_EXES = \
 	${BINDIR}/example1${EXE} \
@@ -49,7 +50,9 @@ QPOASES_EXES = \
 	${BINDIR}/example5${EXE} \
 	${BINDIR}/exampleLP${EXE} \
 	${BINDIR}/qrecipe${EXE} \
-	${BINDIR}/qrecipeSchur${EXE}
+	${BINDIR}/qrecipeSchur${EXE} \
+	${BINDIR}/qrecipePresolverDense${EXE} \
+	${BINDIR}/qrecipePresolverSparse${EXE}
 
 
 ##
@@ -74,6 +77,13 @@ ${BINDIR}/qrecipeSchur${EXE}: qrecipeSchur.${OBJEXT} qrecipe_data.hpp ${LINK_DEP
 	@${ECHO} "Creating" $@
 	@${CPP} ${DEF_TARGET} ${CPPFLAGS} $< ${QPOASES_LINK} ${LINK_LIBRARIES}
 
+${BINDIR}/qrecipePresolverDense${EXE}: qrecipePresolverDense.${OBJEXT} qrecipe_data.hpp ${LINK_DEPENDS}
+	@${ECHO} "Creating" $@
+	@${CPP} ${DEF_TARGET} ${CPPFLAGS} $< ${QPOASES_LINK} ${LINK_LIBRARIES}
+
+${BINDIR}/qrecipePresolverSparse${EXE}: qrecipePresolverSparse.${OBJEXT} qrecipe_data.hpp ${LINK_DEPENDS}
+	@${ECHO} "Creating" $@
+	@${CPP} ${DEF_TARGET} ${CPPFLAGS} $< ${QPOASES_LINK} ${LINK_LIBRARIES}
 
 clean:
 	@${ECHO} "Cleaning up (examples)"
@@ -94,6 +104,14 @@ qrecipe.${OBJEXT}: qrecipe.cpp qrecipe_data.hpp
 	@${CPP} ${DEF_TARGET} ${IFLAGS} ${CPPFLAGS} -c $<
 
 qrecipeSchur.${OBJEXT}: qrecipeSchur.cpp qrecipe_data.hpp
+	@${ECHO} "Creating" $@
+	@${CPP} ${DEF_TARGET} ${IFLAGS} ${CPPFLAGS} -c $<
+
+qrecipePresolverDense.${OBJEXT}: qrecipePresolverDense.cpp qrecipe_data.hpp
+	@${ECHO} "Creating" $@
+	@${CPP} ${DEF_TARGET} ${IFLAGS} ${CPPFLAGS} -c $<
+
+qrecipePresolverSparse.${OBJEXT}: qrecipePresolverSparse.cpp qrecipe_data.hpp
 	@${ECHO} "Creating" $@
 	@${CPP} ${DEF_TARGET} ${IFLAGS} ${CPPFLAGS} -c $<
 
