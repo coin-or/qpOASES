@@ -95,6 +95,7 @@ returnValue Presolver::presolveCoordMat(int_t* nV,
     {
         return THROWERROR( convertErrorCode(err) );
     }
+
     return SUCCESSFUL_RETURN;
 }
 
@@ -154,7 +155,7 @@ returnValue Presolver::presolve(int_t* nV,
             Hcp[i] = 0;
 
         for (int_t i = 0; i < *nzH; ++i)
-            Hcp[Hjcn[i]+1]++;
+            ++Hcp[Hjcn[i]+1];
 
         for (int_t i = 1; i <= nVar; ++i)
             Hcp[i] += Hcp[i-1];
@@ -166,7 +167,7 @@ returnValue Presolver::presolve(int_t* nV,
             Acp[i] = 0;
 
         for (int_t i = 0; i < *nzA; ++i)
-            Acp[Ajcn[i]+1]++;
+            ++Acp[Ajcn[i]+1];
 
         for (int_t i = 1; i <= nVar; ++i)
             Acp[i] += Acp[i-1];
@@ -648,6 +649,7 @@ returnValue Presolver::postsolve(real_t* const x,
         memmove(&y[nVar], &y[pnVar], static_cast<size_t>(pnCon) * sizeof(real_t));
     }
 
+    /* Extract working set regarding bound constraints if necessary. */
     if (bounds != 0)
     {
         wj = new int_t[nVar];
@@ -672,11 +674,12 @@ returnValue Presolver::postsolve(real_t* const x,
             default:
                 /* Other status is currently not allowed. */
                 delete[] wj;
-                return RET_INVALID_ARGUMENTS;
+                return THROWERROR( RET_INVALID_ARGUMENTS );
             }
         }
     }
 
+    /* Extract working set regarding linear constraints if necessary. */
     if (constraints != 0)
     {
         wi = new int_t[nCon];
@@ -701,7 +704,7 @@ returnValue Presolver::postsolve(real_t* const x,
                 /* Other status is currently not allowed. */
                 delete[] wi;
                 delete[] wj;
-                return RET_INVALID_ARGUMENTS;
+                return THROWERROR( RET_INVALID_ARGUMENTS );
             }
         }
     }
@@ -710,9 +713,12 @@ returnValue Presolver::postsolve(real_t* const x,
 
 	if (err != QPP_OK)
 	{
+	    delete[] wi;
+	    delete[] wj;
 		return THROWERROR( convertErrorCode(err) );
 	}
 
+	/* Create new qpOASES working set regarding bound constraints. */
 	if (bounds != 0)
     {
         /* Initialize bounds with new dimension and working set */
@@ -759,6 +765,7 @@ returnValue Presolver::postsolve(real_t* const x,
         }
     }
 
+    /* Create new qpOASES working set regarding linear constraints. */
     if (constraints != 0)
     {
         /* Initialize constraints with new dimension and working set */

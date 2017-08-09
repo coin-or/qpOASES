@@ -1,83 +1,103 @@
-# Makefile for creating the qpPresolver library.
+##
+##	This file is part of qpPresolver.
+##
+##	qpPresolver -- An implementation of presolving (= preprocessing) techniques
+##  for Quadratic Programming.
+##	Copyright (C) 2017 by Dominik Cebulla et al. All rights reserved.
+##
+##	qpPresolver is free software; you can redistribute it and/or
+##	modify it under the terms of the GNU Lesser General Public
+##	License as published by the Free Software Foundation; either
+##	version 2.1 of the License, or (at your option) any later version.
+##
+##	qpPresolver is distributed in the hope that it will be useful,
+##	but WITHOUT ANY WARRANTY; without even the implied warranty of
+##	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+##	See the GNU Lesser General Public License for more details.
+##
+##	You should have received a copy of the GNU Lesser General Public
+##	License along with qpPresolver; if not, write to the Free Software
+##	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+##
 
-EXTDIR = ../extern
+##
+##	Filename:  src/Makefile
+##	Author:    Dominik Cebulla
+##	Version:   1.0 Beta
+##	Date:      2017
+##
 
-LIBDIR = ../lib
-QPPDIR = ../include/qpPresolver
+include ../make.mk
 
-MKDIR_P = mkdir -p
+QPPRESOLVER_EXTERN_DIR   = ../extern
+QPPRESOLVER_LIB_DIR      = ../lib
+QPPRESOLVER_INCLUDE_DIR  = ../include
 
-# ==============================================================================
-# header files for dependencies
-# ==============================================================================
-HDR = ../include/qpPresolver.h \
-      $(QPPDIR)/constants.h \
-      $(QPPDIR)/ecrmatrix.h \
-      $(QPPDIR)/errorcodes.h \
-      $(QPPDIR)/minheap.h \
-      $(QPPDIR)/options.h \
-      $(QPPDIR)/presolver.h \
-      $(QPPDIR)/stack.h \
-      $(QPPDIR)/types.h \
-      $(QPPDIR)/utility.h \
-      $(EXTDIR)/mmio/include/mmio.h
-      
-INCLUDES = $(EXTDIR)/mmio/include 
+SUITESPARSE_INCLUDE_DIR  = /usr/include/suitesparse
 
-# ==============================================================================
-# object files
-# ==============================================================================
-OBJ = $(LIBDIR)/ecrmatrix.o \
-	  $(LIBDIR)/minheap.o \
-	  $(LIBDIR)/options.o \
-	  $(LIBDIR)/presolver.o \
-	  $(LIBDIR)/stack.o \
-	  $(LIBDIR)/utility.o
+QPPRESOLVER_IFLAGS       = -I../include \
+                           -I${QPPRESOLVER_EXTERN_DIR}/mmio/include \
+                           -I${SUITESPARSE_INCLUDE_DIR}
 
-EXTERN_OBJ = $(EXTDIR)/mmio/lib/mmio.o
 
-# ==============================================================================
-# library files
-# ==============================================================================
-LIB = $(LIBDIR)/libqpPresolver.a
-SLIB = $(LIBDIR)/libqpPresolver.so
+QPPRESOLVER_DEPENDS = ${QPPRESOLVER_INCLUDE_DIR}/qpPresolver.h \
+                      ${QPPRESOLVER_INCLUDE_DIR}/qpPresolver/cholmod_config.h \
+                      ${QPPRESOLVER_INCLUDE_DIR}/qpPresolver/constants.h \
+                      ${QPPRESOLVER_INCLUDE_DIR}/qpPresolver/ecrmatrix.h \
+                      ${QPPRESOLVER_INCLUDE_DIR}/qpPresolver/errorcodes.h \
+                      ${QPPRESOLVER_INCLUDE_DIR}/qpPresolver/minheap.h \
+                      ${QPPRESOLVER_INCLUDE_DIR}/qpPresolver/options.h \
+                      ${QPPRESOLVER_INCLUDE_DIR}/qpPresolver/presolver.h \
+                      ${QPPRESOLVER_INCLUDE_DIR}/qpPresolver/stack.h \
+                      ${QPPRESOLVER_INCLUDE_DIR}/qpPresolver/types.h \
+                      ${QPPRESOLVER_INCLUDE_DIR}/qpPresolver/utility.h \
+                      ${QPPRESOLVER_EXTERN_DIR}/mmio/include/mmio.h
 
-# ==============================================================================
+
+QPPRESOLVER_OBJECTS = ecrmatrix.${OBJEXT} \
+	                  minheap.${OBJEXT} \
+	                  options.${OBJEXT} \
+	                  presolver.${OBJEXT} \
+	                  stack.${OBJEXT} \
+	                  utility.${OBJEXT}
+
+QPPRESOLVER_EXTERN_OBJECTS = ${QPPRESOLVER_EXTERN_DIR}/mmio/src/mmio.${OBJEXT}
+
+
+QPPRESOLVER_LIB         = ${QPPRESOLVER_LIB_DIR}/libqpPresolver.${LIBEXT}
+QPPRESOLVER_SHARED_LIB  = ${QPPRESOLVER_LIB_DIR}/libqpPresolver.${DLLEXT}
+
 # compiler command for generating objects
-# ==============================================================================
-C = $(CC) $(CFLAGS) $(DEFINES) -I../include -I$(INCLUDES)
+C = ${CC} ${CFLAGS} ${DEFINES} ${QPPRESOLVER_IFLAGS}
 
-all: $(LIB) $(SLIB)
+
+all: create_lib_dir ${QPPRESOLVER_LIB} ${QPPRESOLVER_SHARED_LIB}
     
-# ==============================================================================
-# compile all object files
-# ==============================================================================
-$(LIBDIR)/%.o: %.c
-	@$(MKDIR_P) $(LIBDIR)
-	@$(C) -c $< -o $@
+create_lib_dir:
+	${MKDIR} ${QPPRESOLVER_LIB_DIR}
 
-# ==============================================================================
-# build static library
-# ==============================================================================
-$(LIB): $(OBJ) $(EXTERN_OBJ)
-	@$(AR) rs $@ $^
 
-# ==============================================================================
-# build shared library
-# ==============================================================================
-$(SLIB): $(OBJ) $(EXTERN_OBJ)
-	@$(C) -o $@ -shared $^
+%.${OBJEXT}: %.c
+	@${C} -c $< ${DEF_TARGET}
 
-# ==============================================================================
-# remove object files
-# ==============================================================================
+
+${QPPRESOLVER_LIB}: ${QPPRESOLVER_OBJECTS} ${QPPRESOLVER_EXTERN_OBJECTS}
+	@${ECHO} "Creating static qpPresolver lib."
+	@${AR} rs $@ $^
+
+
+${QPPRESOLVER_SHARED_LIB}: ${QPPRESOLVER_OBJECTS} ${QPPRESOLVER_EXTERN_OBJECTS}
+	@${ECHO} "Creating shared qpPresolver lib."
+	@${C} ${DEF_TARGET} ${SHARED} $^ ${LINK_LIBRARIES}
+
+
 clean:
-#	@echo "Cleaning up (lib/*.o)" 
-	@$(RM) $(OBJ)
+	@${ECHO} "Removing all qpPresolver/src/*.o." 
+	@${RM} ${QPPRESOLVER_OBJECTS}
 
 # ==============================================================================
 # remove object and library files
 # ==============================================================================
 purge: clean
-#	@echo "Removing (shared and static) libraries"
-	@$(RM) $(LIB) $(SLIB)
+	@${ECHO} "Removing (shared and static) qpPresolver libraries."
+	@${RM} ${QPPRESOLVER_LIB} ${QPPRESOLVER_SHARED_LIB} 

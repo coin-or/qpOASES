@@ -20,53 +20,49 @@
 ##	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 ##
 
-
 ##
-##	Filename:  Makefile
+##	Filename:  make_linux.mk
 ##	Author:    Dominik Cebulla
 ##	Version:   1.0 Beta
 ##	Date:      2017
 ##
 
-include make.mk
 
-# Several compiler options can be applied. Call
-#     make DEFINES=
+############################ USER CONFIGURATION ############################
 
-# -DQPP_USE_INT64
-#   to use integers with at least 8 Byte.
+# Compilers and commands:
+AR      = ar
+CD      = cd
+CP      = cp
+ECHO    = echo
+MKDIR   = mkdir -p
+RM      = rm -f
+CPP     = g++
+CC      = gcc
+F77     = gfortran
 
-# -DQPP_USE_SINGLE_PRECISION
-#   to use single precision arithmetics (e.g. float instead of double).
+# File extensions:
+OBJEXT     = o
+LIBEXT     = a
+DLLEXT     = so
+EXE        =
+MEXOCTEXT  = mex
+DEF_TARGET = -o $@
+SHARED     = -shared
 
-# -DQPP_WRITE_LOGFILE
-#   to use a logfile.
+# 32 or 64 depending on target platform
+BITS = $(shell getconf LONG_BIT)
 
-# The whole statment should be enclosed in " ", e.g. make DEFINES="-DQPP_USE_INT64"
+# decide on MEX interface extension
+ifeq ($(BITS), 32)
+	MEXEXT = mexglx
+else
+	MEXEXT = mexa64
+endif
 
-export DEFINES
+## Compiler flags
+CFLAGS += -Wall -Wextra -std=c99 -pedantic -Wno-unused-variable -Wshadow \
+          -Wno-unused-function -finline-functions -Wno-conversion -Wno-sign-conversion \
+          -fPIC
 
-
-.PHONY: all mmio src clean purge
-
-
-## TARGETS:
-
-all: src
-
-src: mmio
-	@${CD} $@; ${MAKE} -s;
-
-
-mmio:
-	@${CD} extern/$@; ${MAKE} -s;
-
-
-clean:
-	@${CD} extern/mmio; ${MAKE} -s clean;
-	@${CD} src; ${MAKE} -s clean;
-
-
-purge:
-	@${CD} extern/mmio; ${MAKE} -s purge;
-	@${CD} src; ${MAKE} -s purge;
+LINK_LIBRARIES = -lcholmod -lsuitesparseconfig -lumfpack

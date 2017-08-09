@@ -147,6 +147,7 @@ qpPresolver/extern/mmio/Makefile -text
 qpPresolver/extern/mmio/include/mmio.h -text
 qpPresolver/extern/mmio/src/mmio.c -text
 qpPresolver/include/qpPresolver.h -text
+qpPresolver/include/qpPresolver/cholmod_config.h -text
 qpPresolver/include/qpPresolver/constants.h -text
 qpPresolver/include/qpPresolver/ecrmatrix.h -text
 qpPresolver/include/qpPresolver/minheap.h -text
@@ -156,6 +157,19 @@ qpPresolver/include/qpPresolver/return_values.h -text
 qpPresolver/include/qpPresolver/stack.h -text
 qpPresolver/include/qpPresolver/types.h -text
 qpPresolver/include/qpPresolver/utility.h -text
+qpPresolver/interfaces/MATLAB/Makefile -text
+qpPresolver/interfaces/MATLAB/example1.m -text
+qpPresolver/interfaces/MATLAB/example1.mat -text
+qpPresolver/interfaces/MATLAB/install.m -text
+qpPresolver/interfaces/MATLAB/qpp.c -text
+qpPresolver/interfaces/MATLAB/qpp.mexa64 -text
+qpPresolver/interfaces/MATLAB/qppFree.m -text
+qpPresolver/interfaces/MATLAB/qppOptions.m -text
+qpPresolver/interfaces/MATLAB/qppPostsolve.m -text
+qpPresolver/interfaces/MATLAB/qppPresolve.m -text
+qpPresolver/interfaces/MATLAB/uninstall.m -text
+qpPresolver/make.mk -text
+qpPresolver/make_linux.mk -text
 qpPresolver/src/Makefile -text
 qpPresolver/src/ecrmatrix.c -text
 qpPresolver/src/minheap.c -text

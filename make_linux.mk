@@ -32,18 +32,30 @@
 ################################################################################
 # user configuration
 
+# Presolver is only compiled if it is not turned off via: make NO_PRESOLVER=1
+ifndef NO_PRESOLVER
+NO_PRESOLVER = 0
+endif
+
+# suitesparse suite (for umfpack, cholmod)
+SUITESPARSE_IDIR   = /usr/include/suitesparse
+SUITESPARSE_LIBDIR = /usr/lib/x86_64-linux-gnu
+LIB_UMFPACK        = ${SUITESPARSE_LIBDIR}/libumfpack.so
+LIB_CHOLMOD        = ${SUITESPARSE_LIBDIR}/libcholmod.so
+LIB_SS_CONFIG      = ${SUITESPARSE_LIBDIR}/libsuitesparseconfig.so
+
 # include directories for presolver, relative
-PRESOLVER_IDIR =   ${TOP}/qpPresolver/include
+PRESOLVER_IDIR   = ${TOP}/qpPresolver/include
 PRESOLVER_SRCDIR = ${TOP}/qpPresolver/src
 PRESOLVER_LIBDIR = ${TOP}/qpPresolver/lib
+
+# library of presolver
+LIB_PRESOLVER = ${PRESOLVER_LIBDIR}/libqpPresolver.a
 
 # include directories, relative
 IDIR =   ${TOP}/include
 SRCDIR = ${TOP}/src
 BINDIR = ${TOP}/bin
-
-# library of presolver
-LIB_PRESOLVER = ${PRESOLVER_LIBDIR}/libqpPresolver.a
 
 # Matlab include directory (ADAPT TO YOUR LOCAL SETTINGS!)
 #MATLAB_IDIR   = ${HOME}/Programs/matlab/extern/include/
@@ -112,9 +124,21 @@ endif
 CPPFLAGS = -Wall -pedantic -Wshadow -Wfloat-equal -O3 -Wconversion -Wsign-conversion -finline-functions -fPIC -DLINUX -D${DEF_SOLVER} -D__NO_COPYRIGHT__
 #          -g -D__DEBUG__ -D__NO_COPYRIGHT__ -D__SUPPRESSANYOUTPUT__ -D__USE_SINGLE_PRECISION__
 
+ifneq (${NO_PRESOLVER}, 0)
+CPPFLAGS += -DNO_PRESOLVER
+endif
+
 # libraries to link against when building qpOASES .so files
-LINK_LIBRARIES = ${LIB_LAPACK} ${LIB_BLAS} ${LIB_PRESOLVER} -lm ${LIB_SOLVER}
-LINK_LIBRARIES_WRAPPER = -lm ${LIB_SOLVER} -lstdc++
+ifeq (${NO_PRESOLVER}, 0)
+LINK_LIBRARIES = ${LIB_UMFPACK} ${LIB_CHOLMOD} ${LIB_SS_CONFIG} ${LIB_PRESOLVER}
+endif
+LINK_LIBRARIES += ${LIB_LAPACK} ${LIB_BLAS} -lm ${LIB_SOLVER}
+
+# CHECK!
+ifeq (${NO_PRESOLVER}, 0)
+LINK_LIBRARIES_WRAPPER = ${LIB_UMFPACK} ${LIB_CHOLMOD} ${LIB_SS_CONFIG} ${LIB_PRESOLVER}
+endif
+LINK_LIBRARIES_WRAPPER += -lm ${LIB_SOLVER} -lstdc++
 
 # how to link against the qpOASES shared library
 QPOASES_LINK = -L${BINDIR} -Wl,-rpath=${BINDIR} -lqpOASES

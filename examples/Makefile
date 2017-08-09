@@ -36,8 +36,13 @@ include ../make.mk
 ##
 
 IFLAGS      =  -I. \
-               -I${IDIR} \
-               -I${PRESOLVER_IDIR}
+               -I${IDIR}
+
+ifeq (${NO_PRESOLVER}, 0)
+IFLAGS += \
+    -I${PRESOLVER_IDIR} \
+    -I${SUITESPARSE_IDIR}
+endif
 
 QPOASES_EXES = \
 	${BINDIR}/example1${EXE} \
@@ -50,10 +55,13 @@ QPOASES_EXES = \
 	${BINDIR}/example5${EXE} \
 	${BINDIR}/exampleLP${EXE} \
 	${BINDIR}/qrecipe${EXE} \
-	${BINDIR}/qrecipeSchur${EXE} \
-	${BINDIR}/qrecipePresolverDense${EXE} \
-	${BINDIR}/qrecipePresolverSparse${EXE}
+	${BINDIR}/qrecipeSchur${EXE}
 
+ifeq (${NO_PRESOLVER}, 0)
+QPOASES_EXES += \
+    ${BINDIR}/qrecipePresolverDense${EXE} \
+	${BINDIR}/qrecipePresolverSparse${EXE}
+endif
 
 ##
 ##	targets

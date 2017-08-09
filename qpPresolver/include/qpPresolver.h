@@ -37,6 +37,7 @@
 
 
 /* qpOASES defines: */
+
 #ifdef __USE_SINGLE_PRECISION__
     #define QPP_USE_SINGLE_PRECISION
 #endif
@@ -49,7 +50,7 @@
     #undef QPP_WRITE_LOGFILE
 #endif
 
-
+#include <qpPresolver/cholmod_config.h>
 #include <qpPresolver/constants.h>
 #include <qpPresolver/ecrmatrix.h>
 #include <qpPresolver/minheap.h>

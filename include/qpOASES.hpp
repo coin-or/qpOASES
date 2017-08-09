@@ -48,7 +48,10 @@
 #include <SQProblem.cpp>
 #include <SparseSolver.cpp>
 #include <SQProblemSchur.cpp>
+
+#ifndef NO_PRESOLVER
 #include <Presolver.cpp>
+#endif
 
 #ifndef __C_WRAPPER__
 #include <OQPinterface.cpp>
@@ -63,6 +66,9 @@
 #include <qpOASES/SQProblemSchur.hpp>
 #include <qpOASES/extras/OQPinterface.hpp>
 #include <qpOASES/extras/SolutionAnalysis.hpp>
+
+#ifndef NO_PRESOLVER
 #include <qpOASES/Presolver.hpp>
+#endif
 
 #endif

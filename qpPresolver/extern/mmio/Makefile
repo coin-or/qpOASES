@@ -1,52 +1,57 @@
-# Makefile for compiling the mmio code. No (static or dynamic) library will be
-# created, only the object file.
+##
+##	This file is part of qpPresolver.
+##
+##	qpPresolver -- An implementation of presolving (= preprocessing) techniques
+##  for Quadratic Programming.
+##	Copyright (C) 2017 by Dominik Cebulla et al. All rights reserved.
+##
+##	qpPresolver is free software; you can redistribute it and/or
+##	modify it under the terms of the GNU Lesser General Public
+##	License as published by the Free Software Foundation; either
+##	version 2.1 of the License, or (at your option) any later version.
+##
+##	qpPresolver is distributed in the hope that it will be useful,
+##	but WITHOUT ANY WARRANTY; without even the implied warranty of
+##	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+##	See the GNU Lesser General Public License for more details.
+##
+##	You should have received a copy of the GNU Lesser General Public
+##	License along with qpPresolver; if not, write to the Free Software
+##	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+##
 
-# ==============================================================================
-# header files for dependencies
-# ==============================================================================
-HDR = include/mmio.h
+##
+##	Filename:  extern/mmio/Makefile
+##	Author:    Dominik Cebulla
+##	Version:   1.0 Beta
+##	Date:      2017
+##
 
-# ==============================================================================
-# object files
-# ==============================================================================
-OBJ = lib/mmio.o
+include ../../make.mk
 
-# ==============================================================================
-# library files
-# ==============================================================================
-# LIB = lib/libmmio.a
 
-# ==============================================================================
-# compiler command for generating objects
-# ==============================================================================
-C = $(CC) $(CFLAGS) $(DEFINES) -Iinclude
+MMIO_DEPENDS  = include/mmio.h
+MMIO_OBJECTS  = src/mmio.o
+MMIO_IFLAGS   = -Iinclude
+MMIO_LIB_DIR  = lib
+MMIO_LIB      = ${MMIO_LIB_DIR}/libmmio.a
 
-# ==============================================================================
-# command for creating lib directory if not existent
-# ==============================================================================
-MKDIR_P = mkdir -p
 
-# ==============================================================================
-# build library
-# ==============================================================================
-# $(LIB): $(OBJ)
-#	@$(AR) rs $(LIB) $(OBJ)
+C = ${CC} ${CFLAGS} ${DEFINES} ${MMIO_IFLAGS}
 
-# ==============================================================================
-# compile all object files
-# ==============================================================================
-lib/mmio.o: src/mmio.c $(HDR)
-	@$(MKDIR_P) -p lib
-	@$(C) -c $< -o $@
 
-# ==============================================================================
-# remove object files
-# ==============================================================================
+${MMIO_LIB}: ${MMIO_OBJECTS}
+	@${MKDIR} ${MMIO_LIB_DIR}
+	@${AR} rs ${MMIO_LIB} ${MMIO_OBJECTS}
+
+
+${MMIO_OBJECTS}: src/mmio.c
+	@${C} -c $< ${DEF_TARGET}
+
+
 clean:
-	@$(RM) $(OBJ)
+	@${RM} ${MMIO_OBJECTS}
 
-# ==============================================================================
-# remove object and library files
-# ==============================================================================
+
 purge: clean
-#	@$(RM) $(LIB)
+	@${RM} ${MMIO_LIB} 

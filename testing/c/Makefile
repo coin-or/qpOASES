@@ -30,6 +30,7 @@
 ##
 
 
+NO_PRESOLVER = 1
 
 include ../../make.mk
 

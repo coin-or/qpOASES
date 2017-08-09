@@ -37,12 +37,14 @@ export CFLAGS = $(CPPFLAGS)
 ##	targets
 ##
 
-
 all: qpPresolver src examples
 #src_aw testing
 
+# We only do not compile the presolver if the user tells us!
 qpPresolver:
+ifeq (${NO_PRESOLVER}, 0)
 	@cd $@; ${MAKE} -s
+endif
 
 src:
 	@cd $@; ${MAKE} -s 

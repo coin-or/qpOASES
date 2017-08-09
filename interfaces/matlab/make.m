@@ -64,7 +64,7 @@ function [] = make( varargin )
     DEBUGFLAGS = ' ';
     %DEBUGFLAGS = ' -v -g CXXDEBUGFLAGS=''$CXXDEBUGFLAGS -Wall -pedantic -Wshadow'' ';
 
-    IFLAGS = [ '-I. -I',QPOASESPATH,'include',' -I',QPOASESPATH,'src',' ' ];
+    IFLAGS = [ '-I. -I',QPOASESPATH,'include',' -I',QPOASESPATH,'src',' -I', QPOASESPATH,'qpPresolver/include', ' ' ];
     CPPFLAGS = [ IFLAGS, DEBUGFLAGS, '-largeArrayDims -D__cpluplus -D__MATLAB__ -D__AVOID_LA_NAMING_CONFLICTS__ -D__SINGLE_OBJECT__',' ' ];
     defaultFlags = '-O -D__NO_COPYRIGHT__ '; %% -D__SUPPRESSANYOUTPUT__
 

@@ -36,7 +36,6 @@
 #ifndef QPOASES_PRESOLVEROPTIONS_HPP
 #define QPOASES_PRESOLVEROPTIONS_HPP
 
-
 extern "C"
 {
 	#include <qpPresolver/options.h>
@@ -53,8 +52,8 @@ BEGIN_NAMESPACE_QPOASES
 
 class Presolver;
 
-/** Redefinition of bound types for qpPresolver in order to match the qpOASES
-    naming convention. */
+/* Redefinition of bound types for qpPresolver in order to match the qpOASES
+   naming convention. */
 typedef qpp_bound_mode_t 	PresolverBoundType;
 #define PBT_TIGHTEST 		QPP_BM_TIGHTEST_BOUNDS
 #define PBT_MEDIUM 			QPP_BM_MEDIUM_BOUNDS
@@ -63,7 +62,7 @@ typedef qpp_bound_mode_t 	PresolverBoundType;
 /** \brief Manages all user-specified options for preprocessing (= presolving) QPs.
  *
  *	This class manages all user-specified options used for preprocessing
- *	quadratic programs. The options can not be changed once the QP has been presolved!
+ *	quadratic programs. The options can not be changed once the QP has been presolved.
  */
 class PresolverOptions : private qpp_options_t
 {
@@ -137,9 +136,10 @@ public:
     /** \name Methods for changing certain option values.
      *
      *  Note that the passed options are not checked for consistency. This will later
-     *  happen within the Presolver class (via \a Presolver::setOptions())
+     *  be done within the Presolver class (via \a Presolver::setOptions()).
      */
     /**@{*/
+
     /** Defines which bounds are passed to the user.
      *
      *  Currently supported are the tightest bounds (\a PBT_TIGHTEST) and the medium
@@ -159,18 +159,20 @@ public:
 	/** Sets the maximum number of iterations of the presolving loop. */
 	inline void setMaxIter(const int_t maxIter);
 
-	/** Sets the amount of information written to the logfile (value between 0 (= none) and
-     *      5 (detailed information). We refer to the qpPresolver documentation for
-     *      further details). */
+	/** Sets the amount of information written to the logfile.
+	 *
+	 *  Value must be between 0 (= no information) and 5 (detailed information).
+	 *  We refer to the qpPresolver documentation for further details. */
 	inline void setLogfileLevel(const int_t logLevel);
 	/**@}*/
 
 	/** \name Methods for enabling/disabling certain preprocessing methods.
 	 *
-	 *  A description can be found e.g. in: Gould, N.I.M. and Toint, P.L.
+	 *  A description of the methods can be found e.g. in: Gould, N.I.M. and Toint, P.L.
 	 *  "Preprocessing for quadratic programming." In: Mathematical Programming 100.1
 	 *  (2004), pp. 95–132. */
 	/**@{*/
+
 	/** Enables bound tightening on the primal variables. */
 	inline void enableBoundTightening();
 

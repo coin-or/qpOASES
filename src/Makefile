@@ -36,8 +36,13 @@ include ../make.mk
 ##
 
 IFLAGS      =  -I. \
-               -I${IDIR} \
-               -I${PRESOLVER_IDIR}
+               -I${IDIR}
+
+ifeq (${NO_PRESOLVER}, 0)
+IFLAGS += \
+    -I${PRESOLVER_IDIR} \
+    -I${SUITESPARSE_IDIR}
+endif
 
 QPOASES_OBJECTS = \
 	SQProblem.${OBJEXT} \
@@ -53,10 +58,13 @@ QPOASES_OBJECTS = \
 	Options.${OBJEXT} \
 	Matrices.${OBJEXT} \
 	MessageHandling.${OBJEXT} \
-	SparseSolver.${OBJEXT} \
-	Presolver.${OBJEXT} \
-	PresolverOptions.${OBJEXT}
+	SparseSolver.${OBJEXT}	
 
+ifeq (${NO_PRESOLVER}, 0)
+QPOASES_OBJECTS += \
+    Presolver.${OBJEXT} \
+    PresolverOptions.${OBJEXT}
+endif
 
 QPOASES_EXTRAS_OBJECTS = \
 	SolutionAnalysis.${OBJEXT} \
@@ -78,10 +86,13 @@ QPOASES_DEPENDS = \
 	${IDIR}/qpOASES/Options.hpp \
 	${IDIR}/qpOASES/Matrices.hpp \
 	${IDIR}/qpOASES/MessageHandling.hpp \
-	${IDIR}/qpOASES/UnitTesting.hpp \
-	${IDIR}/qpOASES/Presolver.hpp \
+	${IDIR}/qpOASES/UnitTesting.hpp
+	
+ifeq (${NO_PRESOLVER}, 0)
+QPOASES_DEPENDS += \
+    ${IDIR}/qpOASES/Presolver.hpp \
 	${IDIR}/qpOASES/PresolverOptions.hpp
-
+endif
 
 ##
 ##	targets

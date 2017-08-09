@@ -44,6 +44,7 @@
 #include <string.h>
 #include <time.h>
 
+#include <qpPresolver/cholmod_config.h>
 #include <qpPresolver/constants.h>
 #include <qpPresolver/ecrmatrix.h>
 #include <qpPresolver/minheap.h>

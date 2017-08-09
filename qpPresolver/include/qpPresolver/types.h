@@ -48,11 +48,9 @@
 
 
 #ifdef QPP_USE_INT64
-    //typedef int_least64_t qpp_int_t;    /**< We use integers with at least 64 bit length. */
     typedef long int qpp_int_t;             /**< Integer type. */
     typedef unsigned long int qpp_uint_t;   /**< Unsigned integer type. */
 #else
-    //typedef int_least32_t qpp_int_t;    /**< We use integers with at least 32 bit length. */
     typedef int qpp_int_t;                  /**< Integer type. */
     typedef unsigned int qpp_uint_t;        /**< Unsigned integer type. */
 #endif

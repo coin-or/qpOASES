@@ -119,7 +119,7 @@ returnValue PresolverOptions::print() const
 	char myPrintfString[MAX_STRING_LENGTH];
 	char boundInfo[32];
 
-	if (bound_mode == PBT_MEDIUM)
+	if (options::bound_mode == PBT_MEDIUM)
     {
         strncpy(boundInfo, "Medium Bounds", 32);
     }

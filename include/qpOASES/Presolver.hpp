@@ -57,7 +57,7 @@ typedef qpp_matrix_sort_type_t MatrixSortType;
 #define MST_ROW_WISE 		QPP_MST_ROW_WISE
 #define MST_COLUMN_WISE 	QPP_MST_COLUMN_WISE
 
-/** \brief Provides functionalities to presolve a given QP (primarily to reduce its size).
+/** \brief Provides functionalities to presolve QPs (primarily to reduce their size).
  *
  *	The presolver must be used before solving the QP (via one of its presolve() methods)
  *	which then returns a preprocessed (possibly smaller) QP. This QP is passed to the solver.
@@ -66,9 +66,10 @@ typedef qpp_matrix_sort_type_t MatrixSortType;
  *
  *	CAVEAT: The impact of preprocessing depends on the QP data, i.e. on the matrices,
  *	gradient vector and bounds. Care must be taken if a sequence of QPs shall be presolved.
- *	We only recommend to presolve the initial QP, then solving it, afterwards postsolving
- *	it (i.e. retrieving the optimal working set and primal-dual solution of the
- *	original QP). The working set can be used for a warm-start.
+ *	We only recommend to presolve the initial QP, solving it, then postsolving it
+ *	(i.e. retrieving the optimal working set and primal-dual solution of the
+ *	original QP). Finally, the computed working set may be used as a warm-start for
+ *	the sequence of QPs.
  */
 class Presolver
 {
@@ -78,14 +79,14 @@ public:
 	 *
 	 *	Allocates (most of the) memory the presolver requires (e.g. for storing the QP).
 	 *	If the number of nonzero elements of the matrices are not known, the presolver
-	 *	reallocates memory later.
+	 *	reallocates memory for the matrices later.
 	 *
 	 *	\param nV Number of variables of the QP.
 	 *	\param nC Number of constraints of the QP.
 	 *	\param nzH Number of nonzero elements of the Hessian matrix. Default value: 0.
-	 *		Note that the presolver only needs access to the lower triangular part of
-	 *		the Hessian matrix and hence the number of nonzero elements of the lower
-	 *		triangular part of the Hessian matrix must be passed.
+	 *		Note that the presolver only accesses the lower triangular part of
+	 *		the Hessian matrix and hence only the number of nonzero elements of the lower
+	 *		triangular part of the Hessian matrix must be passed to the presolver.
 	 *	\param nzA Number of nonzero elements of the constraint matrix. Default value: 0.
 	 *	\param presolveStackSize Initial size (= number of elements) of the presolve stack.
 	 *		Default value: 1000. The presolve stack stores all necessary information of
@@ -100,69 +101,6 @@ public:
 
 	/** Destructor of Presolver class. Deallocates all memory allocated by the presolver. */
 	~Presolver();
-
-
-	/** \brief Presolves the given QP with matrices stored in coordinate scheme.
-	 *
-	 *	All input parameters are going to be modified; they contain the presolved QP afterwards.
-	 *	Furthermore, all other presolve() methods call this function internally.
-	 *
-	 *	\param nV Will contain the number of variables of the presolved QP.
-	 *	\param nC Will contain the number of constraints of the presolved QP.
-	 *	\param Hirn Row subscripts of the Hessian matrix in coordinate format. Will be
-	 *		overwritten with presolved Hessian matrix. Is allowed to be a null pointer if
-	 *		the Hessian matrix is empty. \n
-	 *		CAVEAT: Only the lower triangular part of the Hessian matrix will be returned!
-	 *	\param Hjcn Column subscripts of the Hessian matrix in coordinate format. Will be
-	 *		overwritten with presolved Hessian matrix. Is allowed to be a null pointer if
-	 *		the Hessian matrix is empty. \n
-	 *		CAVEAT: Only the lower triangular part of the Hessian matrix will be returned!
-	 *	\param Hx Nonzero elements of the Hessian matrix in coordinate format. Will be
-	 *		overwritten with presolved Hessian matrix. Is allowed to be a null pointer if
-	 *		the Hessian matrix is empty. \n
-	 *		CAVEAT: Only the lower triangular part of the Hessian matrix will be returned!
-	 *	\param nzH Contains the length of the arrays \p Hirn, \p Hjcn and \p Hx. Will contain
-	 *		the length of these arrays after presolving, i.e. the number of nonzero elements
-	 *		of the lower triangular part of the Hessian matrix.
-	 *	\param g Gradient vector of QP. Will be overwritten with presolved gradient vector.
-	 *	\param Airn Row subscripts of the constraint matrix in coordinate format. Will be
-	 *		overwritten with presolved constraint matrix. Is allowed to be a null pointer if
-	 *		the constraint matrix is empty.
-	 *	\param Ajcn Column subscripts of the constraint matrix in coordinate format. Will be
-	 *		overwritten with presolved constraint matrix. Is allowed to be a null pointer if
-	 *		the constraint matrix is empty.
-	 *	\param Ax Nonzero elements of the constraint matrix in coordinate format. Will be
-	 *		overwritten with presolved constraint matrix. Is allowed to be a null pointer if
-	 *		the constraint matrix is empty.
-	 *	\param nzA Contains the length of the arrays \p Airn, \p Ajcn and \p Ax. Will contain
-	 *		the length of these arrays after presolving, i.e. the number of nonzero elements
-	 *		of the constraint matrix.
-	 *	\param lb Lower bounds on the variables. Will be overwritten with presolved bounds.
-	 *	\param ub Upper bounds on the variables. Will be overwritten with presolved bounds.
-	 *	\param lbA Lower bounds on the constraints. Will be overwritten with presolved bounds.
-	 *	\param ubA Upper bounds on the constraints. Will be overwritten with presolved bounds.
-	 *	\param sortType MST_ROW_WISE: Matrices of presolved QP are sorted row-wise. \n
-	 *					MST_COLUMN_WISE: Matrices of presolved QP are sorted column-wise.
-	 *
-	 *	\return SUCCESSFUL_RETURN \n RET_INVALID_ARGUMENTS \n RET_QP_INFEASIBLE
-	 *		\n RET_QP_UNBOUNDED \n RET_OPTIONS_ADJUSTED \n RET_ERROR_UNDEFINED
-	 */
-	returnValue presolveCoordMat(int_t* nV,
-								 int_t* nC,
-								 int_t* const Hirn,
-								 int_t* const Hjcn,
-								 real_t* const Hx,
-								 int_t* nzH,
-								 real_t* const g,
-								 int_t* const Airn,
-								 int_t* const Ajcn,
-								 real_t* const Ax,
-								 int_t* nzA,
-								 real_t* const lb,
-								 real_t* const ub,
-								 real_t* const lbA,
-								 real_t* const ubA,
-								 const MatrixSortType& sortType);
 
 
 	/** \brief Presolves the given QP with matrices stored in CSC (Harwell-Boeing) scheme.
@@ -335,12 +273,76 @@ private:
 	qpp_data_t* data;	/**< Struct containing all necessary data for qpPresolver. */
 
 
+	/** \brief Presolves the given QP with matrices stored in coordinate scheme.
+	 *
+	 *	All input parameters are going to be modified; they contain the presolved QP
+	 *	afterwards. Furthermore, all other presolve() methods call this function internally.
+	 *
+	 *	\param nV Will contain the number of variables of the presolved QP.
+	 *	\param nC Will contain the number of constraints of the presolved QP.
+	 *	\param Hirn Row subscripts of the Hessian matrix in coordinate format. Will be
+	 *		overwritten with presolved Hessian matrix. Is allowed to be a null pointer if
+	 *		the Hessian matrix is empty. \n
+	 *		CAVEAT: Only the lower triangular part of the Hessian matrix will be returned!
+	 *	\param Hjcn Column subscripts of the Hessian matrix in coordinate format. Will be
+	 *		overwritten with presolved Hessian matrix. Is allowed to be a null pointer if
+	 *		the Hessian matrix is empty. \n
+	 *		CAVEAT: Only the lower triangular part of the Hessian matrix will be returned!
+	 *	\param Hx Nonzero elements of the Hessian matrix in coordinate format. Will be
+	 *		overwritten with presolved Hessian matrix. Is allowed to be a null pointer if
+	 *		the Hessian matrix is empty. \n
+	 *		CAVEAT: Only the lower triangular part of the Hessian matrix will be returned!
+	 *	\param nzH Contains the length of the arrays \p Hirn, \p Hjcn and \p Hx. Will contain
+	 *		the length of these arrays after presolving, i.e. the number of nonzero elements
+	 *		of the lower triangular part of the Hessian matrix.
+	 *	\param g Gradient vector of QP. Will be overwritten with presolved gradient vector.
+	 *	\param Airn Row subscripts of the constraint matrix in coordinate format. Will be
+	 *		overwritten with presolved constraint matrix. Is allowed to be a null pointer if
+	 *		the constraint matrix is empty.
+	 *	\param Ajcn Column subscripts of the constraint matrix in coordinate format. Will be
+	 *		overwritten with presolved constraint matrix. Is allowed to be a null pointer if
+	 *		the constraint matrix is empty.
+	 *	\param Ax Nonzero elements of the constraint matrix in coordinate format. Will be
+	 *		overwritten with presolved constraint matrix. Is allowed to be a null pointer if
+	 *		the constraint matrix is empty.
+	 *	\param nzA Contains the length of the arrays \p Airn, \p Ajcn and \p Ax. Will contain
+	 *		the length of these arrays after presolving, i.e. the number of nonzero elements
+	 *		of the constraint matrix.
+	 *	\param lb Lower bounds on the variables. Will be overwritten with presolved bounds.
+	 *	\param ub Upper bounds on the variables. Will be overwritten with presolved bounds.
+	 *	\param lbA Lower bounds on the constraints. Will be overwritten with presolved bounds.
+	 *	\param ubA Upper bounds on the constraints. Will be overwritten with presolved bounds.
+	 *	\param sortType MST_ROW_WISE: Matrices of presolved QP are sorted row-wise. \n
+	 *					MST_COLUMN_WISE: Matrices of presolved QP are sorted column-wise (default).
+	 *
+	 *	\return SUCCESSFUL_RETURN \n RET_INVALID_ARGUMENTS \n RET_QP_INFEASIBLE
+	 *		\n RET_QP_UNBOUNDED \n RET_OPTIONS_ADJUSTED \n RET_ERROR_UNDEFINED
+	 */
+	returnValue presolveCoordMat(int_t* nV,
+								 int_t* nC,
+								 int_t* const Hirn,
+								 int_t* const Hjcn,
+								 real_t* const Hx,
+								 int_t* nzH,
+								 real_t* const g,
+								 int_t* const Airn,
+								 int_t* const Ajcn,
+								 real_t* const Ax,
+								 int_t* nzA,
+								 real_t* const lb,
+								 real_t* const ub,
+								 real_t* const lbA,
+								 real_t* const ubA,
+								 const MatrixSortType& sortType = MST_COLUMN_WISE);
+
 	/**	Converts error code from qpPresolver to error code from qpOASES (if possible).
 	 *
 	 *	\param err Error code from qpPresolver.
 	 *
 	 *	\return SUCCESSFUL_RETURN \n RET_INVALID_ARGUMENTS \n RET_QP_INFEASIBLE
 	 *		\n RET_QP_UNBOUNDED \n RET_ERROR_UNDEFINED \n RET_OPTIONS_ADJUSTED
+	 *		\n RET_UNABLE_TO_OPEN_FILE \n RET_UNABLE_TO_READ_FILE
+	 *		\n RET_UNABLE_TO_WRITE_FILE
 	 */
 	returnValue convertErrorCode(const qpp_return_value_t err) const;
 };

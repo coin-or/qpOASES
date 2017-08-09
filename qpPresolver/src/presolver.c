@@ -36,7 +36,6 @@
 
 #include <qpPresolver/presolver.h>
 
-
 /*  ======================================================================================
     Forward declaration of static (= private) functions
     ====================================================================================*/
@@ -170,6 +169,73 @@ static qpp_return_value_t varBoundsPCi(const qpp_real_t au_i,
                                        qpp_real_t ub_values[],
                                        qpp_int_t *ub_length);
 
+/** \name KKT system (linear dependency and curvature test). */
+/**@{*/
+
+/** \brief Solves a KKT system given by matrices A and H. */
+static cholmod_dense *solveKKTSystem(const qpp_ecrmatrix_t *A,
+                                     const qpp_ecrmatrix_t *H,
+                                     cholmod_dense *rhs,
+                                     const qpp_int_t *av,
+                                     const qpp_int_t num_av,
+                                     const qpp_int_t *wi,
+                                     const qpp_int_t num_actv_constr,
+                                     const qpp_int_t *wj,
+                                     const qpp_int_t num_actv_bnds,
+                                     qpp_int_t *storage,
+                                     qpp_int_t *vec_indices,
+                                     qpp_real_t *vec_values);
+
+/** \brief Performs a curvature test */
+static qpp_return_value_t curvatureTest(qpp_real_t *result,
+                                        const qpp_int_t index,
+                                        const qpp_ecrmatrix_t *A,
+                                        const qpp_ecrmatrix_t *H,
+                                        const qpp_int_t *av,
+                                        const qpp_int_t num_av,
+                                        const qpp_int_t *wi,
+                                        const qpp_int_t num_actv_constr,
+                                        const qpp_int_t *wj,
+                                        const qpp_int_t num_actv_bnds,
+                                        qpp_int_t *storage,
+                                        qpp_int_t *vec_indices,
+                                        qpp_real_t *vec_values);
+
+/** \brief Checks, if the vector given by rhs_* is linearly dependent on the constraint
+ *      matrix (w.r.t. the working set).
+ */
+static qpp_return_value_t linearDependencyTest(qpp_real_t *result,
+                                               const qpp_ecrmatrix_t *A,
+                                               const qpp_ecrmatrix_t *H,
+                                               const qpp_int_t *rhs_indices,
+                                               const qpp_real_t *rhs_values,
+                                               const qpp_int_t rhs_length,
+                                               const qpp_int_t *av,
+                                               const qpp_int_t num_av,
+                                               const qpp_int_t *wi,
+                                               const qpp_int_t num_actv_constr,
+                                               const qpp_int_t *wj,
+                                               const qpp_int_t num_actv_bnds,
+                                               qpp_int_t *storage,
+                                               qpp_int_t *vec_indices,
+                                               qpp_real_t *vec_values);
+
+/** \brief Pushes a multiplier to 0 such that the working set remains linearly independent. */
+static qpp_return_value_t ldPush(const qpp_int_t index,
+                                 const qpp_int_t sign,
+                                 const qpp_int_t ws,
+                                 qpp_int_t m,
+                                 qpp_int_t n,
+                                 qpp_int_t *wi,
+                                 qpp_int_t *num_wi,
+                                 qpp_int_t *wj,
+                                 qpp_int_t *num_wj,
+                                 qpp_real_t *y,
+                                 qpp_real_t *z,
+                                 qpp_real_t *scalars,
+                                 qpp_real_t tol);
+
+/**@}*/
 
 /*  ======================================================================================
     Implementation of interface functions.
@@ -222,8 +288,8 @@ qpp_return_value_t qppNew(qpp_data_t **pdata,
     memsize += 2*m * (qpp_int_t) sizeof(qpp_real_t);    // yl, yu
     memsize += 2*m * (qpp_int_t) sizeof(qpp_real_t);    // al, au
     memsize += 3*n * (qpp_int_t) sizeof(qpp_real_t);    // zl, zu, H_diag
-    memsize += (m+n) * (qpp_int_t) sizeof(qpp_real_t);  // mem_mpn_r
-    memsize += (m+n) * (qpp_int_t) sizeof(qpp_int_t);   // mem_mpn_i
+    memsize += (m+2*n) * (qpp_int_t) sizeof(qpp_real_t);  // mem_mpn_r
+    memsize += (m+2*n) * (qpp_int_t) sizeof(qpp_int_t);   // mem_mpn_i
 
     iptr = (qpp_int_t*) malloc((size_t) memsize);
     opt = (qpp_options_t*) malloc(sizeof(qpp_options_t));
@@ -267,7 +333,7 @@ qpp_return_value_t qppNew(qpp_data_t **pdata,
     data->A_nnz_columns = iptr; iptr += n;
     data->A_nnz_rows = iptr; iptr += m;
     data->H_nnz_columns = iptr; iptr += n;
-    data->mem_mpn_i = iptr; iptr += m+n;
+    data->mem_mpn_i = iptr; iptr += m+2*n;
 
     rptr = (void*) iptr;
     data->g = rptr; rptr += n;
@@ -282,7 +348,7 @@ qpp_return_value_t qppNew(qpp_data_t **pdata,
     data->zl = rptr; rptr += n;
     data->zu = rptr; rptr += n;
     data->H_diag = rptr; rptr += n;
-    data->mem_mpn_r = rptr; rptr += m+n;
+    data->mem_mpn_r = rptr; rptr += m+2*n;
 
     data->xl = NULL;
     data->xu = NULL;    /* Will be set later (depending on which bounds are used). */
@@ -699,7 +765,7 @@ qpp_return_value_t qppPresolve(qpp_data_t *const data)
         }
 
 
-        //err = checkForFixVar(data);
+        err = checkForFixVar(data);
         if (err != QPP_OK)
         {
             break;
@@ -727,6 +793,15 @@ qpp_return_value_t qppPresolve(qpp_data_t *const data)
         if (opt->enable_singleton_rows_method)
         {
             err = singletonRows(data);
+            if (err != QPP_OK)
+            {
+                break;
+            }
+        }
+
+        if (opt->enable_sparsification_method)
+        {
+            err = sparsification(data);
             if (err != QPP_OK)
             {
                 break;
@@ -775,14 +850,7 @@ qpp_return_value_t qppPresolve(qpp_data_t *const data)
             }
         }
 
-        if (opt->enable_sparsification_method)
-        {
-            err = sparsification(data);
-            if (err != QPP_OK)
-            {
-                break;
-            }
-        }
+
 
         /* In very rare occurrences: slow. */
         if (opt->enable_duplicate_columns_method)
@@ -1239,12 +1307,12 @@ qpp_return_value_t qppPostsolve(qpp_data_t *const data,
                                 qpp_int_t *const wj,
                                 const qpp_int_t use_copies)
 {
-    qpp_int_t m, n, m_ps, n_ps, i, ii, j, jj, k, kk, it, sign, length1,
-        length2, vec_length_1, vec_length_2, stack_ptr;
+    qpp_int_t m, n, m_ps, n_ps, i, j, jj, k, kk, it, sign, length1,
+        length2, vec_length_1, vec_length_2, stack_ptr, num_actv_bnds, num_actv_constr;
     qpp_int_t *av, *ac, *indices1, *indices2, *vec_indices_1, *vec_indices_2, *iptr;
-    qpp_real_t a_ij, value, alpha, new_y, f, eq_tol;
+    qpp_real_t a_ij, value, alpha, new_y, f, eq_tol, feas_tol;
     qpp_real_t *xl, *xu, *R, *C, *values1, *H_diag, *g, *vec_values_1, *vec_values_2, *rptr;
-
+    qpp_return_value_t ret_val;
     #ifdef QPP_WRITE_LOGFILE
     qpp_int_t log_level;
     #endif
@@ -1314,6 +1382,8 @@ qpp_return_value_t qppPostsolve(qpp_data_t *const data,
     n = data->n;
     m_ps = data->m_ps;
     n_ps = data->n_ps;
+    num_actv_bnds = 0;
+    num_actv_constr = 0;
 
     if ( ((x == NULL) || (z == NULL)) && (n_ps > 0) )
     {
@@ -1397,6 +1467,7 @@ qpp_return_value_t qppPostsolve(qpp_data_t *const data,
     stack = data->presolve_stack;
     f = data->f_ps;
     eq_tol = opt->eq_tol;
+    feas_tol = opt->feas_tol;
 
     /*A_nnz_rows = data->A_nnz_rows;
     A_nnz_columns = data->A_nnz_columns;
@@ -1415,6 +1486,7 @@ qpp_return_value_t qppPostsolve(qpp_data_t *const data,
     vec_indices_2 = &vec_indices_1[data->mem_length];
     vec_values_1  = data->mem_real;
     vec_values_2  = &vec_values_1[data->mem_length];
+
 
     /*  The elements x[0],...,x[n_ps-1] are the solution of the presolved problem.
         -> Extract solution! */
@@ -1436,6 +1508,7 @@ qpp_return_value_t qppPostsolve(qpp_data_t *const data,
 
     if (wj != NULL)
     {
+        num_actv_bnds = 0;
         it = n_ps - 1;
         for (j = n-1; j >= 0; --j)
         {
@@ -1443,6 +1516,10 @@ qpp_return_value_t qppPostsolve(qpp_data_t *const data,
             {
                 wj[j] = wj[it];
                 --it;
+                if (wj[j] != QPP_AT_INACTIVE)
+                {
+                    ++num_actv_bnds;
+                }
             }
             else
             {
@@ -1450,7 +1527,6 @@ qpp_return_value_t qppPostsolve(qpp_data_t *const data,
             }
         }
     }
-
 
     it = m_ps - 1;
     for (i = m-1; i >= 0; --i)
@@ -1468,6 +1544,7 @@ qpp_return_value_t qppPostsolve(qpp_data_t *const data,
 
     if (wi != NULL)
     {
+        num_actv_constr = 0;
         it = m_ps - 1;
         for (i = m-1; i >= 0; --i)
         {
@@ -1475,6 +1552,10 @@ qpp_return_value_t qppPostsolve(qpp_data_t *const data,
             {
                 wi[i] = wi[it];
                 --it;
+                if (wi[i] != QPP_AT_INACTIVE)
+                {
+                    ++num_actv_constr;
+                }
             }
             else
             {
@@ -1497,6 +1578,7 @@ qpp_return_value_t qppPostsolve(qpp_data_t *const data,
 
             y[i] = 0.0;
             ac[i] = 1;
+            ++m_ps;
 
             /* Determine optimal working set */
             if (wi != NULL)
@@ -1525,35 +1607,27 @@ qpp_return_value_t qppPostsolve(qpp_data_t *const data,
             /* If the working sets are given, we use and update them. */
             if ( (wj != NULL) && (wi != NULL) )
             {
+                assert(wj[j] != QPP_AT_EQ_CONSTRAINT);
+
                 if ( ((tbt == QPP_TBT_BOTH) && (wj[j] != QPP_AT_INACTIVE))  ||
                      ((tbt == QPP_TBT_LOWER) && (wj[j] == QPP_AT_LOWER_BOUND)) ||
                      ((tbt == QPP_TBT_UPPER) && (wj[j] == QPP_AT_UPPER_BOUND)) )
                 {
                     y[i] = z[j] / a_ij;
+                    z[j] = 0.0;
 
-                    /*if (y[i] > 0.0)
+                    if (a_ij > 0)
                     {
-                        wi[i] = QPP_AT_LOWER_BOUND;
-                    }
-                    else if (y[i] <  0.0)
-                    {
-                        wi[i] = QPP_AT_UPPER_BOUND;
+                        wi[i] = wj[j];
                     }
                     else
-                    {*/
-                        /* z_j was zero, but x_j was active -> linear constraint is active! */
-                        if (a_ij > 0)
-                        {
-                            wi[i] = wj[j];
-                        }
-                        else
-                        {
-                            wi[i] = -wj[j];
-                        }
-                    //}
+                    {
+                        wi[i] = -wj[j];
+                    }
+                    ++num_actv_constr;
 
-                    z[j] = 0.0;
                     wj[j] = QPP_AT_INACTIVE;
+                    --num_actv_bnds;
                 }
                 else
                 {
@@ -1563,9 +1637,9 @@ qpp_return_value_t qppPostsolve(qpp_data_t *const data,
             }
             else    /* No working sets. We only consider the sign of the multiplier z_j. */
             {
-                if ( ((tbt == QPP_TBT_BOTH) && (fabs(z[j]) > eq_tol)) ||
-                     ((tbt == QPP_TBT_LOWER) && (z[j] > eq_tol)) ||
-                     ((tbt == QPP_TBT_UPPER) && (z[j] < -eq_tol)) )
+                if ( ((tbt == QPP_TBT_BOTH) && (fabs(z[j]) > feas_tol)) ||
+                     ((tbt == QPP_TBT_LOWER) && (z[j] > feas_tol)) ||
+                     ((tbt == QPP_TBT_UPPER) && (z[j] < -feas_tol)) )
                 {
                     y[i] = z[j] / a_ij;
                     z[j] = 0.0;
@@ -1583,6 +1657,7 @@ qpp_return_value_t qppPostsolve(qpp_data_t *const data,
             ++A_nnz_columns[j];*/
 
             ac[i] = 1;
+            ++m_ps;
 
             /*free(sr);*/
             break;
@@ -1593,14 +1668,16 @@ qpp_return_value_t qppPostsolve(qpp_data_t *const data,
             value = fv->value;
 
             getColH(H, j, av, vec_indices_1, vec_values_1, &vec_length_1);
-            for (ii = 0; ii < vec_length_1; ++ii)
+            for (kk = 0; kk < vec_length_1; ++kk)
             {
-                i = vec_indices_1[ii];
-                /*++H_nnz_columns[i];*/
-                g[i] -= vec_values_1[ii] * value;
+                k = vec_indices_1[kk];
+                /*++H_nnz_columns[k];*/
+                g[k] -= vec_values_1[kk] * value;
             }
-            av[j] = 1;
             f -= (g[j] * value + 0.5 * value * value * H_diag[j]);
+
+            av[j] = 1;
+            ++n_ps;
 
             getColA(A, j, ac, vec_indices_2, vec_values_2, &vec_length_2);
             /*for (ii = 0; ii < vec_length_2; ++ii)
@@ -1625,7 +1702,7 @@ qpp_return_value_t qppPostsolve(qpp_data_t *const data,
                 }
                 else
                 {
-                    if (z[j] >= 0.0)
+                    if (z[j] >= -1.0e3 * eq_tol)
                     {
                         wj[j] = QPP_AT_LOWER_BOUND;
                     }
@@ -1634,13 +1711,13 @@ qpp_return_value_t qppPostsolve(qpp_data_t *const data,
                         wj[j] = QPP_AT_UPPER_BOUND;
                     }
                 }
+                ++num_actv_bnds;
             }
 
             /*free(fv);*/
             break;
 
-        case QPP_SE_DUPLICATE_COLUMN:   /*  In some cases it is impossible to derive
-                                            an optimal working set! (QBRANDY)*/
+        case QPP_SE_DUPLICATE_COLUMN:   /*  With curvature test, works on test problems. */
             dc = se->elements.dc;
             j = dc->j;
             k = dc->k;
@@ -1670,6 +1747,7 @@ qpp_return_value_t qppPostsolve(qpp_data_t *const data,
             }
 
             av[j] = 1;
+            ++n_ps;
             value = x[k];
 
             if (alpha > 0.0)
@@ -1700,24 +1778,108 @@ qpp_return_value_t qppPostsolve(qpp_data_t *const data,
                     }
                 }
             }
+
             x[j] = value/alpha - x[k]/alpha;
             z[j] = alpha * z[k];
 
             /* Optimal working set. Problems with weakly active variables (cf. QBRANDY)! */
             if (wj != NULL)
             {
-                //printf("wj[k] = %" QPP_PRID "\n", wj[k]);
-                if (alpha > 0.0)
+                /*  Note that the bounds on x_j and x_k are correct! Variable j has been
+                    removed, hence its bounds were not changed afterwards. And the bounds
+                    on x_k have been restored in this (postprocessing) procedure. */
+
+                if (wj[k] == QPP_AT_INACTIVE)
                 {
-                    wj[j] = wj[k];
+                    /*  Here we have to check whether we must add a bound constraint to the
+                        working set in order to guarantee positive definiteness of the
+                        reduced Hessian. */
+                    if (qppIsEqual(x[k], xl[k], eq_tol))
+                    {
+                        wj[k] = QPP_AT_LOWER_BOUND;
+                        ++num_actv_bnds;
+                    }
+                    else if (qppIsEqual(x[k], xu[k], eq_tol))
+                    {
+                        wj[k] = QPP_AT_UPPER_BOUND;
+                        ++num_actv_bnds;
+                    }
+
+                    if (wj[k] == QPP_AT_INACTIVE)
+                    {
+                        /*  x_k is not fixed at one of its bounds. Now we try for x_j. */
+                        if (qppIsEqual(x[j], xl[j], eq_tol))
+                        {
+                            wj[j] = QPP_AT_LOWER_BOUND;
+                            ++num_actv_bnds;
+                        }
+                        else if (qppIsEqual(x[j], xu[j], eq_tol))
+                        {
+                            wj[j] = QPP_AT_UPPER_BOUND;
+                            ++num_actv_bnds;
+                        }
+
+                        if (wj[j] != QPP_AT_INACTIVE)
+                        {
+                            /*  x_j is fixed at a bound -> perform curvature test
+                                (cf. Schork, Master's Thesis, Lemma 3.1). */
+                            values1 = data->mem_mpn_r;
+                            ret_val = curvatureTest(values1, m+j, A, H, av, n_ps, wi, num_actv_constr,
+                                                    wj, num_actv_bnds, data->mem_mpn_i,
+                                                    data->mem_for_bounds_int, data->mem_for_bounds_real);
+                            if (ret_val != QPP_OK)
+                            {
+                                return ret_val;
+                            }
+
+                            value = values1[n+m+j];
+
+                            /* Bound constraint j must stay in working set iff value <= 0. */
+                            if (value > feas_tol)
+                            {
+                                wj[j] = QPP_AT_INACTIVE;
+                                --num_actv_bnds;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        /*  x_k is fixed at a bound -> perform curvature test (cf. Schork,
+                            Master's Thesis, Lemma 3.1). */
+                        values1 = data->mem_mpn_r;
+                        ret_val = curvatureTest(values1, m+k, A, H, av, n_ps, wi, num_actv_constr,
+                                                wj, num_actv_bnds, data->mem_mpn_i,
+                                                data->mem_for_bounds_int, data->mem_for_bounds_real);
+                        if (ret_val != QPP_OK)
+                        {
+                            return ret_val;
+                        }
+
+                        value = values1[n+m+k];
+
+                        /* Bound constraint k must stay in working set iff value <= 0. */
+                        if (value > feas_tol)
+                        {
+                            wj[k] = QPP_AT_INACTIVE;
+                            --num_actv_bnds;
+                        }
+                    }
                 }
                 else
                 {
-                    wj[j] = -wj[k];
+                    /*  Bound constr. k is in working set -> also constraint j must be
+                        added to the working set (both x_k and x_j are active!) */
+                    if (alpha > 0.0)
+                    {
+                        wj[j] = wj[k];
+                    }
+                    else
+                    {
+                        wj[j] = -wj[k];
+                    }
+                    ++num_actv_bnds;
                 }
             }
-
-            //printf("k = %" QPP_PRID ", j = %" QPP_PRID "\n", k, j);
 
             /*free(dc);*/
             break;
@@ -1727,6 +1889,7 @@ qpp_return_value_t qppPostsolve(qpp_data_t *const data,
             i = rpc->i;
 
             ac[i] = 1;
+            ++m_ps;
             y[i] = 0.0;
 
             /* Optimal working set. */
@@ -1816,7 +1979,6 @@ qpp_return_value_t qppPostsolve(qpp_data_t *const data,
                 /* Tighter lower bounds. */
                 for (kk = 0; kk < length1; ++kk)
                 {
-                    int sup = 0;
                     k = indices1[kk];
 
                     if (wj[k] == QPP_AT_LOWER_BOUND)
@@ -1831,65 +1993,109 @@ qpp_return_value_t qppPostsolve(qpp_data_t *const data,
                         for (jj = 0; jj < vec_length_1; ++jj)
                         {
                             j = vec_indices_1[jj];
-                            if (wj[j] != QPP_AT_INACTIVE)
-                                ++sup;
 
+                            if (j == k) continue;
+
+                            /* Determine, where the bound is active. */
                             if (alpha > 0.0)
                             {
                                 if (vec_values_1[jj] > 0.0)
                                 {
-                                    wj[j] = QPP_AT_UPPER_BOUND;
+                                    it = QPP_AT_UPPER_BOUND;
                                 }
                                 else
                                 {
-                                    wj[j] = QPP_AT_LOWER_BOUND;
+                                    it = QPP_AT_LOWER_BOUND;
                                 }
                             }
                             else
                             {
                                 if (vec_values_1[jj] > 0.0)
                                 {
-                                    wj[j] = QPP_AT_LOWER_BOUND;
+                                    it = QPP_AT_LOWER_BOUND;
                                 }
                                 else
                                 {
-                                    wj[j] = QPP_AT_UPPER_BOUND;
+                                    it = QPP_AT_UPPER_BOUND;
                                 }
                             }
+
+                            if (wj[j] == QPP_AT_INACTIVE)
+                            {
+                                /*  We know that bound j is active. It is not part of the
+                                    working set because of linear dependency. */
+                                vec_values_2[0] = 1.0;
+                                vec_indices_2[0] = j;
+                                vec_length_2 = 1;
+
+                                values1 = data->mem_mpn_r;
+                                linearDependencyTest(values1, A, H, vec_indices_2, vec_values_2,
+                                                     vec_length_2, av, n_ps, wi, num_actv_constr,
+                                                     wj, num_actv_bnds, data->mem_mpn_i,
+                                                     data->mem_for_bounds_int, data->mem_for_bounds_real);
+
+                                /*  If e_k is part of the linear combination of e_j, then we can
+                                    remove e_k since it will be replaced by e_j. */
+                                if (fabs(values1[n+m+k]) > 1.0e3 * eq_tol)
+                                {
+                                    wj[j] = it;
+                                    wj[k] = QPP_AT_INACTIVE;
+                                }
+                                /*  Otherwise e_k is not part of the linear combination and another
+                                    constraint must be replaced for e_j. */
+                                else
+                                {
+                                    ldPush(j, -1, it, m, n, wi, &num_actv_constr,
+                                           wj, &num_actv_bnds, y, z, values1+n, eq_tol);
+                                }
+                            }
+                            else
+                            {
+                                wj[j] = it;
+                            }
                         }
-                        wj[k] = QPP_AT_INACTIVE;
 
-                        if (wi[i] != QPP_AT_INACTIVE)
-                            ++sup;
-
-                        if (alpha > 0.0)
+                        if (y[i] >= -1.0e3 * eq_tol)
                         {
-                            wi[i] = QPP_AT_LOWER_BOUND;
+                            it = QPP_AT_LOWER_BOUND;
                         }
                         else
                         {
-                            wi[i] = QPP_AT_UPPER_BOUND;
+                            it = QPP_AT_UPPER_BOUND;
                         }
 
-                        /* If constraint i is equality constraint -> no sign restr. */
-                        if (y[i] > opt->feas_tol)
+                        if (wi[i] == QPP_AT_INACTIVE)
                         {
-                            wi[i] = QPP_AT_LOWER_BOUND;
-                        }
+                            values1 = data->mem_mpn_r;
+                            linearDependencyTest(values1, A, H, vec_indices_1, vec_values_1,
+                                                 vec_length_1, av, n_ps, wi, num_actv_constr,
+                                                 wj, num_actv_bnds, data->mem_mpn_i,
+                                                 data->mem_for_bounds_int, data->mem_for_bounds_real);
 
-                        if (y[i] < -opt->feas_tol)
-                        {
-                            wi[i] = QPP_AT_UPPER_BOUND;
+                            if (fabs(values1[n+m+k]) > 1.0e3 * eq_tol)
+                            {
+                                wi[i] = it;
+                                ++num_actv_constr;
+
+                                wj[k] = QPP_AT_INACTIVE;
+                                --num_actv_bnds;
+                            }
+                            else
+                            {
+                                ldPush(i, 1, it, m, n, wi, &num_actv_constr, wj,
+                                       &num_actv_bnds, y, z, values1+n, eq_tol);
+                            }
                         }
-                        printf("1 Number active components / total: %d / %" QPP_PRID "\n", sup, vec_length_1+1);
+                        else
+                        {
+                            wi[i] = it;
+                        }
                     }
                 }
 
                 /* Tighter upper bounds. */
                 for (kk = 0; kk < length2; ++kk)
                 {
-                    int sup = 0;
-                    int z0 = 0;
                     k = indices2[kk];
 
                     if (wj[k] == QPP_AT_UPPER_BOUND)
@@ -1900,111 +2106,103 @@ qpp_return_value_t qppPostsolve(qpp_data_t *const data,
                             ++it;
 
                         alpha = vec_values_1[it];       /* alpha = a_ik */
+
                         for (jj = 0; jj < vec_length_1; ++jj)
                         {
                             j = vec_indices_1[jj];
 
-                            if (wj[j] == QPP_AT_INACTIVE)
-                                printf("%" QPP_PRID "  ", j);
-
-                            if (wj[j] != QPP_AT_INACTIVE)
-                                ++sup;
-
-                            if (fabs(z[j]) <= opt->feas_tol)
-                                ++z0;
-
-                            /*if (wj[j] == QPP_AT_INACTIVE)
-                            {
-                                getColA(A, j, ac, vec_indices_2, vec_values_2, &vec_length_2);
-                                int found = 0;
-                                for (ii = 0; ii < vec_length_2; ++ii)
-                                {
-                                    it = A->irowst[vec_indices_2[ii]];
-                                    while (it >= 0)
-                                    {
-                                        if (av[A->jcn[it]] && (fabs(z[A->jcn[it]]) <= eq_tol) && (wj[A->jcn[it]] != QPP_AT_INACTIVE))
-                                        {
-                                            wj[A->jcn[it]] = QPP_AT_INACTIVE;
-                                            found = 1;
-                                            break;
-                                        }
-                                        it = A->linkrw[it];
-                                    }
-                                    if (found) break;
-                                }
-                            }*/
+                            if (j == k) continue;
 
                             if (alpha > 0.0)
                             {
                                 if (vec_values_1[jj] > 0.0)
                                 {
-                                    wj[j] = QPP_AT_LOWER_BOUND;
+                                    it = QPP_AT_LOWER_BOUND;
                                 }
                                 else
                                 {
-                                    wj[j] = QPP_AT_UPPER_BOUND;
+                                    it = QPP_AT_UPPER_BOUND;
                                 }
                             }
                             else
                             {
                                 if (vec_values_1[jj] > 0.0)
                                 {
-                                    wj[j] = QPP_AT_UPPER_BOUND;
+                                    it = QPP_AT_UPPER_BOUND;
                                 }
                                 else
                                 {
-                                    wj[j] = QPP_AT_LOWER_BOUND;
+                                    it = QPP_AT_LOWER_BOUND;
                                 }
                             }
+
+                            if (wj[j] == QPP_AT_INACTIVE)
+                            {
+                                vec_values_2[0] = 1.0;
+                                vec_indices_2[0] = j;
+                                vec_length_2 = 1;
+
+                                values1 = data->mem_mpn_r;
+                                linearDependencyTest(values1, A, H, vec_indices_2, vec_values_2,
+                                                     vec_length_2, av, n_ps, wi, num_actv_constr,
+                                                     wj, num_actv_bnds, data->mem_mpn_i,
+                                                     data->mem_for_bounds_int, data->mem_for_bounds_real);
+
+                                if (fabs(values1[n+m+k]) > 1.0e3 * eq_tol)
+                                {
+                                    wj[j] = it;
+                                    wj[k] = QPP_AT_INACTIVE;
+                                }
+                                else
+                                {
+                                    ldPush(j, -1, it, m, n, wi, &num_actv_constr, wj,
+                                           &num_actv_bnds, y, z, values1+n, eq_tol);
+                                }
+                            }
+                            else
+                            {
+                                wj[j] = it;
+                            }
                         }
-                        wj[k] = QPP_AT_INACTIVE;
-                        printf("%" QPP_PRID "  ", k);
 
-                        if (wi[i] != QPP_AT_INACTIVE)
-                            ++sup;
-
-                        if (fabs(y[i]) <= opt->feas_tol)
-                            ++z0;
-
-                        if (alpha > 0.0)
+                        if (y[i] >= -1.0e3 * eq_tol)
                         {
-                            wi[i] = QPP_AT_UPPER_BOUND;
+                            it = QPP_AT_LOWER_BOUND;
                         }
                         else
                         {
-                            wi[i] = QPP_AT_LOWER_BOUND;
+                            it = QPP_AT_UPPER_BOUND;
                         }
 
-                        if (y[i] > opt->feas_tol)
+                        if (wi[i] == QPP_AT_INACTIVE)
                         {
-                            wi[i] = QPP_AT_LOWER_BOUND;
-                        }
+                            values1 = data->mem_mpn_r;
+                            linearDependencyTest(values1, A, H, vec_indices_1, vec_values_1,
+                                                 vec_length_1, av, n_ps, wi, num_actv_constr,
+                                                 wj, num_actv_bnds, data->mem_mpn_i,
+                                                 data->mem_for_bounds_int, data->mem_for_bounds_real);
 
-                        if (y[i] < -opt->feas_tol)
-                        {
-                            wi[i] = QPP_AT_UPPER_BOUND;
-                        }
-
-                        /*if (vec_length_1-sup > 0)
-                        {
-                            for (j = 0; j < n; ++j)
+                            if (fabs(values1[n+m+k]) > 1.0e3 * eq_tol)
                             {
-                                if (av[j] && (fabs(z[j]) <= opt->feas_tol) && (wj[j] != QPP_AT_INACTIVE) )
-                                {
-                                    printf("\nIndex = %" QPP_PRID "\n", j);
-                                    wj[j] = QPP_AT_INACTIVE;
-                                    break;
-                                }
-                            }
-                        }*/
+                                wi[i] = it;
+                                ++num_actv_constr;
 
-                        printf("\n2 Number active components / total / Zero Multipliers: %d / %" QPP_PRID " / %d\n", sup, vec_length_1+1, z0);
+                                wj[k] = QPP_AT_INACTIVE;
+                                --num_actv_bnds;
+                            }
+                            else
+                            {
+                                ldPush(i, 1, it, m, n, wi, &num_actv_constr, wj,
+                                       &num_actv_bnds, y, z, values1+n, eq_tol);
+                            }
+                        }
+                        else
+                        {
+                            wi[i] = it;
+                        }
                     }
                 }
-                //wj[378] = QPP_AT_INACTIVE;
-                //wj[835] = QPP_AT_INACTIVE;
             }
-
 
             /*free(indices1);
             free(indices2);
@@ -2038,6 +2236,7 @@ qpp_return_value_t qppPostsolve(qpp_data_t *const data,
                 {
                     wi[i] = QPP_AT_UPPER_BOUND;
                 }
+                ++num_actv_constr;
             }
 
             /* Check which multipliers z_k have the wrong sign. */
@@ -2062,6 +2261,7 @@ qpp_return_value_t qppPostsolve(qpp_data_t *const data,
             }
 
             ac[i] = 1;
+            ++m_ps;
             y[i] = new_y;
 
             /* We have to update the value of all dual variables z. */
@@ -2074,9 +2274,12 @@ qpp_return_value_t qppPostsolve(qpp_data_t *const data,
                 constraint will be considered as inactive. */
             if ( (wi != NULL) && (wj != NULL) )
             {
+                /*  All variables are already fixed at correct bound due to the postprocessing
+                    operation of fixVariable. */
                 if (fabs(y[i]) <= eq_tol)
                 {
                     wi[i] = QPP_AT_INACTIVE;
+                    --num_actv_constr;
                 }
                 else
                 {
@@ -2085,7 +2288,7 @@ qpp_return_value_t qppPostsolve(qpp_data_t *const data,
                     it = -1;    /* For testing / debugging */
                     for (jj = 0; jj < length1+length2; ++jj)
                     {
-                        if (fabs(z[indices1[jj]]) <= eq_tol)
+                        if (fabs(z[indices1[jj]]) <= 1.0e3 * eq_tol)
                         {
                             wj[indices1[jj]] = QPP_AT_INACTIVE;
                             it = indices1[jj];
@@ -2093,6 +2296,7 @@ qpp_return_value_t qppPostsolve(qpp_data_t *const data,
                         }
                     }
                     assert(it >= 0);
+                    --num_actv_bnds;
                 }
             }
 
@@ -2101,7 +2305,7 @@ qpp_return_value_t qppPostsolve(qpp_data_t *const data,
             free(fpc);*/
             break;
 
-        case QPP_SE_SPARSIFICATION:     /* Multipliers OK, working set not. */
+        case QPP_SE_SPARSIFICATION:     /* OK (with linear dependency test) */
             spf = se->elements.spf;
             alpha = spf->alpha;
             i = spf->i;
@@ -2109,14 +2313,13 @@ qpp_return_value_t qppPostsolve(qpp_data_t *const data,
 
             getRowA(A, i, av, vec_indices_1, vec_values_1, &vec_length_1);
 
+            /*  !!! If the entries in A are NOT sorted, then put the following line
+                into the next for loop!!! */
+            it = A->irowst[k];
             for (jj = 0; jj < vec_length_1; ++jj)
             {
                 j = vec_indices_1[jj];
-                it = A->irowst[k];
 
-                /*  The following loop always works, but if the entries are sorted
-                    (as they should be) we  do not have to reset it = A->irowst[k]
-                    in every iteration */
                 while (A->jcn[it] != j)
                 {
                     it = A->linkrw[it];
@@ -2138,40 +2341,52 @@ qpp_return_value_t qppPostsolve(qpp_data_t *const data,
             /* Remember: i-th linear constraint is an equality constraint! */
             if ( (wi != NULL) && (wj != NULL) )
             {
-                if (fabs(y[k]) <= 1e-8)
-                {
-                    continue;
-                }
-                /* Problem if constr. k is active and constraint i is not!!! */
-                /*if ( wi[k] && !wi[i] && (fabs(y[k]) > 1e-8) )
-                {
-                    puts("Problem SPF.");
-                    printf("z_j[j] = %.6e\n", z[spf->j]);
-
-                    if (y[i] <= 0)
-                    {
-                        wi[i] = QPP_AT_UPPER_BOUND;
-                    }
-                    else //if (y[i] > opt->feas_tol)
-                    {
-                        wi[i] = QPP_AT_LOWER_BOUND;
-                    }
-                }*/
-
                 if (wi[i] != QPP_AT_INACTIVE)
                 {
-                    if (y[i] <= -opt->feas_tol)
-                    {
-                        wi[i] = QPP_AT_UPPER_BOUND;
-                    }
-                    else if (y[i] > opt->feas_tol)
+                    if (y[i] >= -1.0e3 * eq_tol)
                     {
                         wi[i] = QPP_AT_LOWER_BOUND;
                     }
+                    else
+                    {
+                        wi[i] = QPP_AT_UPPER_BOUND;
+                    }
                 }
 
-            }
+                if ( (wi[i] == QPP_AT_INACTIVE) && (wi[k] != QPP_AT_INACTIVE) )
+                {
+                    values1 = data->mem_mpn_r;
 
+                    ret_val = linearDependencyTest(values1, A, H, vec_indices_1, vec_values_1,
+                                                   vec_length_1, av, n_ps, wi, num_actv_constr,
+                                                   wj, num_actv_bnds, data->mem_mpn_i,
+                                                   data->mem_for_bounds_int,
+                                                   data->mem_for_bounds_real);
+                    if (ret_val != QPP_OK)
+                    {
+                        return ret_val;
+                    }
+
+                    /* Constraint must be linearly dependent. For debugging we nevertheless check it. */
+                    /*value = 0.0;
+                    for (jj = 0; jj < n; ++jj)
+                    {
+                        value += values1[jj] * values1[jj];
+                    }
+
+                    assert(value <= eq_tol);*/
+
+                    kk = (alpha * y[k] > 1.0e3 * eq_tol ? QPP_AT_UPPER_BOUND : QPP_AT_LOWER_BOUND);
+
+                    ret_val = ldPush(i, 1, kk, m, n, wi, &num_actv_constr, wj, &num_actv_bnds, y, z,
+                                     values1+n, eq_tol);
+
+                    if (ret_val != QPP_OK)
+                    {
+                        return ret_val;
+                    }
+                }
+            }
 
             /*free(spf);*/
             break;
@@ -2200,6 +2415,7 @@ qpp_return_value_t qppPostsolve(qpp_data_t *const data,
 
                 x[j] += sc->au / a_ij;  /* sc->au == sc->al */
                 av[j] = 1;
+                ++n_ps;
                 z[j] = -a_ij * y[i];
                 /*++A_nnz_rows[i];*/
 
@@ -2215,9 +2431,12 @@ qpp_return_value_t qppPostsolve(qpp_data_t *const data,
 
                 if ( (wi != NULL) && (wj != NULL) )
                 {
+                    assert(wi[i] != QPP_AT_EQ_CONSTRAINT);
+
                     /* Here, wi[i] stores the status of the i-th (inequality!) constraint */
                     if (wi[i] == QPP_AT_LOWER_BOUND)
                     {
+                        ++num_actv_bnds;
                         if (a_ij > 0.0)
                         {
                             wj[j] = QPP_AT_UPPER_BOUND;
@@ -2229,6 +2448,7 @@ qpp_return_value_t qppPostsolve(qpp_data_t *const data,
                     }
                     else if (wi[i] == QPP_AT_UPPER_BOUND)
                     {
+                        ++num_actv_bnds;
                         if (a_ij > 0.0)
                         {
                             wj[j] = QPP_AT_LOWER_BOUND;
@@ -2242,15 +2462,15 @@ qpp_return_value_t qppPostsolve(qpp_data_t *const data,
                     {
                         /* Inequality constraint is inactive and so is x_j. */
                         wj[j] = QPP_AT_INACTIVE;
-                    }
-                }
 
-                /*  The original linear (eq.) constraint must be considered as active
-                    since then the dimension of the null space of the constraints stays
-                    the same. */
-                if (wi != NULL)
-                {
-                    if (y[i] >= 0.0)
+                        /*  i-th linear constraint will become active (if it is not
+                            already active). So, if the constraint is not active, we have
+                            to increase the number of active constraints. */
+                        ++num_actv_constr;
+                    }
+
+                    /* Active (equality) constraint i -> Dimension of null space stays the same! */
+                    if (y[i] >= -1.0e3 * eq_tol)
                     {
                         wi[i] = QPP_AT_LOWER_BOUND;
                     }
@@ -2265,6 +2485,8 @@ qpp_return_value_t qppPostsolve(qpp_data_t *const data,
                 y[i] = value;
                 av[j] = 1;
                 ac[i] = 1;
+                ++n_ps;
+                ++m_ps;
                 z[j] = 0.0;
 
                 /* x_j was (implied) free without splitting an equality constraint */
@@ -2281,6 +2503,7 @@ qpp_return_value_t qppPostsolve(qpp_data_t *const data,
                         if (wi != NULL)
                         {
                             wi[i] = QPP_AT_LOWER_BOUND;
+                            ++num_actv_constr;
                         }
                     }
                     else
@@ -2290,6 +2513,7 @@ qpp_return_value_t qppPostsolve(qpp_data_t *const data,
                         if (wi != NULL)
                         {
                             wi[i] = QPP_AT_UPPER_BOUND;
+                            ++num_actv_constr;
                         }
                     }
                 }
@@ -2302,6 +2526,7 @@ qpp_return_value_t qppPostsolve(qpp_data_t *const data,
                         if (wi != NULL)
                         {
                             wi[i] = QPP_AT_UPPER_BOUND;
+                            ++num_actv_constr;
                         }
                     }
                     else if (isfinite(sc->al))
@@ -2310,6 +2535,7 @@ qpp_return_value_t qppPostsolve(qpp_data_t *const data,
                         if (wi != NULL)
                         {
                             wi[i] = QPP_AT_LOWER_BOUND;
+                            ++num_actv_constr;
                         }
                     }
                     else
@@ -3823,7 +4049,7 @@ static qpp_return_value_t emptyColumns(qpp_data_t *const data)
 
         if (H_nnz_columns[j] == 0)
         {
-            /* Solve LP: min g_j * x s.t. xl_j <= x <= xu_j */
+            /* Solve LP: min g_j * x_j s.t. xl_j <= x <= xu_j */
             if (g_j > QPP_ZERO)
             {
                 if (isinf(xl_j))
@@ -3874,8 +4100,9 @@ static qpp_return_value_t emptyColumns(qpp_data_t *const data)
                     xl_j <= x_j <= xu_j */
                 if ( isfinite(xl_j) && isfinite(xu_j) )
                 {
-                    value = (xu_j + xl_j) / 2;
-                    actv_type = QPP_AT_INACTIVE;
+                    /* To ensure that the reduced Hessian stays pos. def.: Fix at lower bound. */
+                    value = xl_j;
+                    actv_type = QPP_AT_LOWER_BOUND;
                 }
                 else if (isfinite(xl_j))
                 {
@@ -3889,8 +4116,12 @@ static qpp_return_value_t emptyColumns(qpp_data_t *const data)
                 }
                 else
                 {
-                    value = 0.0;
-                    actv_type = QPP_AT_INACTIVE;
+                    /*  Here, x_j is a free variable, does neither occur in linear constraints,
+                        nor in the objective function. We can not remove it here, as the reduced
+                        Hessian might become indefinite (not pos. def.). */
+                    continue;
+                    /*value = 0.0;
+                    actv_type = QPP_AT_INACTIVE;*/
                 }
             }
             data->found_reduction = 1;
@@ -3911,6 +4142,7 @@ static qpp_return_value_t emptyColumns(qpp_data_t *const data)
         {
             /* Solve QP: min 0.5 * h_jj * x^2 + g_j * x s.t. xl_j <= x <= xu_j */
             value = -g_j / h_jj;    /* Solution of unconstrained problem */
+            actv_type = QPP_AT_INACTIVE;
 
             if (h_jj > 0.0)
             {
@@ -4172,6 +4404,7 @@ static qpp_return_value_t singletonColumns(qpp_data_t *const data)
 
         if (need_to_split == 1)
         {
+            //continue;
             /* Use split technique only after 2 iterations of the presolving loop. */
             if ((data->num_iter <= 2) || !qppIsEqual(al[i], au[i], eq_tol))
             {
@@ -6110,6 +6343,592 @@ static qpp_return_value_t dualConstraints(qpp_data_t *const data)
         fflush(data->logfile);
     }
     #endif
+
+    return QPP_OK;
+}
+
+
+static cholmod_dense *solveKKTSystem(const qpp_ecrmatrix_t *A,
+                                     const qpp_ecrmatrix_t *H,
+                                     cholmod_dense *rhs,
+                                     const qpp_int_t *av,
+                                     const qpp_int_t num_av,
+                                     const qpp_int_t *wi,
+                                     const qpp_int_t num_actv_constr,
+                                     const qpp_int_t *wj,
+                                     const qpp_int_t num_actv_bnds,
+                                     qpp_int_t *storage,
+                                     qpp_int_t *vec_indices,
+                                     qpp_real_t *vec_values)
+{
+    qpp_int_t i, j, k, l, m, n, num_entries, vec_length, dim_it, kkt_dim, status;
+    qpp_real_t *Kx, *Ksol_x, *rhs_x;
+    double umf_info[UMFPACK_INFO], umf_control[UMFPACK_CONTROL];
+    qpp_int_t *Ki, *Kp, *av_offset, *wi_offset;
+    cholmod_sparse *K;
+    cholmod_dense *Ksol;
+    cholmod_common cc;
+    void *symbolic, *numeric;
+
+    m = A->nrow;
+    n = A->ncol;
+    av_offset = storage;
+    qppSetArrayi(av_offset, m + 2*n, 0);
+    wi_offset = &av_offset[n];
+    K = NULL;
+    Ksol = NULL;
+
+    kkt_dim = num_av + num_actv_constr + num_actv_bnds;
+
+    /*qpp_int_t n_av = 0;
+    qpp_int_t n_wi = 0;
+    qpp_int_t n_wj = 0;
+
+    for (k = 0; k < n; ++k)
+    {
+        if (av[k])
+            ++n_av;
+        if (wj[k])
+            ++n_wj;
+    }
+    for (k = 0; k < m; ++k)
+    {
+        if (wi[k] )
+            ++n_wi;
+    }
+
+    printf("REF n_av = %d, n_wi = %d, n_wj = %d\n", (int)(num_av-n_av),
+           (int)(num_actv_constr-n_wi), (int)(num_actv_bnds-n_wj));*/
+
+    if (!av[0])
+    {
+        av_offset[0] = 1;
+    }
+    for (k = 1; k < n; ++k)
+    {
+        av_offset[k] = av_offset[k-1];
+        if (!av[k])
+        {
+            ++av_offset[k];
+        }
+    }
+
+    if (!wi[0])
+    {
+        wi_offset[0] = 1;
+    }
+    for (k = 1; k < m; ++k)
+    {
+        wi_offset[k] = wi_offset[k-1];
+        if (!wi[k])
+        {
+            ++wi_offset[k];
+        }
+    }
+
+    CM_START(&cc);
+    K = CM_ALLOCATE_SPARSE(kkt_dim, kkt_dim, 2 * (H->nnz+A->nnz+num_actv_bnds), 1, 1, 0,
+                           CHOLMOD_REAL, &cc);
+    CM_FINISH(&cc);
+
+    if (K == NULL)
+    {
+        return NULL;
+    }
+
+    num_entries = 0;
+    dim_it = 0;
+    Ki = K->i;
+    Kp = K->p;
+    Kx = K->x;
+
+    Kp[dim_it++] = 0;
+    l = 0;
+
+    /* Build KKT matrix in CSC format */
+    for (j = 0; j < n; ++j)
+    {
+        if (av[j])
+        {
+            getColH(H, j, av, vec_indices, vec_values, &vec_length);
+            for (k = 0; k < vec_length; ++k)
+            {
+                Ki[num_entries] = vec_indices[k] - av_offset[vec_indices[k]];
+                Kx[num_entries++] = vec_values[k];
+            }
+
+            getColA(A, j, wi, vec_indices, vec_values, &vec_length);
+            for (k = 0; k < vec_length; ++k)
+            {
+                Ki[num_entries] = vec_indices[k] - wi_offset[vec_indices[k]] + num_av;
+                Kx[num_entries++] = vec_values[k];
+            }
+
+            if (wj[j])
+            {
+                Ki[num_entries] = l + num_av + num_actv_constr;
+                Kx[num_entries++] = 1.0;
+                ++l;
+            }
+            Kp[dim_it++] = num_entries;
+        }
+    }
+
+    for (i = 0; i < m; ++i)
+    {
+        if (wi[i])
+        {
+            getRowA(A, i, av, vec_indices, vec_values, &vec_length);
+            for (k = 0; k < vec_length; ++k)
+            {
+                Ki[num_entries] = vec_indices[k] - av_offset[vec_indices[k]];
+                Kx[num_entries++] = vec_values[k];
+            }
+            Kp[dim_it++] = num_entries;
+        }
+    }
+
+    for (j = 0; j < n; ++j)
+    {
+        if (wj[j])
+        {
+            Ki[num_entries] = j - av_offset[j];
+            Kx[num_entries++] = 1.0;
+            Kp[dim_it++] = num_entries;
+        }
+    }
+
+    /*FILE *mat_file = fopen("KKT.mm", "w");
+    CM_WRITE_SPARSE(mat_file, K, NULL, NULL, &cc);
+    fclose(mat_file);*/
+
+    /* SOLVE WITH UMFPACK */
+    UMFPACK_DEFAULTS(umf_control);
+    status = UMFPACK_SYMBOLIC(kkt_dim, kkt_dim, Kp, Ki, Kx, &symbolic, umf_control, umf_info);
+    if (status < 0)
+    {
+        CM_START(&cc);
+        CM_FREE_SPARSE(&K, &cc);
+        CM_FINISH(&cc);
+        return NULL;
+    }
+
+    status = UMFPACK_NUMERIC(Kp, Ki, Kx, symbolic, &numeric, umf_control, umf_info);
+    if (status < 0)
+    {
+        CM_START(&cc);
+        CM_FREE_SPARSE(&K, &cc);
+        CM_FINISH(&cc);
+        return NULL;
+    }
+
+    rhs_x = rhs->x;
+    Ksol = CM_ALLOCATE_DENSE(kkt_dim, 1, kkt_dim, CHOLMOD_REAL, &cc);
+    Ksol_x = Ksol->x;
+
+    status = UMFPACK_SOLVE(UMFPACK_A, Kp, Ki, Kx, Ksol_x, rhs_x, numeric, umf_control, umf_info);
+    if (status < 0)
+    {
+        CM_START(&cc);
+        CM_FREE_SPARSE(&K, &cc);
+        CM_FREE_DENSE(&Ksol, &cc);
+        CM_FINISH(&cc);
+        return NULL;
+    }
+
+    /*CM_START(&cc);
+    Ksol = SPQR_BACKSLASH(K, rhs, &cc);
+    CM_FINISH(&cc);*/
+
+    if (Ksol == NULL)
+    {
+        puts("Keine Loesung");
+        CM_START(&cc);
+        CM_FREE_SPARSE(&K, &cc);
+        CM_FINISH(&cc);
+        return NULL;
+    }
+
+    UMFPACK_FREE_NUMERIC(&numeric);
+    UMFPACK_FREE_SYMBOLIC(&symbolic);
+
+    CM_START(&cc);
+    CM_FREE_SPARSE(&K, &cc);
+    CM_FINISH(&cc);
+
+    return Ksol;
+}
+
+
+static qpp_return_value_t curvatureTest(qpp_real_t *result,
+                                        const qpp_int_t index,
+                                        const qpp_ecrmatrix_t *A,
+                                        const qpp_ecrmatrix_t *H,
+                                        const qpp_int_t *av,
+                                        const qpp_int_t num_av,
+                                        const qpp_int_t *wi,
+                                        const qpp_int_t num_actv_constr,
+                                        const qpp_int_t *wj,
+                                        const qpp_int_t num_actv_bnds,
+                                        qpp_int_t *storage,
+                                        qpp_int_t *vec_indices,
+                                        qpp_real_t *vec_values)
+{
+    qpp_int_t m, n, k, kkt_dim, counter;
+    qpp_real_t *x;
+    cholmod_dense *rhs, *Ksol;
+    cholmod_common cc;
+
+    m = A->nrow;
+    n = A->ncol;
+    rhs = NULL;
+    Ksol = NULL;
+
+    kkt_dim = num_av + num_actv_constr + num_actv_bnds;
+
+    CM_START(&cc);
+
+    rhs = CM_ALLOCATE_DENSE(kkt_dim, 1, kkt_dim, CHOLMOD_REAL, &cc);
+
+    CM_FINISH(&cc);
+
+    if (rhs == NULL)
+    {
+        return QPP_OUT_OF_MEMORY;
+    }
+
+    x = rhs->x;
+    qppSetArrayr(x, kkt_dim, 0.0);
+
+    /*  If index \in {0,...,m-1}, then curvature test with linear constraint <index>,
+        else curvature test with bound constraint <index> - <m>. */
+    if (index < m)
+    {
+        counter = 0;
+        for (k = 0; k < n; ++k)
+        {
+            if (!wi[k])
+            {
+                ++counter;
+            }
+
+            if (k == index)
+            {
+                x[num_av + k - counter] = 1.0;
+                break;
+            }
+        }
+    }
+    else
+    {
+        counter = 0;
+        for (k = 0; k < n; ++k)
+        {
+            if (!wj[k])
+            {
+                ++counter;
+            }
+
+            if (k == (index-m))
+            {
+                x[num_av + num_actv_constr + k - counter] = 1.0;
+                break;
+            }
+        }
+    }
+
+    Ksol = solveKKTSystem(A, H, rhs, av, num_av, wi, num_actv_constr, wj, num_actv_bnds,
+                          storage, vec_indices, vec_values);
+    if (Ksol == NULL)
+    {
+        CM_START(&cc);
+        CM_FREE_DENSE(&rhs, &cc);
+        CM_FINISH(&cc);
+        return QPP_OUT_OF_MEMORY;
+    }
+
+    x = Ksol->x;
+
+    qppSetArrayr(result, m + 2*n, 0.0);
+    counter = 0;
+    for (k = 0; k < n; ++k)
+    {
+        if (av[k])
+        {
+            result[k] = x[counter++];
+        }
+    }
+
+    assert(counter == num_av);
+    counter = num_av;
+
+    for (k = 0; k < m; ++k)
+    {
+        if (wi[k])
+        {
+            result[n+k] = x[counter++];
+        }
+    }
+
+    assert(counter == num_av + num_actv_constr);
+    counter = num_av + num_actv_constr;
+
+    for (k = 0; k < n; ++k)
+    {
+        if (wj[k])
+        {
+            result[n+m+k] = x[counter++];
+        }
+    }
+
+    CM_START(&cc);
+
+    CM_FREE_DENSE(&rhs, &cc);
+    CM_FREE_DENSE(&Ksol, &cc);
+
+    CM_FINISH(&cc);
+
+    return QPP_OK;
+}
+
+
+static qpp_return_value_t linearDependencyTest(qpp_real_t *result,
+                                               const qpp_ecrmatrix_t *A,
+                                               const qpp_ecrmatrix_t *H,
+                                               const qpp_int_t *rhs_indices,
+                                               const qpp_real_t *rhs_values,
+                                               const qpp_int_t rhs_length,
+                                               const qpp_int_t *av,
+                                               const qpp_int_t num_av,
+                                               const qpp_int_t *wi,
+                                               const qpp_int_t num_actv_constr,
+                                               const qpp_int_t *wj,
+                                               const qpp_int_t num_actv_bnds,
+                                               qpp_int_t *storage,
+                                               qpp_int_t *vec_indices,
+                                               qpp_real_t *vec_values)
+{
+    qpp_int_t m, n, counter, k, it, kkt_dim;
+    qpp_real_t *x;
+    cholmod_dense *rhs, *Ksol;
+    cholmod_common cc;
+
+    m = A->nrow;
+    n = A->ncol;
+    kkt_dim = num_av + num_actv_constr + num_actv_bnds;
+    rhs = NULL;
+    Ksol = NULL;
+
+    CM_START(&cc);
+
+    rhs = CM_ALLOCATE_DENSE(kkt_dim, 1, kkt_dim, CHOLMOD_REAL, &cc);
+
+    CM_FINISH(&cc);
+
+    if (rhs == NULL)
+    {
+        return QPP_OUT_OF_MEMORY;
+    }
+
+    x = rhs->x;
+    qppSetArrayr(x, kkt_dim, 0.0);
+
+    it = 0;
+    counter = 0;
+    for (k = 0; k < n; ++k)
+    {
+        if (!av[k])
+        {
+            ++counter;
+        }
+
+        if ( (it < rhs_length) && (k == rhs_indices[it]) )
+        {
+            x[k-counter] = rhs_values[it];
+            ++it;
+        }
+
+    }
+    assert((n-counter)<=num_av);
+
+    Ksol = solveKKTSystem(A, H, rhs, av, num_av, wi, num_actv_constr, wj, num_actv_bnds,
+                          storage, vec_indices, vec_values);
+    if (Ksol == NULL)
+    {
+        CM_START(&cc);
+        CM_FREE_DENSE(&rhs, &cc);
+        CM_FINISH(&cc);
+        return QPP_OUT_OF_MEMORY;
+    }
+
+    x = Ksol->x;
+
+    qppSetArrayr(result, m + 2*n, 0.0);
+    counter = 0;
+    for (k = 0; k < n; ++k)
+    {
+        if (av[k])
+        {
+            result[k] = x[counter++];
+        }
+    }
+
+    assert(counter == num_av);
+    counter = num_av;
+
+    for (k = 0; k < m; ++k)
+    {
+        if (wi[k])
+        {
+            result[n+k] = x[counter++];
+        }
+    }
+
+    assert(counter == num_av + num_actv_constr);
+    counter = num_av + num_actv_constr;
+
+    for (k = 0; k < n; ++k)
+    {
+        if (wj[k])
+        {
+            result[n+m+k] = x[counter++];
+        }
+    }
+
+    CM_START(&cc);
+
+    CM_FREE_DENSE(&rhs, &cc);
+    CM_FREE_DENSE(&Ksol, &cc);
+
+    CM_FINISH(&cc);
+
+    return QPP_OK;
+}
+
+
+static qpp_return_value_t ldPush(const qpp_int_t index,
+                                 const qpp_int_t sign,
+                                 const qpp_int_t ws,
+                                 qpp_int_t m,
+                                 qpp_int_t n,
+                                 qpp_int_t *wi,
+                                 qpp_int_t *num_wi,
+                                 qpp_int_t *wj,
+                                 qpp_int_t *num_wj,
+                                 qpp_real_t *y,
+                                 qpp_real_t *z,
+                                 qpp_real_t *scalars,
+                                 qpp_real_t tol)
+{
+    qpp_real_t factor;
+    qpp_int_t w;
+    qpp_real_t multiplier;
+
+    qpp_int_t sgn = sign;
+    w = index;
+
+    assert(sign != 0);
+
+    if (sign > 0)
+        multiplier = y[index];
+    else
+        multiplier = z[index];
+
+    factor = 1.0;
+
+    qpp_int_t i, j;
+
+    for (i = 0; i < m; ++i)
+    {
+        if ( (wi[i] == QPP_AT_LOWER_BOUND) && (scalars[i]*multiplier < -1.0e3 * tol) )
+        {
+            if (factor > -y[i] / (scalars[i] * multiplier))
+            {
+                sgn = 1;
+                w = i;
+                factor = -y[i] / (scalars[i] * multiplier);
+            }
+        }
+        else if ( (wi[i] == QPP_AT_UPPER_BOUND) && (scalars[i]*multiplier > 1.0e3 * tol) )
+        {
+            if (factor > -y[i] / (scalars[i] * multiplier))
+            {
+                sgn = 1;
+                w = i;
+                factor = -y[i] / (scalars[i] * multiplier);
+            }
+        }
+    }
+
+    scalars += m;
+    for (j = 0; j < n; ++j)
+    {
+        if ( (wj[j] == QPP_AT_LOWER_BOUND) && (scalars[j]*multiplier < -1.0e3 * tol) )
+        {
+            if (factor > -z[j] / (scalars[j] * multiplier))
+            {
+                sgn = -1;
+                w = j;
+                factor = -z[j] / (scalars[j] * multiplier);
+            }
+        }
+        else if ( (wj[j] == QPP_AT_UPPER_BOUND) && (scalars[j]*multiplier > 1.0e3 * tol) )
+        {
+            if (factor > -z[j] / (scalars[j] * multiplier))
+            {
+                sgn = -1;
+                w = j;
+                factor = -z[j] / (scalars[j] * multiplier);
+            }
+        }
+    }
+
+    scalars -= m;
+
+    for (i = 0; i < m; ++i)
+    {
+        if (wi[i] != QPP_AT_INACTIVE)
+        {
+            y[i] += factor * multiplier * scalars[i];
+        }
+    }
+
+    for (j = 0; j < n; ++j)
+    {
+        if (wj[j] != QPP_AT_INACTIVE)
+        {
+            z[j] += factor * multiplier * scalars[m+j];
+        }
+    }
+
+    if (sign > 0)
+        y[index] *= (1.0 - factor);
+    else
+        z[index] *= (1.0 - factor);
+
+    if (sign > 0)
+    {
+        wi[index] = ws;
+        (*num_wi) += 1;
+    }
+    else
+    {
+        wj[index] = ws;
+        (*num_wj) += 1;
+    }
+
+    assert(sgn != 0);
+
+    if (sgn > 0)
+    {
+        wi[w] = QPP_AT_INACTIVE;
+        (*num_wi) -= 1;
+    }
+    else
+    {
+        wj[w] = QPP_AT_INACTIVE;
+        (*num_wj) -= 1;
+    }
 
     return QPP_OK;
 }

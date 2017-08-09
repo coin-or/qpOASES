@@ -29,6 +29,7 @@
 ##	Date:      2007-2017
 ##
 
+NO_PRESOLVER = 1
 
 include ../../make.mk
 

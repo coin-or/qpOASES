@@ -22,51 +22,26 @@
 
 
 ##
-##	Filename:  Makefile
+##	Filename:  interfaces/MATLAB/Makefile
 ##	Author:    Dominik Cebulla
 ##	Version:   1.0 Beta
 ##	Date:      2017
 ##
 
-include make.mk
+include ../../make.mk
 
-# Several compiler options can be applied. Call
-#     make DEFINES=
-
-# -DQPP_USE_INT64
-#   to use integers with at least 8 Byte.
-
-# -DQPP_USE_SINGLE_PRECISION
-#   to use single precision arithmetics (e.g. float instead of double).
-
-# -DQPP_WRITE_LOGFILE
-#   to use a logfile.
-
-# The whole statment should be enclosed in " ", e.g. make DEFINES="-DQPP_USE_INT64"
-
+# DEFINES will be passed to "main" Makefile (in main directory).
 export DEFINES
 
 
-.PHONY: all mmio src clean purge
-
-
-## TARGETS:
-
-all: src
-
-src: mmio
-	@${CD} $@; ${MAKE} -s;
-
-
-mmio:
-	@${CD} extern/$@; ${MAKE} -s;
+all:
+	@cd ${TOP}; ${MAKE} -s purge; ${MAKE} -s;
 
 
 clean:
-	@${CD} extern/mmio; ${MAKE} -s clean;
-	@${CD} src; ${MAKE} -s clean;
+	@cd ${TOP}; ${MAKE} -s clean;
 
 
 purge:
-	@${CD} extern/mmio; ${MAKE} -s purge;
-	@${CD} src; ${MAKE} -s purge;
+	@${RM} qpp.mex* qpp.o
+	@cd ${TOP}; ${MAKE} -s purge;

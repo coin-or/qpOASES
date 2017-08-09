@@ -22,51 +22,12 @@
 
 
 ##
-##	Filename:  Makefile
+##	Filename:  make.mk
 ##	Author:    Dominik Cebulla
 ##	Version:   1.0 Beta
 ##	Date:      2017
 ##
 
-include make.mk
+TOP = $(realpath $(dir $(lastword $(MAKEFILE_LIST))))
 
-# Several compiler options can be applied. Call
-#     make DEFINES=
-
-# -DQPP_USE_INT64
-#   to use integers with at least 8 Byte.
-
-# -DQPP_USE_SINGLE_PRECISION
-#   to use single precision arithmetics (e.g. float instead of double).
-
-# -DQPP_WRITE_LOGFILE
-#   to use a logfile.
-
-# The whole statment should be enclosed in " ", e.g. make DEFINES="-DQPP_USE_INT64"
-
-export DEFINES
-
-
-.PHONY: all mmio src clean purge
-
-
-## TARGETS:
-
-all: src
-
-src: mmio
-	@${CD} $@; ${MAKE} -s;
-
-
-mmio:
-	@${CD} extern/$@; ${MAKE} -s;
-
-
-clean:
-	@${CD} extern/mmio; ${MAKE} -s clean;
-	@${CD} src; ${MAKE} -s clean;
-
-
-purge:
-	@${CD} extern/mmio; ${MAKE} -s purge;
-	@${CD} src; ${MAKE} -s purge;
+include ${TOP}/make_linux.mk
