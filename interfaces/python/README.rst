@@ -71,3 +71,5 @@ The Python interface is known to work on
 
 * Windows, Python 3
 * Linux (Ubuntu 12.04) using Python 2.7.3, Python 3.2.3. NumPy 1.8, Cython 0.19
+* MacOS Mojave (10.14.3) using Python 3.7 (anaconda suite)
+
