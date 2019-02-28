@@ -38,7 +38,7 @@ SRCDIR = ${TOP}/src
 BINDIR = ${TOP}/bin
 
 # MacOSX SDK
-SYSROOT = /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk
+SYSROOT = /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk
 SDK = -isysroot ${SYSROOT} -stdlib=libc++
 
 # Matlab include directory (ADAPT TO YOUR LOCAL SETTINGS!)
@@ -46,7 +46,7 @@ MATLAB_IDIR   = /Applications/MATLAB_R2013a.app/extern/include/
 MATLAB_LIBDIR =
 
 # system or replacement BLAS/LAPACK
-REPLACE_LINALG = 1
+REPLACE_LINALG = 0
 
 ifeq ($(REPLACE_LINALG), 1)
 	LIB_BLAS =   ${SRCDIR}/BLASReplacement.o
@@ -91,7 +91,7 @@ DLLEXT = dylib
 EXE =
 MEXOCTEXT = mex
 DEF_TARGET = -o $@
-SHARED = -dynamiclib ${SDK} -lgcc_s.10.5 -ldylib1.o
+SHARED = -dynamiclib ${SDK}
 
 # 32 or 64 depending on target platform
 BITS = $(shell getconf LONG_BIT)
@@ -103,7 +103,7 @@ else
 	MEXEXT = mexa64
 endif
 
-CPPFLAGS = ${SDK} -Wall -pedantic -Wshadow -Wfloat-equal -Wconversion -Wsign-conversion -O3 -fPIC -DLINUX
+CPPFLAGS = ${SDK} -Wall -pedantic -Wshadow -Wfloat-equal -Wconversion -Wsign-conversion -O3 -fPIC -D__USE_LONG_INTEGERS__ -D__USE_LONG_FINTS__ -D__NO_COPYRIGHT__
 #          -g -D__DEBUG__ -D__NO_COPYRIGHT__ -D__SUPPRESSANYOUTPUT__ -D__USE_SINGLE_PRECISION__
 
 # libraries to link against when building qpOASES .so files
@@ -111,7 +111,7 @@ LINK_LIBRARIES = ${LIB_LAPACK} ${LIB_BLAS} -lm ${LIB_SOLVER}
 LINK_LIBRARIES_WRAPPER = -lm ${LIB_SOLVER}
 
 # how to link against the qpOASES shared library
-QPOASES_LINK = -L${BINDIR}  -lqpOASES -L${SYSROOT}/usr/lib/System -lgcc_s.10.5 -lcrt1.o
+QPOASES_LINK = -L${BINDIR}  -lqpOASES -L${SYSROOT}/usr/lib/System
 QPOASES_LINK_WRAPPER = -L${BINDIR} -lqpOASES_wrapper
 
 # link dependencies when creating executables

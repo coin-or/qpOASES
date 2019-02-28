@@ -387,7 +387,7 @@ cdef class PyQProblemB:
     cdef QProblemB *thisptr      # hold a C++ instance which we're wrapping
     def __cinit__(self, long nV):
         # FIXME: allow other HessianTypes!
-        self.thisptr = new QProblemB(<int_t> nV, HST_UNKNOWN, BT_FALSE)
+        self.thisptr = new QProblemB(<int_t> nV, HST_UNKNOWN, BT_TRUE)
 
     def __dealloc__(self):
         del self.thisptr
@@ -504,7 +504,7 @@ cdef class PyQProblem:
     cdef QProblem *thisptr      # hold a C++ instance which we're wrapping
 
     def __cinit__(self, long nV, long nC):
-        self.thisptr = new QProblem(nV, nC, HST_UNKNOWN, BT_FALSE)
+        self.thisptr = new QProblem(nV, nC, HST_UNKNOWN, BT_TRUE)
 
     def __dealloc__(self):
         del self.thisptr
@@ -629,7 +629,7 @@ cdef class PySQProblem:
     cdef SQProblem *thisptr      # hold a C++ instance which we're wrapping
 
     def __cinit__(self, long nV, long nC):
-        self.thisptr = new SQProblem(nV, nC, HST_UNKNOWN, BT_FALSE)
+        self.thisptr = new SQProblem(nV, nC, HST_UNKNOWN, BT_TRUE)
 
     def __dealloc__(self):
         del self.thisptr

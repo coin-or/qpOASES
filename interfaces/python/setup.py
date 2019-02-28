@@ -53,13 +53,21 @@ extra_params['extra_compile_args'] = ["-O2", "-Wno-unused-variable"]
 extra_params['extra_link_args'] = ["-Wl,-O1", "-Wl,--as-needed"]
 
 extra_params = extra_params.copy()
-extra_params['libraries'] = ['qpOASES', "python2.7"]
+extra_params['libraries'] = ['qpOASES']
 
 extra_params['library_dirs'] = ['/usr/lib', os.path.join(BASEDIR, 'bin')]
 extra_params['language'] = 'c++'
 
 if platform.system() in ['Linux', 'Darwin']:
-    extra_params['extra_compile_args'] = ['-D__USE_LONG_INTEGERS__', '-D__USE_LONG_INTS__']
+    extra_params['extra_compile_args'] = ['-D__USE_LONG_INTEGERS__',
+            '-D__USE_LONG_FINTS__']
+
+if platform.system() == 'Darwin':
+    extra_params['include_dirs'].append(
+            '/Library/Developer/CommandLineTools/usr/include/c++/v1')
+    extra_params['extra_compile_args'] += ['-stdlib=libc++',
+        '-Wno-c++11-long-long']
+    extra_params['extra_link_args'] = ['-stdlib=libc++'] # override the others!
 
 if os.name == 'posix':
     extra_params['runtime_library_dirs'] = extra_params['library_dirs']

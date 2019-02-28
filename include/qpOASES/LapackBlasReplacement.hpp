@@ -51,7 +51,7 @@
 #else
 
 	#define SGEMM  sgemm_
-	#define DGEMM  gemm_
+	#define DGEMM  dgemm_
 	#define SPOTRF spotrf_
 	#define DPOTRF dpotrf_
 	#define STRTRS strtrs_
