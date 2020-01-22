@@ -52,25 +52,23 @@ ubA_new = np.array([1.0])
 
 example = QProblem(2, 1)
 options = Options()
-options.printLevel = PrintLevel.NONE
+#options.printLevel = PrintLevel.NONE
 example.setOptions(options)
 
 # Solve first QP.
 nWSR = np.array([10])
 example.init(H, g, A, lb, ub, lbA, ubA, nWSR)
 
+xOpt = np.zeros(2)
+example.getPrimalSolution(xOpt)
+print("\nxOpt = [ %e, %e ];  objVal = %e\n\n"%(xOpt[0],xOpt[1],example.getObjVal()))
 
 # Solve second QP.
 nWSR = np.array([10])
-
-for i in range(100000):
-    for j in range(1, 100):
-        g_new[0] = i%j
-    example.hotstart( g_new, lb_new, ub_new, lbA_new, ubA_new, nWSR)
+example.hotstart( g_new, lb_new, ub_new, lbA_new, ubA_new, nWSR)
 
 # Get and print solution of second QP.
 
-xOpt = np.zeros(2)
 example.getPrimalSolution(xOpt)
 print("\nxOpt = [ %e, %e ];  objVal = %e\n\n"%(xOpt[0],xOpt[1],example.getObjVal()))
 example.printOptions()
