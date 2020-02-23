@@ -1,0 +1,5 @@
+<map id="G" name="G">
+<area shape="rect" id="node1" href="$classQProblemB.html" title="Implements the online active set strategy for box&#45;constrained QPs." alt="" coords="7,5,95,35"/>
+<area shape="rect" id="node3" href="$classQProblem.html" title="Implements the online active set strategy for QPs with general constraints." alt="" coords="144,5,224,35"/>
+<area shape="rect" id="node5" href="$classSQProblem.html" title="Implements the online active set strategy for QPs with varying matrices." alt="" coords="273,5,361,35"/>
+</map>

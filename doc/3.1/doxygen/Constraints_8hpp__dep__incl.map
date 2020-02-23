@@ -1,0 +1,14 @@
+<map id="G" name="G">
+<area shape="rect" id="node3" href="$Constraints_8cpp.html" title="src/Constraints.cpp" alt="" coords="5,83,141,112"/>
+<area shape="rect" id="node5" href="$Flipper_8hpp.html" title="include/qpOASES/Flipper.hpp" alt="" coords="165,83,360,112"/>
+<area shape="rect" id="node13" href="$QProblem_8hpp.html" title="include/qpOASES/QProblem.hpp" alt="" coords="304,237,517,267"/>
+<area shape="rect" id="node7" href="$Flipper_8cpp.html" title="src/Flipper.cpp" alt="" coords="21,160,128,189"/>
+<area shape="rect" id="node9" href="$QProblemB_8hpp.html" title="include/qpOASES/QProblemB.hpp" alt="" coords="152,160,373,189"/>
+<area shape="rect" id="node11" href="$QProblemB_8cpp.html" title="src/QProblemB.cpp" alt="" coords="144,237,280,267"/>
+<area shape="rect" id="node15" href="$OQPinterface_8cpp.html" title="src/OQPinterface.cpp" alt="" coords="177,315,324,344"/>
+<area shape="rect" id="node17" href="$QProblem_8cpp.html" title="src/QProblem.cpp" alt="" coords="348,315,473,344"/>
+<area shape="rect" id="node19" href="$SQProblem_8hpp.html" title="include/qpOASES/SQProblem.hpp" alt="" coords="497,315,719,344"/>
+<area shape="rect" id="node21" href="$SQProblem_8cpp.html" title="src/SQProblem.cpp" alt="" coords="420,392,556,421"/>
+<area shape="rect" id="node23" href="$SolutionAnalysis_8hpp.html" title="include/qpOASES/extras/SolutionAnalysis.hpp" alt="" coords="580,392,873,421"/>
+<area shape="rect" id="node25" href="$SolutionAnalysis_8cpp.html" title="src/SolutionAnalysis.cpp" alt="" coords="644,469,809,499"/>
+</map>

@@ -1,0 +1,28 @@
+<map id="G" name="G">
+<area shape="rect" id="node3" href="$SolutionAnalysis_8hpp.html" title="qpOASES/extras/SolutionAnalysis.hpp" alt="" coords="1160,83,1408,112"/>
+<area shape="rect" id="node5" href="$SQProblem_8hpp.html" title="qpOASES/SQProblem.hpp" alt="" coords="1077,160,1256,189"/>
+<area shape="rect" id="node64" href="$SolutionAnalysis_8ipp.html" title="qpOASES/extras/SolutionAnalysis.ipp" alt="" coords="1280,160,1523,189"/>
+<area shape="rect" id="node7" href="$QProblem_8hpp.html" title="qpOASES/QProblem.hpp" alt="" coords="985,237,1153,267"/>
+<area shape="rect" id="node62" href="$SQProblem_8ipp.html" title="qpOASES/SQProblem.ipp" alt="" coords="1177,237,1351,267"/>
+<area shape="rect" id="node9" href="$QProblemB_8hpp.html" title="qpOASES/QProblemB.hpp" alt="" coords="611,315,789,344"/>
+<area shape="rect" id="node43" href="$Constraints_8hpp.html" title="qpOASES/Constraints.hpp" alt="" coords="908,469,1087,499"/>
+<area shape="rect" id="node58" href="$ConstraintProduct_8hpp.html" title="qpOASES/ConstraintProduct.hpp" alt="" coords="1035,315,1251,344"/>
+<area shape="rect" id="node60" href="$QProblem_8ipp.html" title="qpOASES/QProblem.ipp" alt="" coords="1275,315,1440,344"/>
+<area shape="rect" id="node11" href="$Flipper_8hpp.html" title="qpOASES/Flipper.hpp" alt="" coords="811,392,960,421"/>
+<area shape="rect" id="node48" href="$Options_8hpp.html" title="qpOASES/Options.hpp" alt="" coords="383,469,537,499"/>
+<area shape="rect" id="node51" href="$Matrices_8hpp.html" title="qpOASES/Matrices.hpp" alt="" coords="497,547,657,576"/>
+<area shape="rect" id="node55" href="$QProblemB_8ipp.html" title="qpOASES/QProblemB.ipp" alt="" coords="613,392,787,421"/>
+<area shape="rect" id="node13" href="$Bounds_8hpp.html" title="qpOASES/Bounds.hpp" alt="" coords="729,469,884,499"/>
+<area shape="rect" id="node15" href="$SubjectTo_8hpp.html" title="qpOASES/SubjectTo.hpp" alt="" coords="855,547,1025,576"/>
+<area shape="rect" id="node41" href="$Bounds_8ipp.html" title="qpOASES/Bounds.ipp" alt="" coords="681,547,831,576"/>
+<area shape="rect" id="node17" href="$Indexlist_8hpp.html" title="qpOASES/Indexlist.hpp" alt="" coords="581,624,741,653"/>
+<area shape="rect" id="node39" href="$SubjectTo_8ipp.html" title="qpOASES/SubjectTo.ipp" alt="" coords="857,624,1023,653"/>
+<area shape="rect" id="node19" href="$Utils_8hpp.html" title="qpOASES/Utils.hpp" alt="" coords="423,701,561,731"/>
+<area shape="rect" id="node37" href="$Indexlist_8ipp.html" title="qpOASES/Indexlist.ipp" alt="" coords="585,701,740,731"/>
+<area shape="rect" id="node21" href="$MessageHandling_8hpp.html" title="qpOASES/MessageHandling.hpp" alt="" coords="287,779,500,808"/>
+<area shape="rect" id="node33" href="$Utils_8ipp.html" title="qpOASES/Utils.ipp" alt="" coords="548,779,681,808"/>
+<area shape="rect" id="node27" href="$Constants_8hpp.html" title="qpOASES/Constants.hpp" alt="" coords="93,856,264,885"/>
+<area shape="rect" id="node31" href="$MessageHandling_8ipp.html" title="qpOASES/MessageHandling.ipp" alt="" coords="288,856,499,885"/>
+<area shape="rect" id="node29" href="$Types_8hpp.html" title="qpOASES/Types.hpp" alt="" coords="105,933,252,963"/>
+<area shape="rect" id="node46" href="$Constraints_8ipp.html" title="qpOASES/Constraints.ipp" alt="" coords="1049,547,1223,576"/>
+</map>

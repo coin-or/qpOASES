@@ -1,0 +1,5 @@
+<map id="G" name="G">
+<area shape="rect" id="node1" href="$classSubjectTo.html" title="Base class for managing working sets of bounds and constraints." alt="" coords="7,32,87,61"/>
+<area shape="rect" id="node3" href="$classBounds.html" title="Manages working sets of bounds (= box constraints)." alt="" coords="148,5,215,35"/>
+<area shape="rect" id="node5" href="$classConstraints.html" title="Manages working sets of constraints." alt="" coords="137,59,225,88"/>
+</map>
