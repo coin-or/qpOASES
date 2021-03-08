@@ -62,6 +62,7 @@ bugs or proposing algorithmic improvements (in alphabetical order):
     Boris Houska
     D. Kwame Minde Kufoalor
     Aude Perrin
+    Silvio Traversaro
     Milan Vukov
     Thomas Wiese
     Leonard Wirsching
