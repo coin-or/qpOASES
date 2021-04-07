@@ -57,7 +57,7 @@ BEGIN_NAMESPACE_QPOASES
  *	\version 3.2
  *	\date 2012-2017
  */
-class SQProblemSchur : public SQProblem
+class QPOASES_EXPORT SQProblemSchur : public SQProblem
 {
 	/* allow SolutionAnalysis class to access private members */
 	friend class SolutionAnalysis;

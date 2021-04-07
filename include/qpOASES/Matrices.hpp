@@ -56,7 +56,7 @@ BEGIN_NAMESPACE_QPOASES
  *	\version 3.2
  *	\date 2011-2017
  */
-class Matrix
+class QPOASES_EXPORT Matrix
 {
 	public:
 		/** Default constructor. */
@@ -289,7 +289,7 @@ class Matrix
  *	\version 3.2
  *	\date 2011-2017
  */
-class SymmetricMatrix : public virtual Matrix
+class QPOASES_EXPORT SymmetricMatrix : public virtual Matrix
 {
 	public:
 		/** Default constructor. */
@@ -325,7 +325,7 @@ class SymmetricMatrix : public virtual Matrix
  *	\version 3.2
  *	\date 2011-2017
  */
-class DenseMatrix : public virtual Matrix
+class QPOASES_EXPORT DenseMatrix : public virtual Matrix
 {
 	public:
 		/** Default constructor. */
@@ -508,7 +508,7 @@ class DenseMatrix : public virtual Matrix
  *	\version 3.2
  *	\date 2011-2017
  */
-class SymDenseMat : public DenseMatrix, public SymmetricMatrix
+class QPOASES_EXPORT SymDenseMat : public DenseMatrix, public SymmetricMatrix
 {
 	public:
 		/** Default constructor. */
@@ -554,7 +554,7 @@ class SymDenseMat : public DenseMatrix, public SymmetricMatrix
  *	\version 3.2
  *	\date 2011-2017
  */
-class SparseMatrix : public virtual Matrix
+class QPOASES_EXPORT SparseMatrix : public virtual Matrix
 {
 	public:
 		/** Default constructor. */
@@ -748,7 +748,7 @@ class SparseMatrix : public virtual Matrix
  *	\version 3.2
  *	\date 2011-2017
  */
-class SparseMatrixRow : public virtual Matrix
+class QPOASES_EXPORT SparseMatrixRow : public virtual Matrix
 {
 	public:
 		/** Default constructor. */
@@ -933,7 +933,7 @@ class SparseMatrixRow : public virtual Matrix
  *	\version 3.2
  *	\date 2011-2017
  */
-class SymSparseMat : public SymmetricMatrix, public SparseMatrix
+class QPOASES_EXPORT SymSparseMat : public SymmetricMatrix, public SparseMatrix
 {
 	public:
 		/** Default constructor. */

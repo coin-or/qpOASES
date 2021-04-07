@@ -54,7 +54,7 @@ BEGIN_NAMESPACE_QPOASES
  *	\version 3.2
  *	\date 2009-2017
  */
-class ConstraintProduct
+class QPOASES_EXPORT ConstraintProduct
 {
 	public:
 		/** Default constructor. */

@@ -58,7 +58,7 @@ BEGIN_NAMESPACE_QPOASES
  *	\version 3.2
  *	\date 2007-2017
  */
-class QProblem : public QProblemB
+class QPOASES_EXPORT QProblem : public QProblemB
 {
 	/* allow SolutionAnalysis class to access private members */
 	friend class SolutionAnalysis;

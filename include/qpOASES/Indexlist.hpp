@@ -52,7 +52,7 @@ BEGIN_NAMESPACE_QPOASES
  *	\version 3.2
  *	\date 2007-2017
  */
-class Indexlist
+class QPOASES_EXPORT Indexlist
 {
 	/*
 	 *  FRIENDS

@@ -50,7 +50,7 @@ BEGIN_NAMESPACE_QPOASES
 
 
 /** Default file to display messages. */
-extern FILE* stdFile;
+extern __declspec(dllimport) FILE* stdFile;
 
 
 /**
@@ -241,7 +241,7 @@ RET_SIMPLE_STATUS_M3							/**< QP problem is unbounded (and thus could not be s
  *	\version 3.2
  *	\date 2007-2017
  */
-class MessageHandling
+class QPOASES_EXPORT MessageHandling
 {
 	/*
 	 *	INTERNAL DATA STRUCTURES

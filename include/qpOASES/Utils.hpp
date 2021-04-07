@@ -44,14 +44,14 @@ BEGIN_NAMESPACE_QPOASES
 
 /** Prints a (possibly named) vector.
  * \return SUCCESSFUL_RETURN */
-returnValue print(	const real_t* const v,	/**< Vector to be printed. */
+QPOASES_EXPORT returnValue print(	const real_t* const v,	/**< Vector to be printed. */
 					int_t n,				/**< Length of vector. */
 					const char* name = 0	/**< Name of vector. */
 					);
 
 /** Prints a (possibly named) permuted vector.
  * \return SUCCESSFUL_RETURN */
-returnValue print(	const real_t* const v,		/**< Vector to be printed. */
+QPOASES_EXPORT returnValue print(	const real_t* const v,		/**< Vector to be printed. */
 					int_t n,					/**< Length of vector. */
 					const int_t* const V_idx,	/**< Pemutation vector. */
 					const char* name = 0		/**< Name of vector. */
@@ -59,7 +59,7 @@ returnValue print(	const real_t* const v,		/**< Vector to be printed. */
 
 /** Prints a (possibly named) matrix.
  * \return SUCCESSFUL_RETURN */
-returnValue print(	const real_t* const M,	/**< Matrix to be printed. */
+QPOASES_EXPORT returnValue print(	const real_t* const M,	/**< Matrix to be printed. */
 					int_t nrow,				/**< Row number of matrix. */
 					int_t ncol,				/**< Column number of matrix. */
 					const char* name = 0	/**< Name of matrix. */
@@ -67,7 +67,7 @@ returnValue print(	const real_t* const M,	/**< Matrix to be printed. */
 
 /** Prints a (possibly named) permuted matrix.
  * \return SUCCESSFUL_RETURN */
-returnValue print(	const real_t* const M,		/**< Matrix to be printed. */
+QPOASES_EXPORT returnValue print(	const real_t* const M,		/**< Matrix to be printed. */
 					int_t nrow,					/**< Row number of matrix. */
 					int_t ncol	,				/**< Column number of matrix. */
 					const int_t* const ROW_idx,	/**< Row pemutation vector. */
@@ -77,7 +77,7 @@ returnValue print(	const real_t* const M,		/**< Matrix to be printed. */
 
 /** Prints a (possibly named) index array.
  * \return SUCCESSFUL_RETURN */
-returnValue print(	const int_t* const index,	/**< Index array to be printed. */
+QPOASES_EXPORT returnValue print(	const int_t* const index,	/**< Index array to be printed. */
 					int_t n,					/**< Length of index array. */
 					const char* name = 0		/**< Name of index array. */
 					);
@@ -85,20 +85,20 @@ returnValue print(	const int_t* const index,	/**< Index array to be printed. */
 
 /** Prints a string to desired output target (useful also for MATLAB output!).
  * \return SUCCESSFUL_RETURN */
-returnValue myPrintf(	const char* s	/**< String to be written. */
+QPOASES_EXPORT returnValue myPrintf(	const char* s	/**< String to be written. */
 						);
 
 
 /** Prints qpOASES copyright notice.
  * \return SUCCESSFUL_RETURN */
-returnValue printCopyrightNotice( );
+QPOASES_EXPORT returnValue printCopyrightNotice( );
 
 
 /** Reads a real_t matrix from file.
  * \return SUCCESSFUL_RETURN \n
  		   RET_UNABLE_TO_OPEN_FILE \n
 		   RET_UNABLE_TO_READ_FILE */
-returnValue readFromFile(	real_t* data,				/**< Matrix to be read from file. */
+QPOASES_EXPORT returnValue readFromFile(	real_t* data,				/**< Matrix to be read from file. */
 							int_t nrow,					/**< Row number of matrix. */
 							int_t ncol,					/**< Column number of matrix. */
 							const char* datafilename	/**< Data file name. */
@@ -108,7 +108,7 @@ returnValue readFromFile(	real_t* data,				/**< Matrix to be read from file. */
  * \return SUCCESSFUL_RETURN \n
  		   RET_UNABLE_TO_OPEN_FILE \n
 		   RET_UNABLE_TO_READ_FILE */
-returnValue readFromFile(	real_t* data,				/**< Vector to be read from file. */
+QPOASES_EXPORT returnValue readFromFile(	real_t* data,				/**< Vector to be read from file. */
 							int_t n,					/**< Length of vector. */
 							const char* datafilename	/**< Data file name. */
 							);
@@ -117,7 +117,7 @@ returnValue readFromFile(	real_t* data,				/**< Vector to be read from file. */
  * \return SUCCESSFUL_RETURN \n
  		   RET_UNABLE_TO_OPEN_FILE \n
 		   RET_UNABLE_TO_READ_FILE */
-returnValue readFromFile(	int_t* data,				/**< Vector to be read from file. */
+QPOASES_EXPORT returnValue readFromFile(	int_t* data,				/**< Vector to be read from file. */
 							int_t n,					/**< Length of vector. */
 							const char* datafilename	/**< Data file name. */
 							);
@@ -126,7 +126,7 @@ returnValue readFromFile(	int_t* data,				/**< Vector to be read from file. */
 /** Writes a real_t matrix into a file.
  * \return SUCCESSFUL_RETURN \n
  		   RET_UNABLE_TO_OPEN_FILE  */
-returnValue writeIntoFile(	const real_t* const data,		/**< Matrix to be written into file. */
+QPOASES_EXPORT returnValue writeIntoFile(	const real_t* const data,		/**< Matrix to be written into file. */
 							int_t nrow,						/**< Row number of matrix. */
 							int_t ncol,						/**< Column number of matrix. */
 							const char* datafilename,		/**< Data file name. */
@@ -136,7 +136,7 @@ returnValue writeIntoFile(	const real_t* const data,		/**< Matrix to be written 
 /** Writes a real_t vector into a file.
  * \return SUCCESSFUL_RETURN \n
  		   RET_UNABLE_TO_OPEN_FILE  */
-returnValue writeIntoFile(	const real_t* const data,		/**< Vector to be written into file. */
+QPOASES_EXPORT returnValue writeIntoFile(	const real_t* const data,		/**< Vector to be written into file. */
 							int_t n,						/**< Length of vector. */
 							const char* datafilename,		/**< Data file name. */
 							BooleanType append = BT_FALSE	/**< Indicates if data shall be appended if the file already exists (otherwise it is overwritten). */
@@ -145,7 +145,7 @@ returnValue writeIntoFile(	const real_t* const data,		/**< Vector to be written 
 /** Writes an integer (column) vector into a file.
  * \return SUCCESSFUL_RETURN \n
  		   RET_UNABLE_TO_OPEN_FILE */
-returnValue writeIntoFile(	const int_t* const integer,		/**< Integer vector to be written into file. */
+QPOASES_EXPORT returnValue writeIntoFile(	const int_t* const integer,		/**< Integer vector to be written into file. */
 							int_t n,						/**< Length of vector. */
 							const char* datafilename,		/**< Data file name. */
 							BooleanType append = BT_FALSE	/**< Indicates if integer shall be appended if the file already exists (otherwise it is overwritten). */
@@ -155,7 +155,7 @@ returnValue writeIntoFile(	const int_t* const integer,		/**< Integer vector to b
  * \return SUCCESSFUL_RETURN \n
 		   RET_INVALID_ARGUMENTS
  		   RET_UNABLE_TO_WRITE_FILE */
-returnValue writeIntoMatFile(	FILE* const matFile,		/**< Pointer to Matlab binary file. */
+QPOASES_EXPORT returnValue writeIntoMatFile(	FILE* const matFile,		/**< Pointer to Matlab binary file. */
 								const real_t* const data,	/**< Data to be written into file. */
 								int_t nRows,				/**< Row number of matrix. */
 								int_t nCols, 				/**< Column number of matrix. */
@@ -166,7 +166,7 @@ returnValue writeIntoMatFile(	FILE* const matFile,		/**< Pointer to Matlab binar
  * \return SUCCESSFUL_RETURN \n
 		   RET_INVALID_ARGUMENTS
  		   RET_UNABLE_TO_WRITE_FILE */
-returnValue writeIntoMatFile(	FILE* const matFile,		/**< Pointer to Matlab binary file. */
+QPOASES_EXPORT returnValue writeIntoMatFile(	FILE* const matFile,		/**< Pointer to Matlab binary file. */
 								const int_t* const data,	/**< Data to be written into file. */
 								int_t nRows,				/**< Row number of matrix. */
 								int_t nCols,				/**< Column number of matrix. */
@@ -176,12 +176,12 @@ returnValue writeIntoMatFile(	FILE* const matFile,		/**< Pointer to Matlab binar
 
 /** Returns the current system time.
  * \return current system time */
-real_t getCPUtime( );
+QPOASES_EXPORT real_t getCPUtime( );
 
 
 /** Returns the N-norm of a vector.
  * \return >= 0.0: successful */
-real_t getNorm(	const real_t* const v,	/**< Vector. */
+QPOASES_EXPORT real_t getNorm(	const real_t* const v,	/**< Vector. */
 				int_t n,				/**< Vector's dimension. */
 				int_t type = 2			/**< Norm type, 1: one-norm, 2: Euclidean norm. */
 				);
@@ -190,7 +190,7 @@ real_t getNorm(	const real_t* const v,	/**< Vector. */
 /** Tests whether two real_t-valued arguments are (numerically) equal.
  * \return	BT_TRUE:  arguments differ not more than TOL \n
 		 	BT_FALSE: arguments differ more than TOL */
-inline BooleanType isEqual(	real_t x,			/**< First real number. */
+QPOASES_EXPORT inline BooleanType isEqual(	real_t x,			/**< First real number. */
 							real_t y,			/**< Second real number. */
 							real_t TOL = ZERO	/**< Tolerance for comparison. */
 							);
@@ -199,7 +199,7 @@ inline BooleanType isEqual(	real_t x,			/**< First real number. */
 /** Tests whether a real-valued argument is (numerically) zero.
  * \return	BT_TRUE:  argument differs from 0.0 not more than TOL \n
 		 	BT_FALSE: argument differs from 0.0 more than TOL */
-inline BooleanType isZero(	real_t x,			/**< Real number. */
+QPOASES_EXPORT inline BooleanType isZero(	real_t x,			/**< Real number. */
 							real_t TOL = ZERO	/**< Tolerance for comparison. */
 							);
 
@@ -207,49 +207,49 @@ inline BooleanType isZero(	real_t x,			/**< Real number. */
 /** Returns sign of a real-valued argument.
  * \return	 1.0: argument is non-negative \n
 		 	-1.0: argument is negative */
-inline real_t getSign(	real_t arg	/**< real-valued argument whose sign is to be determined. */
+QPOASES_EXPORT inline real_t getSign(	real_t arg	/**< real-valued argument whose sign is to be determined. */
 						);
 
 
 /** Returns maximum of two integers.
  * \return	Maximum of two integers */
-inline int_t getMax(	int_t x,	/**< First integer. */
+QPOASES_EXPORT inline int_t getMax(	int_t x,	/**< First integer. */
 						int_t y		/**< Second integer. */
 						);
 					
 /** Returns minimum of two integers.
  * \return	Minimum of two integers */
-inline int_t getMin(	int_t x,	/**< First integer. */
+QPOASES_EXPORT inline int_t getMin(	int_t x,	/**< First integer. */
 						int_t y		/**< Second integer. */
 						);
 
 	
 /** Returns maximum of two reals.
  * \return	Maximum of two reals */
-inline real_t getMax(	real_t x,	/**< First real number. */
+QPOASES_EXPORT inline real_t getMax(	real_t x,	/**< First real number. */
 						real_t y	/**< Second real number. */
 						);
 
 /** Returns minimum of two reals.
  * \return	Minimum of two reals */
-inline real_t getMin(	real_t x,	/**< First real number. */
+QPOASES_EXPORT inline real_t getMin(	real_t x,	/**< First real number. */
 						real_t y	/**< Second real number. */
 						);
 
 /** Returns the absolute value of a real number.
  * \return	Absolute value of a real number */
-inline real_t getAbs(	real_t x	/**< Real number. */
+QPOASES_EXPORT inline real_t getAbs(	real_t x	/**< Real number. */
 						);
 
 /** Returns the square-root of a real number.
  * \return	Square-root of a real number */
-inline real_t getSqrt(	real_t x	/**< Non-negative real number. */
+QPOASES_EXPORT inline real_t getSqrt(	real_t x	/**< Non-negative real number. */
 						);
 
 
 /** Computes the maximum violation of the KKT optimality conditions
  *	of given iterate for given QP data. */
-returnValue getKktViolation(	int_t nV,									/**< Number of variables. */
+QPOASES_EXPORT returnValue getKktViolation(	int_t nV,									/**< Number of variables. */
 								int_t nC,									/**< Number of constraints. */
 								const real_t* const H,						/**< Hessian matrix (may be NULL if Hessian is zero or identity matrix). */
 								const real_t* const g,						/**< Gradient vector. */
@@ -270,7 +270,7 @@ returnValue getKktViolation(	int_t nV,									/**< Number of variables. */
 
 /** Computes the maximum violation of the KKT optimality conditions
  *	of given iterate for given QP data. */
-returnValue getKktViolation(	int_t nV,									/**< Number of variables. */
+QPOASES_EXPORT returnValue getKktViolation(	int_t nV,									/**< Number of variables. */
 								const real_t* const H,						/**< Hessian matrix (may be NULL if Hessian is zero or identity matrix). */
 								const real_t* const g,						/**< Gradient vector. */
 								const real_t* const lb,						/**< Lower bound vector (on variables). */
@@ -287,21 +287,21 @@ returnValue getKktViolation(	int_t nV,									/**< Number of variables. */
 
 /** Writes a value of BooleanType into a string.
  * \return SUCCESSFUL_RETURN */
-returnValue convertBooleanTypeToString(	BooleanType value, 		/**< Value to be written. */
+QPOASES_EXPORT returnValue convertBooleanTypeToString(	BooleanType value, 		/**< Value to be written. */
 										char* const string		/**< Input: String of sufficient size, \n
 																	 Output: String containing value. */
 										);
 
 /** Writes a value of SubjectToStatus into a string.
  * \return SUCCESSFUL_RETURN */
-returnValue convertSubjectToStatusToString(	SubjectToStatus value,	/**< Value to be written. */
+QPOASES_EXPORT returnValue convertSubjectToStatusToString(	SubjectToStatus value,	/**< Value to be written. */
 											char* const string		/**< Input: String of sufficient size, \n
 																		 Output: String containing value. */
 											);
 
 /** Writes a value of PrintLevel into a string.
  * \return SUCCESSFUL_RETURN */
-returnValue convertPrintLevelToString(	PrintLevel value, 		/**< Value to be written. */
+QPOASES_EXPORT returnValue convertPrintLevelToString(	PrintLevel value, 		/**< Value to be written. */
 										char* const string		/**< Input: String of sufficient size, \n
 																	 Output: String containing value. */
 										);
@@ -316,7 +316,7 @@ returnValue convertPrintLevelToString(	PrintLevel value, 		/**< Value to be writ
  *         -2: QP is infeasible (and thus could not be solved)
  *         -3: QP is unbounded (and thus could not be solved)
  */
-int_t getSimpleStatus(	returnValue returnvalue, 				/**< ReturnValue to be analysed. */
+QPOASES_EXPORT int_t getSimpleStatus(	returnValue returnvalue, 				/**< ReturnValue to be analysed. */
 						BooleanType doPrintStatus = BT_FALSE	/**< Flag indicating whether simple status shall be printed to screen. */
 						);
 
@@ -324,7 +324,7 @@ int_t getSimpleStatus(	returnValue returnvalue, 				/**< ReturnValue to be analy
 /** Normalises QP constraints.
  * \return SUCCESSFUL_RETURN \n
  *		   RET_INVALID_ARGUMENTS */
-returnValue normaliseConstraints(	int_t nV,		/**< Number of variables. */
+QPOASES_EXPORT returnValue normaliseConstraints(	int_t nV,		/**< Number of variables. */
 									int_t nC, 		/**< Number of constraints. */
 									real_t* A,		/**< Input:  Constraint matrix, \n
 														 Output: Normalised constraint matrix. */

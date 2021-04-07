@@ -53,7 +53,7 @@ BEGIN_NAMESPACE_QPOASES
  *	\version 3.2
  *	\date 2007-2017
  */
-class SubjectTo
+class QPOASES_EXPORT SubjectTo
 {
 	/*
 	 *	PUBLIC MEMBER FUNCTIONS

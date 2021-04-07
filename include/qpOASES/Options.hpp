@@ -53,7 +53,7 @@ BEGIN_NAMESPACE_QPOASES
  *	\version 3.2
  *	\date 2007-2017
  */
-class Options
+class QPOASES_EXPORT Options
 {
 	/*
 	 *	PUBLIC MEMBER FUNCTIONS

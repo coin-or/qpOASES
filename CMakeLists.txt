@@ -59,7 +59,9 @@ option(QPOASES_BUILD_EXAMPLES "Build examples." ON)
 option(QPOASES_AVOID_LA_NAMING_CONFLICTS "If ON, avoid to re-defined symbols that conflict with Blas/Lapack provided functions." OFF)
 
 IF(BUILD_SHARED_LIBS AND WIN32)
-    MESSAGE(FATAL_ERROR "Compiling qpOASES as a shared library in Windows is not supported.")
+    add_compile_definitions("QPOASES_EXPORT=__declspec(dllexport)")
+ELSE()
+    add_compile_definitions(QPOASES_EXPORT)
 ENDIF()
 
 ############################################################

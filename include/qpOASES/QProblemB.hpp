@@ -60,7 +60,7 @@ class SolutionAnalysis;
  *	\version 3.2
  *	\date 2007-2017
  */
-class QProblemB
+class QPOASES_EXPORT QProblemB
 {
 	/* allow SolutionAnalysis class to access private members */
 	friend class SolutionAnalysis;
