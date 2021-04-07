@@ -465,7 +465,7 @@ class QPOASES_EXPORT MessageHandling
 /** Returns a pointer to global message handler.
  *  \return Pointer to global message handler.
  */
-MessageHandling* getGlobalMessageHandler( );
+QPOASES_EXPORT MessageHandling* getGlobalMessageHandler( );
 
 
 END_NAMESPACE_QPOASES

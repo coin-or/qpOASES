@@ -54,7 +54,7 @@ BEGIN_NAMESPACE_QPOASES
  *	\version 3.2
  *	\date 2008-2017
  */
-class SolutionAnalysis
+class QPOASES_EXPORT SolutionAnalysis
 {
 	/*
 	 *	PUBLIC MEMBER FUNCTIONS

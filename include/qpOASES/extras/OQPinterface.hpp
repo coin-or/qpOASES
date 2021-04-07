@@ -50,7 +50,7 @@ BEGIN_NAMESPACE_QPOASES
  * \return SUCCESSFUL_RETURN \n
 		   RET_UNABLE_TO_READ_FILE \n
 		   RET_FILEDATA_INCONSISTENT */
-returnValue readOqpDimensions(	const char* path,	/**< Full path of the data files (without trailing slash!). */
+QPOASES_EXPORT returnValue readOqpDimensions(	const char* path,	/**< Full path of the data files (without trailing slash!). */
 								int_t& nQP,			/**< Output: Number of QPs. */
 								int_t& nV,			/**< Output: Number of variables. */
 								int_t& nC,			/**< Output: Number of constraints. */
@@ -65,7 +65,7 @@ returnValue readOqpDimensions(	const char* path,	/**< Full path of the data file
 		   RET_INVALID_ARGUMENTS \n
 		   RET_UNABLE_TO_READ_FILE \n
 		   RET_FILEDATA_INCONSISTENT */
-returnValue readOqpData(	const char* path,	/**< Full path of the data files (without trailing slash!). */
+QPOASES_EXPORT returnValue readOqpData(	const char* path,	/**< Full path of the data files (without trailing slash!). */
 							int_t& nQP,			/**< Output: Number of QPs. */
 							int_t& nV,			/**< Output: Number of variables. */
 							int_t& nC,			/**< Output: Number of constraints. */
@@ -95,7 +95,7 @@ returnValue readOqpData(	const char* path,	/**< Full path of the data files (wit
  *
  * \return SUCCESSFUL_RETURN \n
  		   RET_BENCHMARK_ABORTED */
-returnValue solveOqpBenchmark(	int_t nQP,					/**< Number of QPs. */
+QPOASES_EXPORT returnValue solveOqpBenchmark(	int_t nQP,					/**< Number of QPs. */
 								int_t nV,					/**< Number of variables. */
 								int_t nC,					/**< Number of constraints. */
 								int_t nEC,					/**< Number of equality constraints. */
@@ -122,7 +122,7 @@ returnValue solveOqpBenchmark(	int_t nQP,					/**< Number of QPs. */
  *
  * \return SUCCESSFUL_RETURN \n
  		   RET_BENCHMARK_ABORTED */
-returnValue solveOqpBenchmark(	int_t nQP,					/**< Number of QPs. */
+QPOASES_EXPORT returnValue solveOqpBenchmark(	int_t nQP,					/**< Number of QPs. */
 								int_t nV,					/**< Number of variables. */
 								int_t nC,					/**< Number of constraints. */
 								int_t nEC,					/**< Number of equality constraints. */
@@ -156,7 +156,7 @@ returnValue solveOqpBenchmark(	int_t nQP,					/**< Number of QPs. */
  *
  * \return SUCCESSFUL_RETURN \n
  		   RET_BENCHMARK_ABORTED */
-returnValue solveOqpBenchmark(	int_t nQP,					/**< Number of QPs. */
+QPOASES_EXPORT returnValue solveOqpBenchmark(	int_t nQP,					/**< Number of QPs. */
 								int_t nV,					/**< Number of variables. */
 								const real_t* const _H,		/**< Hessian matrix. */
 								const real_t* const g,		/**< Sequence of gradient vectors. */
@@ -178,7 +178,7 @@ returnValue solveOqpBenchmark(	int_t nQP,					/**< Number of QPs. */
  *
  * \return SUCCESSFUL_RETURN \n
  		   RET_BENCHMARK_ABORTED */
-returnValue solveOqpBenchmark(	int_t nQP,					/**< Number of QPs. */
+QPOASES_EXPORT returnValue solveOqpBenchmark(	int_t nQP,					/**< Number of QPs. */
 								int_t nV,					/**< Number of variables. */
 								const real_t* const _H,		/**< Hessian matrix. */
 								const real_t* const g,		/**< Sequence of gradient vectors. */
@@ -205,7 +205,7 @@ returnValue solveOqpBenchmark(	int_t nQP,					/**< Number of QPs. */
  * \return SUCCESSFUL_RETURN \n
 		   RET_UNABLE_TO_READ_BENCHMARK \n
  		   RET_BENCHMARK_ABORTED */
-returnValue runOqpBenchmark(	const char* path,			/**< Full path of the benchmark files (without trailing slash!). */
+QPOASES_EXPORT returnValue runOqpBenchmark(	const char* path,			/**< Full path of the benchmark files (without trailing slash!). */
 								BooleanType isSparse,		/**< Shall convert matrices to sparse format before solution? */
 								const Options& options,		/**< QP solver options to be used while solving benchmark problems. */
 								int_t& nWSR, 				/**< Input: Maximum number of working set recalculations; \n
@@ -225,7 +225,7 @@ returnValue runOqpBenchmark(	const char* path,			/**< Full path of the benchmark
  * \return SUCCESSFUL_RETURN \n
 		   RET_UNABLE_TO_READ_BENCHMARK \n
  		   RET_BENCHMARK_ABORTED */
-returnValue runOqpBenchmark(	const char* path,			/**< Full path of the benchmark files (without trailing slash!). */
+QPOASES_EXPORT returnValue runOqpBenchmark(	const char* path,			/**< Full path of the benchmark files (without trailing slash!). */
 								BooleanType isSparse,		/**< Shall convert matrices to sparse format before solution? */
 								BooleanType useHotstarts,	/**< Shall QP solution be hotstarted? */
 								const Options& options,		/**< QP solver options to be used while solving benchmark problems. */
