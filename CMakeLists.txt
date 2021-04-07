@@ -61,7 +61,7 @@ option(QPOASES_AVOID_LA_NAMING_CONFLICTS "If ON, avoid to re-defined symbols tha
 IF(BUILD_SHARED_LIBS AND WIN32)
     add_compile_definitions("QPOASES_EXPORT=__declspec(dllexport)")
 ELSE()
-    add_compile_definitions(QPOASES_EXPORT)
+    add_compile_definitions("QPOASES_EXPORT=")
 ENDIF()
 
 ############################################################
