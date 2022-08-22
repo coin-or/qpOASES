@@ -349,6 +349,112 @@ class Ma57SparseSolver: public SparseSolver
 #endif /* SOLVER_MA57 */
 
 
+#ifdef SOLVER_MUMPS
+
+/**
+ *	\brief Implementation of the linear solver interface using MUMPS.
+ *
+ *	\author Andrea Zanelli
+ *	\version 3.2
+ *	\date 2022
+ */
+class MumpsSparseSolver: public SparseSolver
+{
+	/*
+	 *	PUBLIC MEMBER FUNCTIONS
+	 */
+	public:
+		/** Default constructor. */
+		MumpsSparseSolver( );
+
+		/** Copy constructor (deep copy). */
+		MumpsSparseSolver(	const MumpsSparseSolver& rhs		/**< Rhs object. */
+							);
+
+		/** Destructor. */
+		virtual ~MumpsSparseSolver( );
+
+		/** Assignment operator (deep copy). */
+		virtual MumpsSparseSolver& operator=(	const SparseSolver& rhs	/**< Rhs object. */
+												);
+
+		/** Set new matrix data.  The matrix is to be provided
+			in the Harwell-Boeing format.  Only the lower
+			triangular part should be set. */
+		virtual returnValue setMatrixData( int_t dim,					/**< Dimension of the linear system. */
+										   int_t numNonzeros,			/**< Number of nonzeros in the matrix. */
+										   const int_t* const airn,		/**< Row indices for each matrix entry. */
+										   const int_t* const acjn,		/**< Column indices for each matrix entry. */
+										   const real_t* const avals	/**< Values for each matrix entry. */
+										   );
+
+		/** Compute factorization of current matrix.  This method must be called before solve.*/
+		virtual returnValue factorize( );
+
+		/** Solve linear system with most recently set matrix data. */
+		virtual returnValue solve(	int_t dim,					/**< Dimension of the linear system. */
+									const real_t* const rhs,	/**< Values for the right hand side. */
+									real_t* const sol			/**< Solution of the linear system. */
+									);
+
+		/** Clears all data structures. */
+		virtual returnValue reset( );
+
+		/** Return the number of negative eigenvalues. */
+		virtual int_t getNegativeEigenvalues( );
+
+		/** Return the rank after a factorization */
+		virtual int_t getRank( );
+
+		/** Returns the zero pivots in case the matrix is rank deficient */
+		virtual returnValue getZeroPivots(  int_t* &zeroPivots  /**< ... */
+											);
+	/*
+	 *	PROTECTED MEMBER FUNCTIONS
+	 */
+	protected:
+		/** Frees all allocated memory.
+		 *  \return SUCCESSFUL_RETURN */
+		returnValue clear( );
+
+		/** Copies all members from given rhs object.
+		 *  \return SUCCESSFUL_RETURN */
+		returnValue copy(	const MumpsSparseSolver& rhs	/**< Rhs object. */
+							);
+
+	/*
+	 *	PRIVATE MEMBER FUNCTIONS
+	 */
+	private:
+	/*
+	 *	PRIVATE MEMBER VARIABLES
+	 */
+	private:
+
+        
+        void* mumps_ptr_;           /** Primary MUMPS data structure */
+
+		fint_t dim;				    /**< Dimension of the current linear system. */
+
+		fint_t numNonzeros;		    /**< Number of nonzeros in the current linear system. */
+
+		double* a_mumps;		    /**< matrix for MUMPS (A in MUMPS) */
+
+		fint_t* irn_mumps;		    /**< Row entries of matrix (IRN in MUMPS) */
+
+		fint_t* jcn_mumps;		    /**< Column entries of matrix (JCN in MUMPS) */
+
+		bool have_factorization;    /**< flag indicating whether factorization for current matrix has already been computed */
+
+		fint_t negevals_;		    /**< number of negative eigenvalues */
+
+        fint_t mumps_pivot_order_;  /* pivot order*/
+};
+
+#endif /* SOLVER_MUMPS */
+
+
+
 #ifdef SOLVER_NONE
 
 /**

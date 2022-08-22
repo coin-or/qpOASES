@@ -43,6 +43,22 @@ void MyPrintf(const char* pformat, ... );
 # define MyPrintf mexPrintf
 #endif
 
+#if SOLVER_MUMPS
+
+#include "mumps_compat.h"
+
+#ifdef COIN_USE_MUMPS_MPI_H
+#include "mumps_mpi.h"
+#else
+#include "mpi.h"
+#endif /* COIN_USE_MUMPS_MPI_H */
+
+#include "dmumps_c.h"
+#define MUMPS_STRUC_C DMUMPS_STRUC_C
+#define mumps_c dmumps_c
+
+#endif /* SOLVER_MUMPS */
+
 BEGIN_NAMESPACE_QPOASES
 
 /*****************************************************************************
@@ -1068,6 +1084,540 @@ returnValue Ma57SparseSolver::copy( 	const Ma57SparseSolver& rhs
 
 #endif /* SOLVER_MA57 */
 
+
+#ifdef SOLVER_MUMPS
+
+/*****************************************************************************
+ *****************************************************************************
+ *****************************************************************************
+ *  M U M P S P A R E S E S O L V E R                                        *
+ *****************************************************************************
+ *****************************************************************************
+ *****************************************************************************/
+
+// initialize MPI when library is loaded; finalize MPI when library is unloaded
+__attribute__((constructor))
+static void MPIinit(void)
+{
+   int mpi_initialized;
+   MPI_Initialized(&mpi_initialized);
+   if( !mpi_initialized )
+   {
+      int argc = 1;
+      char** argv = NULL;
+      MPI_Init(&argc, &argv);
+   }
+}
+
+__attribute__((destructor))
+static void MPIfini(void)
+{
+   int mpi_finalized;
+   MPI_Finalized(&mpi_finalized);
+   if(!mpi_finalized)
+      MPI_Finalize();
+}
+
+extern "C"
+{
+	/*
+	*  MA57ID -- Initialize solver.
+	*/
+	extern void  MA57ID (
+		double	*cntl,
+		fint_t		*icntl);
+
+	/*
+	*  MA57AD -- Symbolic Factorization.
+	*/
+	extern void  MA57AD (
+		fint_t			*n,		    /* Order of matrix. */
+		fint_t			*ne,	    /* Number of entries. */
+		const fint_t	*irn,	    /* Matrix nonzero row structure */
+		const fint_t	*jcn,	    /* Matrix nonzero column structure */
+		fint_t			*lkeep,	    /* Workspace for the pivot order of lenght 3*n */
+		fint_t			*keep,	    /* Workspace for the pivot order of lenght 3*n */
+								    /* Automatically iflag = 0; ikeep pivot order iflag = 1 */
+		fint_t			*iwork,	    /* Integer work space. */
+		fint_t			*icntl,	    /* Integer Control parameter of length 30*/
+		fint_t			*info,	    /* Statistical Information; Integer array of length 20 */
+		double			*rinfo);    /* Double Control parameter of length 5 */
+
+	/*
+	* MA57BD -- Numerical Factorization.
+	*/
+	extern void  MA57BD (
+		fint_t	*n,			/* Order of matrix. */
+		fint_t	*ne,		/* Number of entries. */
+		double	*a,			/* Numerical values. */
+		double	*fact,		/* Entries of factors. */
+		fint_t	*lfact,		/* Length of array `fact'. */
+		fint_t	*ifact,		/* Indexing info for factors. */
+		fint_t	*lifact,	/* Length of array `ifact'. */
+		fint_t	*lkeep,		/* Length of array `keep'. */
+		fint_t	*keep,		/* Integer array. */
+		fint_t	*iwork,		/* Workspace of length `n'. */
+		fint_t	*icntl,		/* Integer Control parameter of length 20. */
+		double	*cntl,		/* Double Control parameter of length 5. */
+		fint_t	*info,		/* Statistical Information; Integer array of length 40. */
+		double	*rinfo);	/* Statistical Information; Real array of length 20. */
+
+	/*
+	* MA57CD -- Solution.
+	*/
+	extern void  MA57CD (
+		fint_t	*job,		/* Solution job.  Solve for... */
+							/* JOB <= 1:  A */
+							/* JOB == 2:  PLP^t */
+							/* JOB == 3:  PDP^t */
+							/* JOB >= 4:  PL^t P^t */
+		fint_t	*n,			/* Order of matrix. */
+		double	*fact,		/* Entries of factors. */
+		fint_t	*lfact,		/* Length of array `fact'. */
+		fint_t	*ifact,		/* Indexing info for factors. */
+		fint_t	*lifact,	/* Length of array `ifact'. */
+		fint_t	*nrhs,		/* Number of right hand sides. */
+		double	*rhs,		/* Numerical Values. */
+		fint_t	*lrhs,		/* Leading dimensions of `rhs'. */
+		double	*work,		/* Real workspace. */
+		fint_t	*lwork,		/* Length of `work', >= N*NRHS. */
+		fint_t	*iwork,		/* Integer array of length `n'. */
+		fint_t	*icntl,		/* Integer Control parameter array of length 20. */
+		fint_t	*info);		/* Statistical Information; Integer array of length 40. */
+}
+
+/*****************************************************************************
+ *  P U B L I C                                                              *
+ ****************************************************************************/
+
+
+/*
+ *	M u m p s S p a r s e S o l v e r
+ */
+
+MumpsSparseSolver::MumpsSparseSolver( ) : SparseSolver()
+{
+
+	a_mumps = 0;
+	irn_mumps = 0;
+	jcn_mumps = 0;
+	clear( );
+
+    //initialize mumps
+    MUMPS_STRUC_C* mumps_ = static_cast<MUMPS_STRUC_C*>(calloc(1, sizeof(MUMPS_STRUC_C)));
+    mumps_->job = -1; //initialize mumps
+    mumps_->par = 1;  //working host for sequential version
+    mumps_->sym = 2;  //general symmetric matrix
+    mumps_->comm_fortran = USE_COMM_WORLD;
+
+#ifndef IPOPT_MUMPS_NOMUTEX
+    const std::lock_guard<std::mutex> lock(mumps_call_mutex);
+#endif
+
+    mumps_c(mumps_);
+    mumps_->icntl[1] = 0;
+    mumps_->icntl[2] = 0; //QUIETLY!
+    mumps_->icntl[3] = 0;
+    mumps_ptr_ = (void*) mumps_;
+
+}
+
+
+/*
+ *	M u m p s S p a r s e S o l v e r
+ */
+MumpsparseSolver::MumpsSparseSolver( const MumpsSparseSolver& rhs )
+{
+	copy( rhs );
+}
+
+
+/*
+ *	~ M u m p s S p a r s e S o l v e r
+ */
+MumpsSparseSolver::~MumpsSparseSolver( )
+{
+
+#ifndef IPOPT_MUMPS_NOMUTEX
+    const std::lock_guard<std::mutex> lock(mumps_call_mutex);
+#endif
+
+    MUMPS_STRUC_C* mumps_ = static_cast<MUMPS_STRUC_C*>(mumps_ptr_);
+    mumps_->job = -2; //terminate mumps
+    mumps_c(mumps_);
+    delete[] mumps_->a;
+    free(mumps_);
+}
+
+
+/*
+ *	o p e r a t o r =
+ */
+MumpsSparseSolver& MumpsSparseSolver::operator=( const SparseSolver& rhs )
+{
+	const MumpsSparseSolver* mumps_rhs = dynamic_cast<const MumpsSparseSolver*>(&rhs);
+	if (!mumps_rhs)
+	{
+		fprintf(getGlobalMessageHandler()->getOutputFile(),"Error in MumpsSparseSolver& MumpsSparseSolver::operator=( const SparseSolver& rhs )\n");
+		throw; /* TODO: More elegant exit? */
+	}
+	if ( this != mumps_rhs )
+	{
+		clear( );
+		SparseSolver::operator=( rhs );
+		copy( *mumps_rhs );
+	}
+
+	return *this;
+}
+
+/*
+ *	s e t M a t r i x D a t a
+ */
+returnValue MumpsSparseSolver::setMatrixData(	int_t dim_,
+												int_t numNonzeros_,
+												const int_t* const irn,
+												const int_t* const jcn,
+												const real_t* const avals
+												)
+{
+	reset( );
+	dim = dim_;
+	numNonzeros = numNonzeros_;
+
+	if ( numNonzeros_ > 0 )
+	{
+		a_mumps = new double[numNonzeros_];
+		irn_mumps = new fint_t[numNonzeros_];
+		jcn_mumps = new fint_t[numNonzeros_];
+
+		numNonzeros=0;
+		for (int_t i=0; i<numNonzeros_; ++i)
+			if ( isZero(avals[i]) == BT_FALSE )
+			{
+				a_mumps[numNonzeros] = avals[i];
+				irn_mumps[numNonzeros] = irn[i];
+				jcn_mumps[numNonzeros] = jcn[i];
+				numNonzeros++;
+			}
+	}
+	else
+	{
+		numNonzeros = 0;
+		a_mumps = 0;
+		irn_mumps = 0;
+	    jcn_mumps = 0;
+	}
+
+	return SUCCESSFUL_RETURN;
+}
+
+
+/*
+ *	f a c t o r i z e
+ */
+returnValue MumpsSparseSolver::factorize( )
+{
+	if ( dim == 0 )
+	{
+		have_factorization = true;
+		neig = 0;
+		rank = 0;
+		return SUCCESSFUL_RETURN;
+	}
+
+    /// IPOPT-MUMPS
+    DBG_START_METH("MumpsSolverInterface::SymbolicFactorization",
+                  dbg_verbosity);
+    MUMPS_STRUC_C* mumps_data = static_cast<MUMPS_STRUC_C*>(mumps_ptr_);
+
+#ifndef IPOPT_MUMPS_NOMUTEX
+    const std::lock_guard<std::mutex> lock(mumps_call_mutex);
+#endif
+
+    if( HaveIpData() )
+    {
+      IpData().TimingStats().LinearSystemSymbolicFactorization().Start();
+    }
+
+    mumps_data->job = 1;      //symbolic ordering pass
+
+    //mumps_data->icntl[1] = 6;
+    //mumps_data->icntl[2] = 6;//QUIETLY!
+    //mumps_data->icntl[3] = 4;
+
+    mumps_data->icntl[5] = mumps_permuting_scaling_;
+    mumps_data->icntl[6] = mumps_pivot_order_;
+    mumps_data->icntl[7] = mumps_scaling_;
+    mumps_data->icntl[9] = 0;   //no iterative refinement iterations
+
+    mumps_data->icntl[12] = 1;   //avoid lapack bug, ensures proper inertia; mentioned to be very expensive in mumps manual
+    mumps_data->icntl[13] = mem_percent_; //% memory to allocate over expected
+    mumps_data->cntl[0] = pivtol_;  // Set pivot tolerance
+
+    dump_matrix(mumps_data);
+
+    MyPrintf("Calling MUMPS-1 for symbolic factorization.\n");
+    mumps_c(mumps_data);
+    MyPrintf("Done with MUMPS-1 for symbolic factorization.\n");
+    Index error = mumps_data->info[0];
+    const Index& mumps_permuting_scaling_used = mumps_data->infog[22];
+    const Index& mumps_pivot_order_used = mumps_data->infog[6];
+
+    //return appropriate value
+    if( error == -6 )  //system is singular
+    {
+      MyPrintf("MUMPS returned INFO(1) = % matrix is singular.\n", error);
+      return RET_MATRIX_FACTORISATION_FAILED;
+    }
+    if( error < 0 )
+    {
+      MyPrintf("Error=% returned from MUMPS in Factorization.\n", error);
+      return RET_MATRIX_FACTORISATION_FAILED;
+    }
+
+    //// IPOPT-MUMPS (ACTUAL FACTORIZATION)
+    MUMPS_STRUC_C* mumps_data = static_cast<MUMPS_STRUC_C*>(mumps_ptr_);
+
+    mumps_data->job = 2;  //numerical factorization
+
+    dump_matrix(mumps_data);
+    MyPrintf("Calling MUMPS-2 for numerical factorization.\n");
+    mumps_c(mumps_data);
+    MyPrintf("Done with MUMPS-2 for numerical factorization.\n");
+    Index error = mumps_data->info[0];
+
+    //Check for errors
+    if( error == -8 || error == -9 )  //not enough memory
+    {
+      const Index trycount_max = 20;
+      for( int trycount = 0; trycount < trycount_max; trycount++ )
+      {
+         MyPrintf("MUMPS returned INFO(1) = %" IPOPT_INDEX_FORMAT " and requires more memory, reallocating.  Attempt %d\n", error, trycount + 1);
+         MUMPS_INT old_mem_percent = mumps_data->icntl[13];
+         ComputeMemIncrease(mumps_data->icntl[13], 2.0 * (Number)old_mem_percent, MUMPS_INT(0), "percent extra working space for MUMPS");
+         MyPrintf("Increasing icntl[13] from % to % .\n", old_mem_percent, mumps_data->icntl[13]);
+
+         dump_matrix(mumps_data);
+         MyPrintf("Calling MUMPS-2 (repeated) for numerical factorization.\n");
+         mumps_c(mumps_data);
+         MyPrintf("Done with MUMPS-2 (repeated) for numerical factorization.\n");
+         error = mumps_data->info[0];
+         if( error != -8 && error != -9 )
+         {
+            break;
+         }
+      }
+      if( error == -8 || error == -9 )
+      {
+         MyPrintf("MUMPS was not able to obtain enough memory.\n");
+         return RET_MATRIX_FACTORISATION_FAILED;
+      }
+    }
+
+    MyPrintf("Number of doubles for MUMPS to hold factorization (INFO(9)) = %\n", mumps_data->info[8]);
+    MyPrintf("Number of integers for MUMPS to hold factorization (INFO(10)) = %\n", mumps_data->info[9]);
+
+    if( error == -10 )  //system is singular
+    {
+      MyPrintf("MUMPS returned INFO(1) = % matrix is singular.\n", error);
+      return RET_MATRIX_FACTORISATION_FAILED;
+    }
+
+    negevals_ = mumps_data->infog[11];
+
+    if( error == -13 )
+    {
+      MyPrintf("MUMPS returned INFO(1) =% - out of memory when trying to allocate % %s.\nIn some cases it helps to decrease the value of the option \"mumps_mem_percent\".\n",
+                     error, mumps_data->info[1] < 0 ? -mumps_data->info[1] : mumps_data->info[1],
+                     mumps_data->info[1] < 0 ? "MB" : "bytes");
+      return RET_MATRIX_FACTORISATION_FAILED;
+    }
+    if( error < 0 )  //some other error
+    {
+      MyPrintf("MUMPS returned INFO(1) =% MUMPS failure.\n", error);
+      return SYMSOLVER_FATAL_ERROR;
+    }
+
+    if( check_NegEVals && (numberOfNegEVals != negevals_) )
+    {
+      MyPrintf("In MumpsSolverInterface::Factorization: negevals_ = %, but numberOfNegEVals = %\n", negevals_,
+                     numberOfNegEVals);
+      return RET_MATRIX_FACTORISATION_FAILED;
+    }
+
+	have_factorization = true;
+	return SUCCESSFUL_RETURN;
+}
+
+
+/*
+ *	s o l v e
+ */
+returnValue MumpsSparseSolver::solve(	int_t dim_,
+										const real_t* const rhs,
+										real_t* const sol
+										)
+{
+	/* consistency check */
+	if ( dim_ != dim )
+		return THROWERROR( RET_INVALID_ARGUMENTS );
+
+	if ( !have_factorization )
+	{
+	  MyPrintf("Factorization not called before solve in MumpsSparseSolver::solve.\n");
+	  return THROWERROR( RET_INVALID_ARGUMENTS );
+	}
+
+	if ( dim == 0 )
+		return SUCCESSFUL_RETURN;
+
+    /// IPOPT-MUMPS
+    MUMPS_STRUC_C* mumps_data = static_cast<MUMPS_STRUC_C*>(mumps_ptr_);
+
+    ESymSolverStatus retval = SYMSOLVER_SUCCESS;
+
+    for( Index i = 0; i < nrhs; i++ )
+    {
+      Index offset = i * mumps_data->n;
+      mumps_data->rhs = &(rhs_vals[offset]);
+      mumps_data->job = 3;  //solve
+      MyPrintf("Calling MUMPS-3 for solve.\n");
+      mumps_c(mumps_data);
+      MyPrintf("Done with MUMPS-3 for solve.\n");
+      Index error = mumps_data->info[0];
+      if( error < 0 )
+      {
+         MyPrintf("Error=% returned from MUMPS in Solve.\n", error);
+         return THROWERROR(RET_MATRIX_FACTORISATION_FAILED);
+      }
+    }
+
+	return SUCCESSFUL_RETURN;
+}
+
+/*
+ *	r e s e t
+ */
+returnValue MumpsSparseSolver::reset( )
+{
+	/* AW: We probably want to avoid resetting factorization in QProblem */
+	if ( SparseSolver::reset( ) != SUCCESSFUL_RETURN )
+		return THROWERROR( RET_RESET_FAILED );
+
+	clear( );
+	return SUCCESSFUL_RETURN;
+}
+
+/*
+ *	g e t N e g a t i v e E i g e n v a l u e s
+ */
+int_t MumpsSparseSolver::getNegativeEigenvalues( )
+{
+	if( !have_factorization )
+		return -1;
+	else
+		return neig;
+}
+
+
+// TODO(andrea: not implemented yet, default behavior)
+/*
+ *	g e t R a n k
+ */
+// int_t MumpsSparseSolver::getRank( )
+// {
+//     return THROWERROR( RET_NOT_YET_IMPLEMENTED );
+// }
+
+/*
+ *	g e t Z e r o P i v o t s
+ */
+// returnValue MumpsSparseSolver::getZeroPivots( int_t *&zeroPivots )
+// {
+// 	for ( int_t k=0; k<dim-rank; k++ )
+// 		zeroPivots[k] = pivots[rank+k];
+
+// 	return SUCCESSFUL_RETURN;
+// }
+
+
+/*****************************************************************************
+ *  P R O T E C T E D                                                        *
+ *****************************************************************************/
+
+/*
+ *	c l e a r
+ */
+returnValue MumpsSparseSolver::clear( )
+{
+	delete [] a_mumps;
+	delete [] irn_mumps;
+	delete [] jcn_mumps;
+	delete [] pivots;
+
+	dim = -1;
+	numNonzeros = -1;
+	neig = -1;
+	rank = -1;
+	pivots = 0;
+
+	a_mumps = 0;
+	irn_mumps = 0;
+	jcn_mumps = 0;
+
+	fact_mumps = 0;
+	lfact_mumps = -1;
+	ifact_mumps = 0;
+	lifact_mumps = -1;
+
+	have_factorization = false;
+	return SUCCESSFUL_RETURN;
+}
+
+
+/*
+ *	c o p y
+ */
+returnValue MumpsSparseSolver::copy( 	const MumpsSparseSolver& rhs
+										)
+{
+	dim = rhs.dim;
+	numNonzeros = rhs.numNonzeros;
+	neig = rhs.neig;
+	rank = rhs.rank;
+	have_factorization = rhs.have_factorization;
+
+	if ( rhs.a_mumps != 0 )
+	{
+		a_mumps = new double[numNonzeros];
+		memcpy( a_mumps,rhs.a_mumps,numNonzeros*sizeof(double) );
+	}
+	else
+		a_mumps = 0;
+
+	if ( rhs.irn_mumps != 0 )
+	{
+		irn_mumps = new fint_t[numNonzeros];
+		memcpy( irn_mumps,rhs.irn_mumps,numNonzeros*sizeof(fint_t) );
+	}
+	else
+		irn_mumps = 0;
+
+	if ( rhs.jcn_mumps != 0 )
+	{
+		jcn_mumps = new fint_t[numNonzeros];
+		memcpy( jcn_mumps,rhs.jcn_mumps,numNonzeros*sizeof(fint_t) );
+	}
+	else
+		jcn_mumps = 0;
+
+    rhs.mumps_pivot_order_ = mumps_pivot_order_;
+
+	return SUCCESSFUL_RETURN;
+}
+
+#endif /* SOLVER_MUMPS */
 
 #ifdef SOLVER_NONE
 

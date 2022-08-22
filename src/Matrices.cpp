@@ -687,7 +687,7 @@ SparseMatrix::SparseMatrix(	int_t nr, int_t nc, int_t ld, const real_t*  const v
 	{
 		jc[j] = nnz;
 		for (i = 0; i < nRows; i++)
-			if ( ( isZero( v[i*ld+j],0.0 ) == BT_FALSE ) || ( i == j ) ) /* also include zero diagonal elemets! */
+			if ( ( isZero( v[i*ld+j],0.0 ) == BT_FALSE ) || ( i == j ) ) /* also include zero diagonal elements! */
 			{
 				ir[nnz] = i;
 				val[nnz++] = v[i*ld+j];
