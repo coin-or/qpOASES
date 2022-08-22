@@ -57,7 +57,8 @@ endif
 
 # choice of sparse solver: NONE, MA27, or MA57
 # If choice is not 'NONE', BLAS and LAPACK replacements must not be used
-USE_SOLVER = NONE
+# USE_SOLVER = NONE
+USE_SOLVER = MUMPS
 #USE_SOLVER = MA57
 
 ifeq ($(USE_SOLVER), MA57)
@@ -67,6 +68,10 @@ ifeq ($(USE_SOLVER), MA57)
 else ifeq ($(USE_SOLVER), MA27)
 	LIB_SOLVER = /usr/local/lib/libhsl_ma27.a
 	DEF_SOLVER = SOLVER_MA27
+	LINKHSL =
+else ifeq ($(USE_SOLVER), MUMPS)
+	LIB_SOLVER = /home/andrea/feasible_sqp/external/mumps_installation/lib/libcoinmumps.so
+	DEF_SOLVER = SOLVER_MUMPS
 	LINKHSL =
 else
 	LIB_SOLVER =

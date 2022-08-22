@@ -45,15 +45,17 @@ void MyPrintf(const char* pformat, ... );
 
 #if SOLVER_MUMPS
 
-#include "mumps_compat.h"
+#define USE_COMM_WORLD -987654
 
-#ifdef COIN_USE_MUMPS_MPI_H
-#include "mumps_mpi.h"
-#else
+#include <../../mumps_installation/include/coin-or/mumps/mumps_compat.h>
+
+#ifdef USE_MPI_H
 #include "mpi.h"
-#endif /* COIN_USE_MUMPS_MPI_H */
+#else
+#include <../../mumps_installation/include/coin-or/mumps/mumps_mpi.h>
+#endif /* USE_MPI_H */
 
-#include "dmumps_c.h"
+#include <../../mumps_installation/include/coin-or/mumps/dmumps_c.h>
 #define MUMPS_STRUC_C DMUMPS_STRUC_C
 #define mumps_c dmumps_c
 
@@ -1095,6 +1097,7 @@ returnValue Ma57SparseSolver::copy( 	const Ma57SparseSolver& rhs
  *****************************************************************************
  *****************************************************************************/
 
+#ifdef USE_MPI_H
 // initialize MPI when library is loaded; finalize MPI when library is unloaded
 __attribute__((constructor))
 static void MPIinit(void)
@@ -1113,10 +1116,11 @@ __attribute__((destructor))
 static void MPIfini(void)
 {
    int mpi_finalized;
-   MPI_Finalized(&mpi_finalized);
+   MPI_Finalize(&mpi_finalized);
    if(!mpi_finalized)
       MPI_Finalize();
 }
+#endif /* !USE_MPI_H */
 
 extern "C"
 {
@@ -1210,9 +1214,9 @@ MumpsSparseSolver::MumpsSparseSolver( ) : SparseSolver()
     mumps_->sym = 2;  //general symmetric matrix
     mumps_->comm_fortran = USE_COMM_WORLD;
 
-#ifndef IPOPT_MUMPS_NOMUTEX
-    const std::lock_guard<std::mutex> lock(mumps_call_mutex);
-#endif
+// #ifndef IPOPT_MUMPS_NOMUTEX
+//     const std::lock_guard<std::mutex> lock(mumps_call_mutex);
+// #endif
 
     mumps_c(mumps_);
     mumps_->icntl[1] = 0;
@@ -1226,7 +1230,7 @@ MumpsSparseSolver::MumpsSparseSolver( ) : SparseSolver()
 /*
  *	M u m p s S p a r s e S o l v e r
  */
-MumpsparseSolver::MumpsSparseSolver( const MumpsSparseSolver& rhs )
+MumpsSparseSolver::MumpsSparseSolver( const MumpsSparseSolver& rhs )
 {
 	copy( rhs );
 }
@@ -1238,9 +1242,9 @@ MumpsparseSolver::MumpsSparseSolver( const MumpsSparseSolver& rhs )
 MumpsSparseSolver::~MumpsSparseSolver( )
 {
 
-#ifndef IPOPT_MUMPS_NOMUTEX
-    const std::lock_guard<std::mutex> lock(mumps_call_mutex);
-#endif
+// #ifndef IPOPT_MUMPS_NOMUTEX
+//     const std::lock_guard<std::mutex> lock(mumps_call_mutex);
+// #endif
 
     MUMPS_STRUC_C* mumps_ = static_cast<MUMPS_STRUC_C*>(mumps_ptr_);
     mumps_->job = -2; //terminate mumps
@@ -1321,24 +1325,16 @@ returnValue MumpsSparseSolver::factorize( )
 	if ( dim == 0 )
 	{
 		have_factorization = true;
-		neig = 0;
-		rank = 0;
+		negevals_ = 0;
 		return SUCCESSFUL_RETURN;
 	}
 
     /// IPOPT-MUMPS
-    DBG_START_METH("MumpsSolverInterface::SymbolicFactorization",
-                  dbg_verbosity);
     MUMPS_STRUC_C* mumps_data = static_cast<MUMPS_STRUC_C*>(mumps_ptr_);
 
-#ifndef IPOPT_MUMPS_NOMUTEX
-    const std::lock_guard<std::mutex> lock(mumps_call_mutex);
-#endif
-
-    if( HaveIpData() )
-    {
-      IpData().TimingStats().LinearSystemSymbolicFactorization().Start();
-    }
+// #ifndef IPOPT_MUMPS_NOMUTEX
+//     const std::lock_guard<std::mutex> lock(mumps_call_mutex);
+// #endif
 
     mumps_data->job = 1;      //symbolic ordering pass
 
@@ -1355,14 +1351,14 @@ returnValue MumpsSparseSolver::factorize( )
     mumps_data->icntl[13] = mem_percent_; //% memory to allocate over expected
     mumps_data->cntl[0] = pivtol_;  // Set pivot tolerance
 
-    dump_matrix(mumps_data);
+    // dump_matrix(mumps_data);
 
     MyPrintf("Calling MUMPS-1 for symbolic factorization.\n");
     mumps_c(mumps_data);
     MyPrintf("Done with MUMPS-1 for symbolic factorization.\n");
-    Index error = mumps_data->info[0];
-    const Index& mumps_permuting_scaling_used = mumps_data->infog[22];
-    const Index& mumps_pivot_order_used = mumps_data->infog[6];
+    int error = mumps_data->info[0];
+    const int& mumps_permuting_scaling_used = mumps_data->infog[22];
+    const int& mumps_pivot_order_used = mumps_data->infog[6];
 
     //return appropriate value
     if( error == -6 )  //system is singular
@@ -1377,28 +1373,28 @@ returnValue MumpsSparseSolver::factorize( )
     }
 
     //// IPOPT-MUMPS (ACTUAL FACTORIZATION)
-    MUMPS_STRUC_C* mumps_data = static_cast<MUMPS_STRUC_C*>(mumps_ptr_);
+    // MUMPS_STRUC_C* mumps_data = static_cast<MUMPS_STRUC_C*>(mumps_ptr_);
 
     mumps_data->job = 2;  //numerical factorization
 
-    dump_matrix(mumps_data);
+    // dump_matrix(mumps_data);
     MyPrintf("Calling MUMPS-2 for numerical factorization.\n");
     mumps_c(mumps_data);
     MyPrintf("Done with MUMPS-2 for numerical factorization.\n");
-    Index error = mumps_data->info[0];
+    error = mumps_data->info[0];
 
     //Check for errors
     if( error == -8 || error == -9 )  //not enough memory
     {
-      const Index trycount_max = 20;
+      const int trycount_max = 20;
       for( int trycount = 0; trycount < trycount_max; trycount++ )
       {
-         MyPrintf("MUMPS returned INFO(1) = %" IPOPT_INDEX_FORMAT " and requires more memory, reallocating.  Attempt %d\n", error, trycount + 1);
+         MyPrintf("MUMPS returned INFO(1) = % and requires more memory, reallocating.  Attempt %d\n", error, trycount + 1);
          MUMPS_INT old_mem_percent = mumps_data->icntl[13];
-         ComputeMemIncrease(mumps_data->icntl[13], 2.0 * (Number)old_mem_percent, MUMPS_INT(0), "percent extra working space for MUMPS");
+         ComputeMemIncrease(mumps_data->icntl[13], 2.0 * (double)old_mem_percent, MUMPS_INT(0), "percent extra working space for MUMPS");
          MyPrintf("Increasing icntl[13] from % to % .\n", old_mem_percent, mumps_data->icntl[13]);
 
-         dump_matrix(mumps_data);
+         // dump_matrix(mumps_data);
          MyPrintf("Calling MUMPS-2 (repeated) for numerical factorization.\n");
          mumps_c(mumps_data);
          MyPrintf("Done with MUMPS-2 (repeated) for numerical factorization.\n");
@@ -1436,15 +1432,9 @@ returnValue MumpsSparseSolver::factorize( )
     if( error < 0 )  //some other error
     {
       MyPrintf("MUMPS returned INFO(1) =% MUMPS failure.\n", error);
-      return SYMSOLVER_FATAL_ERROR;
-    }
-
-    if( check_NegEVals && (numberOfNegEVals != negevals_) )
-    {
-      MyPrintf("In MumpsSolverInterface::Factorization: negevals_ = %, but numberOfNegEVals = %\n", negevals_,
-                     numberOfNegEVals);
       return RET_MATRIX_FACTORISATION_FAILED;
     }
+
 
 	have_factorization = true;
 	return SUCCESSFUL_RETURN;
@@ -1472,25 +1462,23 @@ returnValue MumpsSparseSolver::solve(	int_t dim_,
 	if ( dim == 0 )
 		return SUCCESSFUL_RETURN;
 
+    // MUMPS overwrites the rhs, copy rhs to sol and pass that to the solver
+    for (int_t i=0; i<dim; ++i) sol[i] = rhs[i];
+
+
     /// IPOPT-MUMPS
     MUMPS_STRUC_C* mumps_data = static_cast<MUMPS_STRUC_C*>(mumps_ptr_);
 
-    ESymSolverStatus retval = SYMSOLVER_SUCCESS;
-
-    for( Index i = 0; i < nrhs; i++ )
+    mumps_data->rhs = sol;
+    mumps_data->job = 3;  //solve
+    MyPrintf("Calling MUMPS-3 for solve.\n");
+    mumps_c(mumps_data);
+    MyPrintf("Done with MUMPS-3 for solve.\n");
+    int error = mumps_data->info[0];
+    if( error < 0 )
     {
-      Index offset = i * mumps_data->n;
-      mumps_data->rhs = &(rhs_vals[offset]);
-      mumps_data->job = 3;  //solve
-      MyPrintf("Calling MUMPS-3 for solve.\n");
-      mumps_c(mumps_data);
-      MyPrintf("Done with MUMPS-3 for solve.\n");
-      Index error = mumps_data->info[0];
-      if( error < 0 )
-      {
-         MyPrintf("Error=% returned from MUMPS in Solve.\n", error);
-         return THROWERROR(RET_MATRIX_FACTORISATION_FAILED);
-      }
+     MyPrintf("Error=% returned from MUMPS in Solve.\n", error);
+     return THROWERROR(RET_MATRIX_FACTORISATION_FAILED);
     }
 
 	return SUCCESSFUL_RETURN;
@@ -1517,29 +1505,28 @@ int_t MumpsSparseSolver::getNegativeEigenvalues( )
 	if( !have_factorization )
 		return -1;
 	else
-		return neig;
+		return negevals_;
 }
 
 
 // TODO(andrea: not implemented yet, default behavior)
+
 /*
  *	g e t R a n k
  */
-// int_t MumpsSparseSolver::getRank( )
-// {
-//     return THROWERROR( RET_NOT_YET_IMPLEMENTED );
-// }
-
+int_t MumpsSparseSolver::getRank( )
+{
+	return -1;
+}
 /*
  *	g e t Z e r o P i v o t s
  */
-// returnValue MumpsSparseSolver::getZeroPivots( int_t *&zeroPivots )
-// {
-// 	for ( int_t k=0; k<dim-rank; k++ )
-// 		zeroPivots[k] = pivots[rank+k];
-
-// 	return SUCCESSFUL_RETURN;
-// }
+returnValue MumpsSparseSolver::getZeroPivots( int_t *&zeroPivots )
+{
+	if ( zeroPivots ) delete[] zeroPivots;
+	zeroPivots = 0;
+	return SUCCESSFUL_RETURN;
+}
 
 
 /*****************************************************************************
@@ -1554,22 +1541,15 @@ returnValue MumpsSparseSolver::clear( )
 	delete [] a_mumps;
 	delete [] irn_mumps;
 	delete [] jcn_mumps;
-	delete [] pivots;
 
 	dim = -1;
 	numNonzeros = -1;
-	neig = -1;
-	rank = -1;
-	pivots = 0;
+	negevals_ = -1;
+	mumps_pivot_order_ = 0;
 
 	a_mumps = 0;
 	irn_mumps = 0;
 	jcn_mumps = 0;
-
-	fact_mumps = 0;
-	lfact_mumps = -1;
-	ifact_mumps = 0;
-	lifact_mumps = -1;
 
 	have_factorization = false;
 	return SUCCESSFUL_RETURN;
@@ -1584,8 +1564,7 @@ returnValue MumpsSparseSolver::copy( 	const MumpsSparseSolver& rhs
 {
 	dim = rhs.dim;
 	numNonzeros = rhs.numNonzeros;
-	neig = rhs.neig;
-	rank = rhs.rank;
+	negevals_ = rhs.negevals_;
 	have_factorization = rhs.have_factorization;
 
 	if ( rhs.a_mumps != 0 )
@@ -1612,7 +1591,8 @@ returnValue MumpsSparseSolver::copy( 	const MumpsSparseSolver& rhs
 	else
 		jcn_mumps = 0;
 
-    rhs.mumps_pivot_order_ = mumps_pivot_order_;
+    //TODO(andrea) fix this!
+    // rhs.mumps_pivot_order_ = mumps_pivot_order_;
 
 	return SUCCESSFUL_RETURN;
 }

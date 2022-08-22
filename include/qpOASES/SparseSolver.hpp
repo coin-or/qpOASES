@@ -34,6 +34,8 @@
 
 #ifndef QPOASES_SPARSESOLVER_HPP
 #define QPOASES_SPARSESOLVER_HPP
+#include <limits>
+#include <sstream>
 
 #include <qpOASES/Utils.hpp>
 
@@ -434,22 +436,91 @@ class MumpsSparseSolver: public SparseSolver
         
         void* mumps_ptr_;           /** Primary MUMPS data structure */
 
-		fint_t dim;				    /**< Dimension of the current linear system. */
+		int dim;				    /**< Dimension of the current linear system. */
 
-		fint_t numNonzeros;		    /**< Number of nonzeros in the current linear system. */
+		int numNonzeros;		    /**< Number of nonzeros in the current linear system. */
 
 		double* a_mumps;		    /**< matrix for MUMPS (A in MUMPS) */
 
-		fint_t* irn_mumps;		    /**< Row entries of matrix (IRN in MUMPS) */
+		int* irn_mumps;		    /**< Row entries of matrix (IRN in MUMPS) */
 
-		fint_t* jcn_mumps;		    /**< Column entries of matrix (JCN in MUMPS) */
+		int* jcn_mumps;		    /**< Column entries of matrix (JCN in MUMPS) */
 
 		bool have_factorization;    /**< flag indicating whether factorization for current matrix has already been computed */
 
-		fint_t negevals_;		    /**< number of negative eigenvalues */
+		int negevals_;		    /**< number of negative eigenvalues */
 
-        fint_t mumps_pivot_order_;  /* pivot order*/
+        int mumps_pivot_order_;  /* pivot order*/
+
+        bool initialized_;
+        /** Flag indicating if the matrix has to be refactorized because
+        *  the pivot tolerance has been changed.
+        */
+        bool pivtol_changed_;
+        /** Flag that is true if we just requested the values of the
+        *  matrix again (SYMSOLVER_CALL_AGAIN) and have to factorize
+        *  again.
+        */
+        bool refactorize_;
+        ///@}
+
+        /** @name Solver specific data/options */
+        ///@{
+        /** Pivot tolerance */
+        double pivtol_;
+
+        /** Maximal pivot tolerance */
+        double pivtolmax_;
+
+        /** Percent increase in memory */
+        int mem_percent_;
+
+        /** Permutation and scaling method in MUMPS */
+        int mumps_permuting_scaling_;
+
+        /** Scaling in MUMPS */
+        int mumps_scaling_;
+
+        /** Threshold in MUMPS to state that a constraint is linearly dependent */
+        double mumps_dep_tol_;
+
+        /** Flag indicating whether the TNLP with identical structure has
+        *  already been solved before.
+        */
+        bool warm_start_same_structure_;
+        ///@}
+
+        /** Flag indicating if symbolic factorization has already been called */
+        bool have_symbolic_factorization_;
 };
+
+template<typename T>
+inline void ComputeMemIncrease(
+   T&          len,          ///< current length on input, new length on output
+   double      recommended,  ///< recommended size
+   T           min,          ///< minimal size that should ensured
+   const char* context       ///< context from where this function is called - used to setup message for exception
+)
+{
+   if( recommended >= std::numeric_limits<T>::max() )
+   {
+      // increase len to the maximum possible, if that is still an increase
+      if( len < std::numeric_limits<T>::max() )
+      {
+         len = std::numeric_limits<T>::max();
+      }
+      else
+      {
+         std::stringstream what;
+         what << "Cannot allocate more than " << std::numeric_limits<T>::max()*sizeof(T) << " bytes for " << context << " due to limitation on integer type";
+         throw std::overflow_error(what.str());
+      }
+   }
+   else
+   {
+      len = std::max(min, (T) recommended);
+   }
+}
 
 #endif /* SOLVER_MUMPS */
 
