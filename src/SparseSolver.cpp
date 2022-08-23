@@ -1122,73 +1122,6 @@ static void MPIfini(void)
 }
 #endif /* !USE_MPI_H */
 
-extern "C"
-{
-	/*
-	*  MA57ID -- Initialize solver.
-	*/
-	extern void  MA57ID (
-		double	*cntl,
-		fint_t		*icntl);
-
-	/*
-	*  MA57AD -- Symbolic Factorization.
-	*/
-	extern void  MA57AD (
-		fint_t			*n,		    /* Order of matrix. */
-		fint_t			*ne,	    /* Number of entries. */
-		const fint_t	*irn,	    /* Matrix nonzero row structure */
-		const fint_t	*jcn,	    /* Matrix nonzero column structure */
-		fint_t			*lkeep,	    /* Workspace for the pivot order of lenght 3*n */
-		fint_t			*keep,	    /* Workspace for the pivot order of lenght 3*n */
-								    /* Automatically iflag = 0; ikeep pivot order iflag = 1 */
-		fint_t			*iwork,	    /* Integer work space. */
-		fint_t			*icntl,	    /* Integer Control parameter of length 30*/
-		fint_t			*info,	    /* Statistical Information; Integer array of length 20 */
-		double			*rinfo);    /* Double Control parameter of length 5 */
-
-	/*
-	* MA57BD -- Numerical Factorization.
-	*/
-	extern void  MA57BD (
-		fint_t	*n,			/* Order of matrix. */
-		fint_t	*ne,		/* Number of entries. */
-		double	*a,			/* Numerical values. */
-		double	*fact,		/* Entries of factors. */
-		fint_t	*lfact,		/* Length of array `fact'. */
-		fint_t	*ifact,		/* Indexing info for factors. */
-		fint_t	*lifact,	/* Length of array `ifact'. */
-		fint_t	*lkeep,		/* Length of array `keep'. */
-		fint_t	*keep,		/* Integer array. */
-		fint_t	*iwork,		/* Workspace of length `n'. */
-		fint_t	*icntl,		/* Integer Control parameter of length 20. */
-		double	*cntl,		/* Double Control parameter of length 5. */
-		fint_t	*info,		/* Statistical Information; Integer array of length 40. */
-		double	*rinfo);	/* Statistical Information; Real array of length 20. */
-
-	/*
-	* MA57CD -- Solution.
-	*/
-	extern void  MA57CD (
-		fint_t	*job,		/* Solution job.  Solve for... */
-							/* JOB <= 1:  A */
-							/* JOB == 2:  PLP^t */
-							/* JOB == 3:  PDP^t */
-							/* JOB >= 4:  PL^t P^t */
-		fint_t	*n,			/* Order of matrix. */
-		double	*fact,		/* Entries of factors. */
-		fint_t	*lfact,		/* Length of array `fact'. */
-		fint_t	*ifact,		/* Indexing info for factors. */
-		fint_t	*lifact,	/* Length of array `ifact'. */
-		fint_t	*nrhs,		/* Number of right hand sides. */
-		double	*rhs,		/* Numerical Values. */
-		fint_t	*lrhs,		/* Leading dimensions of `rhs'. */
-		double	*work,		/* Real workspace. */
-		fint_t	*lwork,		/* Length of `work', >= N*NRHS. */
-		fint_t	*iwork,		/* Integer array of length `n'. */
-		fint_t	*icntl,		/* Integer Control parameter array of length 20. */
-		fint_t	*info);		/* Statistical Information; Integer array of length 40. */
-}
 
 /*****************************************************************************
  *  P U B L I C                                                              *
@@ -1223,6 +1156,7 @@ MumpsSparseSolver::MumpsSparseSolver( ) : SparseSolver()
     mumps_->icntl[2] = 0; //QUIETLY!
     mumps_->icntl[3] = 0;
     mumps_ptr_ = (void*) mumps_;
+
 
 }
 
@@ -1327,10 +1261,25 @@ returnValue MumpsSparseSolver::factorize( )
 		have_factorization = true;
 		negevals_ = 0;
 		return SUCCESSFUL_RETURN;
+
 	}
 
     /// IPOPT-MUMPS
     MUMPS_STRUC_C* mumps_data = static_cast<MUMPS_STRUC_C*>(mumps_ptr_);
+
+    MUMPS_STRUC_C* mumps_ = static_cast<MUMPS_STRUC_C*>(mumps_ptr_);
+    mumps_data->n = dim;
+    mumps_data->nz = numNonzeros;
+    delete[] mumps_data->a;
+    mumps_data->a = NULL;
+
+    mumps_data->a = new double[numNonzeros];
+    mumps_data->irn = const_cast<int*>(irn_mumps);
+    mumps_data->jcn = const_cast<int*>(jcn_mumps);
+
+    // make sure we do the symbolic factorization before a real
+    // factorization
+    have_symbolic_factorization_ = false;
 
 // #ifndef IPOPT_MUMPS_NOMUTEX
 //     const std::lock_guard<std::mutex> lock(mumps_call_mutex);
@@ -1363,13 +1312,16 @@ returnValue MumpsSparseSolver::factorize( )
     //return appropriate value
     if( error == -6 )  //system is singular
     {
-      MyPrintf("MUMPS returned INFO(1) = % matrix is singular.\n", error);
-      return RET_MATRIX_FACTORISATION_FAILED;
+        MyPrintf("MUMPS returned INFO(1) = %i matrix is singular.\n", error);
+        return RET_MATRIX_FACTORISATION_FAILED;
     }
     if( error < 0 )
     {
-      MyPrintf("Error=% returned from MUMPS in Factorization.\n", error);
-      return RET_MATRIX_FACTORISATION_FAILED;
+        
+        printf("nnz = %i\n",numNonzeros);
+        MyPrintf("Error=%i returned from MUMPS in Factorization.\n", error);
+        MyPrintf("MUMPS returned INFO(2) = %i.\n", mumps_data->info[1]);
+        return RET_MATRIX_FACTORISATION_FAILED;
     }
 
     //// IPOPT-MUMPS (ACTUAL FACTORIZATION)
@@ -1378,65 +1330,66 @@ returnValue MumpsSparseSolver::factorize( )
     mumps_data->job = 2;  //numerical factorization
 
     // dump_matrix(mumps_data);
-    MyPrintf("Calling MUMPS-2 for numerical factorization.\n");
+    // MyPrintf("Calling MUMPS-2 for numerical factorization.\n");
     mumps_c(mumps_data);
-    MyPrintf("Done with MUMPS-2 for numerical factorization.\n");
+    // MyPrintf("Done with MUMPS-2 for numerical factorization.\n");
     error = mumps_data->info[0];
 
     //Check for errors
     if( error == -8 || error == -9 )  //not enough memory
     {
-      const int trycount_max = 20;
-      for( int trycount = 0; trycount < trycount_max; trycount++ )
-      {
-         MyPrintf("MUMPS returned INFO(1) = % and requires more memory, reallocating.  Attempt %d\n", error, trycount + 1);
-         MUMPS_INT old_mem_percent = mumps_data->icntl[13];
-         ComputeMemIncrease(mumps_data->icntl[13], 2.0 * (double)old_mem_percent, MUMPS_INT(0), "percent extra working space for MUMPS");
-         MyPrintf("Increasing icntl[13] from % to % .\n", old_mem_percent, mumps_data->icntl[13]);
+        const int trycount_max = 20;
+        for( int trycount = 0; trycount < trycount_max; trycount++ )
+        {
+            MyPrintf("MUMPS returned INFO(1) = %i and requires more memory, reallocating.  Attempt %d\n", error, trycount + 1);
+            MUMPS_INT old_mem_percent = mumps_data->icntl[13];
+            ComputeMemIncrease(mumps_data->icntl[13], 2.0 * (double)old_mem_percent, MUMPS_INT(0), "percent extra working space for MUMPS");
+            MyPrintf("Increasing icntl[13] from % to % .\n", old_mem_percent, mumps_data->icntl[13]);
 
-         // dump_matrix(mumps_data);
-         MyPrintf("Calling MUMPS-2 (repeated) for numerical factorization.\n");
-         mumps_c(mumps_data);
-         MyPrintf("Done with MUMPS-2 (repeated) for numerical factorization.\n");
-         error = mumps_data->info[0];
-         if( error != -8 && error != -9 )
-         {
-            break;
-         }
-      }
-      if( error == -8 || error == -9 )
-      {
-         MyPrintf("MUMPS was not able to obtain enough memory.\n");
-         return RET_MATRIX_FACTORISATION_FAILED;
-      }
+            // dump_matrix(mumps_data);
+            MyPrintf("Calling MUMPS-2 (repeated) for numerical factorization.\n");
+            mumps_c(mumps_data);
+            MyPrintf("Done with MUMPS-2 (repeated) for numerical factorization.\n");
+            error = mumps_data->info[0];
+            if( error != -8 && error != -9 )
+            {
+                break;
+            }
+        }
+        if( error == -8 || error == -9 )
+        {
+            MyPrintf("MUMPS was not able to obtain enough memory.\n");
+            return RET_MATRIX_FACTORISATION_FAILED;
+        }
     }
 
-    MyPrintf("Number of doubles for MUMPS to hold factorization (INFO(9)) = %\n", mumps_data->info[8]);
-    MyPrintf("Number of integers for MUMPS to hold factorization (INFO(10)) = %\n", mumps_data->info[9]);
+    // MyPrintf("Number of doubles for MUMPS to hold factorization (INFO(9)) = %i\n", mumps_data->info[8]);
+    // MyPrintf("Number of integers for MUMPS to hold factorization (INFO(10)) = %i\n", mumps_data->info[9]);
 
     if( error == -10 )  //system is singular
     {
-      MyPrintf("MUMPS returned INFO(1) = % matrix is singular.\n", error);
-      return RET_MATRIX_FACTORISATION_FAILED;
+        MyPrintf("MUMPS returned INFO(1) = %i matrix is singular.\n", error);
+        return RET_MATRIX_FACTORISATION_FAILED;
     }
 
     negevals_ = mumps_data->infog[11];
 
     if( error == -13 )
     {
-      MyPrintf("MUMPS returned INFO(1) =% - out of memory when trying to allocate % %s.\nIn some cases it helps to decrease the value of the option \"mumps_mem_percent\".\n",
+        MyPrintf("MUMPS returned INFO(1) =%i - out of memory when trying to allocate % %s.\nIn some cases it helps to decrease the value of the option \"mumps_mem_percent\".\n",
                      error, mumps_data->info[1] < 0 ? -mumps_data->info[1] : mumps_data->info[1],
                      mumps_data->info[1] < 0 ? "MB" : "bytes");
-      return RET_MATRIX_FACTORISATION_FAILED;
+        return RET_MATRIX_FACTORISATION_FAILED;
     }
     if( error < 0 )  //some other error
     {
-      MyPrintf("MUMPS returned INFO(1) =% MUMPS failure.\n", error);
-      return RET_MATRIX_FACTORISATION_FAILED;
+        MyPrintf("MUMPS returned INFO(1) =%i MUMPS failure.\n", error);
+        return RET_MATRIX_FACTORISATION_FAILED;
     }
 
 
 	have_factorization = true;
+
 	return SUCCESSFUL_RETURN;
 }
 
@@ -1449,6 +1402,7 @@ returnValue MumpsSparseSolver::solve(	int_t dim_,
 										real_t* const sol
 										)
 {
+
 	/* consistency check */
 	if ( dim_ != dim )
 		return THROWERROR( RET_INVALID_ARGUMENTS );
@@ -1460,7 +1414,9 @@ returnValue MumpsSparseSolver::solve(	int_t dim_,
 	}
 
 	if ( dim == 0 )
+    {
 		return SUCCESSFUL_RETURN;
+    }
 
     // MUMPS overwrites the rhs, copy rhs to sol and pass that to the solver
     for (int_t i=0; i<dim; ++i) sol[i] = rhs[i];
@@ -1471,13 +1427,13 @@ returnValue MumpsSparseSolver::solve(	int_t dim_,
 
     mumps_data->rhs = sol;
     mumps_data->job = 3;  //solve
-    MyPrintf("Calling MUMPS-3 for solve.\n");
+    // MyPrintf("Calling MUMPS-3 for solve.\n");
     mumps_c(mumps_data);
-    MyPrintf("Done with MUMPS-3 for solve.\n");
+    // MyPrintf("Done with MUMPS-3 for solve.\n");
     int error = mumps_data->info[0];
     if( error < 0 )
     {
-     MyPrintf("Error=% returned from MUMPS in Solve.\n", error);
+     MyPrintf("Error=%i returned from MUMPS in Solve.\n", error);
      return THROWERROR(RET_MATRIX_FACTORISATION_FAILED);
     }
 
@@ -1498,8 +1454,7 @@ returnValue MumpsSparseSolver::reset( )
 }
 
 /*
- *	g e t N e g a t i v e E i g e n v a l u e s
- */
+ *	g e t N e g a t i v e E i g e n v a l u e s */
 int_t MumpsSparseSolver::getNegativeEigenvalues( )
 {
 	if( !have_factorization )

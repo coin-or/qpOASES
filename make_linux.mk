@@ -39,18 +39,24 @@ BINDIR = ${TOP}/bin
 
 # Matlab include directory (ADAPT TO YOUR LOCAL SETTINGS!)
 #MATLAB_IDIR   = ${HOME}/Programs/matlab/extern/include/
-MATLAB_IDIR   = /usr/local/matlab/extern/include/
-MATLAB_LIBDIR = /usr/local/matlab/bin/glnxa64/
+# MATLAB_IDIR   = /usr/local/matlab/extern/include/
+# MATLAB_IDIR   = /home/andrea/MATLAB/R2021a/extern/include/
+MATLAB_IDIR   = /usr/local/MATLAB/R2017b/extern/include/
+# MATLAB_LIBDIR = /usr/local/matlab/bin/glnxa64/
+# MATLAB_LIBDIR = /home/andrea/MATLAB/R2021a/bin/glnxa64/
+# MATLAB_LIBDIR = /usr/local/MATLAB/R2017b/bin/glnxa64/
 
 # system or replacement BLAS/LAPACK
-REPLACE_LINALG = 1
+REPLACE_LINALG = 0
 
 ifeq ($(REPLACE_LINALG), 1)
 	LIB_BLAS =   ${SRCDIR}/BLASReplacement.o
 	LIB_LAPACK = ${SRCDIR}/LAPACKReplacement.o
 else
-	LIB_BLAS =   /usr/lib/libblas.so.3gf
-	LIB_LAPACK = /usr/lib/liblapack.so.3gf
+	# LIB_BLAS =   /usr/lib/libblas.so.3gf
+	# LIB_LAPACK = /usr/lib/liblapack.so.3gf
+	LIB_BLAS =   /usr/lib/x86_64-linux-gnu/libblas.so
+	LIB_LAPACK = /usr/lib/x86_64-linux-gnu/liblapack.so
 #	LIB_BLAS = ${MATLAB_LIBDIR}/libmwblas.so
 #	LIB_LAPACK = ${MATLAB_LIBDIR}/libmwlapack.so
 endif
@@ -59,10 +65,11 @@ endif
 # If choice is not 'NONE', BLAS and LAPACK replacements must not be used
 # USE_SOLVER = NONE
 USE_SOLVER = MUMPS
-#USE_SOLVER = MA57
+# USE_SOLVER = MA57
 
 ifeq ($(USE_SOLVER), MA57)
-	LIB_SOLVER = ${MATLAB_LIBDIR}/libmwma57.so
+	# LIB_SOLVER = ${MATLAB_LIBDIR}/libmwma57.so
+    LIB_SOLVER = /home/andrea/feasible_sqp/external/coin_hsl_source/.libs/libcoinhsl.so
 	DEF_SOLVER = SOLVER_MA57
 	LINKHSL = -Wl,-rpath=${MATLAB_LIBDIR}
 else ifeq ($(USE_SOLVER), MA27)
@@ -115,7 +122,7 @@ CPPFLAGS = -Wall -pedantic -Wshadow -Wfloat-equal -O3 -Wconversion -Wsign-conver
 #          -g -D__DEBUG__ -D__NO_COPYRIGHT__ -D__SUPPRESSANYOUTPUT__ -D__USE_SINGLE_PRECISION__
 
 # libraries to link against when building qpOASES .so files
-LINK_LIBRARIES = ${LIB_LAPACK} ${LIB_BLAS} -lm ${LIB_SOLVER}
+LINK_LIBRARIES = ${LIB_LAPACK} ${LIB_BLAS} -lm ${LIB_SOLVER} -ldl
 LINK_LIBRARIES_WRAPPER = -lm ${LIB_SOLVER} -lstdc++
 
 # how to link against the qpOASES shared library

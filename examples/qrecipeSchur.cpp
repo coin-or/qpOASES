@@ -93,7 +93,35 @@ int main( )
 	nWSR = 1000;
 	SQProblemSchur qrecipeSchur(180, 91);
 	tic = getCPUtime();
-	qrecipeSchur.init(H, g, A, lb, ub, lbA, ubA, nWSR, 0);
+
+	Options options;
+	// options.setToDefault();
+	// options.printLevel = PL_TABULAR;
+	options.printLevel = PL_HIGH;
+	// options.printLevel = PL_LOW;
+	/* options.printLevel = PL_NONE; */
+    options.enableEqualities = BT_FALSE;
+    // options.enableFarBounds = BT_FALSE;
+    qrecipeSchur.setOptions(options);
+    
+    int NV = 180;
+    int NI = 91;
+
+    Bounds guessedBounds( NV );
+    guessedBounds.init(NV);
+    for (int i = 0; i < NV; i++) {
+        guessedBounds.setupBound(i, (SubjectToStatus)0);
+    }
+
+    Constraints guessedConstraints( NI );
+
+    guessedConstraints.init(NI);
+    for (int i = 0; i < NI; i++) {
+	guessedConstraints.setupConstraint(i, (SubjectToStatus)0);
+    }
+
+    printf("fine till here\n");
+	qrecipeSchur.init(H, g, A, lb, ub, lbA, ubA, nWSR, 0, NULL, NULL, &guessedBounds, &guessedConstraints);
 	toc = getCPUtime();
 	qrecipeSchur.getPrimalSolution(x3);
 	qrecipeSchur.getDualSolution(y3);
@@ -104,10 +132,17 @@ int main( )
 	errP1 = 0.0;
 	errP2 = 0.0;
 	errP3 = 0.0;
+	// for (i = 0; i < 180; i++)
+    // {
+        // fprintf(stdFile, "x3[%i]=%f\n", i, x3[i]);
+    // }
 	#ifndef SOLVER_NONE
 	for (i = 0; i < 180; i++)
+    {
+        fprintf(stdFile, "x3[%i]=%f\n", i, x3[i]);
 		if (getAbs(x1[i] - x2[i]) > errP1)
 			errP1 = getAbs(x1[i] - x2[i]);
+    }
 	for (i = 0; i < 180; i++)
 		if (getAbs(x1[i] - x3[i]) > errP2)
 			errP2 = getAbs(x1[i] - x3[i]);
