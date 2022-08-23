@@ -126,7 +126,7 @@ int main( )
 	qrecipeSchur.getPrimalSolution(x3);
 	qrecipeSchur.getDualSolution(y3);
 
-	fprintf(stdFile, "Solved sparse problem (Schur complement approach) in %d iterations, %.3f seconds.\n", (int)nWSR, toc-tic);
+    fprintf(stdFile, "Solved sparse problem (Schur complement approach) in %d iterations, %.3f seconds.\n", (int)nWSR, toc-tic);
 
 	/* check distance of solutions */
 	errP1 = 0.0;

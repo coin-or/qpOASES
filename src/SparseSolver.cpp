@@ -1155,8 +1155,21 @@ MumpsSparseSolver::MumpsSparseSolver( ) : SparseSolver()
     mumps_->icntl[1] = 0;
     mumps_->icntl[2] = 0; //QUIETLY!
     mumps_->icntl[3] = 0;
-    mumps_ptr_ = (void*) mumps_;
 
+
+    // these values are just copied from Ipopt: better values might exist
+    mem_percent_ = 1000;
+    mumps_permuting_scaling_ = 7;
+    mumps_pivot_order_ = 7;
+    mumps_scaling_ = 77;
+    mumps_dep_tol_ = 0.0;
+
+    // Reset all private data
+    initialized_ = false;
+    pivtol_changed_ = false;
+    refactorize_ = false;
+    have_symbolic_factorization_ = false;
+    mumps_ptr_ = (void*) mumps_;
 
 }
 
@@ -1302,9 +1315,9 @@ returnValue MumpsSparseSolver::factorize( )
 
     // dump_matrix(mumps_data);
 
-    MyPrintf("Calling MUMPS-1 for symbolic factorization.\n");
+    // MyPrintf("Calling MUMPS-1 for symbolic factorization.\n");
     mumps_c(mumps_data);
-    MyPrintf("Done with MUMPS-1 for symbolic factorization.\n");
+    // MyPrintf("Done with MUMPS-1 for symbolic factorization.\n");
     int error = mumps_data->info[0];
     const int& mumps_permuting_scaling_used = mumps_data->infog[22];
     const int& mumps_pivot_order_used = mumps_data->infog[6];

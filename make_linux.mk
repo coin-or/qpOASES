@@ -65,7 +65,7 @@ endif
 # If choice is not 'NONE', BLAS and LAPACK replacements must not be used
 # USE_SOLVER = NONE
 USE_SOLVER = MUMPS
-# USE_SOLVER = MA57
+
 
 ifeq ($(USE_SOLVER), MA57)
 	# LIB_SOLVER = ${MATLAB_LIBDIR}/libmwma57.so
