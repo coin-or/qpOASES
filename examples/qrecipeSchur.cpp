@@ -110,18 +110,19 @@ int main( )
     Bounds guessedBounds( NV );
     guessedBounds.init(NV);
     for (int i = 0; i < NV; i++) {
-        guessedBounds.setupBound(i, (SubjectToStatus)0);
+        guessedBounds.setupBound(i, (SubjectToStatus)1);
     }
 
     Constraints guessedConstraints( NI );
 
     guessedConstraints.init(NI);
     for (int i = 0; i < NI; i++) {
-	guessedConstraints.setupConstraint(i, (SubjectToStatus)0);
+	guessedConstraints.setupConstraint(i, (SubjectToStatus)1);
     }
 
     printf("fine till here\n");
-	qrecipeSchur.init(H, g, A, lb, ub, lbA, ubA, nWSR, 0, NULL, NULL, &guessedBounds, &guessedConstraints);
+	// qrecipeSchur.init(H, g, A, lb, ub, lbA, ubA, nWSR, 0, NULL, NULL, &guessedBounds, &guessedConstraints);
+	qrecipeSchur.init(H, g, A, lb, ub, lbA, ubA, nWSR, 0);
 	toc = getCPUtime();
 	qrecipeSchur.getPrimalSolution(x3);
 	qrecipeSchur.getDualSolution(y3);

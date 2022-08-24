@@ -47,15 +47,15 @@ void MyPrintf(const char* pformat, ... );
 
 #define USE_COMM_WORLD -987654
 
-#include <../../mumps_installation/include/coin-or/mumps/mumps_compat.h>
+#include <../external/mumps_installation/include/coin-or/mumps/mumps_compat.h>
 
 #ifdef USE_MPI_H
 #include "mpi.h"
 #else
-#include <../../mumps_installation/include/coin-or/mumps/mumps_mpi.h>
+#include <../external/mumps_installation/include/coin-or/mumps/mumps_mpi.h>
 #endif /* USE_MPI_H */
 
-#include <../../mumps_installation/include/coin-or/mumps/dmumps_c.h>
+#include <../external/mumps_installation/include/coin-or/mumps/dmumps_c.h>
 #define MUMPS_STRUC_C DMUMPS_STRUC_C
 #define mumps_c dmumps_c
 

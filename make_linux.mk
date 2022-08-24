@@ -77,7 +77,7 @@ else ifeq ($(USE_SOLVER), MA27)
 	DEF_SOLVER = SOLVER_MA27
 	LINKHSL =
 else ifeq ($(USE_SOLVER), MUMPS)
-	LIB_SOLVER = /home/andrea/feasible_sqp/external/mumps_installation/lib/libcoinmumps.so
+	LIB_SOLVER = $(PWD)/../external/mumps_installation/lib/libcoinmumps.so
 	DEF_SOLVER = SOLVER_MUMPS
 	LINKHSL =
 else

@@ -36,10 +36,26 @@ include make.mk
 ##
 
 
-all: src examples
+ifeq ($(DEF_SOLVER), SOLVER_MUMPS)
+EXTERNAL = mumps
+else
+EXTERNAL =
+endif
+
+all:  $(EXTERNAL) src examples
+	
 #src_aw testing
 
-src:
+ifeq ($(DEF_SOLVER), SOLVER_MUMPS)
+mumps: 
+	@cd external/ThirdParty-Mumps; \
+	if [ -d "MUMPS" ]; then \
+	echo "Found MUMPS source code."; \
+	else get.Mumps && ./configure --prefix=$(PWD)/external/mumps_installation; fi; \
+	make && make install
+endif
+
+src: $(EXTERNAL)
 	@cd $@; ${MAKE} -s
 
 #src_aw:
