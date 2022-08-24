@@ -120,8 +120,8 @@ int main( )
 	guessedConstraints.setupConstraint(i, (SubjectToStatus)1);
     }
 
-    printf("fine till here\n");
 	// qrecipeSchur.init(H, g, A, lb, ub, lbA, ubA, nWSR, 0, NULL, NULL, &guessedBounds, &guessedConstraints);
+	tic = getCPUtime();
 	qrecipeSchur.init(H, g, A, lb, ub, lbA, ubA, nWSR, 0);
 	toc = getCPUtime();
 	qrecipeSchur.getPrimalSolution(x3);

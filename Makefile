@@ -77,6 +77,11 @@ debugging:
 	@cd $@; ${MAKE} -s
 
 clean:
+ifeq ($(DEF_SOLVER), SOLVER_MUMPS)
+	@echo Cleaning up \(mumps\)
+	@cd external/ThirdParty-Mumps && ${MAKE} -s clean
+	@cd external && ${RM} -rf mumps_installation
+endif
 	@cd src               && ${MAKE} -s clean
 	@cd examples          && ${MAKE} -s clean
 	@cd bin               && ${RM} -f *.* *{EXE}

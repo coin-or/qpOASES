@@ -36,6 +36,8 @@
 IDIR =   ${TOP}/include
 SRCDIR = ${TOP}/src
 BINDIR = ${TOP}/bin
+MKFILE_PATH := $(abspath $(lastword $(MAKEFILE_LIST)))
+MKFILE_DIR := $(dir $(MKFILE_PATH))
 
 # Matlab include directory (ADAPT TO YOUR LOCAL SETTINGS!)
 #MATLAB_IDIR   = ${HOME}/Programs/matlab/extern/include/
@@ -66,7 +68,7 @@ else ifeq ($(USE_SOLVER), MA27)
 	DEF_SOLVER = SOLVER_MA27
 	LINKHSL =
 else ifeq ($(USE_SOLVER), MUMPS)
-	LIB_SOLVER = $(PWD)/../external/mumps_installation/lib/libcoinmumps.so
+	LIB_SOLVER = $(MKFILE_DIR)/external/mumps_installation/lib/libcoinmumps.so
 	DEF_SOLVER = SOLVER_MUMPS
 	LINKHSL =
 else
