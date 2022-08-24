@@ -512,15 +512,15 @@ returnValue Ma27SparseSolver::copy( 	const Ma27SparseSolver& rhs
 	la_ma27 = rhs.la_ma27;
 	if ( rhs.a_ma27 != 0 )
 	{
-	  if (rhs.have_factorization)
-		{
-		  a_ma27 = new double[la_ma27];
-		  memcpy( a_ma27,rhs.a_ma27,la_ma27*sizeof(double) );
+	    if (rhs.have_factorization)
+	    {
+		    a_ma27 = new double[la_ma27];
+		    memcpy( a_ma27,rhs.a_ma27,la_ma27*sizeof(double) );
 		}
-	  else
+	    else
 		{
-		  a_ma27 = new double[numNonzeros];
-		  memcpy( a_ma27,rhs.a_ma27,numNonzeros*sizeof(double) );
+		    a_ma27 = new double[numNonzeros];
+		    memcpy( a_ma27,rhs.a_ma27,numNonzeros*sizeof(double) );
 		}
 	}
 	else
@@ -889,18 +889,23 @@ returnValue Ma57SparseSolver::solve(	int_t dim_,
 										real_t* const sol
 										)
 {
+    printf("in solve (MA57)\n");
 	/* consistency check */
 	if ( dim_ != dim )
 		return THROWERROR( RET_INVALID_ARGUMENTS );
 
 	if ( !have_factorization )
 	{
-	  MyPrintf("Factorization not called before solve in Ma57SparseSolver::solve.\n");
-	  return THROWERROR( RET_INVALID_ARGUMENTS );
+	    MyPrintf("Factorization not called before solve in Ma57SparseSolver::solve.\n");
+	    return THROWERROR( RET_INVALID_ARGUMENTS );
 	}
 
 	if ( dim == 0 )
+    {
+        printf("dim=0\n");
 		return SUCCESSFUL_RETURN;
+    }
+
 
 	/* Call MA57CD to solve the system */
 	fint_t job_ma57 = 1;
@@ -1102,23 +1107,23 @@ returnValue Ma57SparseSolver::copy( 	const Ma57SparseSolver& rhs
 __attribute__((constructor))
 static void MPIinit(void)
 {
-   int mpi_initialized;
-   MPI_Initialized(&mpi_initialized);
-   if( !mpi_initialized )
-   {
-      int argc = 1;
-      char** argv = NULL;
-      MPI_Init(&argc, &argv);
-   }
+    int mpi_initialized;
+    MPI_Initialized(&mpi_initialized);
+    if( !mpi_initialized )
+    {
+        int argc = 1;
+        char** argv = NULL;
+        MPI_Init(&argc, &argv);
+    }
 }
 
 __attribute__((destructor))
 static void MPIfini(void)
 {
-   int mpi_finalized;
-   MPI_Finalize(&mpi_finalized);
-   if(!mpi_finalized)
-      MPI_Finalize();
+    int mpi_finalized;
+    MPI_Finalize(&mpi_finalized);
+    if(!mpi_finalized)
+        MPI_Finalize();
 }
 #endif /* !USE_MPI_H */
 
@@ -1329,8 +1334,7 @@ returnValue MumpsSparseSolver::factorize( )
         return RET_MATRIX_FACTORISATION_FAILED;
     }
     if( error < 0 )
-    {
-        
+    {    
         printf("nnz = %i\n",numNonzeros);
         MyPrintf("Error=%i returned from MUMPS in Factorization.\n", error);
         MyPrintf("MUMPS returned INFO(2) = %i.\n", mumps_data->info[1]);
@@ -1416,6 +1420,7 @@ returnValue MumpsSparseSolver::solve(	int_t dim_,
 										)
 {
 
+    printf("in solve (MUMPS)\n");
 	/* consistency check */
 	if ( dim_ != dim )
 		return THROWERROR( RET_INVALID_ARGUMENTS );
@@ -1446,8 +1451,8 @@ returnValue MumpsSparseSolver::solve(	int_t dim_,
     int error = mumps_data->info[0];
     if( error < 0 )
     {
-     MyPrintf("Error=%i returned from MUMPS in Solve.\n", error);
-     return THROWERROR(RET_MATRIX_FACTORISATION_FAILED);
+        MyPrintf("Error=%i returned from MUMPS in Solve.\n", error);
+        return THROWERROR(RET_MATRIX_FACTORISATION_FAILED);
     }
 
 	return SUCCESSFUL_RETURN;
@@ -1558,9 +1563,6 @@ returnValue MumpsSparseSolver::copy( 	const MumpsSparseSolver& rhs
 	}
 	else
 		jcn_mumps = 0;
-
-    //TODO(andrea) fix this!
-    // rhs.mumps_pivot_order_ = mumps_pivot_order_;
 
 	return SUCCESSFUL_RETURN;
 }
