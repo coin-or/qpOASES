@@ -48,10 +48,11 @@ all:  $(EXTERNAL) src examples
 
 ifeq ($(DEF_SOLVER), SOLVER_MUMPS)
 mumps: 
+	@echo $(QPOASESROOT)
 	@cd external/ThirdParty-Mumps; \
 	if [ -d "MUMPS" ]; then \
 	echo "Found MUMPS source code."; \
-	else get.Mumps && ./configure --prefix=$(PWD)/external/mumps_installation; fi; \
+	else get.Mumps; ./configure --prefix=$(PWD)/external/mumps_installation; fi; \
 	make && make install
 endif
 

@@ -889,7 +889,7 @@ returnValue Ma57SparseSolver::solve(	int_t dim_,
 										real_t* const sol
 										)
 {
-    printf("in solve (MA57)\n");
+    // printf("in solve (MA57)\n");
 	/* consistency check */
 	if ( dim_ != dim )
 		return THROWERROR( RET_INVALID_ARGUMENTS );
@@ -1169,6 +1169,12 @@ MumpsSparseSolver::MumpsSparseSolver( ) : SparseSolver()
     mumps_scaling_ = 77;
     mumps_dep_tol_ = 0.0;
 
+    pivtol_ = 0.000001;
+    // pivtol_ = 1.0;
+    // pivtol_ = 0.1;
+    // pivtol_ = 0.0;
+    pivtolmax_ = 0.1; // actually unused atm
+
     // Reset all private data
     initialized_ = false;
     pivtol_changed_ = false;
@@ -1420,7 +1426,7 @@ returnValue MumpsSparseSolver::solve(	int_t dim_,
 										)
 {
 
-    printf("in solve (MUMPS)\n");
+    // printf("in solve (MUMPS)\n");
 	/* consistency check */
 	if ( dim_ != dim )
 		return THROWERROR( RET_INVALID_ARGUMENTS );

@@ -52,8 +52,8 @@ int main( )
 	real_t *y2 = new real_t[271];
 
 	/* create sparse matrices */
-	SymSparseMat *H = new SymSparseMat(180, 180, H_ir, H_jc, H_val);
-	SparseMatrix *A = new SparseMatrix(91, 180, A_ir, A_jc, A_val);
+	SymSparseMat *H = new SymSparseMat(180, 180, H_ri, H_cp, H_val);
+	SparseMatrix *A = new SparseMatrix(91, 180, A_ri, A_cp, A_val);
 
 	H->createDiagInfo();
 

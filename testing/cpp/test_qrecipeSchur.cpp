@@ -98,34 +98,10 @@ int main( )
 
 	/* solve with sparse matrices (Schur complement) */
 	#ifndef SOLVER_NONE
-	Options options;
-	// options.setToDefault();
-	// options.printLevel = PL_TABULAR;
-	options.printLevel = PL_HIGH;
-	// options.printLevel = PL_LOW;
-	/* options.printLevel = PL_NONE; */
-    options.enableEqualities = BT_FALSE;
-    // options.enableFarBounds = BT_FALSE;
-    qrecipeSchur.setOptions(options);
-    int NV = 180;
-    int NI = 91;
-
-    Bounds guessedBounds( NV );
-    guessedBounds.init(NV);
-    for (int i = 0; i < NV; i++) {
-        guessedBounds.setupBound(i, (SubjectToStatus)1);
-    }
-
-    Constraints guessedConstraints( NI );
-
-    guessedConstraints.init(NI);
-    for (int i = 0; i < NI; i++) {
-	guessedConstraints.setupConstraint(i, (SubjectToStatus)1);
-    }
-
 	nWSR = 1000;
+	SQProblemSchur qrecipeSchur(180, 91);
+	qrecipeSchur.setOptions(options);
 	tic = getCPUtime();
-	// qrecipeSchur.init(H, g, A, lb, ub, lbA, ubA, nWSR, 0, NULL, NULL, &guessedBounds, &guessedConstraints);
 	qrecipeSchur.init(H, g, A, lb, ub, lbA, ubA, nWSR, 0);
 	toc = getCPUtime();
 	qrecipeSchur.getPrimalSolution(x3);

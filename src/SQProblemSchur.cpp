@@ -2637,6 +2637,8 @@ returnValue SQProblemSchur::stepCalcBacksolveSchur( int_t nFR, int_t nFX, int_t 
 
 	retval = sparseSolver->solve(dim, rhs, sol);
 
+    // for (int i = 0; i < dim; i++)
+    //     printf("sol[%i] = %f\n", i, sol[i]);
 
 	if (retval != SUCCESSFUL_RETURN)
 	{

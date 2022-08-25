@@ -91,9 +91,9 @@ int main( )
 
 	/* solve with sparse matrices (Schur complement) */
 	#ifndef SOLVER_NONE
-	nWSR = 1000;
+	nWSR = 10000;
 	SQProblemSchur qp(n, m);
-	qp.setOptions(options);
+	// qp.setOptions(options);
 	tic = getCPUtime();
 	qp.init(H, g, A, lb, ub, lbA, ubA, nWSR, 0);
 	toc = getCPUtime();
