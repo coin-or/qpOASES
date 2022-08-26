@@ -36,11 +36,14 @@ include make.mk
 ##
 
 
-all: src examples
+all: bin src examples
 #src_aw testing
 
 src:
 	@cd $@; ${MAKE} -s
+
+bin:
+	mkdir bin
 
 #src_aw:
 #	@cd $@; ${MAKE} -s
