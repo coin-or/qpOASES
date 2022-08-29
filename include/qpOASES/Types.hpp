@@ -174,10 +174,8 @@ typedef double real_t;
 
 /** Defines int_t for facilitating switching between int and long int. */
 #ifdef __USE_LONG_INTEGERS__
-// typedef long int_t;
-// typedef unsigned long uint_t;
-typedef int int_t;
-typedef unsigned int uint_t;
+typedef long int_t;
+typedef unsigned long uint_t;
 #else
 typedef int int_t;
 typedef unsigned int uint_t;
@@ -186,8 +184,7 @@ typedef unsigned int uint_t;
 
 /** Defines FORTRAN integer type. Might be platform dependent! */
 #ifdef __USE_LONG_FINTS__
-// typedef long fint_t;
-typedef int fint_t;
+typedef long fint_t;
 #else
 typedef int fint_t;
 #endif /* __USE_LONG_FINTS__ */
