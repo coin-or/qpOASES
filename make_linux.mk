@@ -38,6 +38,7 @@ SRCDIR = ${TOP}/src
 BINDIR = ${TOP}/bin
 MKFILE_PATH := $(abspath $(lastword $(MAKEFILE_LIST)))
 MKFILE_DIR := $(dir $(MKFILE_PATH))
+EXT_IDIR = 
 
 # Matlab include directory (ADAPT TO YOUR LOCAL SETTINGS!)
 #MATLAB_IDIR   = ${HOME}/Programs/matlab/extern/include/
@@ -68,9 +69,10 @@ else ifeq ($(USE_SOLVER), MA27)
 	DEF_SOLVER = SOLVER_MA27
 	LINKHSL =
 else ifeq ($(USE_SOLVER), MUMPS)
-	LIB_SOLVER = $(MKFILE_DIR)/external/mumps_installation/lib/libcoinmumps.so
+	LIB_SOLVER = $(MKFILE_DIR)external/mumps_installation/lib/libcoinmumps.so
 	DEF_SOLVER = SOLVER_MUMPS
 	LINKHSL =
+	EXT_IDIR += -I$(MKFILE_DIR)external/mumps_installation/include/coin-or/mumps/
 else
 	LIB_SOLVER =
 	DEF_SOLVER = SOLVER_NONE
@@ -109,7 +111,7 @@ else
 endif
 
 
-CPPFLAGS = -Wall -pedantic -Wshadow -Wfloat-equal -O3 -Wconversion -Wsign-conversion -fPIC -DLINUX -D__USE_LONG_INTEGERS__ -D__USE_LONG_FINTS__ -D${DEF_SOLVER} -D__NO_COPYRIGHT__
+CPPFLAGS = -Wall $(EXT_IDIR) -pedantic -Wshadow -Wfloat-equal -O3 -Wconversion -Wsign-conversion -fPIC -DLINUX -D__USE_LONG_INTEGERS__ -D__USE_LONG_FINTS__ -D${DEF_SOLVER} -D__NO_COPYRIGHT__
 #          -g -D__DEBUG__ -D__NO_COPYRIGHT__ -D__SUPPRESSANYOUTPUT__ -D__USE_SINGLE_PRECISION__
 
 # libraries to link against when building qpOASES .so files
