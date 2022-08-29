@@ -44,7 +44,7 @@ EXT_IDIR =
 #MATLAB_IDIR   = ${HOME}/Programs/matlab/extern/include/
 
 # system or replacement BLAS/LAPACK
-REPLACE_LINALG = 0
+REPLACE_LINALG = 1
 
 ifeq ($(REPLACE_LINALG), 1)
 	LIB_BLAS =   ${SRCDIR}/BLASReplacement.o
