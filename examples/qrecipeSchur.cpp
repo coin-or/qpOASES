@@ -35,15 +35,14 @@
 
 
 #include <qpOASES.hpp>
-// #include "qrecipe_data.hpp"
+#include "qrecipe_data.hpp"
 // #include "generate_sparse_qp/qp_data.hpp"
 // #include "generate_sparse_qp/simple_qp_data.hpp"
-#include "generate_sparse_qp/trivial_qp_data.hpp"
+// #include "generate_sparse_qp/trivial_qp_data.hpp"
 
 int main( )
 {
 	USING_NAMESPACE_QPOASES
-
 
 	long i;
 	int_t nWSR;

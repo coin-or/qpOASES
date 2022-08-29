@@ -70,6 +70,7 @@ int main( )
 	options.setToDefault();
 	options.printLevel = PL_TABULAR;
 	options.initialStatusBounds = ST_UPPER;
+	/* options.enableEqualities = BT_FALSE; */
 
 	/* create sparse matrices */
 	SymSparseMat *H = new SymSparseMat(n, n, H_ir, H_jc, H_val);
