@@ -72,8 +72,10 @@ SQProblemSchur::SQProblemSchur( ) : SQProblem( )
 	sparseSolver = new Ma57SparseSolver();
 #elif defined SOLVER_MA27
 	sparseSolver = new Ma27SparseSolver();
+#elif defined SOLVER_MUMPS
+	sparseSolver = new MumpsSparseSolver();
 #elif defined SOLVER_NONE
-	sparseSolver = new DummySparseSolver();
+    sparseSolver = new DummySparseSolver();
 #endif
 
 	nSmax = 0;
@@ -106,6 +108,8 @@ SQProblemSchur::SQProblemSchur( int_t _nV, int_t _nC, HessianType _hessianType, 
 	sparseSolver = new Ma57SparseSolver();
 #elif defined SOLVER_MA27
 	sparseSolver = new Ma27SparseSolver();
+#elif defined SOLVER_MUMPS
+	sparseSolver = new MumpsSparseSolver();
 #elif defined SOLVER_NONE
 	sparseSolver = new DummySparseSolver();
 #endif
@@ -153,6 +157,8 @@ SQProblemSchur::SQProblemSchur( const SQProblemSchur& rhs ) : SQProblem( rhs )
 	sparseSolver = new Ma57SparseSolver();
 #elif defined SOLVER_MA27
 	sparseSolver = new Ma27SparseSolver();
+#elif defined SOLVER_MUMPS
+	sparseSolver = new MumpsSparseSolver();
 #elif defined SOLVER_NONE
 	sparseSolver = new DummySparseSolver();
 #endif
@@ -2630,6 +2636,10 @@ returnValue SQProblemSchur::stepCalcBacksolveSchur( int_t nFR, int_t nFX, int_t 
 	computeMTimes(-1.0, p, 1.0, rhs);
 
 	retval = sparseSolver->solve(dim, rhs, sol);
+
+    // for (int i = 0; i < dim; i++)
+    //     printf("sol[%i] = %f\n", i, sol[i]);
+
 	if (retval != SUCCESSFUL_RETURN)
 	{
 		MyPrintf( "sparseSolver->solve (second time) failed.\n");

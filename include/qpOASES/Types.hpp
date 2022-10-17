@@ -147,8 +147,8 @@
 #define TT( I,J )  T[(I)*sizeT+(J)]
 
 
-/* If neither MA57 nor MA27 are selected, activate the dummy solver */
-#if !defined(SOLVER_MA27) && !defined(SOLVER_MA57) && !defined(SOLVER_NONE)
+/* If neither MA57 nor MA27 nor MUMPS are selected, activate the dummy solver */
+#if !defined(SOLVER_MA27) && !defined(SOLVER_MA57) && !defined(SOLVER_MUMPS) && !defined(SOLVER_NONE)
 #define SOLVER_NONE
 #endif
 

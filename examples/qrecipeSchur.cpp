@@ -34,12 +34,11 @@
  */
 
 
-
 #include <qpOASES.hpp>
-
 #include "qrecipe_data.hpp"
-
-
+// #include "generate_sparse_qp/qp_data.hpp"
+// #include "generate_sparse_qp/simple_qp_data.hpp"
+// #include "generate_sparse_qp/trivial_qp_data.hpp"
 
 int main( )
 {
@@ -48,28 +47,31 @@ int main( )
 	long i;
 	int_t nWSR;
 	real_t errP1, errP2, errP3, errD1, errD2, errD3, tic, toc;
-	real_t *x1 = new real_t[180];
-	real_t *y1 = new real_t[271];
-	real_t *x2 = new real_t[180];
-	real_t *y2 = new real_t[271];
-	real_t *x3 = new real_t[180];
-	real_t *y3 = new real_t[271];
+	real_t *x1 = new real_t[NV];
+	real_t *y1 = new real_t[NV+NC];
+	real_t *x2 = new real_t[NV];
+	real_t *y2 = new real_t[NV+NC];
+	real_t *x3 = new real_t[NV];
+	real_t *y3 = new real_t[NV+NC];
 
 	/* create sparse matrices */
-	SymSparseMat *H = new SymSparseMat(180, 180, H_ir, H_jc, H_val);
-	SparseMatrix *A = new SparseMatrix(91, 180, A_ir, A_jc, A_val);
+	SymSparseMat *H = new SymSparseMat(NV, NV, H_ri, H_cp, H_val);
+	SparseMatrix *A = new SparseMatrix(NC, NV, A_ri, A_cp, A_val);
 
 	H->createDiagInfo();
 
 	real_t* H_full = H->full();
+    for (int i = 0; i < NV; i++)
+        for (int j = 0; j < NV; j++)
+            printf("H[%i,%i] = %f\n", i, j, H_full[i*NV+j]);
 	real_t* A_full = A->full();
 
-	SymDenseMat *Hd = new SymDenseMat(180,180,180,H_full);
-	DenseMatrix *Ad = new DenseMatrix(91,180,180,A_full);
+	SymDenseMat *Hd = new SymDenseMat(NV, NV, NV, H_full);
+	DenseMatrix *Ad = new DenseMatrix(NC, NV, NV, A_full);
 
 	/* solve with dense matrices */
 	nWSR = 1000;
-	QProblem qrecipeD(180, 91);
+	QProblem qrecipeD(NV, NC);
 	tic = getCPUtime();
 	qrecipeD.init(Hd, g, Ad, lb, ub, lbA, ubA, nWSR, 0);
 	toc = getCPUtime();
@@ -80,7 +82,7 @@ int main( )
 
 	/* solve with sparse matrices (nullspace factorization) */
 	nWSR = 1000;
-	QProblem qrecipeS(180, 91);
+	QProblem qrecipeS(NV, NC);
 	tic = getCPUtime();
 	qrecipeS.init(H, g, A, lb, ub, lbA, ubA, nWSR, 0);
 	toc = getCPUtime();
@@ -91,27 +93,30 @@ int main( )
 
 	/* solve with sparse matrices (Schur complement) */
 	nWSR = 1000;
-	SQProblemSchur qrecipeSchur(180, 91);
+	SQProblemSchur qrecipeSchur(NV, NC);
 	tic = getCPUtime();
 	qrecipeSchur.init(H, g, A, lb, ub, lbA, ubA, nWSR, 0);
 	toc = getCPUtime();
 	qrecipeSchur.getPrimalSolution(x3);
 	qrecipeSchur.getDualSolution(y3);
 
-	fprintf(stdFile, "Solved sparse problem (Schur complement approach) in %d iterations, %.3f seconds.\n", (int)nWSR, toc-tic);
+    fprintf(stdFile, "Solved sparse problem (Schur complement approach) in %d iterations, %.3f seconds.\n", (int)nWSR, toc-tic);
 
 	/* check distance of solutions */
 	errP1 = 0.0;
 	errP2 = 0.0;
 	errP3 = 0.0;
 	#ifndef SOLVER_NONE
-	for (i = 0; i < 180; i++)
+	for (i = 0; i < NV; i++)
+    {
+        fprintf(stdFile, "x3[%i]=%f\n", i, x3[i]);
 		if (getAbs(x1[i] - x2[i]) > errP1)
 			errP1 = getAbs(x1[i] - x2[i]);
-	for (i = 0; i < 180; i++)
+    }
+	for (i = 0; i < NV; i++)
 		if (getAbs(x1[i] - x3[i]) > errP2)
 			errP2 = getAbs(x1[i] - x3[i]);
-	for (i = 0; i < 180; i++)
+	for (i = 0; i < NV; i++)
 		if (getAbs(x2[i] - x3[i]) > errP3)
 			errP3 = getAbs(x2[i] - x3[i]);
 	#endif /* SOLVER_NONE */
@@ -122,14 +127,14 @@ int main( )
 	errD1 = 0.0;
 	errD2 = 0.0;
 	errD3 = 0.0;
-	for (i = 0; i < 271; i++)
+	for (i = 0; i < NV+NC; i++)
 		if (getAbs(y1[i] - y2[i]) > errD1)
 			errD1 = getAbs(y1[i] - y2[i]);
 	#ifndef SOLVER_NONE
-	for (i = 0; i < 271; i++)
+	for (i = 0; i < NV+NC; i++)
 		if (getAbs(y1[i] - y3[i]) > errD2)
 			errD2 = getAbs(y1[i] - y3[i]);
-	for (i = 0; i < 271; i++)
+	for (i = 0; i < NV+NC; i++)
 		if (getAbs(y2[i] - y3[i]) > errD3)
 			errD3 = getAbs(y2[i] - y3[i]);
 	#endif /* SOLVER_NONE */

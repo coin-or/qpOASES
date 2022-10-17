@@ -70,6 +70,7 @@ int main( )
 	options.setToDefault();
 	options.printLevel = PL_TABULAR;
 	options.initialStatusBounds = ST_UPPER;
+	/* options.enableEqualities = BT_FALSE; */
 
 	/* create sparse matrices */
 	SymSparseMat *H = new SymSparseMat(n, n, H_ir, H_jc, H_val);
@@ -91,9 +92,9 @@ int main( )
 
 	/* solve with sparse matrices (Schur complement) */
 	#ifndef SOLVER_NONE
-	nWSR = 1000;
+	nWSR = 10000;
 	SQProblemSchur qp(n, m);
-	qp.setOptions(options);
+	// qp.setOptions(options);
 	tic = getCPUtime();
 	qp.init(H, g, A, lb, ub, lbA, ubA, nWSR, 0);
 	toc = getCPUtime();

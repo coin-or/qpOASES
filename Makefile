@@ -36,10 +36,26 @@ include make.mk
 ##
 
 
-all: bin src examples
+ifeq ($(DEF_SOLVER), SOLVER_MUMPS)
+EXTERNAL = mumps
+else
+EXTERNAL =
+endif
+
+all:  $(EXTERNAL) bin src examples
 #src_aw testing
 
-src:
+ifeq ($(DEF_SOLVER), SOLVER_MUMPS)
+mumps: 
+	@echo $(QPOASESROOT)
+	@cd external/ThirdParty-Mumps; \
+	if [ -d "MUMPS" ]; then \
+	echo "Found MUMPS source code."; \
+	else get.Mumps; ./configure --prefix=$(PWD)/external/mumps_installation; fi; \
+	make && make install
+endif
+
+src: $(EXTERNAL)
 	@cd $@; ${MAKE} -s
 
 bin:
@@ -64,6 +80,11 @@ debugging:
 	@cd $@; ${MAKE} -s
 
 clean:
+ifeq ($(DEF_SOLVER), SOLVER_MUMPS)
+	@echo Cleaning up \(mumps\)
+	@cd external/ThirdParty-Mumps && ${MAKE} -s clean
+	@cd external && ${RM} -rf mumps_installation
+endif
 	@cd src               && ${MAKE} -s clean
 	@cd examples          && ${MAKE} -s clean
 	@cd bin               && ${RM} -f *.* *{EXE}

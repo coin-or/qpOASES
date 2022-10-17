@@ -87,6 +87,10 @@ int main( )
 	/* solve with sparse matrices (nullspace factorization) */
 	nWSR = 1000;
 	QProblem qrecipeS(180, 91);
+	/* for some reason this is necessary to pass the test when using MUMPS */ 
+#if USE_SOLVER == MUMPS
+    options.enableEqualities = BT_FALSE;
+#endif
 	qrecipeS.setOptions(options);
 	tic = getCPUtime();
 	qrecipeS.init(H, g, A, lb, ub, lbA, ubA, nWSR, 0);

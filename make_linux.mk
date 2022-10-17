@@ -36,11 +36,12 @@
 IDIR =   ${TOP}/include
 SRCDIR = ${TOP}/src
 BINDIR = ${TOP}/bin
+MKFILE_PATH := $(abspath $(lastword $(MAKEFILE_LIST)))
+MKFILE_DIR := $(dir $(MKFILE_PATH))
+EXT_IDIR = 
 
 # Matlab include directory (ADAPT TO YOUR LOCAL SETTINGS!)
 #MATLAB_IDIR   = ${HOME}/Programs/matlab/extern/include/
-MATLAB_IDIR   = /usr/local/matlab/extern/include/
-MATLAB_LIBDIR = /usr/local/matlab/bin/glnxa64/
 
 # system or replacement BLAS/LAPACK
 REPLACE_LINALG = 1
@@ -49,8 +50,6 @@ ifeq ($(REPLACE_LINALG), 1)
 	LIB_BLAS =   ${SRCDIR}/BLASReplacement.o
 	LIB_LAPACK = ${SRCDIR}/LAPACKReplacement.o
 else
-	LIB_BLAS =   /usr/lib/libblas.so.3gf
-	LIB_LAPACK = /usr/lib/liblapack.so.3gf
 #	LIB_BLAS = ${MATLAB_LIBDIR}/libmwblas.so
 #	LIB_LAPACK = ${MATLAB_LIBDIR}/libmwlapack.so
 endif
@@ -58,7 +57,8 @@ endif
 # choice of sparse solver: NONE, MA27, or MA57
 # If choice is not 'NONE', BLAS and LAPACK replacements must not be used
 USE_SOLVER = NONE
-#USE_SOLVER = MA57
+# USE_SOLVER = MUMPS
+
 
 ifeq ($(USE_SOLVER), MA57)
 	LIB_SOLVER = ${MATLAB_LIBDIR}/libmwma57.so
@@ -68,6 +68,11 @@ else ifeq ($(USE_SOLVER), MA27)
 	LIB_SOLVER = /usr/local/lib/libhsl_ma27.a
 	DEF_SOLVER = SOLVER_MA27
 	LINKHSL =
+else ifeq ($(USE_SOLVER), MUMPS)
+	LIB_SOLVER = $(MKFILE_DIR)external/mumps_installation/lib/libcoinmumps.so
+	DEF_SOLVER = SOLVER_MUMPS
+	LINKHSL =
+	EXT_IDIR += -I$(MKFILE_DIR)external/mumps_installation/include/coin-or/mumps/
 else
 	LIB_SOLVER =
 	DEF_SOLVER = SOLVER_NONE
@@ -106,11 +111,12 @@ else
 endif
 
 
-CPPFLAGS = -Wall -pedantic -Wshadow -Wfloat-equal -O3 -Wconversion -Wsign-conversion -fPIC -DLINUX -D__USE_LONG_INTEGERS__ -D__USE_LONG_FINTS__ -D${DEF_SOLVER} -D__NO_COPYRIGHT__
+# CPPFLAGS = -Wall $(EXT_IDIR) -pedantic -Wshadow -Wfloat-equal -O3 -Wconversion -Wsign-conversion -fPIC -DLINUX -D__USE_LONG_INTEGERS__ -D__USE_LONG_FINTS__ -D${DEF_SOLVER} -D__NO_COPYRIGHT__
+CPPFLAGS = -Wall $(EXT_IDIR) -pedantic -Wshadow -Wfloat-equal -O3 -Wconversion -Wsign-conversion -fPIC -DLINUX  -D${DEF_SOLVER} -D__NO_COPYRIGHT__
 #          -g -D__DEBUG__ -D__NO_COPYRIGHT__ -D__SUPPRESSANYOUTPUT__ -D__USE_SINGLE_PRECISION__
 
 # libraries to link against when building qpOASES .so files
-LINK_LIBRARIES = ${LIB_LAPACK} ${LIB_BLAS} -lm ${LIB_SOLVER}
+LINK_LIBRARIES = ${LIB_LAPACK} ${LIB_BLAS} -lm ${LIB_SOLVER} -ldl
 LINK_LIBRARIES_WRAPPER = -lm ${LIB_SOLVER} -lstdc++
 
 # how to link against the qpOASES shared library
