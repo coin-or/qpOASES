@@ -42,8 +42,7 @@ else
 EXTERNAL =
 endif
 
-all:  $(EXTERNAL) src examples
-	
+all:  $(EXTERNAL) bin src examples
 #src_aw testing
 
 ifeq ($(DEF_SOLVER), SOLVER_MUMPS)
@@ -58,6 +57,9 @@ endif
 
 src: $(EXTERNAL)
 	@cd $@; ${MAKE} -s
+
+bin:
+	mkdir bin
 
 #src_aw:
 #	@cd $@; ${MAKE} -s

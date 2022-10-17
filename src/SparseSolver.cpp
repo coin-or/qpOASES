@@ -793,7 +793,8 @@ returnValue Ma57SparseSolver::factorize( )
 	 * Call MA57AD for symbolic factorization *
 	******************************************/
 
-	fint_t lkeep_ma57 = 5*dim + numNonzeros + getMax(numNonzeros,dim) + 42;
+	fint_t max_nnz = numNonzeros > dim ? numNonzeros : dim;
+	fint_t lkeep_ma57 = 5*dim + numNonzeros + max_nnz + 42;
 	fint_t *keep_ma57 = new fint_t[lkeep_ma57];
 	fint_t *iwork_ma57 = new fint_t[5*dim];
 
@@ -825,7 +826,7 @@ returnValue Ma57SparseSolver::factorize( )
 	fact_ma57 = new double[lfact_ma57];
 
 	lifact_ma57 = (fint_t)(lfact_factor * (double)(info_ma57[9]));
-	ifact_ma57 = new int_t[lifact_ma57];
+	ifact_ma57 = new fint_t[lifact_ma57];
 
     /*******************************************
 	 * Call MA57BD for numerical factorization *
