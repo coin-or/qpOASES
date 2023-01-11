@@ -44,6 +44,8 @@ def deprecation_warning_cputime():
     warnings.warn("\nFloat cputime will be deprecated in qpOASES 4.0.\nUse cputime = numpy.array([2.0]) as input to qp.init() and qp.hotstart()", DeprecationWarning, stacklevel=2)
 
 
+cdef str __version__ = "3.2.2"
+
 cdef class PyBooleanType:
     FALSE = BT_FALSE
     TRUE  = BT_TRUE
