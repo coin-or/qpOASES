@@ -43,6 +43,19 @@ SET(PACKAGE_URL "https://projects.coin-or.org/qpOASES")
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/libs)
 
+IF(NOT CMAKE_INSTALL_LIBDIR)
+    SET(CMAKE_INSTALL_LIBDIR lib)
+ENDIF(NOT CMAKE_INSTALL_LIBDIR)
+
+IF(NOT CMAKE_INSTALL_BINDIR)
+    SET(CMAKE_INSTALL_BINDIR ${CMAKE_INSTALL_LIBDIR})
+ENDIF(NOT CMAKE_INSTALL_BINDIR)
+
+IF(NOT CMAKE_INSTALL_INCLUDEDIR)
+    SET(CMAKE_INSTALL_INCLUDEDIR include)
+ENDIF(NOT CMAKE_INSTALL_INCLUDEDIR)
+
+
 IF( NOT CMAKE_VERBOSE_MAKEFILE )
     SET( CMAKE_VERBOSE_MAKEFILE OFF )
 ENDIF( NOT CMAKE_VERBOSE_MAKEFILE )
@@ -107,16 +120,15 @@ endif("${isSystemDir}" STREQUAL "-1")
 #################### build and install #####################
 ############################################################
 INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/include)
-
 # compile qpOASES libraries
 FILE(GLOB SRC src/*.cpp)
 
 # library
 ADD_LIBRARY(qpOASES ${SRC})
 INSTALL(TARGETS qpOASES
-  LIBRARY DESTINATION lib
-  ARCHIVE DESTINATION lib
-  RUNTIME DESTINATION lib
+  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
 SET_TARGET_PROPERTIES(
     qpOASES
@@ -126,12 +138,36 @@ SET_TARGET_PROPERTIES(
 
 # headers
 INSTALL(FILES include/qpOASES.hpp
-  DESTINATION include)
+  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+
 INSTALL(DIRECTORY include/qpOASES
-  DESTINATION include
+  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
   FILES_MATCHING PATTERN "*.hpp"
   PATTERN "*.ipp"
   PATTERN ".svn" EXCLUDE)
+
+############################################################
+######################### Package Config ###################
+############################################################
+
+include(CMakePackageConfigHelpers)
+set(INCLUDE_INSTALL_DIR ${CMAKE_INSTALL_INCLUDEDIR})
+set(LIB_INSTALL_DIR ${CMAKE_INSTALL_LIBDIR})
+configure_package_config_file(qpOASESConfig.cmake.in
+  ${CMAKE_CURRENT_BINARY_DIR}/qpOASESConfig.cmake
+  INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/qpOASES
+  PATH_VARS INCLUDE_INSTALL_DIR LIB_INSTALL_DIR
+  NO_CHECK_REQUIRED_COMPONENTS_MACRO)
+
+write_basic_package_version_file(
+    ${CMAKE_CURRENT_BINARY_DIR}/qpOASESConfigVersion.cmake
+    VERSION ${PACKAGE_VERSION}
+    COMPATIBILITY SameMajorVersion)
+
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/qpOASESConfig.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/qpOASESConfigVersion.cmake
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/qpOASES
+    COMPONENT qpOASES)
 
 ############################################################
 ######################### examples #########################

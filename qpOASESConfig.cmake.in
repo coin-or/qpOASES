@@ -1,0 +1,29 @@
+# CMake qpOASES module
+#
+# It defines the following variables:
+# qpOASES_FOUND         - TRUE
+# qpOASES_INCLUDE_DIR  - The qpOASES include directory
+# qpOASES_LIBRARY_DIR  - The qpOASES library directory
+# qpOASES_LIBRARY     - The qpOASES library
+# qpOASES_VERSION       - The qpOASES version in the form <major>.<minor>
+
+
+
+@PACKAGE_INIT@
+
+set(qpOASES_VERSION @PACKAGE_VERSION@)
+
+
+set_and_check(qpOASES_INCLUDE_DIR "@PACKAGE_INCLUDE_INSTALL_DIR@")
+
+
+set(qpOASES_INCLUDE_DIR "${qpOASES_INCLUDE_DIR}" CACHE STRING "Include path for qpOASES and its dependencies")
+set_and_check(qpOASES_LIBRARY_DIR @PACKAGE_LIB_INSTALL_DIR@)
+set(qpOASES_LIBRARY_DIR "${qpOASES_LIBRARY_DIR}" CACHE STRING "Library path for qpOASES and its dependencies")
+
+find_library(qpOASES_LIBRARY NAMES qpOASES
+    PATHS ${qpOASES_LIBRARY_DIR} NO_DEFAULT_PATH)
+
+
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args(qpOASES DEFAULT_MSG qpOASES_INCLUDE_DIR qpOASES_LIBRARY_DIR qpOASES_LIBRARY qpOASES_VERSION)
