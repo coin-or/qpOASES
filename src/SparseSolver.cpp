@@ -36,32 +36,31 @@
 
 
 #include <qpOASES/SparseSolver.hpp>
-#include <iostream>
 
 #ifndef __MATLAB__
-# include <cstdarg>
-void MyPrintf(const char* pformat, ... );
+	# include <cstdarg>
+	void MyPrintf(const char* pformat, ... );
 #else
-# include <mex.h>
-# define MyPrintf mexPrintf
+	# include <mex.h>
+	# define MyPrintf mexPrintf
 #endif
 
-#if SOLVER_MUMPS
+#ifdef SOLVER_MUMPS
 
-#define USE_COMM_WORLD -987654
+	#define USE_COMM_WORLD -987654
 
-#include "mumps_compat.h"
+	#include "mumps_compat.h"
 
 
-#if defined USE_MPI_H || defined MUMPS_SEQ
-#include "mpi.h"
-#else
-#include "mumps_mpi.h"
-#endif /* USE_MPI_H */
+	#if defined USE_MPI_H || defined MUMPS_SEQ
+		#include "mpi.h"
+	#else
+		#include "mumps_mpi.h"
+	#endif /* USE_MPI_H */
 
-#include "dmumps_c.h"
-#define MUMPS_STRUC_C DMUMPS_STRUC_C
-#define mumps_c dmumps_c
+	#include "dmumps_c.h"
+	#define MUMPS_STRUC_C DMUMPS_STRUC_C
+	#define mumps_c dmumps_c
 
 #endif /* SOLVER_MUMPS */
 
