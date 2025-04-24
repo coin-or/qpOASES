@@ -28,8 +28,6 @@
  *	\version 3.2
  *	\date 2012-2017
  *
- *      THIS FILE HAS BEEN MODIFIED FROM THE ORIGINAL SOURCE SPECIFIED ABOVE.
- *
  *	Interfaces to sparse linear solvers that are used in a Schur-complement
  *	implementation in qpOASES.
  */
