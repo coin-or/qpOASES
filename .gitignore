@@ -1,1 +1,6 @@
 /*.mex
+CMakeCache.txt
+CMakeFiles
+*.cmake
+bin
+libs

@@ -1303,7 +1303,7 @@ returnValue MumpsSparseSolver::factorize( )
     /// IPOPT-MUMPS
     MUMPS_STRUC_C* mumps_data = static_cast<MUMPS_STRUC_C*>(mumps_ptr_);
 
-    MUMPS_STRUC_C* mumps_ = static_cast<MUMPS_STRUC_C*>(mumps_ptr_);
+    //MUMPS_STRUC_C* mumps_ = static_cast<MUMPS_STRUC_C*>(mumps_ptr_);
     mumps_data->n = dim;
     mumps_data->nz = numNonzeros;
     
@@ -1346,8 +1346,8 @@ returnValue MumpsSparseSolver::factorize( )
     
     // MyPrintf("Done with MUMPS-1 for symbolic factorization.\n");
     int error = mumps_data->info[0];
-    const int& mumps_permuting_scaling_used = mumps_data->infog[22];
-    const int& mumps_pivot_order_used = mumps_data->infog[6];
+    //const int& mumps_permuting_scaling_used = mumps_data->infog[22];
+    //const int& mumps_pivot_order_used = mumps_data->infog[6];
 
     //return appropriate value
     if( error == -6 )  //system is singular

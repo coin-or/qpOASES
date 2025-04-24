@@ -30,7 +30,8 @@
 ##
 ## THIS FILE HAS BEEN MODIFIED FROM THE ORIGINAL SOURCE
 
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 3.10)
+include(CMakeDependentOption)
 
 PROJECT(qpOASES CXX)
 SET(PACKAGE_NAME "qpOASES")
@@ -114,31 +115,45 @@ ADD_LIBRARY(qpOASES SHARED ${SRC})
 #############################
 ##########EDIT HERE##########
 #############################
-option(MA57 "Use MA57 sparse solver" OFF)
-set(HSL_PATH "" CACHE STRING "Path to the coinhsl folder with the /.libs/libcoinhsl.so binary containing MA57")
-set(GK_METIS_PATH "" CACHE STRING "Path to the directory containing the libmetis.a and libGKlib.a binaries that HSL requires")
+IF (UNIX AND NOT APPLE)
+	option(MA57 "Use MA57 sparse solver" OFF)
+	set(HSL_PATH "" CACHE STRING "Path to the coinhsl folder with the /.libs/libcoinhsl.so binary containing MA57")
+	set(GK_METIS_PATH "" CACHE STRING "Path to the directory containing the libmetis.a and libGKlib.a binaries that HSL requires")
 
-if(MA57)
-	ADD_LIBRARY(METIS STATIC IMPORTED)
-	set_target_properties(METIS PROPERTIES IMPORTED_LOCATION ${GK_METIS_PATH}/libmetis.a)
+	if(MA57)
+		ADD_LIBRARY(METIS STATIC IMPORTED)
+		set_target_properties(METIS PROPERTIES IMPORTED_LOCATION ${GK_METIS_PATH}/libmetis.a)
 
-	ADD_LIBRARY(GKLIB STATIC IMPORTED)
-	set_target_properties(GKLIB PROPERTIES IMPORTED_LOCATION ${GK_METIS_PATH}/libGKlib.a)
+		ADD_LIBRARY(GKLIB STATIC IMPORTED)
+		set_target_properties(GKLIB PROPERTIES IMPORTED_LOCATION ${GK_METIS_PATH}/libGKlib.a)
 
-	target_compile_options(qpOASES PUBLIC -DSOLVER_MA57)
-	target_link_libraries(qpOASES PUBLIC ${HSL_PATH}/.libs/libcoinhsl.so METIS GKLIB LAPACK::LAPACK BLAS::BLAS dl)
+		target_compile_options(qpOASES PUBLIC -DSOLVER_MA57)
+		set(LINSOL_LIBS ${LINSOL_LIBS} ${HSL_PATH}/.libs/libcoinhsl.so METIS GKLIB)
+	endif()
+
+	option(MUMPS "Use MUMPS sparse solver" OFF)
+	cmake_dependent_option(MUMPS_STATIC "Link static MUMPS binary" OFF "MUMPS" OFF)
+	set(MUMPS_PATH "" CACHE STRING "Path to the MUMPS/ThirdPartyMumps folder")
+
+	if(MUMPS)
+		target_include_directories(qpOASES PUBLIC ${MUMPS_PATH}/include ${MUMPS_PATH}/libseq)
+		target_compile_definitions(qpOASES PUBLIC SOLVER_MUMPS MUMPS_SEQ)
+		if(MUMPS_STATIC)
+			set(LINSOL_LIBS ${LINSOL_LIBS} ${MUMPS_PATH}/lib/libdmumps.a ${MUMPS_PATH}/lib/libmumps_common.a ${MUMPS_PATH}/lib/libpord.a ${MUMPS_PATH}/lib/libmpiseq.a)
+		else()
+			set(LINSOL_LIBS ${LINSOL_LIBS} ${MUMPS_PATH}/lib/libdmumps.so ${MUMPS_PATH}/lib/libmumps_common.so ${MUMPS_PATH}/lib/libpord.so ${MUMPS_PATH}/lib/libmpiseq.so)
+		endif()
+	endif()
+
+	option(THIRD_PARTY_MUMPS "Use MUMPS sparse solver built via coin-or ThirdPartyMumps" OFF)
+	if(THIRD_PARTY_MUMPS)
+		target_include_directories(qpOASES PUBLIC ${MUMPS_PATH}/MUMPS/include ${MUMPS_PATH}/MUMPS/libseq ${MUMPS_PATH}/)
+		target_compile_definitions(qpOASES PUBLIC SOLVER_MUMPS)
+		set(LINSOL_LIBS ${LINSOL_LIBS} ${MUMPS_PATH}/.libs/libcoinmumps.so)
+	endif()
 endif()
 
-option(MUMPS "Use MUMPS sparse solver" OFF)
-set(MUMPS_PATH "" CACHE STRING "Path to the MUMPS build folder")
-
-if(MUMPS)
-	target_include_directories(qpOASES PUBLIC ${MUMPS_PATH}/include ${MUMPS_PATH}/libseq)
-	target_compile_definitions(qpOASES PUBLIC SOLVER_MUMPS MUMPS_SEQ)
-	target_link_libraries(qpOASES PUBLIC LAPACK::LAPACK BLAS::BLAS ${MUMPS_PATH}/lib/libdmumps.a ${MUMPS_PATH}/lib/libmumps_common.a ${MUMPS_PATH}/libpord.a ${MUMPS_PATH}/libmpiseq.a dl)
-endif()
-
-
+target_link_libraries(qpOASES PUBLIC ${LINSOL_LIBS} LAPACK::LAPACK BLAS::BLAS dl)
 #END OF EDITS
 
 INSTALL(TARGETS qpOASES
@@ -183,7 +198,7 @@ if (QPOASES_BUILD_EXAMPLES)
 
     FOREACH(ELEMENT ${EXAMPLE_NAMES})
         ADD_EXECUTABLE(${ELEMENT} examples/${ELEMENT}.cpp)
-        TARGET_LINK_LIBRARIES(${ELEMENT} qpOASES LAPACK::LAPACK BLAS::BLAS ${HSLPATH}/.libs/libcoinhsl.so dl METIS GKLIB)
+        TARGET_LINK_LIBRARIES(${ELEMENT} qpOASES)
     ENDFOREACH(ELEMENT ${EXAMPLE_NAMES})
 endif(QPOASES_BUILD_EXAMPLES)
 
