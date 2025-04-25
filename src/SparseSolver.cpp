@@ -686,8 +686,8 @@ Ma57SparseSolver::Ma57SparseSolver( ) : SparseSolver()
 	icntl_ma57[0] = -1;			/* Suppress error messages */
 	icntl_ma57[1] = -1;			/* Suppress warning messages */
 	icntl_ma57[2] = -1;			/* Suppress monitoring messages */
-	/*icntl_ma57[4] = 4;		// Print everything (for debugging) */
 	icntl_ma57[5] = 5;          /* Matrix reordering. Default value 5: Automatic choice between METIS and MC47, 4: METIS*/
+	/*icntl_ma57[4] = 4;		// Print everything (for debugging) */
 	icntl_ma57[15] = 1;			/* Place small pivots at the end of the factorization (default: 0) */
 
 	/* \todo good default values?
@@ -845,6 +845,7 @@ returnValue Ma57SparseSolver::factorize( )
 	ierror = info_ma57[1];  /* Error flag */
 	neig = info_ma57[23];   /* Number of negative eigenvalues */
 	rank = info_ma57[24];   /* Rank of matrix */
+	
 
 	/* Read pivot sequence (see MA57UD source code) */
 	pivots = new fint_t[dim];
@@ -862,6 +863,7 @@ returnValue Ma57SparseSolver::factorize( )
 
         iwpos = iwpos+ncols+2;
     }
+    
 
 	if (iflag == 4)
 	{
@@ -980,7 +982,7 @@ returnValue Ma57SparseSolver::getZeroPivots( int_t *&zeroPivots )
 {
 	for ( int_t k=0; k<dim-rank; k++ )
 		zeroPivots[k] = pivots[rank+k];
-
+        
 	return SUCCESSFUL_RETURN;
 }
 
