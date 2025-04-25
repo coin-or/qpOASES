@@ -1,5 +1,4 @@
 ##
-##
 ##     This file is part of qpOASES.
 ##
 ##     qpOASES -- An Implementation of the Online Active Set Strategy.
@@ -30,8 +29,7 @@
 ##     Date:      2007-2017
 ##
 
-cmake_minimum_required(VERSION 3.18)
-include(CMakeDependentOption)
+cmake_minimum_required(VERSION 2.6)
 
 PROJECT(qpOASES CXX)
 SET(PACKAGE_NAME "qpOASES")
@@ -118,7 +116,6 @@ endif("${isSystemDir}" STREQUAL "-1")
 
 
 
-
 ############################################################
 #################### build and install #####################
 ############################################################
@@ -126,72 +123,8 @@ INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/include)
 # compile qpOASES libraries
 FILE(GLOB SRC src/*.cpp)
 
-find_package(BLAS)
-find_package(LAPACK)
-
-if(BLAS_FOUND)
-	list(REMOVE_ITEM SRC ${CMAKE_CURRENT_SOURCE_DIR}/src/BLASReplacement.cpp)
-	set(BLAS_LAPACK_LIB BLAS::BLAS)
-endif()
-if(LAPACK_FOUND)
-	list(REMOVE_ITEM SRC ${CMAKE_CURRENT_SOURCE_DIR}/src/LAPACKReplacement.cpp)
-	set(BLAS_LAPACK_LIB ${BLAS_LAPACK_LIB} LAPACK::LAPACK)
-endif()
-
 # library
 ADD_LIBRARY(qpOASES ${SRC})
-
-IF (UNIX AND NOT APPLE)
-	option(MA57 "Use MA57 sparse solver" OFF)
-	set(HSL_PATH "" CACHE STRING "Path to the coinhsl folder with the /.libs/libcoinhsl.so binary containing MA57")
-	set(GK_METIS_PATH "" CACHE STRING "Path to the directory containing the libmetis.a and libGKlib.a binaries that HSL requires")
-	set(ETC_LIB ${ETC_LIB} dl)
-	
-	if(MA57)
-		ADD_LIBRARY(METIS STATIC IMPORTED)
-		set_target_properties(METIS PROPERTIES IMPORTED_LOCATION ${GK_METIS_PATH}/libmetis.a)
-
-		ADD_LIBRARY(GKLIB STATIC IMPORTED)
-		set_target_properties(GKLIB PROPERTIES IMPORTED_LOCATION ${GK_METIS_PATH}/libGKlib.a)
-
-		target_compile_options(qpOASES PUBLIC -DSOLVER_MA57)
-		
-		if(NOT BLAS_FOUND)
-			message(FATAL_ERROR "A BLAS library is required to build with MA57")
-		endif()
-		
-		set(LINSOL_LIBS ${LINSOL_LIBS} ${HSL_PATH}/.libs/libcoinhsl.so METIS GKLIB)
-	endif()
-
-	option(MUMPS "Use MUMPS sparse solver" OFF)
-	cmake_dependent_option(MUMPS_STATIC "Link static MUMPS binary" OFF "MUMPS" OFF)
-	set(MUMPS_PATH "" CACHE STRING "Path to the MUMPS/ThirdPartyMumps folder")
-
-	if(MUMPS)
-		target_include_directories(qpOASES PUBLIC ${MUMPS_PATH}/include ${MUMPS_PATH}/libseq)
-		target_compile_definitions(qpOASES PUBLIC SOLVER_MUMPS MUMPS_SEQ)
-		if(MUMPS_STATIC)
-			if(NOT (BLAS_FOUND AND LAPACK_FOUND))
-				message(FATAL_ERROR "BLAS and LAPACK are required to build with statically linked MUMPS")
-			endif()
-			set(LINSOL_LIBS ${LINSOL_LIBS} ${MUMPS_PATH}/lib/libdmumps.a ${MUMPS_PATH}/lib/libmumps_common.a ${MUMPS_PATH}/lib/libpord.a ${MUMPS_PATH}/lib/libmpiseq.a)
-			set(ETC_LIB ${ETC_LIB} -lgfortran)
-		else()
-			set(LINSOL_LIBS ${LINSOL_LIBS} ${MUMPS_PATH}/lib/libdmumps.so ${MUMPS_PATH}/lib/libmumps_common.so ${MUMPS_PATH}/lib/libpord.so ${MUMPS_PATH}/lib/libmpiseq.so)
-		endif()
-	endif()
-
-	option(THIRD_PARTY_MUMPS "Use MUMPS sparse solver built via coin-or ThirdPartyMumps" OFF)
-	if(THIRD_PARTY_MUMPS)
-		target_include_directories(qpOASES PUBLIC ${MUMPS_PATH}/MUMPS/include ${MUMPS_PATH}/MUMPS/libseq ${MUMPS_PATH}/)
-		target_compile_definitions(qpOASES PUBLIC SOLVER_MUMPS)
-		set(LINSOL_LIBS ${LINSOL_LIBS} ${MUMPS_PATH}/.libs/libcoinmumps.so)
-	endif()
-endif()
-
-target_link_libraries(qpOASES PUBLIC ${LINSOL_LIBS} ${BLAS_LAPACK_LIB} ${ETC_LIB})
-target_compile_options(qpOASES PRIVATE -fPIC)
-
 INSTALL(TARGETS qpOASES
   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
   ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
