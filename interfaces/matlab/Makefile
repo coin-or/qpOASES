@@ -67,6 +67,7 @@ copyMs:
 	@${CP} qpOASES.m ${BINDIR}
 	@${CP} qpOASES_options.m ${BINDIR}
 	@${CP} qpOASES_sequence.m ${BINDIR}
+	@${CP} qpOASES_auxInput.m ${BINDIR}
 
 #@${CP} qpOASES_sequenceVM.m ${BINDIR}
 	
