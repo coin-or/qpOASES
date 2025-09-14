@@ -29,7 +29,7 @@
 ##     Date:      2007-2017
 ##
 
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 3.18)
 
 PROJECT(qpOASES CXX)
 SET(PACKAGE_NAME "qpOASES")
