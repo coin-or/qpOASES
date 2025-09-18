@@ -36,29 +36,29 @@
 #include <qpOASES/SparseSolver.hpp>
 
 #ifndef __MATLAB__
-# include <cstdarg>
-void MyPrintf(const char* pformat, ... );
+	# include <cstdarg>
+	void MyPrintf(const char* pformat, ... );
 #else
-# include <mex.h>
-# define MyPrintf mexPrintf
+	# include <mex.h>
+	# define MyPrintf mexPrintf
 #endif
 
-#if SOLVER_MUMPS
+#ifdef SOLVER_MUMPS
 
-#define USE_COMM_WORLD -987654
+	#define USE_COMM_WORLD -987654
 
-#include "mumps_compat.h"
+	#include "mumps_compat.h"
 
 
-#ifdef USE_MPI_H
-#include "mpi.h"
-#else
-#include "mumps_mpi.h"
-#endif /* USE_MPI_H */
+	#if defined USE_MPI_H || defined MUMPS_SEQ
+		#include "mpi.h"
+	#else
+		#include "mumps_mpi.h"
+	#endif /* USE_MPI_H */
 
-#include "dmumps_c.h"
-#define MUMPS_STRUC_C DMUMPS_STRUC_C
-#define mumps_c dmumps_c
+	#include "dmumps_c.h"
+	#define MUMPS_STRUC_C DMUMPS_STRUC_C
+	#define mumps_c dmumps_c
 
 #endif /* SOLVER_MUMPS */
 
@@ -686,6 +686,7 @@ Ma57SparseSolver::Ma57SparseSolver( ) : SparseSolver()
 	icntl_ma57[0] = -1;			/* Suppress error messages */
 	icntl_ma57[1] = -1;			/* Suppress warning messages */
 	icntl_ma57[2] = -1;			/* Suppress monitoring messages */
+	icntl_ma57[5] = 5;          /* Matrix reordering. Default value 5: Automatic choice between METIS and MC47, 4: METIS*/
 	/*icntl_ma57[4] = 4;		// Print everything (for debugging) */
 	icntl_ma57[15] = 1;			/* Place small pivots at the end of the factorization (default: 0) */
 
@@ -844,6 +845,7 @@ returnValue Ma57SparseSolver::factorize( )
 	ierror = info_ma57[1];  /* Error flag */
 	neig = info_ma57[23];   /* Number of negative eigenvalues */
 	rank = info_ma57[24];   /* Rank of matrix */
+	
 
 	/* Read pivot sequence (see MA57UD source code) */
 	pivots = new fint_t[dim];
@@ -861,6 +863,7 @@ returnValue Ma57SparseSolver::factorize( )
 
         iwpos = iwpos+ncols+2;
     }
+    
 
 	if (iflag == 4)
 	{
@@ -979,7 +982,7 @@ returnValue Ma57SparseSolver::getZeroPivots( int_t *&zeroPivots )
 {
 	for ( int_t k=0; k<dim-rank; k++ )
 		zeroPivots[k] = pivots[rank+k];
-
+        
 	return SUCCESSFUL_RETURN;
 }
 
@@ -1104,6 +1107,7 @@ returnValue Ma57SparseSolver::copy( 	const Ma57SparseSolver& rhs
  *****************************************************************************
  *****************************************************************************/
 
+
 #ifdef USE_MPI_H
 // initialize MPI when library is loaded; finalize MPI when library is unloaded
 __attribute__((constructor))
@@ -1127,8 +1131,7 @@ static void MPIfini(void)
     if(!mpi_finalized)
         MPI_Finalize();
 }
-#endif /* !USE_MPI_H */
-
+#endif
 
 /*****************************************************************************
  *  P U B L I C                                                              *
@@ -1159,10 +1162,10 @@ MumpsSparseSolver::MumpsSparseSolver( ) : SparseSolver()
 // #endif
 
     mumps_c(mumps_);
-    mumps_->icntl[1] = 0;
-    mumps_->icntl[2] = 0; //QUIETLY!
-    mumps_->icntl[3] = 0;
-
+    mumps_->icntl[1] = -1;
+    mumps_->icntl[2] = -1; //QUIETLY!
+    mumps_->icntl[3] = -1;
+    
 
     // these values are just copied from Ipopt: better values might exist
     mem_percent_ = 1000;
@@ -1171,10 +1174,12 @@ MumpsSparseSolver::MumpsSparseSolver( ) : SparseSolver()
     mumps_scaling_ = 77;
     mumps_dep_tol_ = 0.0;
 
-    pivtol_ = 0.000001;
+    //pivtol_ = 0.000001;
+    //pivtol_ = 0.1;
     // pivtol_ = 1.0;
     // pivtol_ = 0.1;
     // pivtol_ = 0.0;
+	pivtol_ = 0.01; //default value for general symmetric matrices
     pivtolmax_ = 0.1; // actually unused atm
 
     // Reset all private data
@@ -1205,11 +1210,13 @@ MumpsSparseSolver::~MumpsSparseSolver( )
 // #ifndef IPOPT_MUMPS_NOMUTEX
 //     const std::lock_guard<std::mutex> lock(mumps_call_mutex);
 // #endif
+	clear();
 
     MUMPS_STRUC_C* mumps_ = static_cast<MUMPS_STRUC_C*>(mumps_ptr_);
     mumps_->job = -2; //terminate mumps
     mumps_c(mumps_);
-    delete[] mumps_->a;
+    //delete[] mumps_->a;
+    //delete[] a_mumps;
     free(mumps_);
 }
 
@@ -1256,14 +1263,15 @@ returnValue MumpsSparseSolver::setMatrixData(	int_t dim_,
 		jcn_mumps = new fint_t[numNonzeros_];
 
 		numNonzeros=0;
-		for (int_t i=0; i<numNonzeros_; ++i)
+		for (int_t i=0; i<numNonzeros_; ++i){
 			if ( isZero(avals[i]) == BT_FALSE )
-			{
+			{       
 				a_mumps[numNonzeros] = avals[i];
 				irn_mumps[numNonzeros] = irn[i];
 				jcn_mumps[numNonzeros] = jcn[i];
 				numNonzeros++;
 			}
+		}
 	}
 	else
 	{
@@ -1293,29 +1301,24 @@ returnValue MumpsSparseSolver::factorize( )
     /// IPOPT-MUMPS
     MUMPS_STRUC_C* mumps_data = static_cast<MUMPS_STRUC_C*>(mumps_ptr_);
 
-    MUMPS_STRUC_C* mumps_ = static_cast<MUMPS_STRUC_C*>(mumps_ptr_);
+    //MUMPS_STRUC_C* mumps_ = static_cast<MUMPS_STRUC_C*>(mumps_ptr_);
     mumps_data->n = dim;
     mumps_data->nz = numNonzeros;
-    delete[] mumps_data->a;
-    mumps_data->a = NULL;
+    
 
-    mumps_data->a = new double[numNonzeros];
+	mumps_data->a = const_cast<double*>(a_mumps);
     mumps_data->irn = const_cast<int*>(irn_mumps);
     mumps_data->jcn = const_cast<int*>(jcn_mumps);
+    
 
     // make sure we do the symbolic factorization before a real
     // factorization
     have_symbolic_factorization_ = false;
 
-// #ifndef IPOPT_MUMPS_NOMUTEX
-//     const std::lock_guard<std::mutex> lock(mumps_call_mutex);
-// #endif
+	// #ifndef IPOPT_MUMPS_NOMUTEX
+	//     const std::lock_guard<std::mutex> lock(mumps_call_mutex);
+	// #endif
 
-    mumps_data->job = 1;      //symbolic ordering pass
-
-    //mumps_data->icntl[1] = 6;
-    //mumps_data->icntl[2] = 6;//QUIETLY!
-    //mumps_data->icntl[3] = 4;
 
     mumps_data->icntl[5] = mumps_permuting_scaling_;
     mumps_data->icntl[6] = mumps_pivot_order_;
@@ -1324,16 +1327,25 @@ returnValue MumpsSparseSolver::factorize( )
 
     mumps_data->icntl[12] = 1;   //avoid lapack bug, ensures proper inertia; mentioned to be very expensive in mumps manual
     mumps_data->icntl[13] = mem_percent_; //% memory to allocate over expected
+    
+    mumps_data->icntl[24-1] = 1; //enable null pivot detection
+    //mumps_data->icntl[56-1] = 1; //enable rank revealing and returning of indices corresponding to null singular values
+
+    //TODO good default value. 1e-8 is set above for MA27. MA57 manual suggests 1e-12 as a normal value.
+    mumps_data->cntl[3-1] = 1e-12; //null pivot tolerance
+
     mumps_data->cntl[0] = pivtol_;  // Set pivot tolerance
 
     // dump_matrix(mumps_data);
 
-    // MyPrintf("Calling MUMPS-1 for symbolic factorization.\n");
+
+    mumps_data->job = 1;      //symbolic ordering pass
     mumps_c(mumps_data);
+    
     // MyPrintf("Done with MUMPS-1 for symbolic factorization.\n");
     int error = mumps_data->info[0];
-    const int& mumps_permuting_scaling_used = mumps_data->infog[22];
-    const int& mumps_pivot_order_used = mumps_data->infog[6];
+    //const int& mumps_permuting_scaling_used = mumps_data->infog[22];
+    //const int& mumps_pivot_order_used = mumps_data->infog[6];
 
     //return appropriate value
     if( error == -6 )  //system is singular
@@ -1359,7 +1371,7 @@ returnValue MumpsSparseSolver::factorize( )
     mumps_c(mumps_data);
     // MyPrintf("Done with MUMPS-2 for numerical factorization.\n");
     error = mumps_data->info[0];
-
+    
     //Check for errors
     if( error == -8 || error == -9 )  //not enough memory
     {
@@ -1391,11 +1403,18 @@ returnValue MumpsSparseSolver::factorize( )
     // MyPrintf("Number of doubles for MUMPS to hold factorization (INFO(9)) = %i\n", mumps_data->info[8]);
     // MyPrintf("Number of integers for MUMPS to hold factorization (INFO(10)) = %i\n", mumps_data->info[9]);
 
+	//REMOVED: Mumps does not error on singular systems if null pivot detection is enabled. infog[28-1] instead contains number of null pivots
+	/*
     if( error == -10 )  //system is singular
     {
         MyPrintf("MUMPS returned INFO(1) = %i matrix is singular.\n", error);
         return RET_MATRIX_FACTORISATION_FAILED;
     }
+	*/
+	if (mumps_data->infog[28-1]){
+		return RET_KKT_MATRIX_SINGULAR;
+	}
+
 
     negevals_ = mumps_data->infog[11];
 
@@ -1490,22 +1509,22 @@ int_t MumpsSparseSolver::getNegativeEigenvalues( )
 }
 
 
-// TODO(andrea: not implemented yet, default behavior)
 
 /*
  *	g e t R a n k
  */
-int_t MumpsSparseSolver::getRank( )
-{
-	return -1;
+int_t MumpsSparseSolver::getRank(){
+	return dim - static_cast<MUMPS_STRUC_C*>(mumps_ptr_)->infog[28-1];
 }
+
 /*
  *	g e t Z e r o P i v o t s
  */
-returnValue MumpsSparseSolver::getZeroPivots( int_t *&zeroPivots )
-{
-	if ( zeroPivots ) delete[] zeroPivots;
-	zeroPivots = 0;
+returnValue MumpsSparseSolver::getZeroPivots( int_t *&zeroPivots ){
+	MUMPS_STRUC_C* mumps_data = static_cast<MUMPS_STRUC_C*>(mumps_ptr_);
+	for (int i = 0; i < mumps_data->infog[28-1]; i++){
+		zeroPivots[i] = mumps_data->pivnul_list[i] - 1;
+	}
 	return SUCCESSFUL_RETURN;
 }
 
