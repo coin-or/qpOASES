@@ -1,3 +1,6 @@
+#cython: language_level=3
+#distutils: language=c++
+
 ##
 ##  This file is part of qpOASES.
 ##
