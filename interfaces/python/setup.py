@@ -95,7 +95,7 @@ if os.name == 'posix':
     ]
 
 ext_modules = [
-    Extension("qpoases",  ["qpoases.pyx", "qpoases.pxd"],   **extra_params),
+    Extension("qpoases",  ["qpoases.pyx"],   **extra_params),
 ]
 
 setup(
