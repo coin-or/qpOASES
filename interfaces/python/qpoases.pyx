@@ -1,3 +1,6 @@
+#cython: language_level=3
+#distutils: language=c++
+
 ##
 ##  This file is part of qpOASES.
 ##
@@ -407,7 +410,7 @@ cdef class PyQProblemB:
         cdef np.ndarray cput_tmp
 
         # enable nWSR as return value in argument list
-        if isinstance(nWSR, long) or isinstance(nWSR, int):
+        if isinstance(nWSR, int):
             deprecation_warning_nWSR()
             nWSR_tmp = np.array([nWSR], dtype=long)
         else:
@@ -450,7 +453,7 @@ cdef class PyQProblemB:
         cdef np.ndarray cput_tmp
 
         # enable nWSR as return value in argument list
-        if isinstance(nWSR, long) or isinstance(nWSR, int):
+        if isinstance(nWSR, int):
             deprecation_warning_nWSR()
             nWSR_tmp = np.array([nWSR], dtype=long)
         else:
@@ -527,7 +530,7 @@ cdef class PyQProblem:
         cdef np.ndarray cput_tmp
 
         # enable nWSR as return value in argument list
-        if isinstance(nWSR, long) or isinstance(nWSR, int):
+        if isinstance(nWSR, int):
             deprecation_warning_nWSR()
             nWSR_tmp = np.array([nWSR], dtype=long)
         else:
@@ -578,7 +581,7 @@ cdef class PyQProblem:
         cdef np.ndarray cput_tmp
 
         # enable nWSR as return value in argument list
-        if isinstance(nWSR, long) or isinstance(nWSR, int):
+        if isinstance(nWSR, int):
             deprecation_warning_nWSR()
             nWSR_tmp = np.array([nWSR], dtype=long)
         else:
@@ -648,13 +651,13 @@ cdef class PySQProblem:
              cputime=0.0
     ):
         # FIXME: add asserts
-        cpdef np.ndarray nWSR_tmp
-        cpdef np.ndarray cput_tmp
+        cdef np.ndarray nWSR_tmp
+        cdef np.ndarray cput_tmp
         # nWSR_tmp = np.zeros(1, dtype=long)
         # cput_tmp = np.zeros(1, dtype=float)
 
         # enable nWSR as return value in argument list
-        if isinstance(nWSR, long) or isinstance(nWSR, int):
+        if isinstance(nWSR, int):
             deprecation_warning_nWSR()
             nWSR_tmp = np.array([nWSR], dtype=long)
         else:
@@ -708,7 +711,7 @@ cdef class PySQProblem:
         cdef np.ndarray cput_tmp
 
         # enable nWSR as return value in argument list
-        if isinstance(nWSR, long) or isinstance(nWSR, int):
+        if isinstance(nWSR, int):
             deprecation_warning_nWSR()
             nWSR_tmp = np.array([nWSR], dtype=long)
         else:

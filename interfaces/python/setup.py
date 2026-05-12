@@ -34,9 +34,8 @@ import os
 import numpy as np
 import platform
 
-from distutils.core import setup
-from distutils.extension import Extension
-from Cython.Distutils import build_ext
+from setuptools import setup
+from setuptools.extension import Extension
 from Cython.Build import cythonize
 
 BASEDIR = os.path.dirname(os.path.abspath(__file__))
@@ -95,11 +94,10 @@ if os.name == 'posix':
     ]
 
 ext_modules = [
-    Extension("qpoases",  ["qpoases.pyx", "qpoases.pxd"],   **extra_params),
+    Extension("qpoases",  ["qpoases.pyx"],   **extra_params),
 ]
 
 setup(
-    name='qpOASES interface',
-    cmdclass={'build_ext': build_ext},
+    name='qpOASES',
     ext_modules=cythonize(ext_modules),
 )
