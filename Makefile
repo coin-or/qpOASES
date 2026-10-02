@@ -55,7 +55,7 @@ mumps:
 	make && make install
 endif
 
-src: $(EXTERNAL)
+src: bin $(EXTERNAL)
 	@cd $@; ${MAKE} -s
 
 bin:
