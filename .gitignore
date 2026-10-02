@@ -1,1 +1,9 @@
 /*.mex
+
+# Build outputs
+*.o
+*.a
+*.so
+*.dylib
+/bin/
+/build/
