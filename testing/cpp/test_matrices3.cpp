@@ -46,9 +46,10 @@ int main( )
 {
 	USING_NAMESPACE_QPOASES
 	
-	int_t i;
+	int_t i, j;
 
 	real_t errH=0.0;
+	real_t absHv, maxAbsHv=0.0, tolH;
 	real_t v[180];
 	real_t resHn[180];
 	real_t resHt[180];
@@ -71,15 +72,28 @@ int main( )
 	for ( i=0; i<180; ++i )
 		if ( getAbs(resHn[i] - resHt[i]) > errH)
 			errH = getAbs(resHn[i] - resHt[i]);
-	
-	fprintf(stdFile, "maximum difference in H*v vs. H'*v: %9.2e\n", errH);
+
+	/* H*v and H'*v sum the same 180 products in a different order, so each
+	 * entry may differ by up to the dot-product rounding bound
+	 * n*EPS*sum_j |H_ij|*|v_j|; use the largest such bound as tolerance. */
+	for ( i=0; i<180; ++i )
+	{
+		absHv = 0.0;
+		for ( j=0; j<180; ++j )
+			absHv += getAbs(H_full[i*180+j]) * getAbs(v[j]);
+		if ( absHv > maxAbsHv )
+			maxAbsHv = absHv;
+	}
+	tolH = 180 * EPS * maxAbsHv;
+
+	fprintf(stdFile, "maximum difference in H*v vs. H'*v: %9.2e (tolerance %9.2e)\n", errH, tolH);
 	
 	delete H;
 	delete[] H_full;
 	delete Hd;
 	
 	
-	QPOASES_TEST_FOR_TOL( errH,1e-15 )
+	QPOASES_TEST_FOR_TOL( errH,tolH )
 	
 	return TEST_PASSED;
 }
