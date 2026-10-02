@@ -94,8 +94,8 @@ class MpcConstraintProduct : public ConstraintProduct
 				diagOffset = rhs.diagOffset;
 				A  = rhs.A;
 			}
-			else
-				return *this;
+
+			return *this;
 		};
 
 		virtual int_t operator() (	int_t constrIndex,
