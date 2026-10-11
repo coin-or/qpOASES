@@ -90,37 +90,37 @@ int main( )
 
 //  ------------ VARIANCE-COVARIANCE EVALUATION --------------------
 
-        real_t *Var              = new real_t[5*5];
-        real_t *Primal_Dual_Var  = new real_t[5*5];
+	real_t *Var							 = new real_t[5*5];
+	real_t *Primal_Dual_Var	 = new real_t[5*5];
 
-        int_t run1, run2;
-        for( run1 = 0; run1 < 5*5; run1++ )
-            Var[run1] = 0.0;
+	int_t run1, run2;
+	for( run1 = 0; run1 < 5*5; run1++ )
+		Var[run1] = 0.0;
 
-        Var[0] = 1.0;
-        Var[6] = 1.0;
+	Var[0] = 1.0;
+	Var[6] = 1.0;
 
-//                  (  1   0   0   0   0   )
-//                  (  0   1   0   0   0   )
-//     Var     =    (  0   0   0   0   0   )
-//                  (  0   0   0   0   0   )
-//                  (  0   0   0   0   0   )
+//									(	 1	 0	 0	 0	 0	 )
+//									(	 0	 1	 0	 0	 0	 )
+//		 Var		 =		(	 0	 0	 0	 0	 0	 )
+//									(	 0	 0	 0	 0	 0	 )
+//									(	 0	 0	 0	 0	 0	 )
 
 
-        analyser.getVarianceCovariance( &example, Var,Primal_Dual_Var );
+	analyser.getVarianceCovariance( &example, Var,Primal_Dual_Var );
 
-        printf("\nPrimal_Dual_VAR = \n");
-        for( run1 = 0; run1 < 5; run1++ ){
-          for( run2 = 0; run2 < 5; run2++ ){
-            printf(" %10f", Primal_Dual_Var[run1*5+run2]);
-          }
-          printf("\n");
-        }
+	printf("\nPrimal_Dual_VAR = \n");
+	for( run1 = 0; run1 < 5; run1++ ){
+		for( run2 = 0; run2 < 5; run2++ ){
+			printf(" %10f", Primal_Dual_Var[run1*5+run2]);
+		}
+		printf("\n");
+	}
 
-        delete[] Primal_Dual_Var;
-        delete[] Var;
+	QPOASES_TEST_FOR_NEAR(Primal_Dual_Var[3 * 5 + 3], 26.0);
 
-		QPOASES_TEST_FOR_NEAR( Primal_Dual_Var[3*5+3], 26.0 );
+	delete[] Primal_Dual_Var;
+	delete[] Var;
 
 	return TEST_PASSED;
 }
