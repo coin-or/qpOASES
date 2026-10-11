@@ -20,9 +20,11 @@ jobs:
       - name: Configure
         run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -DCMAKE_POSITION_INDEPENDENT_CODE=On
       - name: Build
-        run: cmake --build build --config Release --parallel
+        run: cmake --build build --config Debug --parallel
+      - name: Test
+        run: ctest --test-dir build --build-config Debug --output-on-failure
       - name: Install
-        run: cmake --install build --config Release --prefix "${{ runner.temp }}/qpOASES-install"
+        run: cmake --install build --config Debug --prefix "${{ runner.temp }}/qpOASES-install"
       - name: Upload build
         uses: actions/upload-artifact@v7
         with:

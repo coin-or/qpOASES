@@ -165,6 +165,55 @@ INSTALL(DIRECTORY include/qpOASES
   PATTERN ".svn" EXCLUDE)
 
 ############################################################
+######################### Unit tests  ######################
+############################################################
+
+ENABLE_TESTING()
+
+SET(TESTS
+  # testing/cpp/test_bench.cpp
+  testing/cpp/test_constraintProduct1.cpp
+  testing/cpp/test_constraintProduct2.cpp
+  testing/cpp/test_example1a.cpp
+  testing/cpp/test_example1b.cpp
+  testing/cpp/test_example1.cpp
+  testing/cpp/test_example2.cpp
+  testing/cpp/test_example4.cpp
+  testing/cpp/test_example5.cpp
+  testing/cpp/test_example6.cpp
+  testing/cpp/test_example7.cpp
+  testing/cpp/test_exampleLP.cpp
+  testing/cpp/test_externalChol1.cpp
+  testing/cpp/test_gradientShift.cpp
+  testing/cpp/test_guessedWS1.cpp
+  # testing/cpp/test_hs268.cpp
+  testing/cpp/test_identitySqproblem.cpp
+  testing/cpp/test_indexlist.cpp
+  testing/cpp/test_infeasible1.cpp
+  testing/cpp/test_janick1.cpp
+  testing/cpp/test_janick2.cpp
+  testing/cpp/test_matrices2.cpp
+  testing/cpp/test_matrices3.cpp
+  testing/cpp/test_matrices.cpp
+  testing/cpp/test_qrecipe.cpp
+  testing/cpp/test_qrecipeSchur.cpp
+  testing/cpp/test_runAllOqpExamples.cpp
+  testing/cpp/test_sebastien1.cpp
+  testing/cpp/test_smallSchur.cpp
+  testing/cpp/test_vanBarelsUnboundedQP.cpp)
+
+
+FOREACH(TEST ${TESTS})
+    GET_FILENAME_COMPONENT(TEST_NAME ${TEST} NAME_WE)
+    ADD_EXECUTABLE(${TEST_NAME} ${TEST})
+    TARGET_LINK_LIBRARIES(${TEST_NAME} qpOASES)
+    ADD_TEST(
+      NAME ${TEST_NAME}
+      COMMAND ${TEST_NAME}
+      WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/testing)
+ENDFOREACH()
+
+############################################################
 ######################### Package Config ###################
 ############################################################
 
