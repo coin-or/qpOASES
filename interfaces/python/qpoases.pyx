@@ -390,6 +390,9 @@ cdef class PySymmMat:
 
         assert not deref(self.mat_ptr).needToFreeMemory()
 
+    def print(self, name):
+        return deref(self.mat_ptr).print(name.encode("utf-8"))
+
 
 cdef class PyMat:
     cdef dict __dict__
@@ -438,6 +441,9 @@ cdef class PyMat:
                                                                get_vec_view(self.A_data)))
 
         assert not deref(self.mat_ptr).needToFreeMemory()
+
+    def print(self, name):
+        return deref(self.mat_ptr).print(name.encode("utf-8"))
 
 
 cdef get_working_set_bounds(QProblemB* problem):
