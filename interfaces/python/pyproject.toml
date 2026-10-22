@@ -5,4 +5,8 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "qpOASES"
 version = "1.0.0"
-dependencies = ["numpy"]
+dependencies = ["numpy", "scipy"]
+
+
+[dependency-groups]
+test = ["pytest"]

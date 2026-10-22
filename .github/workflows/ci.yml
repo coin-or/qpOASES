@@ -1,0 +1,77 @@
+name: Build project
+
+on:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - windows-latest
+          - macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+      - name: Configure
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -DCMAKE_POSITION_INDEPENDENT_CODE=On
+      - name: Build
+        run: cmake --build build --config Debug --parallel
+      - name: Test
+        run: ctest --test-dir build --build-config Debug --output-on-failure
+      - name: Install
+        run: cmake --install build --config Debug --prefix "${{ runner.temp }}/qpOASES-install"
+      - name: Upload build
+        uses: actions/upload-artifact@v7
+        with:
+          name: backend-${{ matrix.os }}
+          path: "${{ runner.temp }}/qpOASES-install"
+
+  python:
+    needs: build
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - windows-latest
+          - macos-latest
+        python:
+          - "3.10"
+          - "3.12"
+          - "3.14"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+      - name: Download build
+        uses: actions/download-artifact@v7
+        with:
+          name: backend-${{ matrix.os }}
+          path: "${{ runner.temp }}/qpOASES-install"
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: ${{ matrix.python }}
+          cache: pip
+          cache-dependency-path: interfaces/python/pyproject.toml
+      - name: Install python dependencies
+        working-directory: interfaces/python
+        run: |
+          python -m pip install --upgrade pip build
+      - name: Test Python package
+        working-directory: interfaces/python
+        env:
+          CFLAGS: -I${{ github.workspace }}/include
+          CXXFLAGS: -I${{ github.workspace }}/include
+          LDFLAGS: -L${{ github.workspace}}/build/libs
+          QPOASES_PREFIX: ${{ runner.temp }}/qpOASES-install
+        run: |
+          python -m pip install tox
+          tox

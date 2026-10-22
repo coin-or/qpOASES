@@ -377,7 +377,7 @@ returnValue Options::print( ) const
 	#ifndef __SUPPRESSANYOUTPUT__
 
 	char myPrintfString[MAX_STRING_LENGTH];
-	char info[MAX_STRING_LENGTH];
+	char info[MAX_FORMAT_LENGTH];
 
 	myPrintf( "\n###################   qpOASES  --  QP OPTIONS   ##################\n" );
 	myPrintf( "\n" );
