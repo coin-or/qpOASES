@@ -35,10 +35,17 @@ import warnings
 warnings.simplefilter("once", DeprecationWarning)
 import numpy as np
 cimport numpy as np
+import scipy as sp
+
+from scipy.sparse import SparseEfficiencyWarning
 
 from cython.operator cimport dereference as deref
 
+from libcpp.memory cimport unique_ptr, make_unique
+
+
 cimport qpoases
+
 
 def deprecation_warning_nWSR():
     warnings.warn("\nInteger nWSR will be deprecated in qpOASES 4.0.\nUse nWSR = numpy.array([10]) as input to qp.init() and qp.hotstart()", DeprecationWarning, stacklevel=2)
@@ -47,11 +54,77 @@ def deprecation_warning_cputime():
     warnings.warn("\nFloat cputime will be deprecated in qpOASES 4.0.\nUse cputime = numpy.array([2.0]) as input to qp.init() and qp.hotstart()", DeprecationWarning, stacklevel=2)
 
 
+real_t_type = np.dtype('double')
+int_t_type = np.dtype('long')
+sparse_int_t_type = np.dtype('long')
+
+
 cdef str __version__ = "3.2.2"
 
-cdef class PyBooleanType:
-    FALSE = BT_FALSE
-    TRUE  = BT_TRUE
+
+cdef BooleanType bt_from_bool(bint value):
+    return BT_TRUE if value else BT_FALSE
+
+
+cdef bint bt_to_bool(BooleanType value):
+    if value == BT_TRUE:
+        return True
+    assert value == BT_FALSE
+    return False
+
+
+cdef np.ndarray get_cputime(cputime):
+    if isinstance(cputime, float) and cputime != 0:
+        deprecation_warning_cputime()
+
+    if isinstance(cputime, float):
+        cputime = np.array([cputime], dtype=real_t_type)
+
+    if cputime.shape!= (1,) or cputime.item() < 0:
+        raise ValueError("Invalid cputime provided")
+
+    return <np.ndarray> cputime
+
+
+cdef real_t* get_cputime_view(np.ndarray cputime_arr):
+    if cputime_arr.item() == 0.:
+        return NULL
+
+    return <real_t*> cputime_arr.data
+
+
+cdef real_t* get_vec_view(np.ndarray vec):
+    assert vec.ndim == 1
+    if vec.size == 0:
+        return <real_t*> NULL
+    return <real_t*> vec.data
+
+
+cdef sparse_int_t* get_index_view(np.ndarray vec):
+    assert vec.ndim == 1
+    assert vec.dtype == sparse_int_t_type
+    if vec.size == 0:
+        return <sparse_int_t*> NULL
+    return <sparse_int_t*> vec.data
+
+
+cdef real_t* get_mat_view(np.ndarray mat):
+    assert mat.ndim == 2
+    if mat.size == 0:
+        return <real_t*> NULL
+    return <real_t*> mat.data
+
+
+cdef np.ndarray get_nWSR(nWSR):
+    if isinstance(nWSR, int):
+        deprecation_warning_nWSR()
+        nWSR = np.array([nWSR], dtype=int_t_type)
+
+    if nWSR.shape != (1,) or nWSR.item() < 0:
+        raise ValueError("Invalid nWSR provided")
+
+    return <np.ndarray> nWSR
+
 
 cdef class PyPrintLevel:
     DEBUG_ITER = PL_DEBUG_ITER
@@ -61,7 +134,7 @@ cdef class PyPrintLevel:
     MEDIUM     = PL_MEDIUM
     HIGH       = PL_HIGH
 
-cdef class PyHessianType:
+cpdef enum PyHessianType:
     ZERO               = HST_ZERO
     IDENTITY           = HST_IDENTITY
     POSDEF             = HST_POSDEF
@@ -70,7 +143,7 @@ cdef class PyHessianType:
     INDEF              = HST_INDEF
     UNKNOWN            = HST_UNKNOWN
 
-cdef class PySubjectToStatus:
+cpdef enum PySubjectToStatus:
     LOWER              = ST_LOWER
     INACTIVE           = ST_INACTIVE
     UPPER              = ST_UPPER
@@ -233,6 +306,180 @@ cdef class PyReturnValue:
     SIMPLE_STATUS_M3                      = RET_SIMPLE_STATUS_M3
 
 
+class QPOASESError(Exception):
+    def __init__(self, error_message, error_code):
+        self.error_code = PyReturnValue(error_code)
+        message = f"QPOASES error <{str(error_code)}>: {error_message}"
+        super().__init__(message)
+
+
+cdef check_return_value(returnValue retval):
+    cdef unique_ptr[MessageHandling] message_handling
+    if retval != SUCCESSFUL_RETURN:
+        message_handling = unique_ptr[MessageHandling](new MessageHandling())
+        message = deref(message_handling).getErrorCodeMessage(retval).decode("utf-8")
+        raise QPOASESError(message, retval)
+
+
+def check_shape(arr, name, shape):
+    if isinstance(arr, np.ndarray) and not arr.flags.c_contiguous:
+        raise ValueError("Array must be c-continuous")
+
+    if arr.shape != shape:
+        raise ValueError("Array {0} has invalid shape (expected: {1}, actual: {2})".format(name,
+                                                                                           shape,
+                                                                                           arr.shape))
+
+
+cdef class PySymmMat:
+    cdef dict __dict__
+    cdef unique_ptr[SymmetricMatrix] mat_ptr
+
+    def __cinit__(self, H: np.ndarray | sp.sparse.spmatrix):
+        cdef SymSparseMat* sparse_ptr = NULL
+        assert H.ndim == 2
+
+        if isinstance(H, np.ndarray):
+            H = np.atleast_2d(H)
+            if H.ndim != 2:
+                raise ValueError("Invalid matrix shape")
+
+            (m, n) = H.shape[:2]
+
+            if m != n:
+                raise ValueError("Matrix must be square")
+
+            if not H.flags.c_contiguous:
+                raise ValueError("Array must be c-continuous")
+
+            self.H = H
+
+            self.mat_ptr = unique_ptr[SymmetricMatrix](new SymDenseMat(m,
+                                                                       n,
+                                                                       n,
+                                                                       get_mat_view(self.H)))
+
+        else:
+            if not sp.sparse.issparse(H):
+                raise ValueError("Unknown matrix type")
+
+            if H.format != "csc":
+                warnings.warn(
+                    "Matrix is required to be CSC",
+                    SparseEfficiencyWarning,
+                )
+                H = H.tocsc()
+
+            (m, n) = H.shape[:2]
+
+            if m != n:
+                raise ValueError("Matrix must be square")
+
+            self.H_rows = H.indices.astype(sparse_int_t_type, copy=False)
+            self.H_cols = H.indptr.astype(sparse_int_t_type, copy=False)
+            self.H_data = H.data.astype(real_t_type, copy=False)
+
+            sparse_ptr = new SymSparseMat(m,
+                                          n,
+                                          get_index_view(self.H_rows),
+                                          get_index_view(self.H_cols),
+                                          get_vec_view(self.H_data))
+
+            deref(sparse_ptr).createDiagInfo()
+            self.mat_ptr = unique_ptr[SymmetricMatrix](sparse_ptr)
+
+        assert not deref(self.mat_ptr).needToFreeMemory()
+
+    def print(self, name):
+        return deref(self.mat_ptr).print(name.encode("utf-8"))
+
+
+cdef class PyMat:
+    cdef dict __dict__
+    cdef unique_ptr[Matrix] mat_ptr
+
+    def __cinit__(self, A: np.ndarray | sp.sparse.spmatrix):
+        cdef int_t m, n, l
+        cdef real_t[:, :] A_view
+
+        if isinstance(A, np.ndarray):
+            self.A = np.atleast_2d(A)
+            if A.ndim != 2:
+                raise ValueError("Invalid matrix shape")
+
+            (m, n) = A.shape[:2]
+
+            if not A.flags.c_contiguous:
+                raise ValueError("Array must be c-continuous")
+
+            self.mat_ptr = unique_ptr[Matrix](new DenseMatrix(m,
+                                                              n,
+                                                              n,
+                                                              get_mat_view(self.A)))
+
+        else:
+            if not sp.sparse.issparse(A):
+                raise ValueError("Unknown matrix type")
+
+            if A.format != "csc":
+                warnings.warn(
+                    "Matrix is required to be CSC",
+                    SparseEfficiencyWarning,
+                )
+                A = A.tocsc()
+
+            (m, n) = A.shape[:2]
+
+            self.A_rows = A.indices.astype(sparse_int_t_type, copy=False)
+            self.A_cols = A.indptr.astype(sparse_int_t_type, copy=False)
+            self.A_data = A.data.astype(real_t_type, copy=False)
+
+            self.mat_ptr = unique_ptr[Matrix](new SparseMatrix(m,
+                                                               n,
+                                                               get_index_view(self.A_rows),
+                                                               get_index_view(self.A_cols),
+                                                               get_vec_view(self.A_data)))
+
+        assert not deref(self.mat_ptr).needToFreeMemory()
+
+    def print(self, name):
+        return deref(self.mat_ptr).print(name.encode("utf-8"))
+
+
+cdef get_working_set_bounds(QProblemB* problem):
+    cdef np.ndarray working_set_bounds = np.empty((problem.getNV(),),
+                                                  dtype=real_t_type)
+
+    check_return_value(problem.getWorkingSetBounds(<real_t*> working_set_bounds.data))
+
+    return working_set_bounds
+
+
+cdef get_working_set_constraints(QProblem* problem):
+    cdef np.ndarray working_set_bounds = np.empty((problem.getNC(),),
+                                                  dtype=real_t_type)
+
+    check_return_value(problem.getWorkingSetConstraints(<real_t*> working_set_bounds.data))
+
+    return working_set_bounds
+
+
+cdef get_bounds(QProblemB* problem):
+        cdef PyBounds bounds = PyBounds()
+        cdef Bounds* bounds_view = bounds.thisptr.get()
+
+        check_return_value(problem.getBounds(deref(bounds_view)))
+
+        return bounds
+
+cdef get_constraints(QProblem* problem):
+        cdef PyConstraints constraints = PyConstraints()
+        cdef Constraints* constraints_view = constraints.thisptr.get()
+
+        check_return_value(problem.getConstraints(deref(constraints_view)))
+
+        return constraints
+
 
 cdef class PyOptions:
     cdef Options *thisptr      # hold a C++ instance which we're wrapping
@@ -263,28 +510,28 @@ cdef class PyOptions:
         def __set__(self, printLevel): self.thisptr.printLevel = printLevel
 
     property enableRamping:
-        def __get__(self): return self.thisptr.enableRamping
-        def __set__(self, enableRamping): self.thisptr.enableRamping = enableRamping
+        def __get__(self): return bt_to_bool(self.thisptr.enableRamping)
+        def __set__(self, bint enableRamping): self.thisptr.enableRamping = bt_from_bool(enableRamping)
 
     property enableFarBounds:
-        def __get__(self): return self.thisptr.enableFarBounds
-        def __set__(self, enableFarBounds): self.thisptr.enableFarBounds = enableFarBounds
+        def __get__(self): return bt_to_bool(self.thisptr.enableFarBounds)
+        def __set__(self, bint enableFarBounds): self.thisptr.enableFarBounds = bt_from_bool(enableFarBounds)
 
     property enableFlippingBounds:
-        def __get__(self): return self.thisptr.enableFlippingBounds
-        def __set__(self, enableFlippingBounds): self.thisptr.enableFlippingBounds = enableFlippingBounds
+        def __get__(self): return bt_to_bool(self.thisptr.enableFlippingBounds)
+        def __set__(self, bint enableFlippingBounds): self.thisptr.enableFlippingBounds = bt_from_bool(enableFlippingBounds)
 
     property enableRegularisation:
-        def __get__(self): return self.thisptr.enableRegularisation
-        def __set__(self, enableRegularisation): self.thisptr.enableRegularisation = enableRegularisation
+        def __get__(self): return bt_to_bool(self.thisptr.enableRegularisation)
+        def __set__(self, bint enableRegularisation): self.thisptr.enableRegularisation = bt_from_bool(enableRegularisation)
 
     property enableFullLITests:
-        def __get__(self): return self.thisptr.enableFullLITests
-        def __set__(self, enableFullLITests): self.thisptr.enableFullLITests = enableFullLITests
+        def __get__(self): return bt_to_bool(self.thisptr.enableFullLITests)
+        def __set__(self, bint enableFullLITests): self.thisptr.enableFullLITests = bt_from_bool(enableFullLITests)
 
     property enableNZCTests:
-        def __get__(self): return self.thisptr.enableNZCTests
-        def __set__(self, enableNZCTests): self.thisptr.enableNZCTests = enableNZCTests
+        def __get__(self): return bt_to_bool(self.thisptr.enableNZCTests)
+        def __set__(self, bint enableNZCTests): self.thisptr.enableNZCTests = bt_from_bool(enableNZCTests)
 
     property enableDriftCorrection:
         def __get__(self): return self.thisptr.enableDriftCorrection
@@ -295,8 +542,8 @@ cdef class PyOptions:
         def __set__(self, enableCholeskyRefactorisation): self.thisptr.enableCholeskyRefactorisation = enableCholeskyRefactorisation
 
     property enableEqualities:
-        def __get__(self): return self.thisptr.enableEqualities
-        def __set__(self, enableEqualities): self.thisptr.enableEqualities = enableEqualities
+        def __get__(self): return bt_to_bool(self.thisptr.enableEqualities)
+        def __set__(self, bint enableEqualities): self.thisptr.enableEqualities = bt_from_bool(enableEqualities)
 
     property terminationTolerance:
         def __get__(self): return self.thisptr.terminationTolerance
@@ -387,185 +634,412 @@ cdef class PyOptions:
         def __set__(self, dropIneqConPriority): self.thisptr.dropIneqConPriority = dropIneqConPriority
 
 
+cdef class PyConstraints:
+    cdef unique_ptr[Constraints] thisptr
+
+    def __cinit__(self, n=None):
+        if n is not None:
+            self.thisptr = make_unique[Constraints](<int_t> n)
+        else:
+            self.thisptr = make_unique[Constraints]()
+
+    def init(self, n):
+        check_return_value(deref(self.thisptr).init(<int_t> n))
+
+    def setupConstraint(self,
+                   int_t number,
+                   PySubjectToStatus status):
+        check_return_value(deref(self.thisptr).setupConstraint(number, <SubjectToStatus> status))
+
+    def setupAllInactive(self):
+        check_return_value(deref(self.thisptr).setupAllInactive())
+
+    def setupAllLower(self):
+        check_return_value(deref(self.thisptr).setupAllLower())
+
+    def setupAllUpper(self):
+        check_return_value(deref(self.thisptr).setupAllUpper())
+
+    def moveActiveToInactive(self, int_t number):
+        check_return_value(deref(self.thisptr).moveActiveToInactive(number))
+
+    def moveInactiveToActive(self, int_t number, PySubjectToStatus status):
+        check_return_value(deref(self.thisptr).moveInactiveToActive(number,
+                                                                    <SubjectToStatus> status))
+
+    def print(self):
+        check_return_value(deref(self.thisptr).print())
+
+    def getActive(self):
+        cdef PyIndexlist activeList = PyIndexlist()
+        activeList.thisptr = deref(self.thisptr).getActive()
+        activeList.parent = self
+        return activeList
+
+    def getInactive(self):
+        cdef PyIndexlist inactiveList = PyIndexlist()
+        inactiveList.thisptr = deref(self.thisptr).getInactive()
+        inactiveList.parent = self
+        return inactiveList
+
+    def getStatus(self, int_t i):
+        return PySubjectToStatus(deref(self.thisptr).getStatus(i))
+
+    def setStatus(self, int_t i, PySubjectToStatus value):
+        check_return_value(deref(self.thisptr).setStatus(i, <SubjectToStatus> value))
+
+    def copy(self):
+        cdef PyConstraints copied = PyConstraints()
+        copied.thisptr = make_unique[Constraints](deref(self.thisptr.get()))
+        return copied
+
+    def __copy__(self):
+        return self.copy()
+
+
+
+cdef class PyIndexlist:
+    cdef Indexlist* thisptr
+    cdef object parent
+
+    def __cinit__(self):
+        self.thisptr = NULL
+
+    def getIndex(self, int_t number):
+        return self.thisptr.getIndex(number)
+
+    def getNumber(self, int_t index):
+        return self.thisptr.getNumber(index)
+
+    @property
+    def length(self):
+        return self.this.ptr.getLength()
+
+    @property
+    def lastNumber(self):
+        return self.thisptr.getLastNumber()
+
+    def addNumber(self, int_t number):
+        check_return_value(self.thisptr.addNumber(number))
+
+    def removeNumber(self, int_t number):
+        check_return_value(self.thisptr.removeNumber(number))
+
+    def swapNumbers(self, int_t first, int_t second):
+        check_return_value(self.thisptr.swapNumbers(first, second))
+
+    def isMember(self, int_t number):
+        return self.thisptr.isMember(number)
+
+    def __contains__(self, number):
+        return self.isMember(number)
+
+
+cdef class PyBounds:
+    cdef unique_ptr[Bounds] thisptr
+
+    def __cinit__(self, n=None):
+        if n is not None:
+            self.thisptr = make_unique[Bounds](<int_t> n)
+        else:
+            self.thisptr = make_unique[Bounds]()
+
+    def init(self, n):
+        check_return_value(deref(self.thisptr).init(<int_t> n))
+
+    def setupBound(self,
+                   int_t number,
+                   PySubjectToStatus status):
+        check_return_value(deref(self.thisptr).setupBound(number, <SubjectToStatus> status))
+
+    def setupAllFree(self):
+        check_return_value(deref(self.thisptr).setupAllFree())
+
+    def setupAllLower(self):
+        check_return_value(deref(self.thisptr).setupAllLower())
+
+    def setupAllUpper(self):
+        check_return_value(deref(self.thisptr).setupAllUpper())
+
+    def print(self):
+        check_return_value(deref(self.thisptr).print())
+
+    def moveFixedToFree(self, int_t number):
+        check_return_value(deref(self.thisptr).moveFixedToFree(number))
+
+    def moveFreeToFixed(self, int_t number, PySubjectToStatus status):
+        check_return_value(deref(self.thisptr).moveFreeToFixed(number,
+                                                               <SubjectToStatus> status))
+
+    def getFree(self):
+        cdef PyIndexlist freeList = PyIndexlist()
+        freeList.thisptr = deref(self.thisptr).getFree()
+        freeList.parent = self
+        return freeList
+
+    def getFixed(self):
+        cdef PyIndexlist fixedList = PyIndexlist()
+        fixedList.thisptr = deref(self.thisptr).getFixed()
+        fixedList.parent = self
+        return fixedList
+
+    def getStatus(self, int_t i):
+        return PySubjectToStatus(deref(self.thisptr).getStatus(i))
+
+    def setStatus(self, int_t i, PySubjectToStatus value):
+        check_return_value(deref(self.thisptr).setStatus(i, <SubjectToStatus> value))
+
+    def copy(self):
+        cdef PyBounds copied = PyBounds()
+        copied.thisptr = make_unique[Bounds](deref(self.thisptr.get()))
+        return copied
+
+    def __copy__(self):
+        return self.copy()
 
 cdef class PyQProblemB:
-    cdef QProblemB *thisptr      # hold a C++ instance which we're wrapping
-    def __cinit__(self, long nV):
-        # FIXME: allow other HessianTypes!
-        self.thisptr = new QProblemB(<int_t> nV, HST_UNKNOWN, BT_TRUE)
+    cdef unique_ptr[QProblemB] thisptr      # hold a C++ instance which we're wrapping
+    cdef PySymmMat H
 
-    def __dealloc__(self):
-        del self.thisptr
+    def __cinit__(self,
+                  long nV,
+                  PyHessianType hessian_type=PyHessianType.UNKNOWN):
+        self.thisptr = make_unique[QProblemB](<int_t> nV, <HessianType> hessian_type, BT_TRUE)
 
     def init(self,
-             np.ndarray[np.double_t, ndim=2] H,
+             H: np.ndarray | sp.sparse.spmatrix,
              np.ndarray[np.double_t, ndim=1] g,
              np.ndarray[np.double_t, ndim=1] lb,
              np.ndarray[np.double_t, ndim=1] ub,
              nWSR,
-             cputime = 0.0
+             cputime = 0.0,
+             np.ndarray[np.double_t, ndim=1] x_opt=None,
+             np.ndarray[np.double_t, ndim=1] y_opt=None,
+             PyBounds guessed_bounds=None
         ):
         # FIXME: add asserts
         cdef np.ndarray nWSR_tmp
         cdef np.ndarray cput_tmp
+        cdef real_t* x_opt_view = NULL
+        cdef real_t* y_opt_view = NULL
+        cdef Bounds* guessed_bounds_view = NULL
+        cdef real_t* cput_view = NULL
 
-        # enable nWSR as return value in argument list
-        if isinstance(nWSR, int):
-            deprecation_warning_nWSR()
-            nWSR_tmp = np.array([nWSR], dtype=long)
-        else:
-            nWSR_tmp = nWSR
+        NV = self.NV
 
-        if cputime > 1.e-16:
-            # enable cputime as return value in argument list
-            if isinstance(cputime, float):
-                deprecation_warning_cputime()
-                cput_tmp = np.array([cputime], dtype=float)
-            else:
-                cput_tmp = cputime
+        check_shape(H, "H", (NV, NV))
+        check_shape(g, "g", (NV,))
+        check_shape(lb, "lb", (NV,))
+        check_shape(ub, "ub", (NV,))
 
-            return self.thisptr.init(
-                    <real_t*> H.data,
-                    <real_t*> g.data,
-                    <real_t*> lb.data,
-                    <real_t*> ub.data,
-                    <int_t&>  nWSR_tmp.data[0],
-                    <real_t*> &cput_tmp.data[0]
-                    )
+        if x_opt is not None:
+            check_shape(x_opt, "x_opt", (NV,))
+            x_opt_view = get_vec_view(x_opt)
 
-        return self.thisptr.init(
-                    <real_t*> H.data,
-                    <real_t*> g.data,
-                    <real_t*> lb.data,
-                    <real_t*> ub.data,
-                    <int_t&> nWSR_tmp.data[0]
-                    )
+        if y_opt is not None:
+            check_shape(y_opt, "y_opt", (NV,))
+            y_opt_view = get_vec_view(y_opt)
+
+        if guessed_bounds is not None:
+            guessed_bounds.thisptr.get()
+
+        nWSR_tmp = get_nWSR(nWSR)
+
+        self.H = PySymmMat(H)
+
+        cput_tmp = get_cputime(cputime)
+        cput_view = get_cputime_view(cput_tmp)
+
+        check_return_value(deref(self.thisptr).init(
+            self.H.mat_ptr.get(),
+            get_vec_view(g),
+            get_vec_view(lb),
+            get_vec_view(ub),
+            <int_t&>  nWSR_tmp.data[0],
+            cput_view,
+            x_opt_view,
+            y_opt_view,
+            guessed_bounds_view))
 
     def hotstart(self,
              np.ndarray[np.double_t, ndim=1] g,
              np.ndarray[np.double_t, ndim=1] lb,
              np.ndarray[np.double_t, ndim=1] ub,
              nWSR,
-             cputime = 0.0
+             cputime=0.0,
+             PyBounds guessed_bounds=None
         ):
         # FIXME: add asserts
         cdef np.ndarray nWSR_tmp
+        # cdef np.ndarray cput_tmp
+        cdef Bounds* guessed_bounds_view = NULL
         cdef np.ndarray cput_tmp
+        cdef real_t* cput_view = NULL
 
-        # enable nWSR as return value in argument list
-        if isinstance(nWSR, int):
-            deprecation_warning_nWSR()
-            nWSR_tmp = np.array([nWSR], dtype=long)
-        else:
-            nWSR_tmp = nWSR#np.asarray(nWSR, dtype=int)
+        NV = self.NV
+        check_shape(g, "g", (NV,))
+        check_shape(lb, "lb", (NV,))
+        check_shape(ub, "ub", (NV,))
 
-        if cputime > 1.e-16:
-            # enable cputime as return value in argument list
-            if isinstance(cputime, float):
-                deprecation_warning_cputime()
-                cput_tmp = np.array([cputime], dtype=float)
-            else:
-                cput_tmp = cputime#np.asarray(cputime, dtype=float)
+        if guessed_bounds is not None:
+            guessed_bounds_view = guessed_bounds.thisptr.get()
 
-            return self.thisptr.hotstart(
-                    <real_t*> g.data,
-                    <real_t*> lb.data,
-                    <real_t*> ub.data,
-                    <int_t&>  nWSR_tmp.data[0],
-                    <real_t*> &cput_tmp.data[0]
-                )
+        nWSR_tmp = get_nWSR(nWSR)
 
-        return self.thisptr.hotstart(
-                    <real_t*> g.data,
-                    <real_t*> lb.data,
-                    <real_t*> ub.data,
-                    <int_t&>    nWSR_tmp.data[0]
-            )
+        cput_tmp = get_cputime(cputime)
+        cput_view = get_cputime_view(cput_tmp)
+
+        check_return_value(deref(self.thisptr).hotstart(
+                get_vec_view(g),
+                get_vec_view(lb),
+                get_vec_view(ub),
+                <int_t&>  nWSR_tmp.data[0],
+                cput_view,
+                guessed_bounds_view))
+
+    cpdef bint isSolved(self):
+        return deref(self.thisptr).isSolved()
+
+    cpdef bint isInfeasible(self):
+        return deref(self.thisptr).isInfeasible()
+
+    cpdef bint isUnbounded(self):
+        return deref(self.thisptr).isUnbounded()
 
     def getPrimalSolution(self, np.ndarray[np.double_t, ndim=1] xOpt):
-        return self.thisptr.getPrimalSolution(<real_t*> xOpt.data)
+        return deref(self.thisptr).getPrimalSolution(<real_t*> xOpt.data)
 
     def getDualSolution(self, np.ndarray[np.double_t, ndim=1] yOpt):
-        return self.thisptr.getDualSolution(<real_t*> yOpt.data)
+        NV = self.NV
+        check_shape(yOpt, "yOpt", (NV,))
+        check_return_value(deref(self.thisptr).getDualSolution(<real_t*> yOpt.data))
 
     def getObjVal(self):
-        return self.thisptr.getObjVal()
+        return deref(self.thisptr).getObjVal()
 
     def printOptions(self):
-        return self.thisptr.printOptions()
+        return deref(self.thisptr).printOptions()
 
     def getOptions(self):
         # FIXME: memory management? who deallocates o
-        cdef Options *o = new Options(self.thisptr.getOptions())
+        cdef Options *o = new Options(deref(self.thisptr).getOptions())
         retval = PyOptions()
         retval.thisptr = o
         return retval
 
     def setOptions(self, PyOptions options):
-        self.thisptr.setOptions(deref(options.thisptr))
+        check_return_value(deref(self.thisptr).setOptions(deref(options.thisptr)))
+
+    @property
+    def NV(self) -> int:
+        return deref(self.thisptr).getNV()
+
+    @property
+    def NFR(self) -> int:
+        return deref(self.thisptr).getNFR()
+
+    @property
+    def NFX(self) -> int:
+        return deref(self.thisptr).getNFX()
+
+    @property
+    def NFV(self) -> int:
+        return deref(self.thisptr).getNFV()
+
+    @property
+    def NZ(self) -> int:
+        return deref(self.thisptr).getNZ()
+
+    def getBounds(self) -> PyBounds:
+        return get_bounds(self.thisptr.get())
+
+    def getWorkingSetBounds(self):
+        return get_working_set_bounds(self.thisptr.get())
 
 
 cdef class PyQProblem:
-    cdef QProblem *thisptr      # hold a C++ instance which we're wrapping
+    cdef unique_ptr[QProblem] thisptr      # hold a C++ instance which we're wrapping
+    cdef PySymmMat H
+    cdef PyMat A
 
-    def __cinit__(self, long nV, long nC):
-        self.thisptr = new QProblem(nV, nC, HST_UNKNOWN, BT_TRUE)
-
-    def __dealloc__(self):
-        del self.thisptr
+    def __cinit__(self,
+                  long nV,
+                  long nC,
+                  PyHessianType hessian_type=PyHessianType.UNKNOWN):
+        self.thisptr = make_unique[QProblem](nV, nC, <HessianType> hessian_type, BT_TRUE)
 
     cpdef init(self,
-             np.ndarray[np.double_t, ndim=2] H,
+             H: np.ndarray | sp.sparse.spmatrix,
              np.ndarray[np.double_t, ndim=1] g,
-             np.ndarray[np.double_t, ndim=2] A,
+             A: np.ndarray | sp.sparse.spmatrix,
              np.ndarray[np.double_t, ndim=1] lb,
              np.ndarray[np.double_t, ndim=1] ub,
              np.ndarray[np.double_t, ndim=1] lbA,
              np.ndarray[np.double_t, ndim=1] ubA,
              nWSR,
-             cputime=0.0):
+             cputime=0.0,
+             np.ndarray x_opt=None,
+             np.ndarray y_opt=None,
+             PyBounds guessed_bounds=None,
+             PyConstraints guessed_constraints=None):
 
         # FIXME: add asserts
         cdef np.ndarray nWSR_tmp
         cdef np.ndarray cput_tmp
+        cdef real_t* cput_view = NULL
+        cdef real_t* x_opt_view = NULL
+        cdef real_t* y_opt_view = NULL
+        cdef Bounds* guessed_bounds_view = NULL
+        cdef Constraints* guessed_constraints_view = NULL
 
-        # enable nWSR as return value in argument list
-        if isinstance(nWSR, int):
-            deprecation_warning_nWSR()
-            nWSR_tmp = np.array([nWSR], dtype=long)
-        else:
-            nWSR_tmp = nWSR
+        NV = self.NV
+        NC = self.NC
 
-        if cputime > 1.e-16:
-            # enable cputime as return value in argument list
-            if isinstance(cputime, float):
-                deprecation_warning_cputime()
-                cput_tmp = np.array([cputime], dtype=float)
-            else:
-                cput_tmp = cputime
+        check_shape(H, "H", (NV, NV))
+        check_shape(A, "A", (NC, NV))
+        check_shape(g, "g", (NV,))
+        check_shape(lb, "lb", (NV,))
+        check_shape(ub, "ub", (NV,))
+        
+        check_shape(lbA, "lbA", (NC,))
+        check_shape(ubA, "ubA", (NC,))
 
-            return self.thisptr.init(
-                    <real_t*> H.data,
-                    <real_t*> g.data,
-                    <real_t*> A.data,
-                    <real_t*> lb.data,
-                    <real_t*> ub.data,
-                    <real_t*> lbA.data,
-                    <real_t*> ubA.data,
+        nWSR_tmp = get_nWSR(nWSR)
+
+        self.H = PySymmMat(H)
+        self.A = PyMat(A)
+
+        if x_opt is not None:
+            check_shape(x_opt, "x_opt", (NV,))
+            x_opt_view = get_vec_view(x_opt)
+
+        if y_opt is not None:
+            check_shape(y_opt, "y_opt", (NV + NC,))
+            y_opt_view = get_vec_view(y_opt)
+
+        if guessed_bounds is not None:
+            guessed_bounds_view = guessed_bounds.thisptr.get()
+
+        if guessed_constraints is not None:
+            guessed_constraints_view = guessed_constraints.thisptr.get()
+
+        cput_tmp = get_cputime(cputime)
+        cput_view = get_cputime_view(cput_tmp)
+
+        check_return_value(deref(self.thisptr).init(
+                    self.H.mat_ptr.get(),
+                    get_vec_view(g),
+                    self.A.mat_ptr.get(),
+                    get_vec_view(lb),
+                    get_vec_view(ub),
+                    get_vec_view(lbA),
+                    get_vec_view(ubA),
                     <int_t&>  nWSR_tmp.data[0],
-                    <real_t*> &cput_tmp.data[0]
-                )
-
-        return self.thisptr.init(
-                    <real_t*> H.data,
-                    <real_t*> g.data,
-                    <real_t*> A.data,
-                    <real_t*> lb.data,
-                    <real_t*> ub.data,
-                    <real_t*> lbA.data,
-                    <real_t*> ubA.data,
-                    <int_t&>  nWSR_tmp.data[0]
-                )
+                    cput_view,
+                    x_opt_view,
+                    y_opt_view,
+                    guessed_bounds_view,
+                    guessed_constraints_view))
 
     cpdef hotstart(self,
              np.ndarray[np.double_t, ndim=1] g,
@@ -574,194 +1048,336 @@ cdef class PyQProblem:
              np.ndarray[np.double_t, ndim=1] lbA,
              np.ndarray[np.double_t, ndim=1] ubA,
              nWSR,
-             cputime=0.0
+             cputime=0.0,
+             PyBounds guessed_bounds=None,
+             PyConstraints guessed_constraints=None
         ):
         # FIXME: add asserts
         cdef np.ndarray nWSR_tmp
         cdef np.ndarray cput_tmp
+        cdef real_t* cput_view = NULL
 
-        # enable nWSR as return value in argument list
-        if isinstance(nWSR, int):
-            deprecation_warning_nWSR()
-            nWSR_tmp = np.array([nWSR], dtype=long)
-        else:
-            nWSR_tmp = nWSR
+        cdef Bounds* guessed_bounds_view = NULL
+        cdef Constraints* guessed_constraints_view = NULL
 
-        if cputime > 1.e-16:
-            # enable cputime as return value in argument list
-            if isinstance(cputime, float):
-                deprecation_warning_cputime()
-                cput_tmp = np.array([cputime], dtype=float)
-            else:
-                cput_tmp = cputime
+        NV = self.NV
+        NC = self.NC
 
-            return self.thisptr.hotstart(
-                    <real_t*> g.data,
-                    <real_t*> lb.data,
-                    <real_t*> ub.data,
-                    <real_t*> lbA.data,
-                    <real_t*> ubA.data,
+        check_shape(g, "g", (NV,))
+        check_shape(lb, "lb", (NV,))
+        check_shape(ub, "ub", (NV,))
+        
+        check_shape(lbA, "lbA", (NC,))
+        check_shape(ubA, "ubA", (NC,))
+
+        if guessed_bounds is not None:
+            guessed_bounds_view = guessed_bounds.thisptr.get()
+
+        if guessed_constraints is not None:
+            guessed_constraints_view = guessed_constraints.thisptr.get()
+
+        nWSR_tmp = get_nWSR(nWSR)
+
+        cput_tmp = get_cputime(cputime)
+        cput_view = get_cputime_view(cput_tmp)
+
+        check_return_value(deref(self.thisptr).hotstart(
+                    get_vec_view(g),
+                    get_vec_view(lb),
+                    get_vec_view(ub),
+                    get_vec_view(lbA),
+                    get_vec_view(ubA),
                     <int_t&>  nWSR_tmp.data[0],
-                    <real_t*> &cput_tmp.data[0]
-                )
+                    cput_view, #<real_t*> &cput_tmp.data[0],
+                    guessed_bounds_view,
+                    guessed_constraints_view))
 
-        return self.thisptr.hotstart(
-                    <real_t*> g.data,
-                    <real_t*> lb.data,
-                    <real_t*> ub.data,
-                    <real_t*> lbA.data,
-                    <real_t*> ubA.data,
-                    <int_t&>  nWSR_tmp.data[0]
-                )
+    cpdef bint isSolved(self):
+        return deref(self.thisptr).isSolved()
+
+    cpdef bint isInfeasible(self):
+        return deref(self.thisptr).isInfeasible()
+
+    cpdef bint isUnbounded(self):
+        return deref(self.thisptr).isUnbounded()
 
     cpdef getPrimalSolution(self, np.ndarray[np.double_t, ndim=1] xOpt):
-        return self.thisptr.getPrimalSolution(<real_t*> xOpt.data)
+        check_return_value(deref(self.thisptr).getPrimalSolution(<real_t*> xOpt.data))
 
     cpdef getDualSolution(self, np.ndarray[np.double_t, ndim=1] yOpt):
-        return self.thisptr.getDualSolution(<real_t*> yOpt.data)
+        NV = self.NV
+        NC = self.NC
+        check_shape(yOpt, "yOpt", (NV + NC,))
+        check_return_value(deref(self.thisptr).getDualSolution(<real_t*> yOpt.data))
 
     cpdef getObjVal(self):
-        return self.thisptr.getObjVal()
+        return deref(self.thisptr).getObjVal()
 
     cpdef printOptions(self):
-        return self.thisptr.printOptions()
+        check_return_value(deref(self.thisptr).printOptions())
 
     cpdef setOptions(self, PyOptions options):
-        self.thisptr.setOptions(deref(options.thisptr))
+        check_return_value(deref(self.thisptr).setOptions(deref(options.thisptr)))
+
+    @property
+    def NV(self):
+        return deref(self.thisptr).getNV()
+
+    @property
+    def NFR(self):
+        return deref(self.thisptr).getNFR()
+
+    @property
+    def NFX(self):
+        return deref(self.thisptr).getNFX()
+
+    @property
+    def NFV(self):
+        return deref(self.thisptr).getNFV()
+
+    @property
+    def NZ(self):
+        return deref(self.thisptr).getNZ()
+
+    @property
+    def NC(self):
+        return deref(self.thisptr).getNC()
+
+    @property
+    def NEC(self):
+        return deref(self.thisptr).getNEC()
+
+    @property
+    def NAC(self):
+        return deref(self.thisptr).getNAC()
+
+    @property
+    def NIAC(self):
+        return deref(self.thisptr).getNIAC()
+
+    def getBounds(self) -> PyBounds:
+        return get_bounds(self.thisptr.get())
+
+    def getConstraints(self) -> PyConstraints:
+        return get_constraints(self.thisptr.get())
+
+    def getWorkingSetBounds(self):
+        return get_working_set_bounds(self.thisptr.get())
+
+    def getWorkingSetConstraints(self):
+        return get_working_set_constraints(self.thisptr.get())
 
 
 cdef class PySQProblem:
-    cdef SQProblem *thisptr      # hold a C++ instance which we're wrapping
+    cdef unique_ptr[SQProblem] thisptr      # hold a C++ instance which we're wrapping
+    cdef PySymmMat H
+    cdef PyMat A
 
-    def __cinit__(self, long nV, long nC):
-        self.thisptr = new SQProblem(nV, nC, HST_UNKNOWN, BT_TRUE)
-
-    def __dealloc__(self):
-        del self.thisptr
+    def __cinit__(self,
+                  int_t nV,
+                  int_t nC,
+                  PyHessianType hessian_type=PyHessianType.UNKNOWN):
+        self.thisptr = make_unique[SQProblem](nV, nC, <HessianType> hessian_type, BT_TRUE)
 
     cpdef init(self,
-             np.ndarray[np.double_t, ndim=2] H,
+             H: np.ndarray | sp.sparse.spmatrix,
              np.ndarray[np.double_t, ndim=1] g,
-             np.ndarray[np.double_t, ndim=2] A,
+             A: np.ndarray | sp.sparse.spmatrix,
              np.ndarray[np.double_t, ndim=1] lb,
              np.ndarray[np.double_t, ndim=1] ub,
              np.ndarray[np.double_t, ndim=1] lbA,
              np.ndarray[np.double_t, ndim=1] ubA,
              nWSR,
-             cputime=0.0
+             cputime=0.0,
+             np.ndarray x_opt=None,
+             np.ndarray y_opt=None,
+             PyBounds guessed_bounds=None,
+             PyConstraints guessed_constraints=None
+    ):
+        self._maybe_init(H, g, A, lb, ub, lbA, ubA, nWSR, cputime, x_opt, y_opt,
+                         guessed_bounds, guessed_constraints, hotstart=False)
+
+    cpdef _maybe_init(self,
+             H: np.ndarray | sp.sparse.spmatrix,
+             np.ndarray[np.double_t, ndim=1] g,
+             A: np.ndarray | sp.sparse.spmatrix,
+             np.ndarray[np.double_t, ndim=1] lb,
+             np.ndarray[np.double_t, ndim=1] ub,
+             np.ndarray[np.double_t, ndim=1] lbA,
+             np.ndarray[np.double_t, ndim=1] ubA,
+             nWSR,
+             cputime,
+             np.ndarray x_opt,
+             np.ndarray y_opt,
+             PyBounds guessed_bounds,
+             PyConstraints guessed_constraints,
+             hotstart
     ):
         # FIXME: add asserts
         cdef np.ndarray nWSR_tmp
+        # cdef np.ndarray cput_tmp
+        cdef real_t* x_opt_view = NULL
+        cdef real_t* y_opt_view = NULL
+        cdef Bounds* guessed_bounds_view = NULL
+        cdef Constraints* guessed_constraints_view = NULL
         cdef np.ndarray cput_tmp
-        # nWSR_tmp = np.zeros(1, dtype=long)
-        # cput_tmp = np.zeros(1, dtype=float)
+        cdef real_t* cput_view = NULL
 
-        # enable nWSR as return value in argument list
-        if isinstance(nWSR, int):
-            deprecation_warning_nWSR()
-            nWSR_tmp = np.array([nWSR], dtype=long)
-        else:
-            nWSR_tmp = np.asarray(nWSR, dtype=long)
+        NV = self.NV
+        NC = self.NC
 
-        if cputime > 1.e-16:
-            # enable cputime as return value in argument list
-            if isinstance(cputime, float):
-                deprecation_warning_cputime()
-                cput_tmp = np.array([cputime], dtype=float)
-            else:
-                cput_tmp = cputime
-            # print "cput_tmp: ", cput_tmp
+        check_shape(H, "H", (NV, NV))
+        check_shape(A, "A", (NC, NV))
+        check_shape(g, "g", (NV,))
+        check_shape(lb, "lb", (NV,))
+        check_shape(ub, "ub", (NV,))
+        
+        check_shape(lbA, "lbA", (NC,))
+        check_shape(ubA, "ubA", (NC,))
 
-            return self.thisptr.init(
-                        <real_t*> H.data,
-                        <real_t*> g.data,
-                        <real_t*> A.data,
-                        <real_t*> lb.data,
-                        <real_t*> ub.data,
-                        <real_t*> lbA.data,
-                        <real_t*> ubA.data,
+        nWSR_tmp = get_nWSR(nWSR)
+
+        self.H = PySymmMat(H)
+        self.A = PyMat(A)
+
+        if x_opt is not None:
+            check_shape(x_opt, "x_opt", (NV,))
+            x_opt_view = get_vec_view(x_opt)
+
+        if y_opt is not None:
+            check_shape(y_opt, "y_opt", (NV + NC,))
+            y_opt_view = get_vec_view(y_opt)
+
+        if guessed_bounds is not None:
+            guessed_bounds_view = guessed_bounds.thisptr.get()
+
+        if guessed_constraints is not None:
+            guessed_constraints_view = guessed_constraints.thisptr.get()
+
+        cput_tmp = get_cputime(cputime)
+        cput_view = get_cputime_view(cput_tmp)
+
+        if hotstart:
+            check_return_value(deref(self.thisptr).hotstart(
+                        self.H.mat_ptr.get(),
+                        get_vec_view(g),
+                        self.A.mat_ptr.get(),
+                        get_vec_view(lb),
+                        get_vec_view(ub),
+                        get_vec_view(lbA),
+                        get_vec_view(ubA),
                         <int_t&>  nWSR_tmp.data[0],
-                        <real_t*> &cput_tmp.data[0]
-                )
-
-        return self.thisptr.init(
-                    <real_t*> H.data,
-                    <real_t*> g.data,
-                    <real_t*> A.data,
-                    <real_t*> lb.data,
-                    <real_t*> ub.data,
-                    <real_t*> lbA.data,
-                    <real_t*> ubA.data,
-                    <int_t&>  nWSR_tmp.data[0],
-                )
+                        cput_view,
+                        guessed_bounds_view,
+                        guessed_constraints_view))
+        else:
+            check_return_value(deref(self.thisptr).init(
+                        self.H.mat_ptr.get(),
+                        get_vec_view(g),
+                        self.A.mat_ptr.get(),
+                        get_vec_view(lb),
+                        get_vec_view(ub),
+                        get_vec_view(lbA),
+                        get_vec_view(ubA),
+                        <int_t&>  nWSR_tmp.data[0],
+                        cput_view,
+                        x_opt_view,
+                        y_opt_view,
+                        guessed_bounds_view,
+                        guessed_constraints_view))
 
     cpdef hotstart(self,
-             np.ndarray[np.double_t, ndim=2] H,
+             H: np.ndarray | sp.sparse.spmatrix,
              np.ndarray[np.double_t, ndim=1] g,
-             np.ndarray[np.double_t, ndim=2] A,
+             A: np.ndarray | sp.sparse.spmatrix,
              np.ndarray[np.double_t, ndim=1] lb,
              np.ndarray[np.double_t, ndim=1] ub,
              np.ndarray[np.double_t, ndim=1] lbA,
              np.ndarray[np.double_t, ndim=1] ubA,
              nWSR,
-             cputime=0.0):
+             cputime=0.0,
+             PyBounds guessed_bounds=None,
+             PyConstraints guessed_constraints=None
+    ):
+        self._maybe_init(H, g, A, lb, ub, lbA, ubA, nWSR, cputime, None, None,
+                         guessed_bounds, guessed_constraints, hotstart=True)
 
-        # FIXME: add asserts
-        cdef np.ndarray nWSR_tmp
-        cdef np.ndarray cput_tmp
+    cpdef bint isSolved(self):
+        return deref(self.thisptr).isSolved()
 
-        # enable nWSR as return value in argument list
-        if isinstance(nWSR, int):
-            deprecation_warning_nWSR()
-            nWSR_tmp = np.array([nWSR], dtype=long)
-        else:
-            nWSR_tmp = nWSR
+    cpdef bint isInfeasible(self):
+        return deref(self.thisptr).isInfeasible()
 
-        if cputime > 1.e-16:
-            # enable cputime as return value in argument list
-            if isinstance(cputime, float):
-                deprecation_warning_cputime()
-                cput_tmp = np.array([cputime], dtype=float)
-            else:
-                cput_tmp = cputime
-
-            return self.thisptr.hotstart(
-                    <real_t*> H.data,
-                    <real_t*> g.data,
-                    <real_t*> A.data,
-                    <real_t*> lb.data,
-                    <real_t*> ub.data,
-                    <real_t*> lbA.data,
-                    <real_t*> ubA.data,
-                    <int_t&>  nWSR_tmp.data[0],
-                    <real_t*> &cput_tmp.data[0]
-            )
-
-        return self.thisptr.hotstart(
-                    <real_t*> H.data,
-                    <real_t*> g.data,
-                    <real_t*> A.data,
-                    <real_t*> lb.data,
-                    <real_t*> ub.data,
-                    <real_t*> lbA.data,
-                    <real_t*> ubA.data,
-                    <int_t&>  nWSR_tmp.data[0],
-        )
+    cpdef bint isUnbounded(self):
+        return deref(self.thisptr).isUnbounded()
 
     cpdef getPrimalSolution(self, np.ndarray[np.double_t, ndim=1] xOpt):
-        return self.thisptr.getPrimalSolution(<real_t*> xOpt.data)
+        NV = self.NV
+        check_shape(xOpt, "xOpt", (NV,))
+        return deref(self.thisptr).getPrimalSolution(<real_t*> xOpt.data)
 
     cpdef getDualSolution(self, np.ndarray[np.double_t, ndim=1] yOpt):
-        return self.thisptr.getDualSolution(<real_t*> yOpt.data)
+        NV = self.NV
+        NC = self.NC
+        check_shape(yOpt, "yOpt", (NV + NC,))
+        check_return_value(deref(self.thisptr).getDualSolution(<real_t*> yOpt.data))
 
     cpdef getObjVal(self):
-        return self.thisptr.getObjVal()
+        return deref(self.thisptr).getObjVal()
 
     cpdef printOptions(self):
-        return self.thisptr.printOptions()
+        return deref(self.thisptr).printOptions()
 
     cpdef setOptions(self, PyOptions options):
-        self.thisptr.setOptions(deref(options.thisptr))
+        check_return_value(deref(self.thisptr).setOptions(deref(options.thisptr)))
+
+    @property
+    def NV(self):
+        return deref(self.thisptr).getNV()
+
+    @property
+    def NFR(self):
+        return deref(self.thisptr).getNFR()
+
+    @property
+    def NFX(self):
+        return deref(self.thisptr).getNFX()
+
+    @property
+    def NFV(self):
+        return deref(self.thisptr).getNFV()
+
+    @property
+    def NZ(self):
+        return deref(self.thisptr).getNZ()
+
+    @property
+    def NC(self):
+        return deref(self.thisptr).getNC()
+
+    @property
+    def NEC(self):
+        return deref(self.thisptr).getNEC()
+
+    @property
+    def NAC(self):
+        return deref(self.thisptr).getNAC()
+
+    @property
+    def NIAC(self):
+        return deref(self.thisptr).getNIAC()
+
+    def getBounds(self) -> PyBounds:
+        return get_bounds(self.thisptr.get())
+
+    def getConstraints(self) -> PyConstraints:
+        return get_constraints(self.thisptr.get())
+
+    def getWorkingSetBounds(self):
+        return get_working_set_bounds(self.thisptr.get())
+
+    def getWorkingSetConstraints(self):
+        return get_working_set_constraints(self.thisptr.get())
 
 
 cdef class PySolutionAnalysis:
@@ -777,56 +1393,56 @@ cdef class PySolutionAnalysis:
         np.ndarray[np.double_t, ndim=1] maxCmpl
     ):
         """ """
-        if isinstance(qp, PyQProblemB):
-            return self._getKktViolation_QProblemB(qp, maxStat, maxFeas, maxCmpl)
+        if isinstance(qp, PySQProblem):
+            return self._getKktViolation_SQProblem(qp, maxStat, maxFeas, maxCmpl)
 
         elif isinstance(qp, PyQProblem):
             return self._getKktViolation_QProblem(qp, maxStat, maxFeas, maxCmpl)
 
-        elif isinstance(qp, PySQProblem):
-            return self._getKktViolation_SQProblem(qp, maxStat, maxFeas, maxCmpl)
+        elif isinstance(qp, PyQProblemB):
+            return self._getKktViolation_QProblemB(qp, maxStat, maxFeas, maxCmpl)
 
         else:
             raise ValueError('argument 1 must be QProblemB, QProblem or SQProblem')
 
     cpdef _getKktViolation_QProblemB(self,
             PyQProblemB qp,
-            np.ndarray[np.double_t, ndim=1] maxStat,
-            np.ndarray[np.double_t, ndim=1] maxFeas,
-            np.ndarray[np.double_t, ndim=1] maxCmpl
+            np.ndarray[real_t, ndim=1] maxStat,
+            np.ndarray[real_t, ndim=1] maxFeas,
+            np.ndarray[real_t, ndim=1] maxCmpl
         ):
         return self.thisptr.getKktViolation(
-                qp.thisptr,
-                <real_t*> maxStat.data[0],
-                <real_t*> maxFeas.data[0],
-                <real_t*> maxCmpl.data[0]
+                qp.thisptr.get(),
+                <real_t*> maxStat.data,
+                <real_t*> maxFeas.data,
+                <real_t*> maxCmpl.data
             )
 
     cpdef _getKktViolation_QProblem(self,
             PyQProblem qp,
-            np.ndarray[np.double_t, ndim=1] maxStat,
-            np.ndarray[np.double_t, ndim=1] maxFeas,
-            np.ndarray[np.double_t, ndim=1] maxCmpl
+            np.ndarray[real_t, ndim=1] maxStat,
+            np.ndarray[real_t, ndim=1] maxFeas,
+            np.ndarray[real_t, ndim=1] maxCmpl
         ):
         return self.thisptr.getKktViolation(
-                qp.thisptr,
-                <real_t*> maxStat.data[0],
-                <real_t*> maxFeas.data[0],
-                <real_t*> maxCmpl.data[0]
+                qp.thisptr.get(),
+                <real_t*> maxStat.data,
+                <real_t*> maxFeas.data,
+                <real_t*> maxCmpl.data
             )
 
 
     cpdef _getKktViolation_SQProblem(self,
             PySQProblem qp,
-            np.ndarray[np.double_t, ndim=1] maxStat,
-            np.ndarray[np.double_t, ndim=1] maxFeas,
-            np.ndarray[np.double_t, ndim=1] maxCmpl
+            np.ndarray[real_t, ndim=1] maxStat,
+            np.ndarray[real_t, ndim=1] maxFeas,
+            np.ndarray[real_t, ndim=1] maxCmpl
         ):
         return self.thisptr.getKktViolation(
-                qp.thisptr,
-                <real_t*> maxStat.data[0],
-                <real_t*> maxFeas.data[0],
-                <real_t*> maxCmpl.data[0]
+                qp.thisptr.get(),
+                <real_t*> maxStat.data,
+                <real_t*> maxFeas.data,
+                <real_t*> maxCmpl.data
             )
 
     cpdef getVarianceCovariance(self,
@@ -835,38 +1451,37 @@ cdef class PySolutionAnalysis:
                               np.ndarray[np.double_t, ndim=1] Primal_Dual_VAR ):
 
         if isinstance(qp, PyQProblemB):
-            return self._getVarianceCovariance_QProblemB(qp, g_b_bA_VAR, Primal_Dual_VAR)
+            check_return_value(self._getVarianceCovariance_QProblemB(qp, g_b_bA_VAR, Primal_Dual_VAR))
 
         elif isinstance(qp, PyQProblem):
-            return self._getVarianceCovariance_QProblem(qp, g_b_bA_VAR, Primal_Dual_VAR)
+            check_return_value(self._getVarianceCovariance_QProblem(qp, g_b_bA_VAR, Primal_Dual_VAR))
 
         elif isinstance(qp, PySQProblem):
-            return self._getVarianceCovariance_SQProblem(qp, g_b_bA_VAR, Primal_Dual_VAR)
-
+            check_return_value(self._getVarianceCovariance_SQProblem(qp, g_b_bA_VAR, Primal_Dual_VAR))
         else:
             raise ValueError('argument 1 must be QProblemB, QProblem or SQProblem')
 
-    cpdef _getVarianceCovariance_QProblemB(self,
-                              PyQProblemB qp,
-                              np.ndarray[np.double_t, ndim=1] g_b_bA_VAR,
-                              np.ndarray[np.double_t, ndim=1] Primal_Dual_VAR ):
-        return self.thisptr.getVarianceCovariance(qp.thisptr,
+    cdef returnValue _getVarianceCovariance_QProblemB(self,
+                                                      PyQProblemB qp,
+                                                      np.ndarray[np.double_t, ndim=1] g_b_bA_VAR,
+                                                      np.ndarray[np.double_t, ndim=1] Primal_Dual_VAR ):
+        return self.thisptr.getVarianceCovariance(qp.thisptr.get(),
                                                   <real_t*> g_b_bA_VAR.data,
                                                   <real_t*> Primal_Dual_VAR.data)
 
-    cpdef _getVarianceCovariance_QProblem(self,
-                              PyQProblem qp,
-                              np.ndarray[np.double_t, ndim=1] g_b_bA_VAR,
-                              np.ndarray[np.double_t, ndim=1] Primal_Dual_VAR ):
-        return self.thisptr.getVarianceCovariance(qp.thisptr,
+    cdef returnValue _getVarianceCovariance_QProblem(self,
+                                                     PyQProblem qp,
+                                                     np.ndarray[np.double_t, ndim=1] g_b_bA_VAR,
+                                                     np.ndarray[np.double_t, ndim=1] Primal_Dual_VAR ):
+        return self.thisptr.getVarianceCovariance(qp.thisptr.get(),
                                                   <real_t*> g_b_bA_VAR.data,
                                                   <real_t*> Primal_Dual_VAR.data)
 
-    cpdef _getVarianceCovariance_SQProblem(self,
-                              PySQProblem qp,
-                              np.ndarray[np.double_t, ndim=1] g_b_bA_VAR,
-                              np.ndarray[np.double_t, ndim=1] Primal_Dual_VAR ):
-        return self.thisptr.getVarianceCovariance(qp.thisptr,
+    cdef returnValue _getVarianceCovariance_SQProblem(self,
+                                                      PySQProblem qp,
+                                                      np.ndarray[np.double_t, ndim=1] g_b_bA_VAR,
+                                                      np.ndarray[np.double_t, ndim=1] Primal_Dual_VAR ):
+        return self.thisptr.getVarianceCovariance(qp.thisptr.get(),
                                                   <real_t*> g_b_bA_VAR.data,
                                                   <real_t*> Primal_Dual_VAR.data)
 
@@ -920,4 +1535,3 @@ def py_getKktViolation(long nV,                             # Number of variable
                     )
     return stat, feas, cmpl
 """
-

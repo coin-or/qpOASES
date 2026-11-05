@@ -31,7 +31,10 @@
 
 cmake_minimum_required(VERSION 3.18)
 
-PROJECT(qpOASES CXX)
+cmake_policy(SET CMP0091 NEW)
+set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreadedDLL")
+
+PROJECT(qpOASES C CXX)
 SET(PACKAGE_NAME "qpOASES")
 SET(PACKAGE_VERSION "3.2.2")
 SET(PACKAGE_SO_VERSION "3.2")
@@ -136,6 +139,24 @@ SET_TARGET_PROPERTIES(
     SOVERSION ${PACKAGE_SO_VERSION}
     )
 
+############################################################
+######################### C wrapper ########################
+############################################################
+
+ADD_LIBRARY(qpOASES_wrapper interfaces/c/qpOASES_wrapper.cpp)
+TARGET_INCLUDE_DIRECTORIES(qpOASES_wrapper PUBLIC interfaces/c)
+
+TARGET_LINK_LIBRARIES(qpOASES_wrapper qpOASES)
+
+ADD_EXECUTABLE(c_example1 interfaces/c/c_example1.c)
+TARGET_LINK_LIBRARIES(c_example1 qpOASES_wrapper)
+
+ADD_EXECUTABLE(c_example1a interfaces/c/c_example1a.c)
+TARGET_LINK_LIBRARIES(c_example1a qpOASES_wrapper)
+
+ADD_EXECUTABLE(c_example1b interfaces/c/c_example1b.c)
+TARGET_LINK_LIBRARIES(c_example1b qpOASES_wrapper)
+
 # headers
 INSTALL(FILES include/qpOASES.hpp
   DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
@@ -145,6 +166,55 @@ INSTALL(DIRECTORY include/qpOASES
   FILES_MATCHING PATTERN "*.hpp"
   PATTERN "*.ipp"
   PATTERN ".svn" EXCLUDE)
+
+############################################################
+######################### Unit tests  ######################
+############################################################
+
+ENABLE_TESTING()
+
+SET(TESTS
+  # testing/cpp/test_bench.cpp
+  testing/cpp/test_constraintProduct1.cpp
+  testing/cpp/test_constraintProduct2.cpp
+  testing/cpp/test_example1a.cpp
+  testing/cpp/test_example1b.cpp
+  testing/cpp/test_example1.cpp
+  testing/cpp/test_example2.cpp
+  testing/cpp/test_example4.cpp
+  testing/cpp/test_example5.cpp
+  testing/cpp/test_example6.cpp
+  testing/cpp/test_example7.cpp
+  testing/cpp/test_exampleLP.cpp
+  testing/cpp/test_externalChol1.cpp
+  testing/cpp/test_gradientShift.cpp
+  testing/cpp/test_guessedWS1.cpp
+  # testing/cpp/test_hs268.cpp
+  testing/cpp/test_identitySqproblem.cpp
+  testing/cpp/test_indexlist.cpp
+  testing/cpp/test_infeasible1.cpp
+  testing/cpp/test_janick1.cpp
+  testing/cpp/test_janick2.cpp
+  testing/cpp/test_matrices2.cpp
+  testing/cpp/test_matrices3.cpp
+  testing/cpp/test_matrices.cpp
+  testing/cpp/test_qrecipe.cpp
+  testing/cpp/test_qrecipeSchur.cpp
+  testing/cpp/test_runAllOqpExamples.cpp
+  testing/cpp/test_sebastien1.cpp
+  testing/cpp/test_smallSchur.cpp
+  testing/cpp/test_vanBarelsUnboundedQP.cpp)
+
+
+FOREACH(TEST ${TESTS})
+    GET_FILENAME_COMPONENT(TEST_NAME ${TEST} NAME_WE)
+    ADD_EXECUTABLE(${TEST_NAME} ${TEST})
+    TARGET_LINK_LIBRARIES(${TEST_NAME} qpOASES)
+    ADD_TEST(
+      NAME ${TEST_NAME}
+      COMMAND ${TEST_NAME}
+      WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/testing)
+ENDFOREACH()
 
 ############################################################
 ######################### Package Config ###################

@@ -65,6 +65,8 @@ const real_t INFTY = 1.0e20;
  *	Note: this value should be at least 41! */
 const uint_t MAX_STRING_LENGTH = 160;
 
+const uint_t MAX_FORMAT_LENGTH = 40;
+
 
 END_NAMESPACE_QPOASES
 

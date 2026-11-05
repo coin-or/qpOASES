@@ -1,0 +1,2 @@
+include qpoases.pxd
+include qpoases.pyx
