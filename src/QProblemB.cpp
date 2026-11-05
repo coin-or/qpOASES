@@ -3708,7 +3708,7 @@ returnValue QProblemB::printIteration( 	int_t iter,
 	real_t *grad = 0;
 
 	char myPrintfString[MAX_STRING_LENGTH];
-	char info[MAX_STRING_LENGTH];
+	char info[MAX_FORMAT_LENGTH];
 	const char excStr[] = " ef";
 
 	switch ( options.printLevel )

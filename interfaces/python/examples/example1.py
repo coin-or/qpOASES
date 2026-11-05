@@ -31,7 +31,7 @@ from qpoases import PyPrintLevel as PrintLevel
 #Setup data of first QP.
 
 H   = np.array([1.0, 0.0, 0.0, 0.5 ]).reshape((2,2))
-A   = np.array([1.0, 1.0 ]).reshape((2,1))
+A   = np.array([1.0, 1.0 ]).reshape((1,2))
 g   = np.array([1.5, 1.0 ])
 lb  = np.array([0.5, -2.0])
 ub  = np.array([5.0, 2.0 ])

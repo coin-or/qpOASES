@@ -34,6 +34,7 @@ cdef extern from "qpOASES.hpp" namespace "qpOASES":
     #      interface in all cases, i.e, either __USE_LONG_INTEGERS__ is defined
     #      or not.
     ctypedef long int_t
+    ctypedef long sparse_int_t
 
     cdef enum BooleanType:
 
@@ -246,6 +247,32 @@ cdef extern from "qpOASES.hpp" namespace "qpOASES":
         RET_SIMPLE_STATUS_M2
         RET_SIMPLE_STATUS_M3
 
+    cdef cppclass Matrix:
+        BooleanType needToFreeMemory() const
+        void print(const char* name) const
+
+    cdef cppclass SymmetricMatrix(Matrix):
+        sparse_int_t* createDiagInfo()
+
+    cdef cppclass DenseMatrix(Matrix):
+        DenseMatrix(int_t, int_t, int_t, real_t*)
+
+    cdef cppclass SymDenseMat(DenseMatrix, SymmetricMatrix):
+        SymDenseMat(int_t, int_t, int_t, real_t*)
+
+    cdef cppclass SparseMatrix(Matrix):
+        SparseMatrix(int_t,
+                     int_t,
+                     int_t*,
+                     int_t*,
+                     real_t*)
+
+    cdef cppclass SymSparseMat(SparseMatrix, SymmetricMatrix):
+        SymSparseMat(int_t,
+                     int_t,
+                     sparse_int_t*,
+                     sparse_int_t*,
+                     real_t*)
 
     cdef cppclass Options:
 
@@ -302,12 +329,82 @@ cdef extern from "qpOASES.hpp" namespace "qpOASES":
         int_t dropIneqConPriority
 
 
+    cdef cppclass Indexlist:
+        returnValue init(int_t n)
+        returnValuegetNumberArray( int_t** const numberarray) const
+        returnValuegetISortArray(  int_t** const iSortArray) const
+        int_t getIndex(int_t givennumber) const
+        int_t getNumber(int_t physicalindex) const
+        int_t getLength() const
+        int_t getLastNumber() const
+        returnValue addNumber(int_t addnumber)
+        returnValue removeNumber(int_t removenumber)
+        returnValue swapNumbers(int_t number1, int_t number2)
+        BooleanType isMember(int_t _number) const
+
+
+    cdef cppclass MessageHandling:
+        MessageHandling()
+        const char* getErrorCodeMessage(const returnValue _returnValue)
+
+
     cdef cppclass Bounds:
         Bounds()
+        Bounds(int_t n)
+        Bounds(const Bounds& other)
+
+        returnValue init(int_t n)
+
+        returnValue setupBound(int_t number,
+                               SubjectToStatus status)
+
+        returnValue setupAllFree()
+        returnValue setupAllLower()
+        returnValue setupAllUpper()
+
+        returnValue moveFixedToFree(int_t number)
+
+        returnValue moveFreeToFixed(int_t number,
+                                    SubjectToStatus _status)
+
+        returnValue print()
+
+        Indexlist* getFree()
+        Indexlist* getFixed()
+
+        SubjectToStatus getStatus(int_t i)
+        returnValue     setStatus(int_t i, SubjectToStatus value)
+
+        int_t getNV()
 
 
     cdef cppclass Constraints:
         Constraints()
+        Constraints(int_t n)
+        Consstraints(const Constraints& other)
+        returnValue init(int_t n)
+
+        returnValue setupConstraint(int_t number,
+                                    SubjectToStatus _status)
+
+        returnValue setupAllInactive()
+        returnValue setupAllLower()
+        returnValue setupAllUpper()
+
+        returnValue moveActiveToInactive(int_t number)
+
+        returnValue moveInactiveToActive(int_t number,
+                                    SubjectToStatus _status)
+
+        returnValue print()
+
+        Indexlist* getActive()
+        Indexlist* getInactive()
+
+        SubjectToStatus getStatus(int_t i)
+        returnValue     setStatus(int_t i, SubjectToStatus value)
+
+        int_t getNC()
 
 
     cdef cppclass QProblemB:
@@ -316,70 +413,64 @@ cdef extern from "qpOASES.hpp" namespace "qpOASES":
 
         QProblemB(const QProblemB&)
 
-        returnValue init(real_t*,
-                         real_t*,
-                         real_t*,
-                         real_t*,
-                         int_t&)
-
-        returnValue init(real_t*,
+        returnValue init(SymmetricMatrix *,
                          real_t*,
                          real_t*,
                          real_t*,
                          int_t&,
-                         real_t*)
-
-        returnValue hotstart(real_t*,
-                             real_t*,
-                             real_t*,
-                             int_t&)
+                         real_t* const,
+                         const real_t* const,
+                         const real_t* const,
+                         const Bounds* const)
 
         returnValue hotstart(real_t*,
                              real_t*,
                              real_t*,
                              int_t&,
-                             real_t*)
+                             real_t*,
+                             const Bounds* const)
 
+        BooleanType isSolved() const
+        BooleanType isInfeasible() const
+        BooleanType isUnbounded() const
 
         returnValue getPrimalSolution(real_t*)
         returnValue getDualSolution(real_t*)
         returnValue printOptions()
         real_t getObjVal()
 
+        int_t getNV() const
+        int_t getNFR() const
+        int_t getNFX() const
+        int_t getNFV() const
+        int_t getNZ() const
+
+        returnValue getBounds(Bounds& bounds) const
+
         Options getOptions()
         returnValue setOptions(Options&)
 
-    cdef cppclass QProblem:
+        returnValue getWorkingSetBounds(real_t* workingSetB)
+
+    cdef cppclass QProblem(QProblemB):
         QProblem()
         QProblem(int_t, int_t, HessianType, BooleanType)
 
         QProblem(const QProblem&)
 
-        returnValue init(real_t*,
-                         real_t*,
-                         real_t*,
-                         real_t*,
-                         real_t*,
-                         real_t*,
-                         real_t*,
-                         int_t&)
-
-        returnValue init(real_t*,
-                         real_t*,
-                         real_t*,
-                         real_t*,
-                         real_t*,
-                         real_t*,
-                         real_t*,
+        returnValue init(SymmetricMatrix *,
+                         const real_t* const,
+                         Matrix *,
+                         const real_t* const,
+                         const real_t* const,
+                         const real_t* const,
+                         const real_t* const,
                          int_t&,
-                         real_t*)
-
-        returnValue hotstart(real_t*,
-                             real_t*,
-                             real_t*,
-                             real_t*,
-                             real_t*,
-                             int_t&)
+                         real_t* const,
+                         const real_t* const xOpt,
+                         const real_t* const yOpt,
+                         const Bounds* const guessedBounds,
+                         const Constraints* const guessedConstraints)
 
         returnValue hotstart(real_t*,
                              real_t*,
@@ -387,45 +478,32 @@ cdef extern from "qpOASES.hpp" namespace "qpOASES":
                              real_t*,
                              real_t*,
                              int_t&,
-                             real_t*)
+                             real_t*,
+                             const Bounds* const guessedBounds,
+                             const Constraints* const guessedConstraints)
 
         returnValue getPrimalSolution(real_t*)
         returnValue getDualSolution(real_t*)
-        returnValue printOptions()
-        real_t getObjVal()
 
-        Options getOptions()
-        returnValue setOptions(Options&)
+        int_t getNC( ) const
+        int_t getNEC( ) const
+        int_t getNAC( ) const
+        int_t getNIAC( ) const
+
+        returnValue getConstraints(Constraints& constraints) const
+
+        returnValue getWorkingSetConstraints(real_t* workingSetC)
 
 
-    cdef cppclass SQProblem:
+    cdef cppclass SQProblem(QProblem):
         SQProblem()
         SQProblem(int_t, int_t, HessianType, BooleanType)
 
         SQProblem(const QProblem&)
 
-        returnValue init(real_t*,
-                         real_t*,
-                         real_t*,
-                         real_t*,
-                         real_t*,
-                         real_t*,
-                         real_t*,
-                         int_t&)
-
-        returnValue init(real_t*,
-                         real_t*,
-                         real_t*,
-                         real_t*,
-                         real_t*,
-                         real_t*,
-                         real_t*,
-                         int_t&,
-                         real_t*)
-
-        returnValue init(real_t* _H,
+        returnValue init(SymmetricMatrix *_H,
                          real_t* _g,
-                         real_t* _A,
+                         Matrix* _A,
                          real_t* _lb,
                          real_t* _ub,
                          real_t* _lbA,
@@ -435,36 +513,23 @@ cdef extern from "qpOASES.hpp" namespace "qpOASES":
                          real_t* xOpt,
                          real_t* yOpt,
                          Bounds* guessedBounds,
-                         Constraints* guessedConstraints,
-                         real_t* _R)
+                         Constraints* guessedConstraints)
 
-
-        returnValue hotstart(real_t*,
-                             real_t*,
-                             real_t*,
-                             real_t*,
-                             real_t*,
-                             real_t*,
-                             real_t*,
-                             int_t&)
-
-        returnValue hotstart(real_t*,
-                             real_t*,
-                             real_t*,
-                             real_t*,
-                             real_t*,
-                             real_t*,
-                             real_t*,
-                             int_t&,
-                             real_t*)
+        returnValue hotstart(SymmetricMatrix *H_new,
+                             const real_t* const g_new,
+                             Matrix *A_new,
+                             const real_t* const lb_new,
+                             const real_t* const ub_new,
+                             const real_t* const lbA_new,
+                             const real_t* const ubA_new,
+                             int_t& nWSR,
+                             real_t* const cputime,
+                             const Bounds* const guessedBounds,
+                             const Constraints* const guessedConstraints)
 
         returnValue getPrimalSolution(real_t*)
         returnValue getDualSolution(real_t*)
-        returnValue printOptions()
-        real_t getObjVal()
 
-        Options getOptions()
-        returnValue setOptions(Options&)
 
 cdef extern from "qpOASES/extras/SolutionAnalysis.hpp" namespace "qpOASES":
     cdef cppclass SolutionAnalysis:

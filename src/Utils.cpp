@@ -813,9 +813,9 @@ returnValue convertBooleanTypeToString( BooleanType value, char* const string )
 {
 	#ifndef __SUPPRESSANYOUTPUT__
 	if ( value == BT_FALSE )
-		snprintf( string,20,"BT_FALSE" );
+		snprintf( string,MAX_FORMAT_LENGTH,"BT_FALSE" );
 	else
-		snprintf( string,20,"BT_TRUE" );
+		snprintf( string,MAX_FORMAT_LENGTH,"BT_TRUE" );
 	#endif /* __SUPPRESSANYOUTPUT__ */
 
 	return SUCCESSFUL_RETURN;
@@ -831,31 +831,31 @@ returnValue convertSubjectToStatusToString( SubjectToStatus value, char* const s
 	switch( value )
 	{
 		case ST_INACTIVE:
-			snprintf( string,20,"ST_INACTIVE" );
+			snprintf( string,MAX_FORMAT_LENGTH,"ST_INACTIVE" );
 			break;
 
 		case ST_LOWER:
-			snprintf( string,20,"ST_LOWER" );
+			snprintf( string,MAX_FORMAT_LENGTH,"ST_LOWER" );
 			break;
 
 		case ST_UPPER:
-			snprintf( string,20,"ST_UPPER" );
+			snprintf( string,MAX_FORMAT_LENGTH,"ST_UPPER" );
 			break;
 
 		case ST_UNDEFINED:
-			snprintf( string,20,"ST_UNDEFINED" );
+			snprintf( string,MAX_FORMAT_LENGTH,"ST_UNDEFINED" );
 			break;
 
 		case ST_INFEASIBLE_LOWER:
-			snprintf( string,20,"ST_INFEASIBLE_LOWER" );
+			snprintf( string,MAX_FORMAT_LENGTH,"ST_INFEASIBLE_LOWER" );
 			break;
 
 		case ST_INFEASIBLE_UPPER:
-			snprintf( string,20,"ST_INFEASIBLE_UPPER" );
+			snprintf( string,MAX_FORMAT_LENGTH,"ST_INFEASIBLE_UPPER" );
 			break;
 
 		default:
-			snprintf( string,20,"<invalid value>" );
+			snprintf( string,MAX_FORMAT_LENGTH,"<invalid value>" );
 			break;
 	}
 	#endif /* __SUPPRESSANYOUTPUT__ */
@@ -873,31 +873,31 @@ returnValue convertPrintLevelToString( PrintLevel value, char* const string )
 	switch( value )
 	{
 		case PL_NONE:
-			snprintf( string,20,"PL_NONE" );
+			snprintf( string,MAX_FORMAT_LENGTH,"PL_NONE" );
 			break;
 
 		case PL_LOW:
-			snprintf( string,20,"PL_LOW" );
+			snprintf( string,MAX_FORMAT_LENGTH,"PL_LOW" );
 			break;
 
 		case PL_MEDIUM:
-			snprintf( string,20,"PL_MEDIUM" );
+			snprintf( string,MAX_FORMAT_LENGTH,"PL_MEDIUM" );
 			break;
 
 		case PL_HIGH:
-			snprintf( string,20,"PL_HIGH" );
+			snprintf( string,MAX_FORMAT_LENGTH,"PL_HIGH" );
 			break;
 
 		case PL_TABULAR:
-			snprintf( string,20,"PL_TABULAR" );
+			snprintf( string,MAX_FORMAT_LENGTH,"PL_TABULAR" );
 			break;
 
 		case PL_DEBUG_ITER:
-			snprintf( string,20,"PL_DEBUG_ITER" );
+			snprintf( string,MAX_FORMAT_LENGTH,"PL_DEBUG_ITER" );
 			break;
 
 		default:
-			snprintf( string,20,"<invalid value>" );
+			snprintf( string,MAX_FORMAT_LENGTH,"<invalid value>" );
 			break;
 	}
 	#endif /* __SUPPRESSANYOUTPUT__ */
