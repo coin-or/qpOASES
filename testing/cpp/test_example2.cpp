@@ -117,10 +117,12 @@ int main( )
 		printf("\n");
 	}
 
-	QPOASES_TEST_FOR_NEAR(Primal_Dual_Var[3 * 5 + 3], 26.0);
+  real_t Primal_Dual_Var33 = Primal_Dual_Var[3*5+3];
 
-	delete[] Primal_Dual_Var;
-	delete[] Var;
+  delete[] Primal_Dual_Var;
+  delete[] Var;
+
+	QPOASES_TEST_FOR_NEAR( Primal_Dual_Var33, 26.0 );
 
 	return TEST_PASSED;
 }
