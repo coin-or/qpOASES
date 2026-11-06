@@ -59,7 +59,7 @@ int_t_type = np.dtype('long')
 sparse_int_t_type = np.dtype('long')
 
 
-cdef str __version__ = "3.2.2"
+__version__ = "3.2.2"
 
 
 cdef BooleanType bt_from_bool(bint value):
