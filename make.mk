@@ -32,14 +32,16 @@
 
 TOP = $(realpath $(dir $(lastword $(MAKEFILE_LIST))))
 
-##	Pick the platform file automatically; for Cygwin or Windows, replace
-##	the block below by the corresponding include line.
+##	Pick the platform file automatically (uname -s reports e.g. Darwin,
+##	Linux or CYGWIN_NT-10.0-19045); for Windows, replace the block below
+##	by the corresponding include line.
 UNAME_S := $(shell uname -s)
 
 ifeq ($(UNAME_S), Darwin)
 include ${TOP}/make_osx.mk
+else ifneq ($(filter CYGWIN%,$(UNAME_S)),)
+include ${TOP}/make_cygwin.mk
 else
 include ${TOP}/make_linux.mk
 endif
-#include ${TOP}/make_cygwin.mk
 #include ${TOP}/make_windows.mk
