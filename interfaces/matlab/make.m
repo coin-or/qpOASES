@@ -69,7 +69,7 @@ function [] = make( varargin )
     defaultFlags = '-O -D__NO_COPYRIGHT__ '; %% -D__SUPPRESSANYOUTPUT__
 
     if ( ispc() == 0 )
-        CPPFLAGS = [ CPPFLAGS, '-DLINUX -lmwblas',' ' ];
+        CPPFLAGS = [ CPPFLAGS, '-DLINUX -lmwblas -lmwlapack',' ' ];
     else
         CPPFLAGS = [ CPPFLAGS, '-DWIN32',' ' ];
     end
