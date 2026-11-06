@@ -261,6 +261,32 @@ int indexDenseSubmatrix()
 }
 
 
+/** DenseMatrix::full() must return a contiguous row-major copy, also when the
+ *  matrix is stored with a leading dimension larger than its number of columns. */
+int denseFull()
+{
+	int_t i;
+	real_t err = 0.0;
+
+	/* 2x3 matrix [ 1 2 3; 4 5 6 ] stored with leading dimension 4 (padding -1). */
+	real_t val[] = { 1.0, 2.0, 3.0, -1.0,  4.0, 5.0, 6.0, -1.0 };
+	real_t ref[] = { 1.0, 2.0, 3.0,  4.0, 5.0, 6.0 };
+
+	DenseMatrix A( 2,3,4,val );
+	real_t* Af = A.full( );
+
+	for ( i=0; i<6; ++i )
+		if ( getAbs( Af[i] - ref[i] ) > err ) err = getAbs( Af[i] - ref[i] );
+	fprintf(stdFile, "Error in DenseMatrix::full() with leading dimension: %9.2e\n", err);
+
+	delete[] Af;
+
+	QPOASES_TEST_FOR_TOL( err,0.0 )
+
+	return TEST_PASSED;
+}
+
+
 /** Obtain column of sparse matrix. */
 int spGetCol()
 {
@@ -881,6 +907,7 @@ int main()
 	errorCount += hilbert();
 	errorCount += submatrix();
 	errorCount += indexDenseSubmatrix();
+	errorCount += denseFull();
 
 	errorCount += spGetCol();
 	errorCount += spGetRow();
