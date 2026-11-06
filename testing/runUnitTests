@@ -68,6 +68,7 @@ runTest $counter ../bin/test_matrices;
 runTest $counter ../bin/test_matrices2;
 runTest $counter ../bin/test_matrices3;
 runTest $counter ../bin/test_indexlist;
+runTest $counter ../bin/test_flipper;
 
 runTest $counter ../bin/test_example1;
 runTest $counter ../bin/test_example1a;

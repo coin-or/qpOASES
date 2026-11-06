@@ -238,6 +238,10 @@ returnValue Flipper::clear( )
 returnValue Flipper::copy(	const Flipper& rhs
 							)
 {
+	/* set() sizes R, Q and T from nV and nC, so take them from rhs first. */
+	nV = rhs.nV;
+	nC = rhs.nC;
+
 	return set( &(rhs.bounds),rhs.R, &(rhs.constraints),rhs.Q,rhs.T );
 }
 

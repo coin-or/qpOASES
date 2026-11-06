@@ -45,6 +45,7 @@ QPOASES_TEST_EXES = \
 	${BINDIR}/test_matrices2${EXE} \
 	${BINDIR}/test_matrices3${EXE} \
 	${BINDIR}/test_indexlist${EXE} \
+	${BINDIR}/test_flipper${EXE} \
 	${BINDIR}/test_example1${EXE} \
 	${BINDIR}/test_example1a${EXE} \
 	${BINDIR}/test_example1b${EXE} \
