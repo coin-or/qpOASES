@@ -587,8 +587,13 @@ returnValue DenseMatrix::writeToFile( FILE* output_file, const char* prefix ) co
 
 real_t* DenseMatrix::full() const
 {
+	int_t i;
 	real_t* v = new real_t[nRows*nCols];
-	memcpy( v,val, ((uint_t)(nRows*nCols))*sizeof(real_t) );
+
+	/* Copy row by row: rows of val are leaDim apart, rows of v are nCols apart. */
+	for ( i=0; i<nRows; ++i )
+		memcpy( &(v[i*nCols]),&(val[i*leaDim]), ((uint_t)nCols)*sizeof(real_t) );
+
 	return v;
 }
 
