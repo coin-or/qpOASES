@@ -550,6 +550,28 @@ class SymDenseMat : public DenseMatrix, public SymmetricMatrix
  *
  *	Sparse matrix class (col compressed format).
  *
+ *	The matrix is stored in compressed sparse column (CSC) format: the nonzero
+ *	entries are listed column by column, and within each column by increasing
+ *	row index. With nnz nonzeros, the three arrays are
+ *	- v (length nnz): the nonzero values, column by column;
+ *	- r (length nnz): r[k] is the row index of v[k];
+ *	- c (length nCols+1): c[j] is the position in v and r of the first entry
+ *	  of column j, and c[nCols] = nnz, so column j occupies positions
+ *	  c[j], ..., c[j+1]-1 (an empty column has c[j] == c[j+1]).
+ *
+ *	Indices are zero-based. For example, the 4x4 matrix
+ *	\verbatim
+	  [ 0  3  4  0 ]
+	  [ 1  0  0  0 ]
+	  [ 0  0  1  0 ]
+	  [ 1  0  0  0 ]
+	\endverbatim
+ *	is given by v = { 1, 1, 3, 4, 1 }, r = { 1, 3, 0, 0, 2 }, c = { 0, 2, 3, 5, 5 }.
+ *	This is the same layout as Eigen's column-major SparseMatrix (valuePtr(),
+ *	innerIndexPtr(), outerIndexPtr()) and scipy.sparse.csc_matrix (data,
+ *	indices, indptr). The arrays are not copied, so they must stay valid while
+ *	the matrix is in use.
+ *
  *	\author Andreas Potschka, Christian Kirches, Hans Joachim Ferreau
  *	\version 3.2
  *	\date 2011-2017
@@ -560,12 +582,12 @@ class SparseMatrix : public virtual Matrix
 		/** Default constructor. */
 		SparseMatrix( );
 
-		/** Constructor with arguments. */
+		/** Constructor with arguments (compressed sparse column format, see class description). */
 		SparseMatrix(	int_t nr, 			/**< Number of rows. */
 						int_t nc, 			/**< Number of columns. */
-						sparse_int_t* r, 	/**< Row indices (length). */
-						sparse_int_t* c, 	/**< Indices to first entry of columns (nCols+1). */
-						real_t* v			/**< Vector of entries (length). */
+						sparse_int_t* r, 	/**< Row index of each nonzero entry (length nnz). */
+						sparse_int_t* c, 	/**< Position of the first entry of each column in r and v, followed by nnz (length nCols+1). */
+						real_t* v			/**< Nonzero entries, column by column (length nnz). */
 						);
 
 		/** Constructor from dense matrix. */
@@ -929,6 +951,11 @@ class SparseMatrixRow : public virtual Matrix
  *
  *	Symmetric sparse matrix class (column compressed format).
  *
+ *	Uses the same compressed sparse column layout as SparseMatrix (see there).
+ *	Store the full matrix, i.e. both the upper and the lower triangle, with the
+ *	row indices increasing within each column, and call createDiagInfo() once
+ *	before passing the matrix to a solver.
+ *
  *	\author Andreas Potschka, Christian Kirches, Hans Joachim Ferreau
  *	\version 3.2
  *	\date 2011-2017
@@ -939,12 +966,12 @@ class SymSparseMat : public SymmetricMatrix, public SparseMatrix
 		/** Default constructor. */
 		SymSparseMat( ) : SparseMatrix( ) { };
 
-		/** Constructor with arguments. */
+		/** Constructor with arguments (compressed sparse column format, see SparseMatrix). */
 		SymSparseMat(	int_t nr, 			/**< Number of rows. */
 						int_t nc, 			/**< Number of columns. */
-						sparse_int_t* r, 	/**< Row indices (length). */
-						sparse_int_t* c, 	/**< Indices to first entry of columns (nCols+1). */
-						real_t* v			/**< Vector of entries (length). */
+						sparse_int_t* r, 	/**< Row index of each nonzero entry (length nnz). */
+						sparse_int_t* c, 	/**< Position of the first entry of each column in r and v, followed by nnz (length nCols+1). */
+						real_t* v			/**< Nonzero entries, column by column (length nnz). */
 						) : SparseMatrix(nr, nc, r, c, v) { };
 
 		/** Constructor from dense matrix. */
