@@ -129,6 +129,9 @@ class SQProblemSchur : public SQProblem
 		 *  For the Schur complement version, this function only returns SUCCESSFUL_RETURN. */
 		virtual returnValue setupTQfactorisation( );
 
+		/* Keep the inherited setupAuxiliaryQP( guessedBounds, guessedConstraints ) visible. */
+		using SQProblem::setupAuxiliaryQP;
+
 		/** This method is overloaded from SQProblem.
 		 *  Sets new matrices and calculates their factorisations. If the
 		 *  current Hessian is trivial (i.e. HST_ZERO or HST_IDENTITY) but a
