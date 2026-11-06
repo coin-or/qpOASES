@@ -174,7 +174,6 @@ INSTALL(DIRECTORY include/qpOASES
 ENABLE_TESTING()
 
 SET(TESTS
-  # testing/cpp/test_bench.cpp
   testing/cpp/test_constraintProduct1.cpp
   testing/cpp/test_constraintProduct2.cpp
   testing/cpp/test_example1a.cpp
@@ -189,7 +188,7 @@ SET(TESTS
   testing/cpp/test_externalChol1.cpp
   testing/cpp/test_gradientShift.cpp
   testing/cpp/test_guessedWS1.cpp
-  # testing/cpp/test_hs268.cpp
+  testing/cpp/test_hs268.cpp
   testing/cpp/test_identitySqproblem.cpp
   testing/cpp/test_indexlist.cpp
   testing/cpp/test_infeasible1.cpp
@@ -215,6 +214,26 @@ FOREACH(TEST ${TESTS})
       COMMAND ${TEST_NAME}
       WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/testing)
 ENDFOREACH()
+
+# test_hs268 and test_bench run on the CUTEr problem set in
+# testing/cpp/data/problems (see testing/cpp/data/fetch_cpp_data), which is
+# not part of the repository. Without it they return TEST_DATA_NOT_FOUND (99),
+# which CTest reports as skipped rather than passed or failed.
+SET_TESTS_PROPERTIES(test_hs268 PROPERTIES SKIP_RETURN_CODE 99)
+
+# test_bench scans the problem directory with <dirent.h>/scandir, which MSVC
+# does not provide. Option sets as in testing/runUnitTests.
+IF(NOT WIN32)
+    ADD_EXECUTABLE(test_bench testing/cpp/test_bench.cpp)
+    TARGET_LINK_LIBRARIES(test_bench qpOASES)
+    FOREACH(OPTS Odd Ods Omd)
+        ADD_TEST(
+          NAME test_bench_${OPTS}
+          COMMAND test_bench ${OPTS}
+          WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/testing)
+        SET_TESTS_PROPERTIES(test_bench_${OPTS} PROPERTIES SKIP_RETURN_CODE 99)
+    ENDFOREACH()
+ENDIF()
 
 ############################################################
 ######################### Package Config ###################

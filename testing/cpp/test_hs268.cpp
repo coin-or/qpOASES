@@ -33,7 +33,6 @@
 
 
 
-#include <dirent.h>
 #include <cstring>
 #include <cstdlib>
 #include <qpOASES.hpp>
