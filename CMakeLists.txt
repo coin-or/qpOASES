@@ -186,6 +186,7 @@ SET(TESTS
   testing/cpp/test_example7.cpp
   testing/cpp/test_exampleLP.cpp
   testing/cpp/test_externalChol1.cpp
+  testing/cpp/test_flipper.cpp
   testing/cpp/test_gradientShift.cpp
   testing/cpp/test_guessedWS1.cpp
   testing/cpp/test_hs268.cpp

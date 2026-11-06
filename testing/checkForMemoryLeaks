@@ -80,6 +80,7 @@ callValgrind $counter ../bin/qrecipeSchur;
 callValgrind $counter ../bin/test_matrices;
 callValgrind $counter ../bin/test_matrices2;
 callValgrind $counter ../bin/test_indexlist;
+callValgrind $counter ../bin/test_flipper;
 callValgrind $counter ../bin/test_example6;
 callValgrind $counter ../bin/test_example7;
 callValgrind $counter ../bin/test_infeasible1;
