@@ -850,8 +850,8 @@ returnValue SparseMatrix::getRowNorm( real_t* norm, int_t type ) const
 			break;
 		case 1:
 			for ( j=0; j < nCols; ++j ) {
-				for (i = jc[j]; i < jc[j+1]; i++);
-				norm[ir[i]] += getAbs( val[i] );
+				for (i = jc[j]; i < jc[j+1]; i++)
+				  norm[ir[i]] += getAbs( val[i] );
 			}
 			break;
 		default:
