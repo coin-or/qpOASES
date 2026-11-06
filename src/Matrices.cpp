@@ -595,7 +595,26 @@ real_t* DenseMatrix::full() const
 
 returnValue DenseMatrix::print( const char* name ) const
 {
-	return REFER_NAMESPACE_QPOASES print( val,nRows,nCols,name );
+	#ifndef __SUPPRESSANYOUTPUT__
+
+	int_t i;
+	char myPrintfString[MAX_STRING_LENGTH];
+
+	/* Print matrix name. */
+	if ( name != 0 )
+	{
+		snprintf( myPrintfString,MAX_STRING_LENGTH,"%s = \n", name );
+		myPrintf( myPrintfString );
+	}
+
+	/* Print row by row, using the leading dimension as row stride. */
+	for( i=0; i<nRows; ++i )
+		REFER_NAMESPACE_QPOASES print( &(val[i*leaDim]), nCols );
+	myPrintf( "\n" );
+
+	#endif /* __SUPPRESSANYOUTPUT__ */
+
+	return SUCCESSFUL_RETURN;
 }
 
 
